@@ -20,7 +20,7 @@ modules:
     path: core_js
     requires:
       - name: OSR_LTI-Container
-      - name: OSR_LTI-JobScheduler
+      #- name: OSR_LTI-JobScheduler
       - name: OSR_LTI-uaa
     provides:
       - name: ti_core_api
