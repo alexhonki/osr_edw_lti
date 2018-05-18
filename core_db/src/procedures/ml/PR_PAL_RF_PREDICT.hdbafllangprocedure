@@ -1,0 +1,22 @@
+{ 
+  "area" : "AFLPAL", 
+  "function" : "RANDOMFORESTSCORING", 
+  "parameters" : [ 
+    { 
+      "type" : "db::ml.type.predict.data", 
+      "direction" : "IN" 
+    }, 
+    { 
+      "type" : "db::ml.type.control", 
+      "direction" : "IN" 
+    }, 
+     { 
+      "type" : "db::ml.type.train.rf_model", 
+      "direction" : "IN" 
+    }, 
+    { 
+      "type" : "db::ml.type.predict.rf_result", 
+      "direction" : "OUT" 
+    } 
+  ]
+}

@@ -1,0 +1,35 @@
+PROCEDURE "procedures.utils::PR_CONF_GET_FORECAST_WINDOW"  (
+	IN IM_TIME_SEGMENT 			VARCHAR(6) default '',
+	OUT OM_FORECAST_WINDOW 		INT,
+	OUT OM_FROM_TIME_SEGMENT 	VARCHAR(6)
+ )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   READS SQL DATA AS
+BEGIN
+  DECLARE LV_TO_TS			VARCHAR(6);
+	DECLARE LV_FROM_TIMESTAMP	Timestamp;
+	----------------------------------------------------
+	-- Get Default Time Segment
+	----------------------------------------------------
+	IF LENGTH(:IM_TIME_SEGMENT) <= 0 OR :IM_TIME_SEGMENT IS NULL THEN
+		--CALL "SAP_CRI"."sap.cri.db.procedures::PR_LAST_EVENT_TIME_SEGMENT"(:LV_TO_TS);
+		CALL "procedures.utils::PR_CONF_GET_PREDICTION_TIME_SEGMENT"(:LV_TO_TS);
+	ELSE
+		LV_TO_TS := :IM_TIME_SEGMENT;
+	END IF;
+	----------------------------------------------------
+	-- Get Forecast Window
+	----------------------------------------------------
+	SELECT TO_INT(A."FROM_VALUE") 
+		INTO OM_FORECAST_WINDOW 
+		FROM "models.adm::CV_CONFIG" A
+		INNER JOIN "functions::TF_CONF_GET_REACTION_TYPE" ( ) B on A."REACTION_TYPE" = B."REACTION_TYPE"
+		WHERE A."IS_ENABLED" = 1 
+		AND A."BUCKET_ID" = 'FORECAST_WINDOW' 
+		AND A."SEQ" = 1;
+	
+	LV_FROM_TIMESTAMP := TO_TIMESTAMP( ADD_DAYS (TO_DATE(:LV_TO_TS), -1 * :OM_FORECAST_WINDOW ) );
+	OM_FROM_TIME_SEGMENT := TO_VARCHAR(YEAR(:LV_FROM_TIMESTAMP)*100 + MONTH(:LV_FROM_TIMESTAMP));
+END

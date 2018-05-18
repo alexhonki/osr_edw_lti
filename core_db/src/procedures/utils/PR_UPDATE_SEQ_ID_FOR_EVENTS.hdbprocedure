@@ -1,0 +1,15 @@
+PROCEDURE "procedures.utils::PR_UPDATE_SEQ_ID_FOR_EVENTS" (
+	IN SEQ_ID INTEGER,
+	IN EVENT_ID INTEGER
+)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   UPSERT "db::adm.config.event.name"("ID", "LATEST_EXTRACTED_SEQUENCE") values (:EVENT_ID, :SEQ_ID) where ID = :EVENT_ID;
+END

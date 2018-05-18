@@ -1,0 +1,34 @@
+{ 
+  "area" : "AFLPAL", 
+  "function" : "LDAESTIMATE", 
+  "parameters" : [ 
+    { 
+      "type" : "db::ml.type.lda.input", 
+      "direction" : "IN" 
+    },
+    { 
+      "type" : "db::ml.type.control", 
+      "direction" : "IN" 
+    }, 
+        { 
+      "type" : "db::ml.type.lda.dictionary", 
+     "direction" : "OUT" 
+    } ,
+        { 
+      "type" : "db::ml.type.lda.topicWordDistribution", 
+     "direction" : "OUT" 
+    } ,
+        { 
+      "type" : "db::ml.type.lda.docTopicDistribution", 
+     "direction" : "OUT" 
+    } ,
+        { 
+      "type" : "db::ml.type.control", 
+     "direction" : "OUT" 
+    } ,
+    { 
+      "type" : "db::ml.type.lda.output", 
+     "direction" : "OUT" 
+    } 
+  ]
+}

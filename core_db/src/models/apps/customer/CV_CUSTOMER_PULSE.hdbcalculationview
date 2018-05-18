@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="3.0" id="models.apps.customer::CV_CUSTOMER_PULSE" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" enforceSqlExecution="false" outputViewType="Projection" cacheInvalidationPeriod="NONE">
+<descriptions defaultDescription="CV_CUSTOMER_PULSE"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="models.apps.customer::CV_CUSTOMER_EVENTS">
+    <resourceUri>models.apps.customer::CV_CUSTOMER_EVENTS</resourceUri>
+  </DataSource>
+  <DataSource id="models.apps.event::CV_EVENT_INFLUENCE">
+    <resourceUri>models.apps.event::CV_EVENT_INFLUENCE</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="CustomerEvents">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ID">
+        <descriptions defaultDescription="Event ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE">
+        <descriptions defaultDescription="Initial Date"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_VALUE">
+        <descriptions defaultDescription="Event Value"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TS">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="Event Name"/>
+      </viewAttribute>
+      <viewAttribute id="CATEGORY_NAME">
+        <descriptions defaultDescription="Event Group"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="Event Description"/>
+      </viewAttribute>
+      <viewAttribute id="PRIORITY">
+        <descriptions defaultDescription="Event Priority"/>
+      </viewAttribute>
+      <viewAttribute id="ICON">
+        <descriptions defaultDescription="Event Icon"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.apps.customer::CV_CUSTOMER_EVENTS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_VALUE" source="EVENT_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY_NAME" source="CATEGORY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PRIORITY" source="PRIORITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ICON" source="ICON"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Influence">
+    <viewAttributes>
+      <viewAttribute id="EVENT_ID_ID" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE" aggregationType="sum">
+        <descriptions defaultDescription="Event Influence"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.apps.event::CV_EVENT_INFLUENCE">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID_ID" source="EVENT_ID_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="CN_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ID" aggregationType="sum">
+        <descriptions defaultDescription="Event ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE" aggregationType="min">
+        <descriptions defaultDescription="Initial Date"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="Event Value"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE" aggregationType="sum">
+        <descriptions defaultDescription="Event Influence"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="Event Name"/>
+      </viewAttribute>
+      <viewAttribute id="CATEGORY_NAME">
+        <descriptions defaultDescription="Event Group"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="Event Description"/>
+      </viewAttribute>
+    
+      <viewAttribute id="PRIORITY">
+        <descriptions defaultDescription="Event Priority"/>
+      </viewAttribute>
+      <viewAttribute id="ICON">
+        <descriptions defaultDescription="Event Icon"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="CustomerEvents">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_VALUE" source="EVENT_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY_NAME" source="CATEGORY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="PRIORITY" source="PRIORITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ICON" source="ICON"/>
+    </input>
+    <input node="Influence">
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID_ID"/>
+    </input>
+    <joinAttribute name="EVENT_ID"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="CUST_ID" key="true" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Customer ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="CUST_ID"/>
+    </attribute>
+    <attribute id="EVENT_ID" key="true" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="EVENT_ID"/>
+    </attribute>
+    <attribute id="EVENT_NAME" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event Name"/>
+      <keyMapping columnObjectName="Join_1" columnName="EVENT_NAME"/>
+    </attribute>
+    <attribute id="EVENT_GROUP" order="4" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event Group"/>
+      <keyMapping columnObjectName="Join_1" columnName="CATEGORY_NAME"/>
+    </attribute>
+    <attribute id="EVENT_VALUE" order="5" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event Value"/>
+      <keyMapping columnObjectName="Join_1" columnName="EVENT_VALUE"/>
+    </attribute>
+    <attribute id="INIT_DATE" order="6" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Initial Date"/>
+      <keyMapping columnObjectName="Join_1" columnName="INIT_DATE"/>
+    </attribute>
+    <attribute id="INFLUENCE" order="7" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event Influence"/>
+      <keyMapping columnObjectName="Join_1" columnName="INFLUENCE"/>
+    </attribute>
+    <attribute id="DESCRIPTION" order="8" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event Description"/>
+      <keyMapping columnObjectName="Join_1" columnName="DESCRIPTION"/>
+    </attribute>
+  
+    <attribute id="PRIORITY" order="9" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event Priority"/>
+      <keyMapping columnObjectName="Join_1" columnName="PRIORITY"/>
+    </attribute>
+    <attribute id="ICON" order="10" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event Icon"/>
+      <keyMapping columnObjectName="Join_1" columnName="ICON"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="208" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="CustomerEvents" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="91" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Influence" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="282" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="208" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="CustomerEvents" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Influence" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

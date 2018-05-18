@@ -1,0 +1,42 @@
+PROCEDURE "procedures.text::PR_PREPARE_CRM_EVENTLIST" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+                   --Input variable declaration
+    DECLARE TOKENS_NUMBER                        BIGINT;
+    DECLARE LV_EVENT_CATEGORY 	NVARCHAR(200) := 'EVENTFROMCRM'; 
+    
+	                -- Get tokens from text analysis result table where number of words are 2 or more
+    TMP_TOKENS = SELECT TA_TOKEN, COUNTER, NumbOfWords FROM (
+    	                                                    SELECT TA_TOKEN, SUM(TA_COUNTER) AS COUNTER, LENGTH(TA_TOKEN) - LENGTH(REPLACE(TA_TOKEN, ' ', '')) + 1 NumbofWords
+                                                            FROM "$TA_db::text.cleanText.Index_CleanedText"
+                                                            GROUP BY TA_TOKEN 
+                                                            ORDER BY COUNTER DESC, NumbOfWords DESC)
+                                                            WHERE NumbofWords > 1; 
+
+                -- Get only the top 0.1% tokens from the total number of tokens in TMP_TOKENS
+    SELECT COUNT(*) AS TOTAL_COUNT INTO TOKENS_NUMBER FROM :TMP_TOKENS WHERE NumbOfWords > 1;
+                
+    SELECT ROUND(:TOKENS_NUMBER * 0.001, 1) INTO TOKENS_NUMBER FROM "synonyms::dummy"; 
+             
+    TMP_TOKENS_2 = SELECT TOP :TOKENS_NUMBER TA_TOKEN, COUNTER FROM :TMP_TOKENS;
+
+                -- Generate Event IDs for newly created Events
+    --CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();
+    	--------------------------------------------------------------
+	-- Insert new Events
+	--------------------------------------------------------------
+	INSERT INTO	"db::adm.config.event.name" 
+			("ID","EVENT_NAME", "CATEGORY_NAME", "DESCRIPTION", "IS_ENABLED", "TYPE", "CREATED.BY", "CREATED.DATE")
+			(SELECT "sequences::AdminEventId".NEXTVAL,"TA_TOKEN", :LV_EVENT_CATEGORY, 'GENERATED' "TA_TOKEN", 1 "IS_ENABLED", 3 "TYPE", SESSION_USER, CURRENT_UTCTIMESTAMP FROM :TMP_TOKENS_2);
+
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------   
+   
+END

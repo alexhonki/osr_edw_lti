@@ -1,0 +1,9 @@
+{
+	"description": "Extract Debt Management Event Data",
+	"action": "procedures.events.erp::PR_EXTRACT_DEBT_MANAGEMENT_EVENT",
+	"schedules": [{
+		"description": "Perform my task every * * * * 21 10 0", 
+		"xscron": "2016 * * * 21 10 0",
+		"parameter": {} 
+	}]
+}

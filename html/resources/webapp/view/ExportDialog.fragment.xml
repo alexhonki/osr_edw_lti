@@ -1,0 +1,33 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:l="sap.ui.layout">
+    <Dialog title="{i18n>ExportDialog.ExportTitle}" contentWidth="800px">
+        <l:Grid defaultSpan="L4 M6 S6" class="sapUiSmallMarginTop">
+            <l:content>
+                <ObjectListItem title="{i18n>ExportDialog.SaveAsCSVTitle}"
+                                intro="{i18n>ExportDialog.SaveAsCSVDescription}"
+                                type="Active"
+                                press="exportCSV"
+                                icon="sap-icon://document-text"/>
+                <ObjectListItem title="{i18n>ExportDialog.EmailExportTitle}"
+                                intro="{i18n>ExportDialog.EmailDescription}"
+                                type="Inactive"
+                                press="exportEMail"
+                                icon="sap-icon://email">
+                    <markers>
+                        <ObjectMarker type="Locked"/>
+                    </markers>
+                </ObjectListItem>
+                <!--<ObjectListItem title="{i18n>ExportDialog.TargetGroupTitle}"
+                                intro="{i18n>ExportDialog.TargetGroupDescription}"
+                                type="{=${/HybrisEnabled} ? 'Active' : 'Inactive'}"
+                                press="exportHybris"
+                                icon="sap-icon://target-group"/>-->
+            </l:content>
+        </l:Grid>
+        <buttons>
+            <Button text="Cancel" press="onCloseDialog"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

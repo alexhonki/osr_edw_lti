@@ -1,0 +1,9 @@
+{
+	"description": "Predefined Event Scanner Data",
+	"action": "procedures.utils::PR_UTIL_PREDEFINED_EVENT_SCANNER",
+	"schedules": [{
+		"description": "Perform my task every * * * * 19 0 0", 
+		"xscron": "2016 * * * 19 0 0",
+		"parameter": {} 
+	}]
+}

@@ -1,0 +1,78 @@
+PROCEDURE "procedures.text::PR_TEXT_ANALYSIS_EXTRACT" ( ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	AS
+BEGIN
+
+	--Input variable declaration
+	DECLARE TOKENS_NUMBER 		BIGINT;
+	DECLARE LV_EVENT_CATEGORY 	NVARCHAR(200) := 'Free Text Analysis'; 
+
+	
+	-- Get tokens from text analysis result table where number of words are 2 or more
+	TMP_TOKENS = SELECT TA_TOKEN, COUNTER, NumbOfWords FROM (
+					SELECT TA_TOKEN, SUM(TA_COUNTER) AS COUNTER, LENGTH(TA_TOKEN) - LENGTH(REPLACE(TA_TOKEN, ' ', '')) + 1 NumbofWords
+					FROM "$TA_db::text.cleanText.Index_CleanedText"
+					GROUP BY TA_TOKEN 
+					ORDER BY COUNTER DESC, NumbOfWords DESC)
+				WHERE NumbofWords > 1; 
+	
+	
+	-- Get only the top 0.1% tokens from the total number of tokens in TMP_TOKENS
+	SELECT COUNT(*) AS TOTAL_COUNT INTO TOKENS_NUMBER FROM :TMP_TOKENS WHERE NumbOfWords > 1;
+	
+	SELECT ROUND(:TOKENS_NUMBER * 0.001, 1) INTO TOKENS_NUMBER FROM "synonyms::dummy"; 
+	
+	TMP_TOKENS_2 = SELECT TOP :TOKENS_NUMBER TA_TOKEN, COUNTER FROM :TMP_TOKENS;
+	
+	-- Get internal Customer ID generated on base customer	
+	LT_COMPLAINTS = SELECT 
+						--a."ID" 				"CUST_ID", 		-- Internal Customer ID
+						a."CUST_ID" 		"CUST_ID",		-- External Customer ID
+						b."TRANS_DATE"		"INIT_DATE",	-- Query/Complaint Transaction Date as start of event
+						b."PROCESSED_DATE"	"END_DATE",
+						YEAR(b."TRANS_DATE")*100 + MONTH(b."TRANS_DATE") 			"INIT_TS",
+						YEAR(b."PROCESSED_DATE")*100 + MONTH(b."PROCESSED_DATE") 	"END_TS",
+						b."DESCRIPTION"
+					FROM "db::app.Customer" a
+					INNER JOIN "db::sys.QueryComplaint" b on a."CUST_ID" = b.CUST_ID;
+		
+	INSERT INTO "db::app.CustomerEvents" 
+	(
+		-- "ID", -- TODO: Will need to add ID to table for event attributes
+		"CUST_ID",
+		-- "EVENT_ID", -- Not Generated yet
+		"EVENT_GROUP",
+		"EVENT_NAME",
+		"INIT_DATE",
+		"END_DATE",
+		"EVENT_VALUE",
+		"DESCRIPTION",
+		"INIT_TS",
+		"END_TS"	
+	)
+	
+	(
+		SELECT 
+			-- "SAP_CRI"."sap.cri.db.sequences::AppEventID".NEXTVAL AS "ID",
+			TO_BIGINT(t1.CUST_ID) 	"CUST_ID", 
+			:LV_EVENT_CATEGORY 		"EVENT_GROUP",
+			t2.TA_TOKEN 			"EVENT_NAME", 
+			t1."INIT_DATE", 
+			t1."END_DATE",
+			1 						"EVENT_VALUE",
+			'' 						"DESCRIPTION",
+			t1."INIT_TS", 
+			t1."END_TS"
+		FROM :LT_COMPLAINTS t1 
+		INNER JOIN :TMP_TOKENS t2 ON LOWER(t1.DESCRIPTION) LIKE '%'|| t2.TA_TOKEN ||'%'
+	);
+	
+	-- Truncate text.cleanText table and its resulted tokens table
+	TRUNCATE TABLE "db::text.cleanText";
+	-- Index is updated when table is cleared
+	--TRUNCATE TABLE "SAP_CRI"."$TA_sap.cri.db::Index_CleanedText";
+	
+	-- Generate Event IDs for newly created Events
+	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();
+END;

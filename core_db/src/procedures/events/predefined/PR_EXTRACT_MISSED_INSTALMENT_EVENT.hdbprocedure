@@ -1,0 +1,266 @@
+PROCEDURE "procedures.events.predefined::PR_EXTRACT_MISSED_INSTALMENT_EVENT" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   
+   	DECLARE LV_MI NVARCHAR(500) := 'Missed instalment payment';
+	DECLARE LV_MI_1 NVARCHAR(500) := '1-3 times missing instalment payment';
+	DECLARE LV_MI_2 NVARCHAR(500) := '>3 times missing instalment payment';
+	DECLARE LV_MI_3 NVARCHAR(500) := '>6 times missing instalment payment';
+	DECLARE LV_MI_4 NVARCHAR(500) := '>9 times missing instalment payment';
+	DECLARE LV_MI_5 NVARCHAR(500) := '>12 times missing instalment payment';
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+   /*************************************
+  	[TABLE] - DFKKPP - Promises to Pay Header Table
+	[FIEDLS SELECTED] - Get the details of all PPKEY for a PRGPA that satisfies the [CONDITION]
+		PRGPA		-	Business Partner that Promised Payment
+		PPKEY		-	Identification of Promise to Pay
+		MAX_DATE	-	MAX(ERDAT) - ERDAT - Date on Which Record Was Created
+		YEAR_		-	Derived from the ERDAT
+		PRAMT		-	Payment Amount Promised
+	
+	[CONDITION]	- Sum of BETRZ_PC and RDAMT should be less than the PRAMT
+		BETRZ_PC	-	Payment Amount in Currency of Promise to Pay
+		RDMAT		-	Amount Cleared by Other Means
+		PRAMT		-	Payment Amount Promised
+   *************************************/
+   
+   LT_PROMPAY = 	SELECT A.PRGPA, A.MAX_DATE, A.YEAR_, B.PPKEY, B.PRAMT
+					FROM(
+					    SELECT PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
+					    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
+					    GROUP BY PRGPA, SUBSTRING(ERDAT, 0,4)
+					) A
+					JOIN(
+					    SELECT PRGPA, ERDAT, PPKEY, PRAMT
+					    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
+					    WHERE (BETRZ_PC + RDAMT) < PRAMT
+					) B
+					ON A.PRGPA = B.PRGPA AND A.MAX_DATE = B.ERDAT
+					ORDER BY A.PRGPA;
+
+
+	 /*************************************
+	  	[TABLE] - DFKKPPD - Promises to Pay Amounts per Date
+		[FIEDLS SELECTED] - Get the date wise details of PPKEY
+			PPKEY			-	Identification of Promise to Pay
+			PRDAT			-	Payment Date Promised
+			PRAMT			-	Payment Amount Promised
+			EXPECT_TO_DATE	-	Total Amount expected to be recovered by this date (Its calculated by adding the PRAMT in order by PRDAT)
+	   *************************************/
+
+	LT_EXPECTED = 	SELECT PPKEY, PRDAT, PRAMT, SUM(PRAMT) OVER (PARTITION BY PPKEY ORDER BY PRDAT) AS EXPECT_TO_DATE
+					FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD";
+
+	
+	 /*************************************
+	  	[TABLE] - DFKKPPP - Payment Assignments to Promises to Pay
+		[FIEDLS SELECTED] - Get the date wise details of payments done for a PPKEY
+			PPKEY			-	Identification of Promise to Pay
+			AMOUNT_PAID		-	SUM(BETRZ) - BETRZ - Payment amount in transaction currency
+			VALUT			-	Value date
+		[GROUP]	-	PPKEY, VALUT
+		[ORDER]	-	PPKEY, VALUT
+	   *************************************/
+	   
+	LT_ACTUAL = SELECT PPKEY, SUM(BETRZ) AS AMOUNT_PAID, VALUT
+				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP"
+				GROUP BY PPKEY, VALUT
+				ORDER BY PPKEY, VALUT;
+
+	
+	/*************************************
+	  	[VIEW] - LT_ACTUAL
+	  	PAID_TO_DATE - Total amount paid till date for a PPKEY
+	   *************************************/
+	LT_PAID =	SELECT *, SUM(AMOUNT_PAID) OVER (PARTITION BY PPKEY ORDER BY VALUT) AS PAID_TO_DATE
+				FROM :LT_ACTUAL
+				ORDER BY PPKEY DESC, VALUT;
+
+
+	 /*************************************
+  	[TABLE] - DFKKPP - Promises to Pay Header Table
+	[FIEDLS SELECTED] - Get the Total number of plans for a Customer/Taxpayer PRGPA
+		PRGPA		-	Business Partner that Promised Payment
+		NUM_PLANS	-	COUNT(PRGPA) - Counts the number of plans for a Taxpayer
+   ****************************************/
+	
+	
+	LT_PLANS = 	SELECT PRGPA, COUNT(PRGPA) NUM_PLANS
+				FROM (
+					SELECT A.PRGPA, A.MAX_DATE, A.YEAR_, B.PPKEY
+	                FROM(
+	                    SELECT PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
+	                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
+	                    GROUP BY PRGPA, SUBSTRING(ERDAT, 0,4)
+	                ) A
+	                JOIN(
+	                    SELECT PRGPA, ERDAT, PPKEY
+	                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
+	                ) B
+	                ON A.PRGPA = B.PRGPA AND A.MAX_DATE = B.ERDAT
+	                ORDER BY A.PRGPA
+	            )
+				GROUP BY PRGPA
+				ORDER BY PRGPA;
+	
+	
+	/*************************************
+  	Calculate the number of instalments missed by PRGPA for PPKEY
+  	LAST_PAID_TO is the sum of total amount paid untill the previous PRDAT at a particular PRDAT
+  		Calculation -- LAG(PAID_TO_DATE) OVER (PARTITION BY A.PPKEY ORDER BY PRDAT) AS LAST_PAID_TO
+  		PRDAT			-	Payment Date Promised
+  	EXPECT_TO_DATE	-	Total Amount expected to be recovered by this date (Its calculated by adding the PRAMT in order by PRDAT)
+  		
+  	LAST_PAID_TO is compared with the EXPECT_TO_DATE for a particular PRDAT
+  	
+  	AMOUNT_PAID	(comes from LT_ACTUAL) -	SUM(BETRZ) - BETRZ - Payment amount in transaction currency
+  	
+  	[CONDITIONS]
+  	If AMOUNT_PAID IS NULL AND LAST_PAID_TO is less than EXPECT_TO_DATE - Status is set as FAILED
+  		- The Last Payment done is less than the expected payment to be done by the taxpayer
+  
+  	***************************************/
+	LT_TEMP = SELECT 
+					C.CUST_ID,
+					B.PRGPA,
+					A.INIT_DATE,
+					NUM_PLANS,
+					IFNULL(NUM_MISSED_INSTALL, 0) NUM_MISSED_PAYMENT
+				FROM (
+					SELECT PRGPA, COUNT(PRGPA) NUM_MISSED_INSTALL, MAX(PRDAT) AS INIT_DATE
+					FROM (
+						SELECT
+							CASE 
+								WHEN (AMOUNT_PAID IS NULL) AND (LAST_PAID_TO < EXPECT_TO_DATE)
+									THEN 'FAILED'
+								WHEN (AMOUNT_PAID IS NULL) AND (LAST_PAID_TO > EXPECT_TO_DATE)
+									THEN 'PASSED'
+								WHEN (AMOUNT_PAID IS NULL)
+									THEN 'FAILED'
+								ELSE 'PASSED'
+							END AS STATUS,
+							*
+						FROM (		
+							SELECT *, LAG(PAID_TO_DATE) OVER (PARTITION BY A.PPKEY ORDER BY PRDAT) AS LAST_PAID_TO
+							FROM :LT_PROMPAY A
+							JOIN :LT_EXPECTED B
+							ON A.PPKEY = B.PPKEY
+							LEFT JOIN :LT_PAID C
+							ON A.PPKEY = C.PPKEY
+							AND B.PRDAT = C.VALUT
+							ORDER BY A.PRGPA, B.PRDAT
+						)
+					)
+					WHERE STATUS = 'FAILED'
+					GROUP BY PRGPA
+					ORDER BY PRGPA
+				) A
+				RIGHT JOIN :LT_PLANS B
+				ON A.PRGPA = B.PRGPA
+				JOIN "db::app.Customer" C
+				ON B.PRGPA = C.EXT_ID
+				WHERE A.INIT_DATE < 20170000;			
+		
+		
+	
+	   /*Missed Instalment - Number of missed instalment*/
+	 INSERT INTO "db::app.CustomerEvents" 
+	 	SELECT
+			CUST_ID,
+			CASE
+				WHEN (NUM_MISSED_PAYMENT > 0 AND NUM_MISSED_PAYMENT < 4) THEN (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_MI_1))
+				WHEN (NUM_MISSED_PAYMENT > 3 AND NUM_MISSED_PAYMENT <= 6) THEN (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_MI_2))
+				WHEN (NUM_MISSED_PAYMENT > 6 AND NUM_MISSED_PAYMENT <= 9) THEN (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_MI_3))
+				WHEN (NUM_MISSED_PAYMENT > 9 AND NUM_MISSED_PAYMENT <= 12) THEN (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_MI_4))
+				WHEN (NUM_MISSED_PAYMENT > 12) THEN (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_MI_5))
+			END	AS EVENT_ID,
+			(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_MI_1))	EVENT_GROUP,
+			CASE
+				WHEN (NUM_MISSED_PAYMENT > 0 AND NUM_MISSED_PAYMENT < 4) THEN :LV_MI_1 
+				WHEN (NUM_MISSED_PAYMENT > 3 AND NUM_MISSED_PAYMENT <= 6) THEN :LV_MI_2 
+				WHEN (NUM_MISSED_PAYMENT > 6 AND NUM_MISSED_PAYMENT <= 9) THEN :LV_MI_3
+				WHEN (NUM_MISSED_PAYMENT > 9 AND NUM_MISSED_PAYMENT <= 12) THEN :LV_MI_4
+				WHEN (NUM_MISSED_PAYMENT > 12) THEN :LV_MI_5
+			END	AS EVENT_NAME,
+			INIT_DATE, 
+			TO_TIMESTAMP('9999-12-31') END_DATE, 
+			1 EVENT_VALUE, 
+			CASE
+				WHEN (NUM_MISSED_PAYMENT > 0 AND NUM_MISSED_PAYMENT < 4) THEN :LV_MI_1 
+				WHEN (NUM_MISSED_PAYMENT > 3 AND NUM_MISSED_PAYMENT <= 6) THEN :LV_MI_2 
+				WHEN (NUM_MISSED_PAYMENT > 6 AND NUM_MISSED_PAYMENT <= 9) THEN :LV_MI_3
+				WHEN (NUM_MISSED_PAYMENT > 9 AND NUM_MISSED_PAYMENT <= 12) THEN :LV_MI_4
+				WHEN (NUM_MISSED_PAYMENT > 12) THEN :LV_MI_5 
+			END	AS DESCRIPTION,
+			YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
+			YEAR(TO_TIMESTAMP('9999-12-31'))*100 + MONTH(TO_TIMESTAMP('9999-12-31')) END_TS			
+		FROM :LT_TEMP;	
+		
+		
+		/*Missed instalment event*/
+		 INSERT INTO "db::app.CustomerEvents" 
+	 	SELECT
+			CUST_ID,
+				(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_MI)) AS EVENT_ID,
+				(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_MI)) AS EVENT_GROUP,
+				:LV_MI AS EVENT_NAME,
+			INIT_DATE, 
+			TO_TIMESTAMP('9999-12-31') END_DATE, 
+			1 EVENT_VALUE, 
+			:LV_MI AS DESCRIPTION,
+			YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
+			YEAR(TO_TIMESTAMP('9999-12-31'))*100 + MONTH(TO_TIMESTAMP('9999-12-31')) END_TS			
+		FROM 
+		(
+					SELECT 
+					C.CUST_ID,
+					B.PRGPA,
+					A.INIT_DATE
+				FROM (
+					SELECT PRGPA,  PRDAT AS INIT_DATE
+					FROM (
+						SELECT
+							CASE 
+								WHEN (AMOUNT_PAID IS NULL) AND (LAST_PAID_TO < EXPECT_TO_DATE)
+									THEN 'FAILED'
+								WHEN (AMOUNT_PAID IS NULL) AND (LAST_PAID_TO > EXPECT_TO_DATE)
+									THEN 'PASSED'
+								WHEN (AMOUNT_PAID IS NULL)
+									THEN 'FAILED'
+								ELSE 'PASSED'
+							END AS STATUS,
+							*
+						FROM (		
+							SELECT *, LAG(PAID_TO_DATE) OVER (PARTITION BY A.PPKEY ORDER BY PRDAT) AS LAST_PAID_TO
+							FROM :LT_PROMPAY A
+							JOIN :LT_EXPECTED B
+							ON A.PPKEY = B.PPKEY
+							LEFT JOIN :LT_PAID C
+							ON A.PPKEY = C.PPKEY
+							AND B.PRDAT = C.VALUT
+							ORDER BY A.PRGPA, B.PRDAT
+						)
+					)
+					WHERE STATUS = 'FAILED'
+					--GROUP BY PRGPA
+					ORDER BY PRGPA
+				) A
+				RIGHT JOIN :LT_PLANS B
+				ON A.PRGPA = B.PRGPA
+				JOIN "db::app.Customer" C
+				ON B.PRGPA = C.EXT_ID
+				WHERE A.INIT_DATE < 20170000			
+		)
+		;	
+		
+	
+   
+END

@@ -1,0 +1,4 @@
+CATEGORY,EVENT_NAME,PRIORITY,EXPANDED_WORD
+CRM_Assess,Refund,2,payment
+CRM_Assess,Refund,1,mosn
+UNUSED,EXTRA,1, 

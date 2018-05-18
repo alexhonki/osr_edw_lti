@@ -1,0 +1,50 @@
+{
+    "_version": "1.1.0",
+    "sap.app": {
+        "_version": "1.2.0",
+        "id": "sap.fiori.cri.test",
+        "type": "application",
+        "i18n": "../i18n/i18n.properties",
+        "title": "{{Test.title}}",
+        "description": "",
+        "applicationVersion": {
+            "version": "1.0.0"
+        }
+    },
+    "sap.ui": {
+        "_version": "1.2.0",
+        "technology": "UI5",
+        "fullWidth": true,
+        "deviceTypes": {
+            "desktop": true
+        },
+        "supportedThemes": [
+            "sap_belize"
+        ]
+    },
+    "sap.ui5": {
+        "_version": "1.1.0",
+        "rootView": "sap.fiori.cri.view.Test",
+        "dependencies": {
+            "minUI5Version": "1.32.0",
+            "libs": {
+                "sap.m": {},
+                "sap.ovp": {
+                    "minVersion": "1.32.0"
+                }
+            }
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "sap.fiori.cri.i18n.i18n"
+                }
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        }
+    }
+}

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Dimension="http://www.sap.com/ndb/BiModelDimension.ecore" id="models.apps.customer::CV_MONTH_TS" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_MONTH_TS"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="synonyms::mtimedimensionmonth">
+    <resourceUri>synonyms::mtimedimensionmonth</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews/>
+<inlineHierarchy xsi:type="Dimension:LeveledHierarchy" id="Gregorian_Hierarchy" aggregateAllNodes="false" orphanedNodesHandling="ROOT_NODES" rootNodeVisibility="ADD_ROOT_NODE" withRootNode="true" nodeStyle="LEVEL_NAME_ENFORCED" cacheEnabled="true" cycleHandling="BREAKUP" emptyValueIsNull="true">
+  <descriptions defaultDescription="Gregorian_Hierarchy"/>
+  <unassignedMemberProperties mode="FALSE"/>
+  <levels>
+    <level levelAttribute="YEAR" levelType="MDLEVEL_TYPE_TIME_YEARS" order="1" orderAttribute="YEAR" sortDirection="ASC"/>
+    <level levelAttribute="HALFYEAR" levelType="MDLEVEL_TYPE_TIME_HALF_YEAR" order="2" orderAttribute="HALFYEAR" sortDirection="ASC"/>
+    <level levelAttribute="QUARTER" levelType="MDLEVEL_TYPE_TIME_QUARTERS" order="3" orderAttribute="QUARTER" sortDirection="ASC"/>
+    <level levelAttribute="MONTH" levelType="MDLEVEL_TYPE_TIME_MONTHS" order="4" orderAttribute="MONTH" sortDirection="ASC"/>
+  </levels>
+</inlineHierarchy>
+<logicalModel id="synonyms::mtimedimensionmonth">
+  <attributes>
+    <attribute id="YEAR" key="true" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="YEAR"/>
+      <keyMapping columnObjectName="mtimedimensionmonth" columnName="YEAR"/>
+    </attribute>
+    <attribute id="HALFYEAR" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="HALFYEAR"/>
+      <keyMapping columnObjectName="mtimedimensionmonth" columnName="HALFYEAR"/>
+    </attribute>
+    <attribute id="QUARTER" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="QUARTER"/>
+      <keyMapping columnObjectName="mtimedimensionmonth" columnName="QUARTER"/>
+    </attribute>
+    <attribute id="MONTH" key="true" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MONTH"/>
+      <keyMapping columnObjectName="mtimedimensionmonth" columnName="MONTH"/>
+    </attribute>
+    <attribute id="YEAR_INT" order="10" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="YEAR_INT"/>
+      <keyMapping columnObjectName="mtimedimensionmonth" columnName="YEAR_INT"/>
+    </attribute>
+    <attribute id="QUARTER_INT" order="11" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="QUARTER_INT"/>
+      <keyMapping columnObjectName="mtimedimensionmonth" columnName="QUARTER_INT"/>
+    </attribute>
+    <attribute id="MONTH_INT" order="12" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MONTH_INT"/>
+      <keyMapping columnObjectName="mtimedimensionmonth" columnName="MONTH_INT"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes>
+    <calculatedAttribute id="JOIN" order="1" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="JOIN"/>
+      <keyCalculation datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>1</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+    <calculatedAttribute id="TIME_SEGMENT" order="2" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TIME_SEGMENT"/>
+      <keyCalculation datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>&quot;YEAR_INT&quot;*100 + &quot;MONTH_INT&quot;</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+    <calculatedAttribute id="MONTH_NAME" order="3" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MONTH_NAME"/>
+      <keyCalculation datatype="NVARCHAR" expressionLanguage="SQL" length="30">
+        <formula>MONTHNAME(TO_DATE(&quot;TIME_SEGMENT&quot;))</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+    <calculatedAttribute id="MONTH_SHORT_NAME" order="4" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MONTH_SHORT_NAME"/>
+      <keyCalculation datatype="NVARCHAR" expressionLanguage="COLUMN_ENGINE" length="3">
+        <formula>leftstr(&quot;MONTH_NAME&quot;,3)</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+    <calculatedAttribute id="QUARTER_TEXT" order="5" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="QUARTER_TEXT"/>
+      <keyCalculation datatype="VARCHAR" expressionLanguage="COLUMN_ENGINE" length="2">
+        <formula>'Q'+string(&quot;QUARTER_INT&quot;)</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+  </calculatedAttributes>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

@@ -1,0 +1,226 @@
+PROCEDURE "procedures.events.predefined::PR_EXTRACT_PROMISED_PAYMENT_EVENT" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   
+   
+   DECLARE LV_PP NVARCHAR(500) := 'Promised Payment';
+   DECLARE LV_PP_1 NVARCHAR(500) := 'Promised Payment in 3 or more Consecutive Years';
+   DECLARE LV_PP_2 NVARCHAR(500) := 'Promised Payment with More Than 3 Instalments';  --TBD
+   DECLARE LV_PP_3 NVARCHAR(500) := 'Promise to Pay Payment was Late';	--TBD
+   
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+   /*Promised Payment*/
+    INSERT INTO "db::app.CustomerEvents" 
+   	SELECT
+		CUST_ID,
+		(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PP)) as EVENT_ID,
+		(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PP))	EVENT_GROUP,
+		:LV_PP EVENT_NAME,
+		INIT_DATE, 
+		END_DATE, 
+		1 EVENT_VALUE, 
+		:LV_PP DESCRIPTION,
+		YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
+		YEAR(END_DATE)*100 + MONTH(END_DATE) END_TS
+	FROM (
+			SELECT
+				*,
+				TO_TIMESTAMP(ERDAT, 'YYYYMMDD') "INIT_DATE", 
+				TO_TIMESTAMP('9999-12-31') "END_DATE"
+			FROM (
+				SELECT GPART, ERDAT
+				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
+				ORDER BY ERDAT, GPART
+			) A
+			JOIN (
+				SELECT CUST_ID, EXT_ID
+				FROM "db::app.Customer"
+			) B 
+			ON A.GPART = B.EXT_ID
+		)
+	WHERE CUST_ID IS NOT NULL
+	ORDER BY INIT_DATE;
+   
+   
+   
+   
+   
+   /*Promised Payment in 3 or more Consecutive Years*/
+    INSERT INTO "db::app.CustomerEvents" 
+   	SELECT
+		CUST_ID,
+		(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PP_1)) as EVENT_ID,
+		(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PP_1))	EVENT_GROUP,
+		:LV_PP_1 EVENT_NAME,
+		INIT_DATE, 
+		END_DATE, 
+		1 EVENT_VALUE, 
+		:LV_PP_1 DESCRIPTION,
+		YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
+		YEAR(END_DATE)*100 + MONTH(END_DATE) END_TS
+	FROM (
+				SELECT
+					*,
+					TO_TIMESTAMP(MAX_DATE, 'YYYYMMDD') "INIT_DATE", 
+					TO_TIMESTAMP('9999-12-31') "END_DATE"
+				FROM (
+					SELECT *, ROW_NUMBER() OVER( PARTITION BY CUST_ID, GRP) AS NUM_CONSECUTIVE_YEARS
+					FROM (
+						SELECT 
+							CUST_ID, 
+							MAX_DATE,
+							(YEAR_ - ROW_NUMBER() OVER( PARTITION BY CUST_ID  ORDER BY YEAR_)) AS GRP
+						FROM (
+							SELECT PRGPA, MAX(ERDAT) AS MAX_DATE, SUBSTRING(ERDAT, 0,4) AS YEAR_
+							FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
+							GROUP BY PRGPA, SUBSTRING(ERDAT, 0,4)
+						) A
+						LEFT JOIN (
+							SELECT EXT_ID, CUST_ID
+					        FROM "db::app.Customer"
+						) B
+							ON A.PRGPA = B.EXT_ID
+					)
+				)
+			)
+	WHERE NUM_CONSECUTIVE_YEARS >= 3
+	AND CUST_ID IS NOT NULL
+	ORDER BY CUST_ID, MAX_DATE;
+
+INSERT INTO "db::app.CustomerEvents"
+SELECT
+	CUST_ID, 
+	(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PP_2)) as EVENT_ID,
+	(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PP_2))	EVENT_GROUP,
+-- Modify Event Name and Description
+	:LV_PP_2 EVENT_NAME,
+	INIT_DATE, 
+	END_DATE, 
+	1 EVENT_VALUE,
+	:LV_PP_2 DESCRIPTION,
+	YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
+	YEAR(END_DATE)*100 + MONTH(END_DATE) END_TS
+-- Insert Predefined Event Logic ---
+FROM (
+	SELECT
+		*,
+		TO_TIMESTAMP(MAX_DATE, 'YYYYMMDD') "INIT_DATE", 
+		TO_TIMESTAMP('9999-12-31') "END_DATE"
+	FROM (
+		SELECT 
+			A.CUST_ID, 
+			A.PRGPA, 
+			A.YEAR_,
+			A.MAX_DATE, 
+			A.NO_OF_INSTALLMENT_PLAN FROM 
+	    (    
+	        SELECT * 
+	        FROM (
+	            SELECT A.PRGPA, A.MAX_DATE, A.YEAR_, COUNT(b.PPKEY) AS NO_OF_INSTALLMENT_PLAN
+	            FROM(
+	                SELECT A.PRGPA, A.MAX_DATE, A.YEAR_, B.PPKEY
+	                FROM(
+	                    SELECT PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
+	                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
+	                    GROUP BY PRGPA, SUBSTRING(ERDAT, 0,4)
+	                ) A
+	                JOIN(
+	                    SELECT PRGPA, ERDAT, PPKEY
+	                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
+	                ) B
+	                ON A.PRGPA = B.PRGPA AND A.MAX_DATE = B.ERDAT
+	                ORDER BY A.PRGPA
+	            ) A
+	            JOIN(
+	                SELECT PPKEY
+	                FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD"
+	            ) B
+	            ON A.PPKEY = B.PPKEY
+	            GROUP BY A.PRGPA, A.YEAR_, A.MAX_DATE
+	            ORDER BY COUNT(b.PPKEY) DESC
+	        )A
+	        JOIN( 
+	            SELECT EXT_ID, CUST_ID
+	            FROM "db::app.Customer"
+	        ) B
+	        ON A.PRGPA = B.EXT_ID
+	    ) A
+	    JOIN (
+	        SELECT CUST_ID
+	        FROM "db::app.Customer"
+	    ) B
+	    ON A.CUST_ID = B.CUST_ID
+	    ORDER BY A.CUST_ID, A.YEAR_
+	)
+)
+WHERE NO_OF_INSTALLMENT_PLAN > 3
+AND CUST_ID IS NOT NULL
+ORDER BY INIT_DATE;
+				
+
+INSERT INTO "db::app.CustomerEvents" 
+SELECT
+	CUST_ID, 
+	(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PP_3)) as EVENT_ID,
+	(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PP_3))	EVENT_GROUP,
+-- Modify Event Name and Description
+	:LV_PP_3 EVENT_NAME,
+	INIT_DATE, 
+	END_DATE, 
+	1 EVENT_VALUE,
+	:LV_PP_3 DESCRIPTION,
+	YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
+	YEAR(END_DATE)*100 + MONTH(END_DATE) END_TS
+-- Insert Predefined Event Logic ---
+
+FROM (
+	SELECT
+		TO_TIMESTAMP(PRDAT, 'YYYYMMDD') "INIT_DATE", 
+		TO_TIMESTAMP('9999-12-31') "END_DATE",
+		A.*,
+		B.VALUT, B.PAYMENT_VALUE,
+		C.GPART,
+		D.CUST_ID
+	FROM (
+		-- get the total sum of payment made due and the next payment date
+		select "PPKEY", "PRDAT", SUM("PRAMT"), LEAD(PRDAT) OVER (PARTITION BY PPKEY ORDER BY PRDAT) as NEXT_DATE
+		from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" -- installment plan tables
+		group by PPKEY, PRDAT
+		order by PPKEY, PRDAT
+	) A
+	JOIN (
+		-- get the total payment made and its total payment number
+		select PPKEY, VALUT, SUM(BETRZ) as PAYMENT_VALUE, COUNT(BETRZ)
+		from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" -- installment actually paid
+		group by PPKEY, VALUT
+		order by PPKEY, VALUT
+	) B
+	ON A.PPKEY = B.PPKEY
+	JOIN (
+		SELECT PPKEY, GPART 
+		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" -- header table
+	) C
+	ON B.PPKEY = C.PPKEY
+	JOIN (
+		SELECT CUST_ID, EXT_ID
+		FROM "db::app.Customer"
+	) D 
+	ON C.GPART = D.EXT_ID
+	WHERE B.VALUT > A.PRDAT
+	AND (A.NEXT_DATE IS NULL OR B.VALUT < A.NEXT_DATE)
+)
+WHERE CUST_ID IS NOT NULL
+ORDER BY INIT_DATE;
+
+-- End Predefined Event Logic ---
+	   
+   
+END

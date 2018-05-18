@@ -1,0 +1,220 @@
+PROCEDURE "procedures.ml::PR_RUN_FPGROWTH_COMBINED_EVENTS"
+(
+	IN I_FROM	INT DEFAULT 000101,
+	IN I_TO		INT DEFAULT 999912
+	)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+    AS
+BEGIN
+DECLARE LA_COMBINED_ID NVARCHAR(500) ARRAY;
+	DECLARE LA_EVENT_ID INT ARRAY;
+	DECLARE LV_EVENT_ID INT;
+	DECLARE LV_ID_LIST NVARCHAR(500) ;
+	
+	DECLARE LV_COUNT INT;
+	DECLARE LV_TEMPLATE_ID INT;
+	
+	-- Custom Exception
+	DECLARE no_reactions CONDITION FOR SQL_ERROR_CODE 10000;
+	
+	--------------------------------------------------------------------------------------------------------
+	-- Set Control Parameters
+	--------------------------------------------------------------------------------------------------------
+	-- THREAD_NUMBER
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT_THREAD_NUMBER','Thread number',1,5,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT_THREAD_NUMBER';
+	END;
+	-- MIN_SUPPORT
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT_MIN_SUPPORT','Minimum Support',1,null,0.1,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT_MIN_SUPPORT';
+	END;
+	--MIN_CONFIDENCE
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT_MIN_CONFIDENCE','Minimum Confidence',1,null,0,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT_MIN_CONFIDENCE';
+	END;
+	--MIN_LIFT	
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT_MIN_LIFT','Minimum Lift',1,null,1,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT_MIN_LIFT';
+	END;
+	-- MAXITEMLENGTH
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT_MAXITEMLENGTH','Maximum Length',1,5,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT_MAXITEMLENGTH';
+	END;
+	-- MAX_CONSEQUENT
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT_MAX_CONSEQUENT','Max Consequent',1,1,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT_MAX_CONSEQUENT';
+	END;
+	-- TIMEOUT
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT_TIMEOUT','Timeout',1,0,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT_TIMEOUT';
+	END;
+	-- LHS_IS_COMPLEMENTARY_RHS
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT_LHS_IS_COMPLEMENTARY_RHS','LHS',1,1,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT_LHS_IS_COMPLEMENTARY_RHS';
+	END;
+	
+
+						
+	--------------------------------------------------------------------------------------------------------
+	-- Signature Values
+	--------------------------------------------------------------------------------------------------------
+ 	LT_PARAMS = SELECT REPLACE(PARAMETER_NAME,'FPG_COMB_EVT_','') "NAME", INT_PARAMETER "INTARGS", DOUBLE_PARAMETER "DOUBLEARGS", STRING_PARAMETER "STRINGARGS"
+				FROM "db::ml.config.MLParameters"
+				WHERE "PARAMETER_NAME" LIKE 'FPG_COMB_EVT_%'
+				AND IS_ENABLED = 1;
+	
+	--------------------------------------------------------------------------------------------------------
+	-- Get Valid Reactions for time period
+	--------------------------------------------------------------------------------------------------------
+	LT_REACTIONS  = SELECT TO_INT("CUST_ID") "TRANS", CAST( "REACTION_TYPE" AS VARCHAR(200)) "ITEM"
+					FROM "db::app.CustomerReactions"
+					WHERE "INIT_TS" BETWEEN :I_FROM AND :I_TO;
+	-- Throw Exception if no reactions Found in period
+	IF IS_EMPTY(:LT_REACTIONS) THEN
+		SIGNAL no_reactions SET MESSAGE_TEXT = 'No Reactions Found in specified period';
+	END IF;
+	
+	--------------------------------------------------------------------------------------------------------
+	-- Create Extra Parameters for Control Table	
+	--------------------------------------------------------------------------------------------------------
+	LT_CONTROL	= 	SELECT CAST( "NAME" AS VARCHAR(100)) "NAME", "INTARGS", "DOUBLEARGS", "STRINGARGS" FROM :LT_PARAMS
+					UNION
+					SELECT CAST( 'RHS_RESTRICT' AS VARCHAR(100)) "NAME", NULL "INTARGS", NULL "DOUBLEARGS", ITEM "STRINGARGS" FROM :LT_REACTIONS GROUP BY ITEM;
+
+	--------------------------------------------------------------------------------------------------------
+	-- Get Only enabled Events
+	--------------------------------------------------------------------------------------------------------
+	LT_EVENT_NAME = SELECT "ID" FROM "db::adm.config.event.name" WHERE "IS_ENABLED" = 1;
+
+	LT_EVENTS	  = SELECT TO_INT("CUST_ID") "TRANS",  CAST( "EVENT_ID.ID" AS VARCHAR(200)) "ITEM"
+					FROM "db::app.CustomerEvents"
+					WHERE "EVENT_ID.ID" IN (SELECT "ID" FROM :LT_EVENT_NAME)
+					  AND "INIT_TS" BETWEEN :I_FROM AND :I_TO;
+
+	--------------------------------------------------------------------------------------------------------
+	-- Prepare Input Data
+	--------------------------------------------------------------------------------------------------------
+	LT_DATA_IN = SELECT TRANS, ITEM FROM 
+			 (
+				 SELECT TRANS, ITEM FROM :LT_REACTIONS
+				 UNION 
+				 SELECT TRANS, ITEM FROM :LT_EVENTS
+			 ) GROUP BY TRANS, ITEM;		
+	
+	
+	--------------------------------------------------------------------------------------------------------
+	-- Run FP-GROWTH Algorithm
+	--------------------------------------------------------------------------------------------------------
+	CALL "procedures.ml::PR_PAL_FPGROWTH"( :LT_DATA_IN, :LT_CONTROL, LT_DATA_OUT );
+
+	LT_COMBINED_LIST = SELECT A.PRERULE 						"ID",
+							IFNULL ( B.DESCRIPTION, A.PRERULE ) "DESCRIPTION",
+							A.POSTRULE 							"REACTION_TYPE",
+							IFNULL ( B.IS_ENABLED, 1 )  		"IS_ENABLED",
+							A."SUPPORT",
+							A."CONFIDENCE",
+							A."LIFT",
+							OCCURRENCES_REGEXPR('(&)' IN A.PRERULE) + 1 as "EVENT_COUNT"
+				--			B.EVENT_ID_REF
+						FROM :LT_DATA_OUT A
+						LEFT OUTER JOIN  "db::adm.config.event.combined.name"  B ON A.PRERULE = B.ID 
+						WHERE PRERULE LIKE '%&%';
+	/*
+	-- Combined event ID input
+	LT_EVENT_ID_LIST = SELECT CAST("ID" AS NVARCHAR(200)) "EVENT_NAME", CAST('Combined Event' AS NVARCHAR(200)) "CATEGORY_NAME" 
+						FROM :LT_COMBINED_LIST
+					--	WHERE EVENT_ID_REF IS NULL
+						GROUP BY "ID";									
+	
+	-- Generate Event ID in event.name table for predefined event
+	CALL "sap.cri.procedures::PR_CONF_GET_MULTIPLE_EVENT_ID"(:LT_EVENT_ID_LIST,LT_NEW_EVENT_ID_LIST);
+	*/
+	
+	LT_TEMPLATE = SELECT * FROM "db::adm.config.event.name" 
+					WHERE 	"TYPE" 			= 0				-- Template 
+					AND 	"PROC_SCHEMA" 	= 'SAP_CRI' 
+					AND 	"PROC_NAME"		= 'sap.cri.procedures.events::PR_EVENT_COMBINED_EVENTS';
+	
+	-- Get sublist of Items that need to be created
+	LT_SUBLIST = select * from :LT_COMBINED_LIST WHERE "ID" NOT IN (SELECT DISTINCT "ID" FROM "db::adm.config.event.combined.list" );
+	
+	BEGIN
+		DECLARE LV_INDEX INT;
+		DECLARE CURSOR c_cursor1  FOR SELECT "ID","REACTION_TYPE" FROM :LT_SUBLIST;
+		-- VERY BAD .. There be dragons
+		FOR cur_row AS c_cursor1
+		DO
+			-- Get count of items in list
+			SELECT OCCURRENCES_REGEXPR('(&)' IN cur_row."ID") + 1 as "COUNT"  INTO LV_COUNT from "synonyms::dummy";
+			-- Set initial text to split
+        	LV_ID_LIST	:= cur_row."ID";
+        	
+		 	FOR LV_INDEX IN 1..:LV_COUNT DO
+		 		-- Set Key
+				LA_COMBINED_ID[CARDINALITY(:LA_COMBINED_ID) + 1]	:= cur_row."ID";
+				
+				IF :LV_INDEX = :LV_COUNT  THEN
+					-- Get Last Entry
+					LA_EVENT_ID[CARDINALITY(:LA_EVENT_ID) + 1] 	:= :LV_ID_LIST;
+				ELSE
+					-- Get event
+					LA_EVENT_ID[CARDINALITY(:LA_EVENT_ID) + 1] 	:= SUBSTR_BEFORE (:LV_ID_LIST, '&');
+					-- Set next sequence of items to process
+					LV_ID_LIST 				:= SUBSTR_AFTER (:LV_ID_LIST, '&');
+				END IF;
+							
+			END FOR;       	
+        	
+        	/* --------------------------------------------------------------------------------------------------------
+        	   -- Create predefined Event
+        	   -- -----------------------
+        	   -- Only create new predefined event for new combined events
+        	   -------------------------------------------------------------------------------------------------------- */
+        	IF NOT IS_EMPTY(:LT_TEMPLATE) THEN
+        		LV_TEMPLATE_ID = :LT_TEMPLATE.ID[1];
+        		LT_PARAMETERS_TEMP = SELECT CAST( 'I_EVENT_NAME' AS NVARCHAR(256)) "PARAMETER_NAME", CAST(cur_row."ID" AS NVARCHAR(256)) "PARAMETER_VALUE" FROM "synonyms::dummy"
+        							 UNION
+        							 SELECT CAST( 'I_REACTION_TYPE' AS NVARCHAR(256)) "PARAMETER_NAME", CAST(cur_row."REACTION_TYPE" AS NVARCHAR(256)) "PARAMETER_VALUE" FROM "synonyms::dummy"
+        							 ;
+        		-- Generate Derived Events for combined events
+        		CALL  "procedures.utils::PR_CONF_CREATE_EVENT_FROM_TEMPLATE"  (:LV_TEMPLATE_ID, :LT_PARAMETERS_TEMP, :LV_EVENT_ID  );
+        	END IF;
+        	
+    	END FOR;
+    	-- Create list of Event IDs
+    	LT_LIST = unnest(:LA_COMBINED_ID,:LA_EVENT_ID) as ("COMBINED.ID","EVENT_ID");   	
+	END;
+	
+	
+	
+	-- Update tables
+/*	UPSERT "sap.cri.db::adm.config.event.combined.name" ("ID","DESCRIPTION","REACTION_TYPE","IS_ENABLED","SUPPORT","CONFIDENCE","LIFT","EVENT_ID_REF")
+		select A."ID",A."DESCRIPTION",A."REACTION_TYPE",A."IS_ENABLED",A."SUPPORT",A."CONFIDENCE",A."LIFT",B."ID" "EVENT_ID_REF"
+			FROM :LT_COMBINED_LIST A
+			INNER JOIN :LT_NEW_EVENT_ID_LIST B ON A."ID" = B."EVENT_NAME"; */
+			
+	UPSERT "db::adm.config.event.combined.name" ("ID","DESCRIPTION","REACTION_TYPE","IS_ENABLED","SUPPORT","CONFIDENCE","LIFT")
+	select A."ID",A."DESCRIPTION",A."REACTION_TYPE",A."IS_ENABLED",A."SUPPORT",A."CONFIDENCE",A."LIFT"
+		FROM :LT_COMBINED_LIST A;		
+		
+	UPSERT "db::adm.config.event.combined.list" ("COMBINED.ID","EVENT_ID") SELECT "COMBINED.ID","EVENT_ID" FROM :LT_LIST;	
+	
+END

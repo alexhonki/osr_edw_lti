@@ -1,0 +1,70 @@
+FUNCTION "functions::TF_CUSTOMER_FILTER_FROM_TO" ( 
+		IN IM_FILTER NVARCHAR(5000),
+		IN IM_FROM	 varchar(6),
+		IN IM_TO	 varchar(6)
+	) 
+	RETURNS table (
+		-- CUST_ID 		INTEGER
+		"CUST_ID" BIGINT
+		-- "INIT_TS" INT
+	)
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER AS
+BEGIN
+	-------------------------------------------------------------------------------
+	-- VARIABLES
+	-------------------------------------------------------------------------------
+	DECLARE LV_MATCH  INTEGER := 0;
+	DECLARE LV_FROM	  INTEGER := TO_INT(:IM_FROM);
+	DECLARE LV_TO	  INTEGER := TO_INT(:IM_TO);
+ 	
+ 	LT_CUSTOMERS = SELECT a.cust_id --a."INIT_TS"
+				FROM "db::app.Customer" a
+				WHERE	
+						A."STATUS" = 0
+				AND 	A."INIT_TS" <= :LV_TO
+  	  			AND	    A."END_TS" >= :LV_FROM
+  	  			;
+ 	
+	-------------------------------------------------------------------------------
+	-- Select data valid for a period in time
+	-------------------------------------------------------------------------------	 
+	IF length(:IM_FILTER) = 0 OR :IM_FILTER IS NULL then
+		-------------------------------------------------------------------------------
+		-- Return Customers with valid attributes
+		-------------------------------------------------------------------------------
+		RETURN SELECT "CUST_ID" --a."INIT_TS"
+				FROM :LT_CUSTOMERS;	  	  			
+	ELSE
+	 	-------------------------------------------------------------------------------
+	 	-- Select only matched customers
+	 	-------------------------------------------------------------------------------
+	 	BEGIN
+	 		DECLARE EXIT HANDLER FOR SQL_ERROR_CODE 1299 LV_MATCH := 0;
+	 		
+			SELECT OCCURRENCES_REGEXPR('(,)' IN :IM_FILTER) + 1 as "MATCH"  INTO LV_MATCH FROM "synonyms::dummy";
+		END;
+		
+		LT_FILTER = SELECT b.attribute_id, c.attr_value, c.attr_key 
+					FROM "db::app.AttributeTypes" b   
+					INNER JOIN "functions::TF_STRING_TO_ROW"(:IM_FILTER) c 
+					ON b.attribute_name = c.attr_name  
+					WHERE b.is_filter = 1;
+		
+		-- Output list of IDs that match criteria
+		RETURN select CUST_ID FROM
+				( SELECT a."CUST_ID" as "CUST_ID", b.attr_key --a."INIT_TS"
+					FROM :LT_CUSTOMERS e 
+					INNER JOIN "db::app.CustomerAttributes" a ON e."CUST_ID" = a."CUST_ID"
+					INNER JOIN :LT_FILTER b ON a."ATTRIBUTE_ID" = b."ATTRIBUTE_ID" AND a.attribute_value = b.attr_value
+					-- Filter For Valid data
+					WHERE   A.INIT_TIME_SEGMENT <= :LV_TO
+	  	  			AND	    A.END_TIME_SEGMENT >= :LV_FROM
+	  	  			) 
+	  	  			
+	  	  			GROUP BY CUST_ID
+	  	  			HAVING COUNT(distinct attr_key) >= :LV_MATCH;
+	 	   	
+	END IF;
+	  
+END;

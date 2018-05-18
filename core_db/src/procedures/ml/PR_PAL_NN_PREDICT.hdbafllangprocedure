@@ -1,0 +1,26 @@
+{ 
+  "area" : "AFLPAL", 
+  "function" : "PREDICTWITHBPNN", 
+  "parameters" : [ 
+    { 
+      "type" : "db::ml.type.predict.data", 
+      "direction" : "IN" 
+    },
+    { 
+      "type" : "db::ml.type.train.nn_model", 
+      "direction" : "IN" 
+    }, 
+    { 
+      "type" : "db::ml.type.control", 
+      "direction" : "IN" 
+    }, 
+    { 
+      "type" : "db::ml.type.predict.nn_result", 
+      "direction" : "OUT" 
+    }, 
+    { 
+      "type" : "db::ml.type.predict.nn_softmax", 
+      "direction" : "OUT" 
+    }
+  ]
+}

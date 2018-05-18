@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" id="models.apps.event::CV_EVENT_INFLUENCE" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_EVENT_INFLUENCE"/>
+<localVariables>
+  <variable id="IP_TO" parameter="true">
+    <descriptions defaultDescription="To Time Segment (YYYYMM)"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_CONF_GET_PREDICTION_TIME_SEGMENT</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_REACTION_TYPE" parameter="true">
+    <descriptions defaultDescription="Reaction Type"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_CONF_GET_REACTION_TYPE</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE">
+    <targetVariable name="IM_TO" resourceUri="functions::TF_EVENT_INFLUENCE"/>
+    <localVariable>IP_TO</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE">
+    <targetVariable name="IM_REACTION_TYPE" resourceUri="functions::TF_EVENT_INFLUENCE"/>
+    <localVariable>IP_REACTION_TYPE</localVariable>
+  </mapping>
+</variableMappings>
+<dataSources>
+  <DataSource id="functions::TF_EVENT_INFLUENCE" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_EVENT_INFLUENCE</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="EVENT_ID" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_IMPACT" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_IMPACT"/>
+      </viewAttribute>
+      <viewAttribute id="TOTAL_CUSTOMERS" aggregationType="sum">
+        <descriptions defaultDescription="TOTAL_CUSTOMERS"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE" aggregationType="sum">
+        <descriptions defaultDescription="INFLUENCE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="INFLUENCE_FLOAT" datatype="FLOAT" length="" expressionLanguage="COLUMN_ENGINE">
+        <formula>&quot;INFLUENCE&quot;</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="functions::TF_EVENT_INFLUENCE">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_IMPACT" source="EVENT_IMPACT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_CUSTOMERS" source="TOTAL_CUSTOMERS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+    <viewAttributes>
+      <viewAttribute id="EVENT_ID">
+        <descriptions defaultDescription="EVENT_ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_IMPACT" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_IMPACT"/>
+      </viewAttribute>
+      <viewAttribute id="TOTAL_CUSTOMERS" aggregationType="sum">
+        <descriptions defaultDescription="TOTAL_CUSTOMERS"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE" aggregationType="sum">
+        <descriptions defaultDescription="INFLUENCE"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE_FLOAT" aggregationType="sum">
+        <descriptions defaultDescription="INFLUENCE_FLOAT"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_IMPACT" source="EVENT_IMPACT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_CUSTOMERS" source="TOTAL_CUSTOMERS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE_FLOAT" source="INFLUENCE_FLOAT"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Aggregation_1">
+  <attributes>
+    <attribute id="EVENT_ID_ID" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="EVENT_ID_ID"/>
+      <keyMapping columnObjectName="Aggregation_1" columnName="EVENT_ID"/>
+    </attribute>
+    <attribute id="EVENT_IMPACT" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="EVENT_IMPACT"/>
+      <keyMapping columnObjectName="Aggregation_1" columnName="EVENT_IMPACT"/>
+    </attribute>
+    <attribute id="TOTAL_CUSTOMERS" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TOTAL_CUSTOMERS"/>
+      <keyMapping columnObjectName="Aggregation_1" columnName="TOTAL_CUSTOMERS"/>
+    </attribute>
+    <attribute id="INFLUENCE" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="INFLUENCE"/>
+      <keyMapping columnObjectName="Aggregation_1" columnName="INFLUENCE"/>
+    </attribute>
+    <attribute id="INFLUENCE_DOUBLE" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="INFLUENCE_FLOAT"/>
+      <keyMapping columnObjectName="Aggregation_1" columnName="INFLUENCE_FLOAT"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="359"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="241"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

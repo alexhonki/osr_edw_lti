@@ -1,0 +1,17 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+
+    <ResponsivePopover
+            title="{/Title}"
+            placement="Left">
+        <endButton>
+            <Button text="Close" press="onCloseDistinctEventPopover"/>
+        </endButton>
+        <content>
+            <List items="{/Events}">
+                <StandardListItem title="{ path: 'Date', formatter: '.formatDate' }"/>
+            </List>
+        </content>
+    </ResponsivePopover>
+</core:FragmentDefinition>

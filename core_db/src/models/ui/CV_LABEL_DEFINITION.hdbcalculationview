@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.ui::CV_LABEL_DEFINITION" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_LABEL_DEFINITION"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="models.adm::CV_REACTION_TYPE">
+    <resourceUri>models.adm::CV_REACTION_TYPE</resourceUri>
+  </DataSource>
+  <DataSource id="db::ui.label.definition">
+    <resourceUri>db::ui.label.definition</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_REACTION_TYPE">
+    <viewAttributes>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="Reaction Type"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.adm::CV_REACTION_TYPE">
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_LABEL_DEFINITION">
+    <viewAttributes>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="REACTION_TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="PAGE">
+        <descriptions defaultDescription="PAGE"/>
+      </viewAttribute>
+      <viewAttribute id="COMPONENT">
+        <descriptions defaultDescription="COMPONENT"/>
+      </viewAttribute>
+      <viewAttribute id="LANGUAGE">
+        <descriptions defaultDescription="LANGUAGE"/>
+      </viewAttribute>
+      <viewAttribute id="LABEL">
+        <descriptions defaultDescription="LABEL"/>
+      </viewAttribute>
+      <viewAttribute id="CREATED_BY">
+        <descriptions defaultDescription="CREATED.DATE"/>
+      </viewAttribute>
+      <viewAttribute id="CREATED_ON" aggregationType="min">
+        <descriptions defaultDescription="CREATED.DATE"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_BY">
+        <descriptions defaultDescription="CHANGED.BY"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_ON" aggregationType="min">
+        <descriptions defaultDescription="CHANGED.DATE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::ui.label.definition">
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PAGE" source="PAGE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="COMPONENT" source="COMPONENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LANGUAGE" source="LANGUAGE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LABEL" source="LABEL"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CREATED_BY" source="CREATED.BY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CREATED_ON" source="CREATED.DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_BY" source="CHANGED.BY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_ON" source="CHANGED.DATE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="J_LABEL_DEF" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="REACTION_TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="PAGE">
+        <descriptions defaultDescription="PAGE"/>
+      </viewAttribute>
+      <viewAttribute id="COMPONENT">
+        <descriptions defaultDescription="COMPONENT"/>
+      </viewAttribute>
+      <viewAttribute id="LANGUAGE">
+        <descriptions defaultDescription="LANGUAGE"/>
+      </viewAttribute>
+      <viewAttribute id="LABEL">
+        <descriptions defaultDescription="LABEL"/>
+      </viewAttribute>
+      <viewAttribute id="CREATED_BY">
+        <descriptions defaultDescription="CREATED.BY"/>
+      </viewAttribute>
+      <viewAttribute id="CREATED_ON" aggregationType="min">
+        <descriptions defaultDescription="CREATED.DATE"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_BY">
+        <descriptions defaultDescription="CHANGED.BY"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_ON" aggregationType="min">
+        <descriptions defaultDescription="CHANGED.DATE"/>
+      </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$REACTION_TYPE$REACTION_TYPE"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="P_REACTION_TYPE">
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$REACTION_TYPE$REACTION_TYPE" source="REACTION_TYPE"/>
+    </input>
+    <input node="P_LABEL_DEFINITION">
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PAGE" source="PAGE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="COMPONENT" source="COMPONENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LANGUAGE" source="LANGUAGE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LABEL" source="LABEL"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CREATED_BY" source="CREATED_BY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CREATED_ON" source="CREATED_ON"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_BY" source="CHANGED_BY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_ON" source="CHANGED_ON"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$REACTION_TYPE$REACTION_TYPE" source="REACTION_TYPE"/>
+    </input>
+    <joinAttribute name="JOIN$REACTION_TYPE$REACTION_TYPE"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="J_LABEL_DEF">
+  <attributes>
+    <attribute id="REACTION_TYPE" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="REACTION_TYPE"/>
+      <keyMapping columnObjectName="J_LABEL_DEF" columnName="REACTION_TYPE"/>
+    </attribute>
+    <attribute id="PAGE" key="true" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PAGE"/>
+      <keyMapping columnObjectName="J_LABEL_DEF" columnName="PAGE"/>
+    </attribute>
+    <attribute id="COMPONENT" key="true" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="COMPONENT"/>
+      <keyMapping columnObjectName="J_LABEL_DEF" columnName="COMPONENT"/>
+    </attribute>
+    <attribute id="LANGUAGE" key="true" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="LANGUAGE"/>
+      <keyMapping columnObjectName="J_LABEL_DEF" columnName="LANGUAGE"/>
+    </attribute>
+    <attribute id="LABEL" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="LABEL"/>
+      <keyMapping columnObjectName="J_LABEL_DEF" columnName="LABEL"/>
+    </attribute>
+    <attribute id="CREATED_BY" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CREATED.BY"/>
+      <keyMapping columnObjectName="J_LABEL_DEF" columnName="CREATED_BY"/>
+    </attribute>
+    <attribute id="CREATED_ON" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CREATED.DATE"/>
+      <keyMapping columnObjectName="J_LABEL_DEF" columnName="CREATED_ON"/>
+    </attribute>
+    <attribute id="CHANGED_BY" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CHANGED.BY"/>
+      <keyMapping columnObjectName="J_LABEL_DEF" columnName="CHANGED_BY"/>
+    </attribute>
+    <attribute id="CHANGED_ON" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CHANGED.DATE"/>
+      <keyMapping columnObjectName="J_LABEL_DEF" columnName="CHANGED_ON"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="P_REACTION_TYPE" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="35" y="503"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="P_LABEL_DEFINITION" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="222" y="503"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="J_LABEL_DEF" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="121" y="389"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="P_REACTION_TYPE" modelObjectNameSpace="J_LABEL_DEF" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="P_LABEL_DEFINITION" modelObjectNameSpace="J_LABEL_DEF" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

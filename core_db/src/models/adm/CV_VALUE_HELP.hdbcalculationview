@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="3.0" id="models.adm::CV_VALUE_HELP" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" enforceSqlExecution="false" outputViewType="Projection" cacheInvalidationPeriod="NONE">
+<descriptions defaultDescription="CV_VALUE_HELP"/>
+<localVariables>
+  <variable id="IP_FIELD_NAME" parameter="true">
+    <descriptions defaultDescription="Field Name"/>
+    <variableProperties datatype="NVARCHAR" length="200" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings/>
+<dataSources>
+  <DataSource id="models.apps.customer::CV_CUSTOMER_ATTRIBUTES">
+    <resourceUri>models.apps.customer::CV_CUSTOMER_ATTRIBUTES</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="FIELD_NAME">
+        <descriptions defaultDescription="ATTRIBUTE_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="FIELD_VALUE">
+        <descriptions defaultDescription="ATTRIBUTE_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="FIELD_DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="FIELD_ID">
+        <descriptions defaultDescription="ATTRIBUTE_ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.apps.customer::CV_CUSTOMER_ATTRIBUTES">
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_NAME" source="ATTRIBUTES_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_VALUE" source="ATTRIBUTE_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_DESCRIPTION" source="ATTR_DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_ID" source="ATTRIBUTE_ID"/>
+    </input>
+    <filter>(&quot;FIELD_NAME&quot;='$$IP_FIELD_NAME$$')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+    <viewAttributes>
+      <viewAttribute id="FIELD_ID" aggregationType="sum">
+        <descriptions defaultDescription="ATTRIBUTE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="FIELD_NAME">
+        <descriptions defaultDescription="ATTRIBUTE_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="FIELD_VALUE">
+        <descriptions defaultDescription="ATTRIBUTE_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="FIELD_DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_ID" source="FIELD_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_NAME" source="FIELD_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_VALUE" source="FIELD_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_DESCRIPTION" source="FIELD_DESCRIPTION"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Aggregation_1">
+  <attributes>
+    <attribute id="FIELD_ID" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="ATTRIBUTE_ID"/>
+      <keyMapping columnObjectName="Aggregation_1" columnName="FIELD_ID"/>
+    </attribute>
+    <attribute id="FIELD_NAME" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="ATTRIBUTE_NAME"/>
+      <keyMapping columnObjectName="Aggregation_1" columnName="FIELD_NAME"/>
+    </attribute>
+    <attribute id="FIELD_VALUE" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="ATTRIBUTE_VALUE"/>
+      <keyMapping columnObjectName="Aggregation_1" columnName="FIELD_VALUE"/>
+    </attribute>
+    <attribute id="FIELD_DESCRIPTION" order="4" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="DESCRIPTION"/>
+      <keyMapping columnObjectName="Aggregation_1" columnName="FIELD_DESCRIPTION"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="92" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="427"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="322"/>
+      <rectangleSize height="30" width="140"/>
+    </shape></shapes>
+</layout>
+</Calculation:scenario>

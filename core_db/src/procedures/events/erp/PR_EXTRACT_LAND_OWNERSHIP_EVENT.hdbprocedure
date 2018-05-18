@@ -1,0 +1,110 @@
+PROCEDURE "procedures.events.erp::PR_EXTRACT_LAND_OWNERSHIP_EVENT" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+   /*************************************
+    BUT000 - 
+    	DEATHDT - Death Date of Business Partner
+    VIBPOBJREL - 
+    	ROLE -      'TR0800' - Owner of land
+    	
+    LT_TEMP - Get all the Dead(DEATHDT > 0) buisness partner From BUT000 Joining with VIBOBJREL with Role as Owner(TR0800)
+    	    	This will give us all the Dead BP's Parcel(INTRENO) details with ValidFrom, ValidTo, and DeathDate 
+    	
+    There would be a self Join on table VIBPOBJREL for INTRENO(Parcel No of Dead business Partner) For partner Excluding Dead ones.
+    Only need to consider those entries for Which ValidFrom <=  DeathDate(MAX VALIDTO of Parcel would be the DeathDate) of Business Partner
+    	As we only need to Check if ownership was increased due to Death or new parcel gain happened Due to Death.
+    	
+    If it's a new Parcel gain scenario then by  Death Date, there will be only one entry in VIBPOBJREL for that parcel, customer combination
+    
+    If it's increase in ownership then by death date, there will be multiple entries in VIBPOBJREL for that parcel, customer combination
+    
+   *************************************/
+   
+	DECLARE LV_LAND_OWN_1 NVARCHAR(500) := 'Increased interest in land holdings';
+	DECLARE LV_LAND_OWN_2 NVARCHAR(500) := 'Decreased interest in land holdings';
+	DECLARE LV_LAND_OWN_3 NVARCHAR(500) := 'Increased Ownership Due to Death';
+	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	
+	 LT_TEMP = select B1.PARTNER, VALIDFROM, VALIDTO, B1.INTRENO AS INTRENO, DEATHDT FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT000" AS a1 inner join
+          "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" AS b1 on a1.PARTNER = b1.PARTNER where a1.DEATHDT > 0 and ROLE='TR0800';
+ 
+ 
+
+	INSERT INTO "db::app.CustomerEvents"
+
+
+	/*'Increased Ownership Due to Death'*/
+	
+	SELECT SAP.CUST_ID AS CUST_ID, 
+			(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_OWN_3)) as EVENT_ID,
+			(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_OWN_3)) as EVENT_GROUP,
+			:LV_LAND_OWN_3 as EVENT_NAME,
+			CAST(VALID_TO as date) AS INIT_DATE, 
+			NULL AS END_DATE, 
+			1 AS EVENT_VALUE, 
+			:LV_LAND_OWN_3 AS DESCRIPTION, 
+			LEFT(VALID_TO,6)  as INIT_TS,
+			NULL AS END_TS
+		FROM (   
+				SELECT PARTNER, count(INTRENO) as "PARCEL_ENTRY_COUNT", max(VALIDTO) as "VALID_TO" FROM(
+					SELECT a.partner ,a.intreno, A.VALIDFROM, B.DEATHDT AS VALIDTO  from "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" a 
+						INNER JOIN
+					(SELECT INTRENO, MAX(VALIDTO) AS DEATHDT FROM :LT_TEMP GROUP BY INTRENO) b 
+						ON a.INTRENO = b.INTRENO
+						WHERE a.PARTNER NOT IN (SELECT PARTNER FROM :LT_TEMP) AND A.VALIDFROM<=B.DEATHDT
+				) GROUP BY PARTNER, INTRENO
+			) as A inner JOIN  "db::app.Customer" as SAP on SAP.EXT_ID=A.PARTNER WHERE PARCEL_ENTRY_COUNT > 1
+ UNION ALL
+	
+	--'Decreased interest in land holdings'
+	SELECT SAP.CUST_ID AS CUST_ID, 
+		(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_OWN_2)) as EVENT_ID,
+		(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_OWN_2)) as EVENT_GROUP,
+		:LV_LAND_OWN_2 as EVENT_NAME,
+		CAST(VALIDFROM as date) AS INIT_DATE, 
+		NULL AS END_DATE, 
+		1 AS EVENT_VALUE, 
+		:LV_LAND_OWN_2 AS DESCRIPTION, 
+		LEFT(VALIDFROM,6)  as INIT_TS,
+		NULL AS END_TS
+		FROM (   			
+	SELECT CURRENT_SHARE, (LAG_BRUTEIL/LAG_RFAKT) AS PREVIOUS_SHARE, VALIDFROM, VALIDTO, PARTNER FROM
+	(SELECT (BRUTEIL/RFAKT) AS CURRENT_SHARE, PARTNER, VALIDFROM, VALIDTO
+   	 ,LAG(BRUTEIL)  OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)  as LAG_BRUTEIL,
+   	  LAG(RFAKT) OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)  AS LAG_RFAKT
+   	 FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" WHERE ROLE='TR0800' AND RFAKT != 0 --AND (BRUTEIL/RFAKT) <= 1
+   	 ) 
+   	WHERE (LAG_BRUTEIL/LAG_RFAKT) > 0
+   	) A inner JOIN  "db::app.Customer" as SAP on SAP.EXT_ID=A.PARTNER WHERE A.PREVIOUS_SHARE > A.CURRENT_SHARE
+   	
+   	UNION ALL
+   	
+   	--'Increased interest in land holdings'
+   	SELECT SAP.CUST_ID AS CUST_ID, 
+		(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_OWN_1)) as EVENT_ID,
+		(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_OWN_1)) as EVENT_GROUP,
+		:LV_LAND_OWN_1 as EVENT_NAME,
+		CAST(VALIDFROM as date) AS INIT_DATE, 
+		NULL AS END_DATE, 
+		1 AS EVENT_VALUE, 
+		:LV_LAND_OWN_1 AS DESCRIPTION, 
+		LEFT(VALIDFROM,6)  as INIT_TS,
+		NULL AS END_TS
+		FROM (   			
+	SELECT CURRENT_SHARE, (LAG_BRUTEIL/LAG_RFAKT) AS PREVIOUS_SHARE, VALIDFROM, VALIDTO, PARTNER FROM
+	(SELECT (BRUTEIL/RFAKT) AS CURRENT_SHARE, PARTNER, VALIDFROM, VALIDTO
+   	 ,LAG(BRUTEIL)  OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)  as LAG_BRUTEIL,
+   	  LAG(RFAKT) OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)  AS LAG_RFAKT
+   	 FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" WHERE ROLE='TR0800' AND RFAKT != 0 --AND (BRUTEIL/RFAKT) <= 1
+   	 ) 
+   	WHERE (LAG_BRUTEIL/LAG_RFAKT) > 0
+   	) A inner JOIN  "db::app.Customer" as SAP on SAP.EXT_ID=A.PARTNER WHERE A.PREVIOUS_SHARE < A.CURRENT_SHARE;
+   	
+
+END

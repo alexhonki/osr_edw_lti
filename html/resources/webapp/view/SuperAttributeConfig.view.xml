@@ -1,0 +1,54 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.SuperAttributeConfig"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:core="sap.ui.core"
+        xmlns:table="sap.ui.table"
+        xmlns:layout="sap.ui.layout"
+        displayBlock="true"
+        height="100%">
+    <Page id="idSAC" showHeader="true" title="{i18n>SuperAttributeConfig.Title}" enableScrolling="true">
+        <content>
+            <Panel id="idConfigPanel" width="auto" height="95%" headerText="{i18n>SuperAttributeConfig.HeaderTitle}" class="sapUiResponsiveMargin" backgroundDesign="Transparent">
+                <table:Table
+                        rows="{/Attributes}"
+                        selectionMode="None"
+                        visibleRowCountMode="Auto">
+                    <table:columns>
+                        <table:Column>
+                            <Label text="{i18n>SuperAttributeConfig.SettingsColumnTitleAttribute}"/>
+                            <table:template>
+                                <Text text="{AttributeName}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column hAlign="Center" width="15rem">
+                            <Label text="{i18n>SuperAttributeConfig.SettingsColumnTitleFilter}"/>
+                            <table:template>
+                                <CheckBox selected="{ShowOnFilter}" select="changedSetup"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column hAlign="Center" width="15rem">
+                            <Label text="{i18n>SuperAttributeConfig.SettingsColumnTitleCustomerInfo}"/>
+                            <table:template>
+                                <CheckBox selected="{ShowOnDetail}" select="changedSetup"/>
+                            </table:template>
+                        </table:Column>
+                    </table:columns>
+                </table:Table>
+            </Panel>
+        </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Button id="idSaveButton" type="Emphasized" text="{i18n>Admin.Footer.Save}" press="save" enabled="false"/>
+                <Button id="idCancelButton" type="Default" text="{i18n>Admin.Footer.Cancel}" press="onCancel"/>
+            </Toolbar>
+        </footer>
+        <dependents>
+			<core:Fragment fragmentName="sap.fiori.cri.fragments.BusyDialog"
+				type="XML">
+			</core:Fragment>
+		</dependents>
+    </Page>
+</mvc:View>

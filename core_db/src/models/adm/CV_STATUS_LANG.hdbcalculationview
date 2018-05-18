@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.adm::CV_STATUS_LANG" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="Status "/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::adm.Customer.Status">
+    <resourceUri>db::adm.Customer.Status</resourceUri>
+  </DataSource>
+  <DataSource id="models.adm::CV_STATUS_TEXT">
+    <resourceUri>models.adm::CV_STATUS_TEXT</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="LANG">
+        <descriptions defaultDescription="LANG"/>
+      </viewAttribute>
+      <viewAttribute id="STATUS_CODE">
+        <descriptions defaultDescription="STATUS_CODE"/>
+      </viewAttribute>
+      <viewAttribute id="STATUS_TEXT">
+        <descriptions defaultDescription="STATUS_TEXT"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::adm.Customer.Status">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LANG" source="LANG"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS_CODE" source="STATUS_CODE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS_TEXT" source="STATUS_TEXT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+    <viewAttributes>
+      <viewAttribute id="ID">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.adm::CV_STATUS_TEXT">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="C1_1" joinType="textTable" languageColumn="LANG">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="LANG">
+        <descriptions defaultDescription="LANG"/>
+      </viewAttribute>
+      <viewAttribute id="STATUS_CODE">
+        <descriptions defaultDescription="STATUS_CODE"/>
+      </viewAttribute>
+      <viewAttribute id="STATUS_TEXT">
+        <descriptions defaultDescription="STATUS_TEXT"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Aggregation_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+    </input>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="LANG" source="LANG"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS_CODE" source="STATUS_CODE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS_TEXT" source="STATUS_TEXT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+    </input>
+    <joinAttribute name="ID"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="ID" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="ID"/>
+    </attribute>
+    <attribute id="STATUS_CODE" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STATUS_CODE"/>
+      <keyMapping columnObjectName="Join_1" columnName="STATUS_CODE"/>
+    </attribute>
+    <attribute id="STATUS_TEXT" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STATUS_TEXT"/>
+      <keyMapping columnObjectName="Join_1" columnName="STATUS_TEXT"/>
+    </attribute>
+    <attribute id="DESCRIPTION" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DESCRIPTION"/>
+      <keyMapping columnObjectName="Join_1" columnName="DESCRIPTION"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="208.81654804810353" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="282" y="356.9999988079071"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="356.9999988079071"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="208.81654804810353" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Aggregation_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.apps.customer::CV_CUSTOMER_REACTION" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_CUSTOMER_REACTION"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::app.CustomerReactions">
+    <resourceUri>db::app.CustomerReactions</resourceUri>
+  </DataSource>
+  <DataSource id="functions::TF_CONF_GET_REACTION_TYPE" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_CONF_GET_REACTION_TYPE</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="REACTION_TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE" aggregationType="min">
+        <descriptions defaultDescription="INIT_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="END_DATE" aggregationType="min">
+        <descriptions defaultDescription="END_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+      <viewAttribute id="END_TS" aggregationType="sum">
+        <descriptions defaultDescription="END_TS"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.CustomerReactions">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="END_DATE" source="END_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="END_TS" source="END_TS"/>
+    </input>
+    <input node="functions::TF_CONF_GET_REACTION_TYPE">
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+    </input>
+    <joinAttribute name="REACTION_TYPE"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="CUST_ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CUST_ID_ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="CUST_ID"/>
+    </attribute>
+    <attribute id="REACTION_TYPE" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="REACTION_TYPE"/>
+      <keyMapping columnObjectName="Join_1" columnName="REACTION_TYPE"/>
+    </attribute>
+    <attribute id="INIT_DATE" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="INIT_DATE"/>
+      <keyMapping columnObjectName="Join_1" columnName="INIT_DATE"/>
+    </attribute>
+    <attribute id="END_DATE" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="END_DATE"/>
+      <keyMapping columnObjectName="Join_1" columnName="END_DATE"/>
+    </attribute>
+    <attribute id="INIT_TS" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="INIT_TS"/>
+      <keyMapping columnObjectName="Join_1" columnName="INIT_TS"/>
+    </attribute>
+    <attribute id="END_TS" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="END_TS"/>
+      <keyMapping columnObjectName="Join_1" columnName="END_TS"/>
+    </attribute>
+    <attribute id="DESCRIPTION" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DESCRIPTION"/>
+      <keyMapping columnObjectName="Join_1" columnName="DESCRIPTION"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="297"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="db::app.CustomerReactions" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="functions::TF_CONF_GET_REACTION_TYPE" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

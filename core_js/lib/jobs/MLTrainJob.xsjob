@@ -1,0 +1,9 @@
+{
+	"description": "Machine Learning Train Data",
+	"action": "procedures.ml::PR_RUN_TRAIN_PREDICT_WRAPPER",
+	"schedules": [{
+		"description": "Perform my task every * * * sat 15 0 0", 
+		"xscron": "2016 * * sat 15 0 0",
+		"parameter": { "REACTION_TYPE": "DEBTOR_INITIAL_ASSESSMENT", "PREVIOUS_WINDOWS": 1 }
+	}]
+}

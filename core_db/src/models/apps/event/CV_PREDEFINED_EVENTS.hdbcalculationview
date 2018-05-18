@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.apps.event::CV_PREDEFINED_EVENTS" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="Predefined Events"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::adm.config.event.name">
+    <resourceUri>db::adm.config.event.name</resourceUri>
+  </DataSource>
+  <DataSource id="db::sys.TempSchedules">
+    <resourceUri>db::sys.TempSchedules</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="EVENT_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="CATEGORY_NAME">
+        <descriptions defaultDescription="CATEGORY_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="TEMPLATE_ID" aggregationType="sum">
+        <descriptions defaultDescription="TEMPLATE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED" aggregationType="sum">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="TYPE" aggregationType="sum">
+        <descriptions defaultDescription="TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="CREATED_BY">
+        <descriptions defaultDescription="CREATED.BY"/>
+      </viewAttribute>
+      <viewAttribute id="CREATED_ON" aggregationType="min">
+        <descriptions defaultDescription="CREATED.DATE"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_BY">
+        <descriptions defaultDescription="CHANGED.BY"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_ON" aggregationType="min">
+        <descriptions defaultDescription="CHANGED.DATE"/>
+      </viewAttribute>
+      <viewAttribute id="PROC_SCHEMA">
+        <descriptions defaultDescription="PROC_SCHEMA"/>
+      </viewAttribute>
+      <viewAttribute id="PROC_NAME">
+        <descriptions defaultDescription="PROC_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="PROC_INTERVAL">
+        <descriptions defaultDescription="PROC_INTERVAL"/>
+      </viewAttribute>
+      <viewAttribute id="PROC_START_DATE" aggregationType="min">
+        <descriptions defaultDescription="PROC_START_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="JOB_ID" aggregationType="sum">
+        <descriptions defaultDescription="JOB_ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::adm.config.event.name">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY_NAME" source="CATEGORY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TEMPLATE_ID" source="TEMPLATE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CREATED_BY" source="CREATED.BY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CREATED_ON" source="CREATED.DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_BY" source="CHANGED.BY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_ON" source="CHANGED.DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PROC_SCHEMA" source="PROC_SCHEMA"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PROC_NAME" source="PROC_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PROC_INTERVAL" source="PROC_INTERVAL"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PROC_START_DATE" source="PROC_START_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOB_ID" source="JOB_ID"/>
+    </input>
+    <filter>(in(&quot;TYPE&quot;,0,1))</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="STATUS">
+        <descriptions defaultDescription="STATUS"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::sys.TempSchedules">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="C1_1" joinType="leftOuter">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="EVENT_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="CATEGORY_NAME">
+        <descriptions defaultDescription="CATEGORY_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="TEMPLATE_ID" aggregationType="sum">
+        <descriptions defaultDescription="TEMPLATE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED" aggregationType="sum">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="TYPE" aggregationType="sum">
+        <descriptions defaultDescription="TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="CREATED_BY">
+        <descriptions defaultDescription="CREATED.BY"/>
+      </viewAttribute>
+      <viewAttribute id="CREATED_ON" aggregationType="min">
+        <descriptions defaultDescription="CREATED.DATE"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_BY">
+        <descriptions defaultDescription="CHANGED.BY"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_ON" aggregationType="min">
+        <descriptions defaultDescription="CHANGED.DATE"/>
+      </viewAttribute>
+      <viewAttribute id="PROC_SCHEMA">
+        <descriptions defaultDescription="PROC_SCHEMA"/>
+      </viewAttribute>
+      <viewAttribute id="PROC_NAME">
+        <descriptions defaultDescription="PROC_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="PROC_INTERVAL">
+        <descriptions defaultDescription="PROC_INTERVAL"/>
+      </viewAttribute>
+      <viewAttribute id="PROC_START_DATE" aggregationType="min">
+        <descriptions defaultDescription="PROC_START_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="JOB_ID" aggregationType="sum">
+        <descriptions defaultDescription="JOB_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ID_1" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="STATUS">
+        <descriptions defaultDescription="STATUS"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="JOB_STATUS" datatype="VARCHAR" length="50" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;STATUS&quot;),'INACTIVE', &quot;STATUS&quot;)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY_NAME" source="CATEGORY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TEMPLATE_ID" source="TEMPLATE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CREATED_BY" source="CREATED_BY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CREATED_ON" source="CREATED_ON"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_BY" source="CHANGED_BY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_ON" source="CHANGED_ON"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PROC_SCHEMA" source="PROC_SCHEMA"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PROC_NAME" source="PROC_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PROC_INTERVAL" source="PROC_INTERVAL"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PROC_START_DATE" source="PROC_START_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOB_ID" source="JOB_ID"/>
+    </input>
+    <input node="Projection_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID_1" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOB_ID" source="ID"/>
+    </input>
+    <joinAttribute name="JOB_ID"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="ID"/>
+    </attribute>
+    <attribute id="EVENT_NAME" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="EVENT_NAME"/>
+      <keyMapping columnObjectName="Join_1" columnName="EVENT_NAME"/>
+    </attribute>
+    <attribute id="CATEGORY_NAME" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CATEGORY_NAME"/>
+      <keyMapping columnObjectName="Join_1" columnName="CATEGORY_NAME"/>
+    </attribute>
+    <attribute id="DESCRIPTION" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DESCRIPTION"/>
+      <keyMapping columnObjectName="Join_1" columnName="DESCRIPTION"/>
+    </attribute>
+    <attribute id="IS_ENABLED" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="IS_ENABLED"/>
+      <keyMapping columnObjectName="Join_1" columnName="IS_ENABLED"/>
+    </attribute>
+    <attribute id="TYPE" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TYPE"/>
+      <keyMapping columnObjectName="Join_1" columnName="TYPE"/>
+    </attribute>
+    <attribute id="CREATED_BY" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CREATED.BY"/>
+      <keyMapping columnObjectName="Join_1" columnName="CREATED_BY"/>
+    </attribute>
+    <attribute id="CREATED_ON" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CREATED.DATE"/>
+      <keyMapping columnObjectName="Join_1" columnName="CREATED_ON"/>
+    </attribute>
+    <attribute id="CHANGE_BY" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CHANGED.BY"/>
+      <keyMapping columnObjectName="Join_1" columnName="CHANGED_BY"/>
+    </attribute>
+    <attribute id="TEMPLATE_ID" order="10" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TEMPLATE_ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="TEMPLATE_ID"/>
+    </attribute>
+    <attribute id="CHANGED_ON" order="11" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CHANGED.DATE"/>
+      <keyMapping columnObjectName="Join_1" columnName="CHANGED_ON"/>
+    </attribute>
+    <attribute id="PROC_SCHEMA" order="12" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PROC_SCHEMA"/>
+      <keyMapping columnObjectName="Join_1" columnName="PROC_SCHEMA"/>
+    </attribute>
+    <attribute id="PROC_NAME" order="13" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PROC_NAME"/>
+      <keyMapping columnObjectName="Join_1" columnName="PROC_NAME"/>
+    </attribute>
+    <attribute id="PROC_INTERVAL" order="14" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PROC_INTERVAL"/>
+      <keyMapping columnObjectName="Join_1" columnName="PROC_INTERVAL"/>
+    </attribute>
+    <attribute id="PROC_START_DATE" order="15" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PROC_START_DATE"/>
+      <keyMapping columnObjectName="Join_1" columnName="PROC_START_DATE"/>
+    </attribute>
+    <attribute id="JOB_ID" order="16" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="JOB_ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="JOB_ID"/>
+    </attribute>
+    <attribute id="STATUS" order="17" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STATUS"/>
+      <keyMapping columnObjectName="Join_1" columnName="STATUS"/>
+    </attribute>
+    <attribute id="JOB_STATUS" order="18" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="JOB_STATUS"/>
+      <keyMapping columnObjectName="Join_1" columnName="JOB_STATUS"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes>
+    <calculatedAttribute id="JOB_ID_INT" order="19" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="JOBID_INT"/>
+      <keyCalculation datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>&quot;JOB_ID&quot;</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+  </calculatedAttributes>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="208" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="91" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="282" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="208" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Projection_2" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

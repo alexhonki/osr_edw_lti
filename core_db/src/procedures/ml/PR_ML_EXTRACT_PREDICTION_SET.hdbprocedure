@@ -1,0 +1,132 @@
+/*
++---------------------- +-------------+-------------+-------------+--------------------+
+|EXCLUDE_MONTHS         | value: 5 <---,,,,,---------,,,,,               ,-> Current TS|
+| data included         |             |     ********|     ********|     *V             |
++---------------------- +-------------+-------------+-------------+--------------------+
+|ML_PREVIOUS_WINDOWS	| value: 2 <--------,--------------,                           |
+|                       |                   1              2             ,-> Current TS|
+| data included         |             |*************|*************|******V             |
++---------------------- +-------------+-------------+-------------+--------------------+
+|ML_CURRENT_START_TS	|										    201704 (2017-04-01)|
++---------------------- +-------------+-------------+-------------+-------------+      |
+|ML_WINDOW_TS_SIZE	    | 12 MONTHS   | 12 MONTHS   | 12 MONTHS   | 12 MONTHS   |      |
++---------------------- +-------------+-------------+-------------+-------------+      |
+	                    | PREVIOUS    | PREVIOUS    | PREVIOUS    | CURRENT     |      |
++---------------------- +-------------+-------------+-------------+-------------+      |
+| SEASON				|201404-201503|201504-201603|201604-201703|201704-201803|      |
++---------------------- +-------------+-------------+-------------+-------------+      |
+|                       |             |             |             |             |      |
+|                       |             |             |             |             |      |
++--------------- +------v------+------v------+------v------+------v------+------v------+
+| YEAR			 |    2014     |    2015     |    2016     |    2017     |    2018     |
++--------------- +-------------+-------------+-------------+-------------+-------------+
+
+WINDOW_TS_SIZE		: Size of windows in months
+CURRENT_START_TS	: Current start time segment for current season
+PREVIOUS_WINDOWS	: The count of previous windows that should be used
+EXCLUDE_MONTHS		: Exlude months from training example +5 will exlude first 5 months 
+					  
+
+ */
+PROCEDURE "procedures.ml::PR_ML_EXTRACT_PREDICTION_SET" 
+	(
+		IN 	REACTION_TYPE VARCHAR(100) DEFAULT 'DEBTOR_INITIAL_ASSESSMENT',
+		IN  WINDOW_TS_SIZE 		INTEGER DEFAULT 12,     -- ML_WINDOW_TS_SIZE
+		IN  CURRENT_START_TS    INTEGER DEFAULT 201706, -- ML_CURRENT_START_TS 
+		IN  CURRENT_END_TS		INTEGER DEFAULT 201804, -- THE MONTH SCRIPT RUNS
+		IN	PREVIOUS_WINDOWS    INTEGER DEFAULT 1,		-- ML_PREVIOUS_WINDOWS
+		IN  EXCLUDE_MONTHS      INTEGER DEFAULT 0,		-- Not implemented Yet
+		IN  RUN_DAY 			DATE 	DEFAULT null	
+	)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+    AS
+BEGIN
+  --DECLARE no_param_value CONDITION FOR SQL_ERROR_CODE 10003;
+	DECLARE START_DATE 			DATE;
+	DECLARE END_DATE 			DATE;
+	DECLARE START_DATE_WINDOWS  DATE;
+	DECLARE PREDICTION_WINDOW   INT := 5;
+	DECLARE STR_TS_INPUT        VARCHAR(500) := 'INTERVAL 12 MONTH';
+	
+	--DECLARE RUN_DAY DATE;
+	DECLARE RETENTION_PERIOD INT := 24;
+	
+	/* WILL BE ACTIVATED ONCE RETENTION PERIOD IS IMPLEMENTED */	
+	BEGIN
+		DECLARE EXIT HANDLER FOR SQLEXCEPTION  RETENTION_PERIOD := 24;
+		 --SIGNAL no_param_value SET MESSAGE_TEXT = 'No value set for parameter: DATA_RETENTION_PERIOD';
+		
+		SELECT TOP 1 "FROM_VALUE"
+		INTO RETENTION_PERIOD
+		FROM "models.adm::CV_CONFIG"
+		WHERE "BUCKET_ID" = 'DATA_RETENTION_PERIOD'
+		  AND "REACTION_TYPE" = 'NA';			
+	END;
+	
+	-- Calculate start date window
+	IF :WINDOW_TS_SIZE = 0 OR :PREVIOUS_WINDOWS = 0 THEN
+		START_DATE_WINDOWS := TO_DATE(:CURRENT_START_TS);
+	ELSE 
+		START_DATE_WINDOWS := ADD_MONTHS ( TO_DATE(:CURRENT_START_TS), :WINDOW_TS_SIZE * :PREVIOUS_WINDOWS * -1 );
+	END IF;
+
+	-----------------------------------
+	-- GET CURRENT DATA DATE
+	-----------------------------------
+	IF :RUN_DAY IS NULL THEN
+		SELECT TO_DATE(TO_DATE) INTO RUN_DAY
+			FROM "functions::TF_CONF_GET_PREDICTION_DATES" ( )
+			WHERE IS_ENABLED = 1;
+	END IF;
+
+	-----------------------------------
+	-- Get active customers for period
+	-----------------------------------
+	LT_ACTIVE_CUSTOMERS = 
+		SELECT "CUST_ID"
+		FROM "models.apps.customer::CV_ACTIVE_CUSTOMER"
+		WHERE :RUN_DAY BETWEEN INIT_DATE AND END_DATE;
+	--	AND "CUST_ID" NOT IN 
+	--		(SELECT CUST_ID FROM "db::app.Customer" -- Customers are not in 'BLOCKED' OR DELETED state
+	--		WHERE STATUS != 0);	
+
+
+	-----------------------------------
+	-- EXTRACT NON-REACTED CUSTOMERS
+	-----------------------------------
+	CUSTOMERS_TABLE_PREDICT =
+		SELECT A.CUST_ID AS CUST_ID, 0 AS REACTED, NULL AS REACTION_DATE
+		FROM :LT_ACTIVE_CUSTOMERS A;
+
+	-----------------------------------
+	-- EXTRACT EVENTS FOR NON-REACTED CUSTOMERS
+	-----------------------------------
+	EVENTS_TABLE_PREDICT = 
+	SELECT 		    A."RECORD_ID", 
+					A."CUST_ID",
+					A."EVENT_ID.ID",
+					A."EVENT_GROUP",
+					A."EVENT_NAME",
+					A."INIT_DATE",
+					null "END_DATE",	-- Not used
+					A."EVENT_VALUE",
+					null "DESCRIPTION", -- Not used
+					A."INIT_TS",
+					null "END_TS" 		-- Not used
+	FROM "db::app.CustomerEvents" A
+	JOIN :CUSTOMERS_TABLE_PREDICT B
+	ON A."CUST_ID" = B.CUST_ID
+	WHERE A.INIT_DATE < :RUN_DAY
+	AND A.INIT_DATE >= :START_DATE_WINDOWS; --ADD_MONTHS(:RUN_DAY, -:RETENTION_PERIOD); 
+	
+--	SELECT * FROM :LT_ACTIVE_CUSTOMERS;
+--	SELECT * FROM :CUSTOMERS_TABLE_PREDICT;
+--	SELECT * FROM :EVENTS_TABLE_PREDICT;
+	
+	------------------------------------------- FEATURES EXTRACTION PROCESS ------------------------------------------------
+	
+	CALL "procedures.ml::PR_ML_GENERIC_FEATURE"(0, :REACTION_TYPE, :RUN_DAY, :CUSTOMERS_TABLE_PREDICT, :EVENTS_TABLE_PREDICT);
+
+END

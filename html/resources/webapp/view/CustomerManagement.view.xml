@@ -1,0 +1,80 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.CustomerManagement"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:core="sap.ui.core"
+        xmlns:table="sap.ui.table"
+        displayBlock="true"
+        height="100%">
+    <Page showHeader="true" title="{i18n>CustomerManagement.Title}" enableScrolling="true">
+        <content>
+            <Panel width="auto" class="sapUiResponsiveContentPadding">
+                <table:Table
+                        id="idCustomerListTable"
+                        selectionMode="MultiToggle"
+                        rows="{CRI>/Customer}"
+                        enableCellFilter="true"
+                        rowHeight="44"
+                        noDataText="{i18n>CustomerManagement.CustomerList.NoData}"
+                        rowSelectionChange="onRowSelectionChange"
+                        enableBusyIndicator="true">
+                    <table:toolbar>
+                        <Toolbar>
+                            <Title text="{i18n>CustomerManagement.CustomerList.Title}"/>
+                            <ToolbarSpacer/>
+                            <SearchField
+                                    placeholder="{i18n>CustomerManagement.CustomerSearchFilterPlaceholder}"
+                                    value="{/customerFilterString}"
+                                    search="filterCustomers"
+                                    width="15rem"/>
+                            <Button
+                                    icon="sap-icon://locked"
+                                    text="{i18n>CustomerManagement.CustomerList.BlockSelected} {= ${/BlockRowCount} > 0 ? '(' + ${/BlockRowCount} + ')' : ''}"
+                                    press="doBlock"
+                                    enabled="{= ${/BlockRowCount} > 0}"/>
+                            <Button
+                                    icon="sap-icon://unlocked"
+                                    text="{i18n>CustomerManagement.CustomerList.UnblockSelected} {= ${/UnblockRowCount} > 0 ? '(' + ${/UnblockRowCount} + ')' : ''}"
+                                    press="doUnblock"
+                                    enabled="{= ${/UnblockRowCount} > 0}"/>
+                            <Button
+                                icon="sap-icon://delete"
+                                text="{i18n>CustomerManagement.CustomerList.DeleteSelected} {= ${/ToBeDeletedeRowCount} > 0 ? '(' + ${/ToBeDeletedeRowCount} + ')' : ''}"
+                                press="doDelete"
+                                enabled="{= ${/ToBeDeletedeRowCount} > 0}"/>
+                        </Toolbar>
+                    </table:toolbar>
+                    <table:columns>
+                        <table:Column width="15rem">
+                            <Label text="{i18n>CustomerList.Number}"/>
+                            <table:template>
+                                <Text text="{CRI>CUST_ID}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column>
+                            <Label text="{i18n>CustomerList.Name}"/>
+                            <table:template>
+                                <Text text="{CRI>NAME}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column width="7rem" hAlign="Center">
+                            <Label text="{i18n>CustomerManagement.CustomerList.Status}"/>
+                            <table:template>
+                                <ObjectStatus
+                                        text="{path:'CRI>STATUS', formatter: '.formatStatusLabel'}"
+                                        state="{path:'CRI>STATUS', formatter:'.formatStatusState'}"
+                                        icon="{path:'CRI>STATUS', formatter:'.formatStatusIcon'}" />
+                            </table:template>
+                        </table:Column>
+                    </table:columns>
+                </table:Table>
+            </Panel>
+        </content>
+        <dependents>
+			<core:Fragment fragmentName="sap.fiori.cri.fragments.BusyDialog"
+				type="XML">
+			</core:Fragment>
+		</dependents>
+    </Page>
+</mvc:View>

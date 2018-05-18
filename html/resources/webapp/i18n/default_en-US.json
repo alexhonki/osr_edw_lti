@@ -1,0 +1,401 @@
+[{
+    "Page": "FilterBar",
+    "Component": "FilterIP_FROM",
+    "Description": "Title for the From Date filter",
+    "Label": "From"
+},{
+    "Page": "FilterBar",
+    "Component": "FilterIP_TO",
+    "Description": "Title for the To Date filter",
+    "Label": "To"
+},{
+    "Page": "FilterBar",
+    "Component": "FilterAGE_GROUP",
+    "Description": "Title for the Age Group filter",
+    "Label": "Age Group"
+},{
+    "Page": "FilterBar",
+    "Component": "FilterBRI_BUCKET",
+    "Description": "Title for the Behavioral Risk Index filter",
+    "Label": "Behavioral Risk"
+},{
+    "Page": "FilterBar",
+    "Component": "FilterGENDER",
+    "Description": "Title for the Gender filter",
+    "Label": "Gender"
+},{
+    "Page": "FilterBar",
+    "Component": "FilterSEGMENT",
+    "Description": "Title for the Customer Segment filter",
+    "Label": "Customer Segment"
+},{
+    "Page": "TrendAnalysis",
+    "Component": "TrendCardTitleTotalCustomers",
+    "Description": "Title for the 'Total Customers' trend card",
+    "Label": "Total Customers"
+},{
+    "Page": "TrendAnalysis",
+    "Component": "TrendCardTotalCustomersValueAxisLabelTotal",
+    "Description": "Label for 'Total' value axis for the 'Total Customers' trend card",
+    "Label": "Total"
+},{
+    "Page": "TrendAnalysis",
+    "Component": "TrendCardTitleAtRiskCustomers",
+    "Description": "Title for the 'At Risk Customers' trend card",
+    "Label": "At Risk Taxpayers"
+},{
+    "Page": "TrendAnalysis",
+    "Component": "TrendCardTitleTopEvents",
+    "Description": "Title for the 'Top Events' trend card",
+    "Label": "Top Events"
+},{
+    "Page": "TrendAnalysis",
+    "Component": "TrendCardTitleCustomerChanges",
+    "Description": "Title for the 'Customer Changes' trend card",
+    "Label": "Taxpayer Changes"
+},{
+    "Page": "TrendAnalysis",
+    "Component": "TrendCardTitleReactionRate",
+    "Description": "Title for the 'Reaction Rate' trend card",
+    "Label": "Debtor Rate"
+},{
+    "Page": "TrendAnalysis",
+    "Component": "TrendCardTitleIncomeLoss",
+    "Description": "Title for the 'Income Lost' trend card",
+    "Label": "Operating Income Lost"
+},{
+    "Page": "TrendAnalysis",
+    "Component": "TrendCardComparisonLabel",
+    "Description": "Label for the Month on Month comparison on the trend card",
+    "Label": "MoM"
+},{
+    "Page": "EventOverview",
+    "Component": "VisualFilterByRisk",
+    "Description": "Title for the 'Risk' visual filter control",
+    "Label": "Events By Risk"
+},{
+    "Page": "EventOverview",
+    "Component": "VisualFilterByImpact",
+    "Description": "Title for the 'Impact' visual filter control",
+    "Label": "Events By Impact"
+},{
+    "Page": "EventOverview",
+    "Component": "VisualFilterByDaysToReact",
+    "Description": "Title for the 'Days to React' visual filter control",
+    "Label": "Events By Days to React"
+},{
+    "Page": "EventOverview",
+    "Component": "TopEventsByRisk",
+    "Description": "Title for the 'Top Events by Risk' list",
+    "Label": "Top Events by Risk"
+},{
+    "Page": "EventOverview",
+    "Component": "TopEventsByImpact",
+    "Description": "Title for the 'Top Events by Impact' list",
+    "Label": "Top Events by Impact"
+},{
+    "Page": "EventOverview",
+    "Component": "TopEventsByDaysToReact",
+    "Description": "Title for the 'Top Events by Days to React' list",
+    "Label": "Top Events by Days to React"
+},{
+    "Page": "EventOverview",
+    "Component": "TopEventItemRiskLabel",
+    "Description": "",
+    "Label": "Risk"
+},{
+    "Page": "EventOverview",
+    "Component": "TopEventItemImpactLabel",
+    "Description": "",
+    "Label": "Impact"
+},{
+    "Page": "EventOverview",
+    "Component": "TopEventItemDaysToReactLabel",
+    "Description": "",
+    "Label": "Days to React"
+},{
+    "Page": "EventOverview",
+    "Component": "CustomerListTitle",
+    "Description": "",
+    "Label": "Customers"
+},{
+    "Page": "EventOverview",
+    "Component": "CustomerListColumnId",
+    "Description": "",
+    "Label": "Customer ID"
+},{
+    "Page": "EventOverview",
+    "Component": "CustomerListColumnName",
+    "Description": "",
+    "Label": "Name"
+},{
+    "Page": "EventOverview",
+    "Component": "CustomerListColumnReacted",
+    "Description": "",
+    "Label": "Reacted"
+},{
+    "Page": "EventOverview",
+    "Component": "CustomerListColumnOperatingIncomeLoss",
+    "Description": "",
+    "Label": "Operating Income Loss"
+},{
+    "Page": "EventOverview",
+    "Component": "CustomerListColumnDetails",
+    "Description": "",
+    "Label": "Details"
+},{
+    "Page": "EventOverview",
+    "Component": "BubbleChartDimensionRisk",
+    "Description": "",
+    "Label": "Risk"
+},{
+    "Page": "EventOverview",
+    "Component": "BubbleChartDimensionImpact",
+    "Description": "",
+    "Label": "Impact"
+},{
+    "Page": "EventOverview",
+    "Component": "BubbleChartTableTitle",
+    "Description": "",
+    "Label": "Events"
+},{
+    "Page": "EventOverview",
+    "Component": "BubbleChartTableColumnEventName",
+    "Description": "",
+    "Label": "Event Name"
+},{
+    "Page": "EventOverview",
+    "Component": "BubbleChartTableColumnRisk",
+    "Description": "",
+    "Label": "Risk"
+},{
+    "Page": "EventOverview",
+    "Component": "BubbleChartTableColumnImpact",
+    "Description": "",
+    "Label": "Impact"
+},{
+    "Page": "EventOverview",
+    "Component": "BubbleChartTableColumnDaysToReact",
+    "Description": "",
+    "Label": "Days To React"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "VisualFilterByRisk",
+    "Description": "",
+    "Label": "Customers by Risk"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "VisualFilterByOperatingIncome",
+    "Description": "",
+    "Label": "Customers by Operating Income"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "VisualFilterByDaysToReact",
+    "Description": "",
+    "Label": "Customers by Days To React"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "SuggestedCustomersTab",
+    "Description": "",
+    "Label": "Suggested Customers"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "AllCustomersTab",
+    "Description": "",
+    "Label": "All Customers"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "SuggestedCustomersTableTitle",
+    "Description": "",
+    "Label": "Suggested Customers"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "SuggestedCustomersColumnName",
+    "Description": "",
+    "Label": "Customer Name"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "SuggestedCustomersColumnId",
+    "Description": "",
+    "Label": "Customer ID"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "SuggestedCustomersColumnRisk",
+    "Description": "",
+    "Label": "Risk"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "SuggestedCustomersColumnOperatingIncomeLoss",
+    "Description": "",
+    "Label": "Operating Income Loss"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "SuggestedCustomersColumnDaysToReact",
+    "Description": "",
+    "Label": "Days To React"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "SuggestedCustomersColumnDetails",
+    "Description": "",
+    "Label": "Details"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "AllCustomersTableTitle",
+    "Description": "",
+    "Label": "All Customers"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "AllCustomersTableColumnId",
+    "Description": "",
+    "Label": "Customer ID"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "AllCustomersTableColumnName",
+    "Description": "",
+    "Label": "Customer Name"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "AllCustomersTableColumnRisk",
+    "Description": "",
+    "Label": "Risk"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "AllCustomersTableColumnOperatingIncomeLoss",
+    "Description": "",
+    "Label": "Operating Income Loss"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "AllCustomersTableColumnDaysToReact",
+    "Description": "",
+    "Label": "Days To React"
+},{
+    "Page": "CustomersAtRisk",
+    "Component": "AllCustomersTableColumnDetails",
+    "Description": "",
+    "Label": "Details"
+},{
+    "Page": "CustomerDetails",
+    "Component": "EventTableColumnName",
+    "Description": "",
+    "Label": "Event Name"
+},{
+    "Page": "CustomerDetails",
+    "Component": "EventTableColumnCategory",
+    "Description": "",
+    "Label": "Event Category"
+},{
+    "Page": "CustomerDetails",
+    "Component": "EventTableColumnDescription",
+    "Description": "",
+    "Label": "Event Description"
+},{
+    "Page": "CustomerDetails",
+    "Component": "EventTableColumnComment",
+    "Description": "",
+    "Label": "Event Comment"
+},{
+    "Page": "CustomerDetails",
+    "Component": "EventTableColumnRisk",
+    "Description": "",
+    "Label": "Risk"
+},{
+    "Page": "CustomerDetails",
+    "Component": "EventTableColumnDate",
+    "Description": "",
+    "Label": "Date"
+},{
+    "Page": "CustomerDetails",
+    "Component": "EventTableColumnCount",
+    "Description": "",
+    "Label": "Count"
+},{
+    "Page": "CustomerDetails",
+    "Component": "EventTableViewTypeLabel",
+    "Description": "",
+    "Label": "View by:"
+},{
+    "Page": "CustomerDetails",
+    "Component": "EventTableViewTypeHistory",
+    "Description": "",
+    "Label": "Event History"
+},{
+    "Page": "CustomerDetails",
+    "Component": "EventTableViewTypeDistinct",
+    "Description": "",
+    "Label": "Distinct Events"
+},{
+    "Page": "CustomerDetails",
+    "Component": "DistinctEventPopoverTitle",
+    "Description": "",
+    "Label": "Occurrences"
+},{
+    "Page": "CustomerDetails",
+    "Component": "KeyInfoId",
+    "Description": "",
+    "Label": "Customer Id"
+},{
+    "Page": "CustomerDetails",
+    "Component": "KeyInfoRisk",
+    "Description": "",
+    "Label": "Risk"
+},{
+    "Page": "CustomerDetails",
+    "Component": "KeyInfoOperatingIncomeLoss",
+    "Description": "",
+    "Label": "Operating Income Loss"
+},{
+    "Page": "CustomerDetails",
+    "Component": "KeyInfoChurn",
+    "Description": "",
+    "Label": "Days to Debtor"
+},{
+    "Page": "CustomerDetails",
+    "Component": "CustomerInfoTabTitle",
+    "Description": "",
+    "Label": "Customer Info"
+},{
+    "Page": "CustomerDetails",
+    "Component": "CustomerAttributesTitle",
+    "Description": "",
+    "Label": "Customer Details"
+},{
+    "Page": "CustomerSearch",
+    "Component": "CustomerListColumnName",
+    "Description": "",
+    "Label": "Customer Name"
+},{
+    "Page": "CustomerSearch",
+    "Component": "CustomerListColumnId",
+    "Description": "",
+    "Label": "ID"
+},{
+    "Page": "CustomerSearch",
+    "Component": "CustomerListColumnRisk",
+    "Description": "",
+    "Label": "Risk"
+},{
+    "Page": "CustomerSearch",
+    "Component": "CustomerListColumnOperatingIncomeLoss",
+    "Description": "",
+    "Label": "Operating Income Loss"
+},{
+    "Page": "CustomerSearch",
+    "Component": "CustomerListColumnDaysToReact",
+    "Description": "",
+    "Label": "Days to Debtor"
+},{
+    "Page": "CustomerSearch",
+    "Component": "CustomerListColumnDetails",
+    "Description": "",
+    "Label": "Customer Details"
+},{
+    "Page": "CustomerSearch",
+    "Component": "CustomerListItemNoRisk",
+    "Description": "Value to display for the 'Risk' column for customers who have reacted.",
+    "Label": "N/A"
+},{
+    "Page": "CustomerSearch",
+    "Component": "CustomerListItemReacted",
+    "Description": "Value to display for the 'Days to React' column for customers who have reacted. This value will be followed by the reaction date e.g. 01/01/2016.",
+    "Label": "Debtor on"
+}]

@@ -1,0 +1,50 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.ApplicationSettings"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:core="sap.ui.core"
+        xmlns:table="sap.ui.table"
+        xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+        displayBlock="true"
+        height="100%">
+    <Page id="idApplicationSettingsPage" class="sapSuiteUiCommonsChartContainer" showHeader="true" title="{i18n>ApplicationSettings.Title}" enableScrolling="true" floatingFooter="true">
+        <Panel width="auto" headerText="Use Case Settings" class="sapUiResponsiveMargin" backgroundDesign="Transparent">
+            <HBox alignItems="Center">
+                <Text text="Select Use Case:" class="sapUiLargeMarginEnd"/>
+                <Select class="sapUiSmallMarginEnd" selectedKey="{/SelectedUseCase}" items="{CRI>/UseCaseConfig}" change="selectUseCase">
+                    <core:Item key="{CRI>REACTION_TYPE}" text="{CRI>DESCRIPTION}"/>
+                </Select>
+                <FormattedText htmlText="&lt;span style='font-style: italic; font-size: 11px; '&gt;Select the Use Case to apply data analysis. This change will impact whole system.&lt;/span&gt;"/>
+            </HBox>
+            <Title text="Use Cases" class="sapUiMediumMarginTop sapUiSmallMarginBottom"/>
+            <FlexBox>
+                <table:Table
+                    id="useCaseList"
+                    selectionMode="None"
+                    rows="{CRI>/UseCaseConfig}"
+                    noDataText="{i18n>Admin.GeneralSettings.NoUseCaseData}">
+                    <table:columns>
+                        <table:Column>
+                            <Label text="{i18n>ApplicationSettings.UseCasesColumnHeadingUseCases}"/>
+                            <table:template>
+                                <Text text="{CRI>DESCRIPTION}" maxLines="2"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column width="3rem" hAlign="Center">
+                            <Label text="{i18n>ApplicationSettings.UseCasesColumnHeadingEdit}"/>
+                            <table:template>
+                                <Button icon="sap-icon://edit" type="Transparent" data:target="{CRI>REACTION_TYPE}" press="editUseCase"/>
+                            </table:template>
+                        </table:Column>
+                    </table:columns>
+                </table:Table>
+            </FlexBox>
+        </Panel>
+        <dependents>
+			<core:Fragment fragmentName="sap.fiori.cri.fragments.BusyDialog"
+				type="XML">
+			</core:Fragment>
+		</dependents>
+    </Page>
+</mvc:View>

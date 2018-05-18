@@ -1,0 +1,10 @@
+{
+	"authenticationMethod": "none",
+	"routes": [
+		  {
+            "source": "^/(.*)",
+            "localDir": "resources/webapp",
+            "cacheControl": "public, max-age=1000,must-revalidate"
+        	}
+        ]
+}

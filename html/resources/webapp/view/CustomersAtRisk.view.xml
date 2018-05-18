@@ -1,0 +1,197 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.CustomersAtRisk"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:cri="sap.fiori.cri"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:table="sap.ui.table"
+        displayBlock="true"
+        height="100%">
+    <Page id="idCustomersAtRisk" showHeader="false" enableScrolling="true">
+        <headerContent>
+        </headerContent>
+        <content>
+            <cri:control.FilterBar
+                    id="idFilterBar"
+                    searchFilterKey='CUSTOMER_NAME'
+                    filterChange="onFilterChanged"
+                    clearFilters="onClearFilters"
+            />
+            <HBox id="idVisualFilters" class="sapUiCompFilterBar" width="100%">
+                <VBox id="idRiskFilter" visible="{=${viewModel>/VisualFilters/CUSTOMER_RISK/items}.length > 1 ? true : false}" class="sapUiResponsiveContentPadding" width="45%">
+                    <Label text="{i18n>CustomersAtRisk.VisualFilterByRisk}" class="sapUiSmallMarginBottom"/>
+                    <cri:control.VisualFilterHBar id="idRiskVisualFilter" height="100px" select="onSelectVisualFilter" deselect="onDeselectVisualFilter" items="{viewModel>/VisualFilters/CUSTOMER_RISK/items}" entityName="Customers" selectedItem="{viewModel>/VisualFilters/CUSTOMER_RISK/selectedItem}">
+                        <cri:control.VisualFilterItem label="{viewModel>BUCKET}" color="{path:'viewModel>BUCKET_SEQ', formatter:'.bucketColorFormatter'}" value="{viewModel>CUSTOMER_COUNT}" data="{viewModel>}"/>
+                    </cri:control.VisualFilterHBar>
+                </VBox>
+                <VBox id="idOperatingIncomeLossFilter" visible="{=${viewModel>/VisualFilters/INCOME_LOSS/items}.length > 1 ? true : false}" class="sapUiResponsiveContentPadding" width="45%">
+                    <Label text="{i18n>CustomersAtRisk.VisualFilterByOperatingIncome}" class="sapUiSmallMarginBottom"/>
+                    <cri:control.VisualFilterHBar id="idOperatingIncomeLossVisualFilter" height="100px" select="onSelectVisualFilter" deselect="onDeselectVisualFilter" items="{viewModel>/VisualFilters/INCOME_LOSS/items}" entityName="Customers" selectedItem="{viewModel>/VisualFilters/INCOME_LOSS/selectedItem}">
+                        <cri:control.VisualFilterItem label="{viewModel>BUCKET}" value="{viewModel>CUSTOMER_COUNT}" data="{viewModel>}"/>
+                    </cri:control.VisualFilterHBar>
+                </VBox>
+               <!-- <VBox id="idDaysToReactFilter" visible="{=${viewModel>/VisualFilters/DAYS_TO_REACT/items}.length > 1 ? true : false}" class="sapUiResponsiveContentPadding" width="33%">
+                    <Label text="{i18n>CustomersAtRisk.VisualFilterByDaysToReact}" class="sapUiSmallMarginBottom"/>
+                    <cri:control.VisualFilterVBarChart id="idDaysToReactVisualFilter" height="100px" select="onSelectVisualFilter" deselect="onDeselectVisualFilter" lineColor="rgb(39,163,221)" items="{viewModel>/VisualFilters/DAYS_TO_REACT/items}" selectedItem="{viewModel>/VisualFilters/DAYS_TO_REACT/selectedItem}">
+                        <cri:control.VisualFilterItem label="{viewModel>BUCKET}" color="#ccc" value="{viewModel>CUSTOMER_COUNT}" data="{viewModel>}"/>
+                    </cri:control.VisualFilterVBarChart>
+                </VBox>-->
+            </HBox>
+            <IconTabBar id="idListContainer" expandable="false" class="sapUiResponsiveContentPadding">
+                <items>
+                    <IconTabFilter id="idSuggestedCustomers" text="{i18n>CustomersAtRisk.SuggestedCustomersTab}">
+                        <Table id="idSuggestedCustomersTable"
+                               inset="false"
+                               mode="MultiSelect"
+                               selectionChange="updateCustomerSelection"
+                               items="{path:'CRI>/AtRiskCustomersParameters(IP_FILTER=\'\')/Results', length:10, sorter:{path:'INFLUENCE', descending:true}}">
+                            <headerToolbar>
+                                <Toolbar>
+                                    <Label text="{i18n>CustomersAtRisk.SuggestedCustomers.Limit.Title}"/>
+                                    <StepInput
+                                            id="idTopFilter"
+                                            value="{viewModel>/SuggestedCustomerCount}"
+                                            min="0"
+                                            max="500"
+                                            width="120px"
+                                            step="1"/>
+                                    <Button id="idUpdateTopFilter" text="{i18n>CustomersAtRisk.SuggestedCustomers.Limit.UpdateButton.Title}" tap="onUpdateSuggestedCustomerLimit"/>
+                                    <ToolbarSpacer/>
+                                    <Button id="idExportSuggestedCustomers" text="{i18n>CustomersAtRisk.CustomersAtRiskExportButton}" press="exportSuggestedCustomerList"/>
+                                </Toolbar>
+                            </headerToolbar>
+                            <columns>
+                                <Column width="10rem" demandPopin="true" minScreenWidth="800px" popinDisplay="Inline">
+                                    <Text text="{i18n>CustomersAtRisk.CustomerListColumnId}"/>
+                                </Column>
+                                 <Column>
+                                    <Text text="{i18n>CustomersAtRisk.CustomerListColumnName}" />
+                                </Column>
+                                <Column demandPopin="true" minScreenWidth="800px" popinDisplay="Block">
+                                    <Text text="{i18n>CustomersAtRisk.SuggestedCustomersColumnRisk}" class="sapSuiteBMCContent"/>
+                                </Column>
+                                <Column demandPopin="true" minScreenWidth="Tablet"
+                                        hAlign="Right" popinDisplay="Inline" width="9rem">
+                                    <Text text="{i18n>CustomersAtRisk.CustomerListColumnOperatingIncomeLoss}" />
+                                </Column>
+                                <!--<Column demandPopin="true" minScreenWidth="800px" popinDisplay="Block">
+                                    <Text text="{i18n>CustomersAtRisk.SuggestedCustomersColumnDaysToReact}" class="sapSuiteBMCContent" />
+                                </Column>
+                                <Column demandPopin="true" minScreenWidth="900px" popinDisplay="Block"
+                                <Text text="{i18n>CustomerList.Journey}" />
+                                </Column-->
+                                <Column width="4rem">
+                                    <Text text="{i18n>CustomersAtRisk.SuggestedCustomersColumnDetails}" />
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem id="idSuggestedCustomerItemTemplate">
+                                    <cells>
+                                        <Text text="{CRI>EXT_ID}" class="sapUiMediumMargin" />
+                                        <Label text="{CRI>NAME}" design="Bold"/>
+                                        <VBox class="sapUiNoContentPadding" alignItems="Start">
+                                            <cri:control.IndicatorBar
+                                                    padding="14px"
+                                                    scale="%"
+                                                    showValueLabel="true"
+                                                    height="40px"
+                                                    label=""
+                                                    color="{path:'CRI>INFLUENCE', formatter:'.formatRiskColor'}"
+                                                    value="{path:'CRI>INFLUENCE'}"
+                                                    maxValue="100"
+                                            />
+                                        </VBox>
+                                        <ObjectNumber
+                                                textAlign="Right"
+                                                number="{
+								                    parts:[{path:'CRI>INCOME_LOSS'},{path:'CRI>/CURRENCY'}],
+								                    type: 'sap.ui.model.type.Currency',
+								                    formatOptions: {showMeasure: false}
+							                    }"
+                                                unit="{CRI>/CURRENCY}" />
+                                        <!--<VBox class="sapUiNoContentPadding" alignItems="Start">
+                                            <cri:control.IndicatorBar
+                                                    padding="14px"
+                                                    scale="D"
+                                                    showValueLabel="true"
+                                                    height="40px"
+                                                    label=""
+                                                    color="{path:'CRI>DAYS_TO_REACT', formatter:'.formatDaysToChurnColor'}"
+                                                    value="{path:'CRI>DAYS_TO_REACT'}"
+                                                    maxValue="120"
+                                            />
+                                        </VBox>-->
+                                        <HBox alignItems="Center">
+                                            <Button icon="sap-icon://navigation-right-arrow" type="Transparent" press="showCustomerPulse"/>
+                                        </HBox>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </IconTabFilter>
+                    <IconTabFilter id="idAllCustomers" text="{i18n>CustomersAtRisk.AllCustomersTab}">
+                        <table:Table
+                                id="idCustomerListTable"
+                                selectionMode="Multi"
+                                rows="{CRI>/AtRiskCustomersParameters(IP_FILTER='')/Results}"
+                                rowHeight="34"
+                                noDataText="{i18n>CustomersAtRisk.CustomerList.NoData}"
+                                rowSelectionChange="onRowSelectionChange">
+                            <table:toolbar>
+                                <Toolbar>
+                                    <Title text="{i18n>CustomersAtRisk.CustomerListTitle}"/>
+                                    <ToolbarSpacer/>
+                                    <Button id="idExportAllCustomers" text="{i18n>CustomersAtRisk.CustomersAtRiskExportButton}" press="exportAtRiskCustomerList"/>
+                                </Toolbar>
+                            </table:toolbar>
+                            <table:columns>
+                                <table:Column width="15rem">
+                                    <Label text="{i18n>CustomersAtRisk.CustomerListColumnId}"/>
+                                    <table:template>
+                                        <Text text="{CRI>EXT_ID}"/>
+                                    </table:template>
+                                </table:Column>
+                                <table:Column>
+                                    <Label text="{i18n>CustomersAtRisk.CustomerListColumnName}"/>
+                                    <table:template>
+                                        <Text text="{CRI>NAME}"/>
+                                    </table:template>
+                                </table:Column>
+                                <table:Column width="5rem" sortProperty="INFLUENCE" hAlign="End">
+                                    <Label text="{i18n>CustomersAtRisk.AllCustomersTableColumnRisk}"/>
+                                    <table:template>
+                                        <Text text="{CRI>INFLUENCE}%"/>
+                                    </table:template>
+                                </table:Column>
+                                <table:Column width="9rem" hAlign="End" sortProperty="INCOME_LOSS">
+                                    <Label text="{i18n>CustomersAtRisk.CustomerListColumnOperatingIncomeLoss}"/>
+                                    <table:template>
+                                        <ObjectNumber textAlign="Right"
+                                                number="{
+								                    parts:[{path:'CRI>INCOME_LOSS'},{path:'CRI>/CURRENCY'}],
+								                    type: 'sap.ui.model.type.Currency',
+								                    formatOptions: {showMeasure: false}
+							                    }"
+                                                unit="{CRI>/CURRENCY}" />
+                                    </table:template>
+                                </table:Column>
+                               <!-- <table:Column width="9rem" sortProperty="DAYS_TO_REACT" hAlign="End">
+                                    <Label text="{i18n>CustomersAtRisk.CustomerListColumnDaysToReact}"/>
+                                    <table:template>
+                                        <Text text="{CRI>DAYS_TO_REACT}"/>
+                                    </table:template>
+                                </table:Column>-->
+                                <table:Column width="7rem" hAlign="Center">
+                                    <Label text="{i18n>CustomersAtRisk.CustomerListColumnDetails}"/>
+                                    <table:template>
+                                        <Button icon="sap-icon://navigation-right-arrow" type="Transparent" press="showCustomerPulse"/>
+                                    </table:template>
+                                </table:Column>
+                            </table:columns>
+                        </table:Table>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+    </Page>
+</mvc:View>

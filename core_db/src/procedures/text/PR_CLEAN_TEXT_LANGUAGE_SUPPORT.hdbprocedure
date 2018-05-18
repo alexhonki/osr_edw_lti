@@ -1,0 +1,52 @@
+PROCEDURE "procedures.text::PR_CLEAN_TEXT_LANGUAGE_SUPPORT" 
+	(
+		IN 	I_LANGUAGE_CODE VARCHAR(2) DEFAULT 'en',
+		OUT O_TEXT_ANALYSIS "db::ml.type.lda.input" DEFAULT EMPTY
+	) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	--DEFAULT SCHEMA SAP_CRI
+	AS
+BEGIN
+	DECLARE STOP_WORDS_STR NVARCHAR(5000);
+	/*****************************************************************************
+	* EXCEPTION HANDLING
+	******************************************************************************/
+	DECLARE no_stop_words CONDITION FOR SQL_ERROR_CODE 10002;
+	DECLARE PROC_NAME nvarchar(1000) := ::CURRENT_OBJECT_SCHEMA || '.' || ::CURRENT_OBJECT_NAME;
+  	DECLARE EXIT HANDLER FOR sqlexception
+  	BEGIN
+  		INSERT INTO "db::adm.log.error" VALUES(::SQL_ERROR_CODE,:PROC_NAME,::SQL_ERROR_MESSAGE,CURRENT_TIMESTAMP);
+  		-- Propagate Exception
+  		RESIGNAL;
+  	END;
+	
+	/*********************************** PERFORM TEXT CLEANING **************************************************
+			Do the following:
+				1. Lower case
+				2. Remove punctuations & number
+				3. Remove stopwords -- define stopwords in StopWords table for the given language 
+	**********************************************************/
+	 -- Use REGEX to replace non-letters and punctuations /* Lower the text */
+	TBL_SOURCE_TEXT = SELECT "ID", lower( REPLACE_REGEXPR('[[:punct:][:space:]]|[[:digit:][:space:]]' IN DESCRIPTION WITH ' ' OCCURRENCE ALL)) DESCRIPTION 
+						FROM "db::sys.QueryComplaint" where DESCRIPTION <> '';
+	-- Read Stop words table
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception SIGNAL no_stop_words SET MESSAGE_TEXT = 'No stop words found for language code: ' || lower(:I_LANGUAGE_CODE);
+		--determine stopwords
+		select '\b(' || STRING_AGG(STOPWORD,'|') || ')\b' into STOP_WORDS_STR from "db::text.StopWords" where lower("LANGUAGE_CODE") = lower(:I_LANGUAGE_CODE);	
+		-- If no Stop words then error
+		IF :STOP_WORDS_STR IS NULL THEN
+			SIGNAL no_stop_words SET MESSAGE_TEXT = 'No stop words found for language code: ' || lower(:I_LANGUAGE_CODE);
+		END IF;
+	END;
+	
+	TBL_SOURCE_TEXT = SELECT ID, --ROW_NUMBER() OVER(ORDER BY "ID") AS "ID", 
+							 REPLACE_REGEXPR(:STOP_WORDS_STR IN "DESCRIPTION" WITH '' OCCURRENCE ALL) AS "DESCRIPTION"
+						FROM :TBL_SOURCE_TEXT;
+						
+	-- Remove multiple spaces in the text for text analysis
+	O_TEXT_ANALYSIS = SELECT "ID", 
+							 REPLACE_REGEXPR('[ ]{2,}' IN "DESCRIPTION" WITH ' ' OCCURRENCE ALL) AS "TEXT"
+		 				FROM :TBL_SOURCE_TEXT; 
+END

@@ -1,0 +1,14 @@
+FUNCTION "functions::TF_GET_MAX_SEQID_EVENT" ( IV_EVENT_NAME STRING)
+       RETURNS TABLE (
+    	OUT_MAX_SEQ_ID INTEGER,
+    	OUT_MAX_DATE TIMESTAMP
+       )
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+/*****************************  
+       Write your function logic 
+ *****************************/ 
+ RETURN select max(LATEST_EXTRACTED_SEQUENCE) AS "OUT_MAX_SEQ_ID", MAX(LAST_EXTRACTED_DATE) as "OUT_MAX_DATE" from "db::adm.config.event.name" where EVENT_NAME = IV_EVENT_NAME;
+ 
+END;

@@ -1,0 +1,23 @@
+{
+	"format_version": 1,
+	"imports": [
+		{
+			"target_table": "db::ml.config.MLParameters",
+			"source_data": {
+				"data_type": "CSV",
+				"file_name": "data.mlData::MLParameters.csv",
+				"has_header": true
+			},
+			"import_settings": {
+				"import_columns": [
+					"PARAMETER_NAME" ,
+            		"DESCRIPTION" ,
+		            "IS_ENABLED" ,
+		            "INT_PARAMETER" ,
+		            "DOUBLE_PARAMETER" ,
+		            "STRING_PARAMETER"	 
+				]
+			}
+		}
+	]
+}

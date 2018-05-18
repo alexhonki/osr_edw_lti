@@ -1,0 +1,14 @@
+PROCEDURE "procedures.utils::PR_UTIL_UPDATE_TIME_DIMENSION_MONTH" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   -- READS SQL DATA 
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   
+   exec 'MDX UPDATE TIME DIMENSION Month 2010 2030';
+   
+END

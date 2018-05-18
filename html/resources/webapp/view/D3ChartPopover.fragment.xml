@@ -1,0 +1,25 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Popover
+            class="sapUiContentPadding"
+            showHeader="false"
+            placement="VerticalPreferedTop">
+        <VBox>
+            <Label design="Bold" text="{/title}" visible="{/showLabel}"/>
+            <List items="{/values}">
+                <CustomListItem>
+                    <HBox justifyContent="SpaceBetween">
+                        <VBox>
+                            <HBox>
+                                <core:HTML content="{HTML}"/>
+                                <Text text="{name}:   {value}"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                </CustomListItem>
+            </List>
+
+        </VBox>
+    </Popover>
+</core:FragmentDefinition>

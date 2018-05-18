@@ -1,0 +1,9 @@
+{
+	"description": "PreDefined Event Runner Data",
+	"action": "procedures.utils::PR_UTIL_GENERATE_EVENT_INFLUENCE",
+	"schedules": [{
+		"description": "Perform my task every * * * * 18 0 0", 
+		"xscron": "2016 * * * 18 0 0",
+		"parameter": {} 
+	}]
+}

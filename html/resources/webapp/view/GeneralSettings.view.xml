@@ -1,0 +1,45 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.GeneralSettings"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:table="sap.ui.table"
+        xmlns:core="sap.ui.core"
+        displayBlock="true"
+        height="100%">
+    <Page id="idGeneralSettingsPage" showHeader="true" title="{i18n>GeneralSettings.Title}" enableScrolling="true">
+        <content>
+            <Panel width="auto" headerText="{i18n>GeneralSettings.DataPreservationHeading}" class="sapUiResponsiveMargin" backgroundDesign="Transparent">
+                <HBox alignItems="Center">
+                    <Text text="{i18n>GeneralSettings.DataPreservationInputLabel}" class="sapUiSmallMarginEnd"/>
+                    <StepInput min="3" step="1" value="{/PreservationMonths}" width="6rem"/>
+                    <Text text="{i18n>GeneralSettings.DataPreservationInputLabelScale}" class="sapUiMediumMarginBegin"/>
+                </HBox>
+            </Panel>
+            <Panel width="auto" headerText="{i18n>GeneralSettings.PredictionDateInputLabel}" class="sapUiResponsiveMargin" backgroundDesign="Transparent">
+                <HBox alignItems="Center">
+                    <Text text="{i18n>GeneralSettings.PredictionDateInputLabelForOption}" class="sapUiSmallMarginEnd"/>
+                    <Select items="{CRI>/ConfigPredictionDate}" selectedKey="{/SelectedPredictionDate}">
+                        <core:Item key="{CRI>SEQ}" text="{CRI>DESCRIPTION}"/>
+                    </Select>
+                    <HBox alignItems="Center" visible="{=${/SelectedPredictionDate} === '3' ? true : false}">
+                        <Text text="Date:" class="sapUiMediumMarginBegin sapUiSmallMarginEnd"/>
+                        <DatePicker dateValue="{/SelectedFixedDate}"/>
+                    </HBox>
+                </HBox>
+            </Panel>
+        </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Button id="idSaveButton" type="Emphasized" text="{i18n>Admin.Footer.Save}" press="onSave" enabled="false"/>
+                <Button id="idCancelButton" type="Default" text="{i18n>Admin.Footer.Cancel}" press="onCancel"/>
+            </Toolbar>
+        </footer>
+        <dependents>
+			<core:Fragment fragmentName="sap.fiori.cri.fragments.BusyDialog"
+				type="XML">
+			</core:Fragment>
+		</dependents>
+    </Page>
+</mvc:View>

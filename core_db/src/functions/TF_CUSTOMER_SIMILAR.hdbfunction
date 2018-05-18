@@ -1,0 +1,186 @@
+FUNCTION "functions::TF_CUSTOMER_SIMILAR" (
+		IN MAIN_CUST_ID BIGINT
+	) 
+	RETURNS table (
+			CUST_ID BIGINT,
+			SIMILARITY DOUBLE 
+		) 
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+DECLARE LV_CUST_A_U 			INT;
+	DECLARE LV_CUST_A_S				INT;
+	DECLARE LV_FROM_TIME_SEGMENT 	INT;
+	DECLARE LV_TO_TIME_SEGMENT 		INT;
+	DECLARE LV_SIMILAR_WINDOW 		INT := 3;
+	---The parameter of selecting top X customers with highest similarity score
+	DECLARE LV_TOP_X 				INT := 20;
+	---The minimum similarity score for the result
+	DECLARE LV_SIMILARITHY_THRESHOLD INT := 50;
+	
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception LV_SIMILAR_WINDOW := 3;
+		-- Get similar customer window size in months
+		SELECT TOP 1 "FROM_VALUE"
+			INTO LV_SIMILAR_WINDOW
+			FROM "models.adm::CV_CONFIG"
+			WHERE "BUCKET_ID" = 'SIMILAR_CUSTOMER_WINDOW'
+			AND "IS_ENABLED" = 1 WITH HINT(NO_INLINE);
+	END;
+	
+	
+	SELECT YEAR(ADD_MONTHS(TO_DATE("TO_DATE"), -:LV_SIMILAR_WINDOW))*100 + MONTH(ADD_MONTHS(TO_DATE("TO_DATE"), -:LV_SIMILAR_WINDOW)), 
+		YEAR(TO_DATE("TO_DATE"))*100 + MONTH(TO_DATE("TO_DATE"))
+			--"TO_TIME_SEGMENT" 
+	INTO LV_FROM_TIME_SEGMENT, LV_TO_TIME_SEGMENT
+	FROM "functions::TF_CONF_GET_PREDICTION_DATES" ( )
+	WHERE IS_ENABLED = 1;
+
+
+	/*
+		Get list of all customers valid for window
+	*/
+ 	LT_CUSTOMERS = SELECT DISTINCT CUST_ID  
+							   FROM "db::app.Customer"
+							   WHERE STATUS = 0 AND  CUST_ID <> :MAIN_CUST_ID
+							   	 AND INIT_TS <= :LV_TO_TIME_SEGMENT AND END_TS >= :LV_FROM_TIME_SEGMENT;
+							   	 
+	/*
+		Get a list of all event ids that occur within the window
+	*/
+    LT_VALID  = SELECT 
+    				DISTINCT B."EVENT_ID.ID" as "EVENT_ID"
+    			FROM  "db::adm.config.event.name" A,
+    			"db::app.CustomerEvents" B
+    			WHERE is_enabled = 1 AND A."ID" = B."EVENT_ID.ID" 
+    			AND (B."INIT_TS" BETWEEN :LV_FROM_TIME_SEGMENT AND :LV_TO_TIME_SEGMENT);
+    /*
+		Frequencies of events exhibited by the target Customer
+	*/    
+    LT_CUSTOMER1 = SELECT "EVENT_ID.ID" as "EVENT_ID", COUNT(*) "F" FROM "db::app.CustomerEvents"
+                   where "CUST_ID" = :MAIN_CUST_ID
+                   AND "EVENT_ID.ID" IN (SELECT "EVENT_ID" FROM :LT_VALID ) 
+                   AND INIT_TS BETWEEN :LV_FROM_TIME_SEGMENT AND :LV_TO_TIME_SEGMENT            
+                   GROUP BY "EVENT_ID.ID";
+     /*
+     	Get the number of unique events and sum of total event frequency from target customer
+     */              
+     SELECT 
+     	COUNT(DISTINCT EVENT_ID), 
+     	SUM("F") 
+     	INTO LV_CUST_A_U, LV_CUST_A_S  
+     FROM :LT_CUSTOMER1;
+     
+     /*
+     	Get frequency for all customers 
+     */
+     LT_EVENTS = SELECT "CUST_ID" as "CUST_ID", "EVENT_ID.ID" as "EVENT_ID", COUNT(*) "F" 
+     				FROM "db::app.CustomerEvents"
+                    where "CUST_ID"  IN (SELECT CUST_ID FROM :LT_CUSTOMERS) 
+                      AND "EVENT_ID.ID" IN (SELECT "EVENT_ID" FROM :LT_VALID ) 
+                      AND INIT_TS BETWEEN :LV_FROM_TIME_SEGMENT AND :LV_TO_TIME_SEGMENT         
+                      GROUP BY "CUST_ID", "EVENT_ID.ID";
+                   
+     /*
+     	DOWN-WARD PRUNING
+     	Remove customers where U_A/3 <= U_B <= 3*U_A AND S_A/3 <= S_B <= 3*2_A
+     	U_A is number of unique events from A
+     	U_B is the same but for other customers
+     	S_A is the sum of total number of events from A
+     	S_B is the same by for other customers
+     */
+     LT_CUSTOMERS = SELECT 
+     					CUST_ID 
+     				FROM  
+		    		   (SELECT 
+		     				CUST_ID,  
+		     				COUNT(DISTINCT EVENT_ID) as "U",  
+		     				SUM(F) AS "S" 
+		 				FROM :LT_EVENTS
+		 				GROUP BY CUST_ID)
+	 				WHERE U BETWEEN :LV_CUST_A_U/3 AND :LV_CUST_A_U*3
+	 				AND S BETWEEN :LV_CUST_A_S/3 AND :LV_CUST_A_S*3;
+	
+	--Only get the events from the pruned customers 				
+	LT_EVENTS = SELECT CUST_ID, EVENT_ID, "F" FROM :LT_EVENTS WHERE CUST_ID IN (SELECT CUST_ID FROM :LT_CUSTOMERS);
+    
+    --Create a complete list of customers with all valid events
+    LT_TOTAL_EVT = SELECT A.CUST_ID, B.EVENT_ID "EVENT_ID" FROM :LT_CUSTOMERS A CROSS JOIN :LT_VALID B;
+    
+    /*
+    	If a customer didn't exhibit an event assign it a freq of 0, create a list of freq for all
+    	valid events for all pruned customers
+    */
+    LT_U_EVENT = SELECT CUST_ID, EVENT_ID, SUM(F) "F" FROM (
+                    SELECT CUST_ID, EVENT_ID, F FROM :LT_EVENTS
+                    UNION
+                    SELECT CUST_ID, EVENT_ID, 0 "F" FROM :LT_TOTAL_EVT group by CUST_ID, EVENT_ID
+                 ) 
+                 group by CUST_ID, EVENT_ID ORDER BY CUST_ID;
+                 
+	/*
+		The matrix represents frequency of target customer vs others per event
+	*/
+     LT_MATRIX = SELECT  A.EVENT_ID, A.F "F1", 
+                    		B.CUST_ID, B.F "F2"
+                    FROM :LT_CUSTOMER1 A
+                    LEFT OUTER JOIN :LT_U_EVENT B ON A.EVENT_ID = B.EVENT_ID ORDER BY B.CUST_ID; 
+                    
+     /*
+     	If Frequency is 0 use the negation of the customers frequency, if both customers have 0 frequence
+     	for the respective event use 0. Otherwise, use the actual frequency value.	        	
+     */                                          
+     LT_EVENT_FINAL =  select CUST_ID, F1, FINAL from
+        				 (
+            				SELECT CUST_ID, 
+            				 case 
+                             WHEN F1 > 0 THEN
+                             F1                       
+                             ELSE
+                             -F2
+                             END AS F1,
+                             case 
+                             WHEN F2 > 0  THEN
+                             F2
+                             ELSE
+                             -F1
+                             END AS FINAL
+            				 FROM :LT_MATRIX 
+            				);
+            				--WHERE FINAL <> 0;
+		
+	/*
+		Computing the cosine similarity of of each customer based on the standard equation.
+		The similarity is first calucalated using vector operations - A.B/|A||B|. Where A
+		is the customer of interest and B is the customer of comparison. Returns values between
+		-1 and 1, where -1 is exactly opossite and 1 is exactly the same.
+	*/	     				 
+         
+  	LT_COSINE =	SELECT
+					CUST_ID,
+					--Get the magnitude of A, sum of each element of A squared
+					SQRT(SUM(POWER(F1, 2)) ) AS A_MAG,
+					--Get the magnitude of B, sum of each element of B squared
+					SQRT(SUM(POWER(FINAL, 2)) ) AS B_MAG,
+					--Calculate A.B, the sum of (A*B)
+					SUM(FINAL*F1) AS A_DOT_B  
+					FROM :LT_EVENT_FINAL GROUP BY CUST_ID;
+						
+	/*
+		Return top X customers with their Similarity Score > Threshold
+		Threshold and X are povided in admin page. Values are normalised to 0-100, where 100 is the most similar.
+	*/       				 
+    
+ 	RETURN
+ 	SELECT
+   	TOP :LV_TOP_X
+   	CUST_ID,
+	SIMILARITY
+	FROM
+		(
+			select CUST_ID, case when  A_MAG * B_MAG <> 0 then 100*(((A_DOT_B/(A_MAG*B_MAG))+1)/2) else 0 end SIMILARITY from  :LT_COSINE 
+			
+	)
+	where  SIMILARITY > :LV_SIMILARITHY_THRESHOLD
+	ORDER BY SIMILARITY DESC;
+END;

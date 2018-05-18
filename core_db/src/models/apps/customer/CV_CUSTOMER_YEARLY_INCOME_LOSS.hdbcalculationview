@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.apps.customer::CV_CUSTOMER_YEARLY_INCOME_LOSS" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_CUSTOMER_INCOME_LOSS"/>
+<localVariables>
+  <variable id="IP_FROM" parameter="true">
+    <descriptions defaultDescription="From Year/Month"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_UTIL_GET_PREDICTED_FILTER_FROM_TIME_SEGMENT</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+
+  <variable id="IP_TO" parameter="true">
+    <descriptions defaultDescription="To Year/Month"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_UTIL_GET_PREDICTED_FILTER_TO_TIME_SEGMENT</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::app.ValueTypes">
+    <resourceUri>db::app.ValueTypes</resourceUri>
+  </DataSource>
+  <DataSource id="db::app.CustomerValues">
+    <resourceUri>db::app.CustomerValues</resourceUri>
+  </DataSource>
+  <DataSource id="models.adm::CV_CONFIG">
+    <resourceUri>models.adm::CV_CONFIG</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="ValTy" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="VALUE_ID" aggregationType="sum">
+        <descriptions defaultDescription="Value ID"/>
+      </viewAttribute>
+      <viewAttribute id="VALUE_NAME">
+        <descriptions defaultDescription="Value Name"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.ValueTypes">
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_ID" source="VALUE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_NAME" source="VALUE_NAME"/>
+    </input>
+    <filter>(&quot;VALUE_NAME&quot; ='OPERATING_INCOME_AMOUNT')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="CustVal" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="VALUE_ID" aggregationType="sum">
+        <descriptions defaultDescription="VALUE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="VALUE" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+    
+      <viewAttribute id="INIT_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="INIT_TIME_SEGMENT"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="REVENUE_YEAR" datatype="INTEGER" expressionLanguage="SQL">
+        <formula>LEFT(&quot;INIT_TIME_SEGMENT&quot;, 4)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="db::app.CustomerValues">
+      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_ID" source="VALUE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE" source="VALUE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TIME_SEGMENT" source="INIT_TIME_SEGMENT"/>
+    </input>
+    <filter>(&quot;TIME_SEGMENT&quot; &gt;= $$IP_FROM$$ AND &quot;TIME_SEGMENT&quot;&lt;=$$IP_TO$$)</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_CURRENCY" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="REACTION_TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="STR_VALUE">
+        <descriptions defaultDescription="STR_VALUE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="JOIN" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>1</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="models.adm::CV_CONFIG">
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STR_VALUE" source="STR_VALUE"/>
+    </input>
+    <filter>(&quot;BUCKET_ID&quot; ='CURRENCY') AND (&quot;IS_ENABLED&quot; =1) AND (&quot;REACTION_TYPE&quot; ='NA')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="J_CustVal" cardinality="C1_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="VALUE" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="REVENUE_YEAR" aggregationType="sum">
+        <descriptions defaultDescription="REVENUE_YEAR"/>
+      </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$VALUE_ID$VALUE_ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="JOIN" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>1</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="CustVal">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE" source="VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REVENUE_YEAR" source="REVENUE_YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$VALUE_ID$VALUE_ID" source="VALUE_ID"/>
+    </input>
+    <input node="ValTy">
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$VALUE_ID$VALUE_ID" source="VALUE_ID"/>
+    </input>
+    <joinAttribute name="JOIN$VALUE_ID$VALUE_ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="J_CUST_VAL_CURR" cardinality="C1_1" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CURRENCY_DESC">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="CURRENCY">
+        <descriptions defaultDescription="STR_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="REVENUE_YEAR" aggregationType="sum">
+        <descriptions defaultDescription="REVENUE_YEAR"/>
+      </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$JOIN$JOIN"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="J_CustVal">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REVENUE_YEAR" source="REVENUE_YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$JOIN$JOIN" source="JOIN"/>
+    </input>
+    <input node="P_CURRENCY">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY_DESC" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="STR_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$JOIN$JOIN" source="JOIN"/>
+    </input>
+    <joinAttribute name="JOIN$JOIN$JOIN"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="J_CUST_VAL_CURR">
+  <attributes>
+    <attribute id="CUST_ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CUST_ID_ID"/>
+      <keyMapping columnObjectName="J_CUST_VAL_CURR" columnName="CUST_ID"/>
+    </attribute>
+    <attribute id="CURRENCY_DESC" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DESCRIPTION"/>
+      <keyMapping columnObjectName="J_CUST_VAL_CURR" columnName="CURRENCY_DESC"/>
+    </attribute>
+    <attribute id="CURRENCY" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STR_VALUE"/>
+      <keyMapping columnObjectName="J_CUST_VAL_CURR" columnName="CURRENCY"/>
+    </attribute>
+    <attribute id="REVENUE_YEAR" order="5" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="REVENUE_YEAR"/>
+      <keyMapping columnObjectName="J_CUST_VAL_CURR" columnName="REVENUE_YEAR"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="INCOME_LOSS" order="2" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="VALUE"/>
+      <measureMapping columnObjectName="J_CUST_VAL_CURR" columnName="INCOME_LOSS"/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="ValTy" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="-129" y="582"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="CustVal" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="110" y="582"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="P_CURRENCY" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="240" y="456"/>
+      <rectangleSize height="30" width="159"/>
+    </shape>
+    <shape expanded="true" modelObjectName="J_CustVal" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="-40" y="456"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  
+    <shape modelObjectName="CustVal" modelObjectNameSpace="J_CustVal" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="ValTy" modelObjectNameSpace="J_CustVal" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="J_CUST_VAL_CURR" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="340"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="J_CustVal" modelObjectNameSpace="J_CUST_VAL_CURR" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="P_CURRENCY" modelObjectNameSpace="J_CUST_VAL_CURR" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

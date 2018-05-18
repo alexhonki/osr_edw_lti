@@ -1,0 +1,18 @@
+{ 
+  "area" : "AFLPAL", 
+  "function" : "FPGROWTH", 
+  "parameters" : [ 
+    { 
+      "type" : "db::ml.type.fpgrowth.input", 
+      "direction" : "IN" 
+    },
+    { 
+      "type" : "db::ml.type.control", 
+      "direction" : "IN" 
+    }, 
+    { 
+      "type" : "db::ml.type.fpgrowth.output", 
+      "direction" : "OUT" 
+    }
+  ]
+}

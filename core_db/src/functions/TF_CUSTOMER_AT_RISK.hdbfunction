@@ -1,0 +1,198 @@
+FUNCTION "functions::TF_CUSTOMER_AT_RISK" ( 
+		IN IM_FILTER NVARCHAR(5000) default ''
+	) 
+	RETURNS table (
+		CUST_ID 		BIGINT,			-- Customer ID (Internal)
+		EVENT_ID		INTEGER,
+		INFLUENCE		INT,
+		IMPACT			INT,
+		DAYS_TO_REACT	INT,
+		EVENT_DAYS		INT,
+		ACTUAL_DTR		INT
+	)
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER AS
+BEGIN
+	------------------------------------------------------------------------------------------------------------
+	-- Default Reaction Type
+	------------------------------------------------------------------------------------------------------------
+	DECLARE LV_REACTION_TYPE 	VARCHAR(200) := 'CHURN';
+	DECLARE LV_FROM_TS			VARCHAR(6);
+	DECLARE LV_TO_TS			VARCHAR(6);
+	DECLARE LV_START_DATE		TIMESTAMP;
+	DECLARE LV_FORECAST			INT;
+	DECLARE LV_INFLUENCE		INT;
+	------------------------------------------------------------------------------------------------------------	
+	-- Get the Reaction type configured ---> needs to be extended in future to support multiple
+	------------------------------------------------------------------------------------------------------------
+	CALL "procedures.utils::PR_CONF_GET_REACTION_TYPE"(:LV_REACTION_TYPE);
+	------------------------------------------------------------------------------------------------------------
+	-- Fetch Timesegment For event and New Start Date
+	------------------------------------------------------------------------------------------------------------
+	--	CALL "SAP_CRI"."sap.cri.db.procedures::PR_LAST_EVENT_TIME_SEGMENT"(:LV_TO_TS);
+	CALL "procedures.utils::PR_CONF_GET_PREDICTION_DATE"(:LV_START_DATE);
+	CALL "procedures.utils::PR_CONF_GET_PREDICTION_TIME_SEGMENT"(:LV_TO_TS);
+	------------------------------------------------------------------------------------------------------------
+	-- Calculate "From Date" Based on "To Date"
+	------------------------------------------------------------------------------------------------------------
+	CALL "procedures.utils::PR_CONF_GET_FORECAST_WINDOW"(:LV_TO_TS, :LV_FORECAST, :LV_FROM_TS);
+	------------------------------------------------------------------------------------------------------------
+	-- Get Influence Threshold for Reaction
+	------------------------------------------------------------------------------------------------------------
+	BEGIN
+		DECLARE EXIT HANDLER FOR SQL_ERROR_CODE 1299  LV_INFLUENCE := 1;
+		
+		SELECT TO_INT(FROM_VALUE) INTO LV_INFLUENCE
+			FROM "models.adm::CV_CONFIG" 
+			WHERE is_enabled = 1 and BUCKET_ID = 'INFLUENCE_THRESHOLD' and seq = 1 and "REACTION_TYPE" = :LV_REACTION_TYPE;
+	END;
+	
+	-- Remove Reacted Customers from filter
+--	LT_FILTER = SELECT "CUST_ID" FROM "SAP_CRI"."sap.cri.db.functions::TF_CUSTOMER_FILTER_FROM_TO"(:IM_FILTER,:LV_TO_TS,:LV_TO_TS)
+--				MINUS
+--				SELECT "CUST_ID" FROM "SAP_CRI"."sap.cri.db::app.CustomerReactions" WHERE "REACTION_TYPE" = :LV_REACTION_TYPE AND INIT_TS <= TO_INT(:LV_TO_TS);	
+	LT_FILTER = SELECT "CUST_ID" FROM "functions::TF_CUSTOMER_FILTER_FROM_TO"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS)
+				MINUS
+				SELECT "CUST_ID" as "CUST_ID" FROM "db::app.CustomerReactions" WHERE "REACTION_TYPE" = :LV_REACTION_TYPE AND INIT_TS <= TO_INT(:LV_TO_TS);
+	/*
+	RETURN
+	 SELECT 
+			CUST_ID, 					-- Customer ID
+			"EVENT_ID",					-- Event ID (Unique ID for Name/Category combination)
+			INFLUENCE, 					-- Influence (Risk %) = Impact / Total Customers
+	0		IMPACT, 					-- Impact (No. of Customer reacted)
+			DAYS_TO_REACT,  			-- Days to React
+			"EVENT_DAYS",
+			"DAYS_TO_REACT"-"EVENT_DAYS" AS "ACTUAL_DTR" 
+			FROM (
+				SELECT 
+					A.CUST_ID,
+					Z.EVENT_ID, 
+					P.RISK_SCORE INFLUENCE, 
+				--	B.IMPACT, 
+					B.DAYS_TO_REACT, 
+					DAYS_BETWEEN(Z.INIT_DATE,:LV_START_DATE) "EVENT_DAYS" ,
+					row_number() over (partition by A.cust_id order by P.RISK_SCORE desc)  as row_num
+				FROM :LT_FILTER A
+				INNER JOIN "SAP_CRI"."sap.cri.db::ml.predict.CustomerRiskResults" P on A."CUST_ID" = P."CUST_ID"
+				INNER JOIN	"sap.cri.model.app::CV_CUSTOMER_LAST_EVENT"(placeholder."$$IP_INIT_TS$$"=>:LV_TO_TS) Z ON A."CUST_ID" = Z."CUST_ID"
+				INNER JOIN
+				 (
+						SELECT
+							C."EVENT_ID",  
+						--	A.INFLUENCE, 
+						--	A.EVENT_IMPACT "ALL",
+						--	B.EVENT_IMPACT "IMPACT", 
+							C."DAYS_TO_REACT" "DAYS_TO_REACT"
+						-- INFLUENCE	 
+				--		FROM "SAP_CRI"."sap.cri.db.functions::TF_EVENT_INFLUENCE"(:LV_TO_TS,:LV_REACTION_TYPE) A
+						-- IMPACT
+				--		INNER JOIN "SAP_CRI"."sap.cri.db.functions::TF_EVENT_IMPACT_FILTER"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS,:LV_REACTION_TYPE) B on A.EVENT_ID = B.EVENT_ID
+						-- DAYS TO REACT
+				--		INNER JOIN "SAP_CRI"."sap.cri.db.functions::TF_EVENT_DAYS_TO_REACT"(:LV_TO_TS,:LV_REACTION_TYPE) C on A.EVENT_ID = C.EVENT_ID
+						FROM "SAP_CRI"."sap.cri.db.functions::TF_EVENT_DAYS_TO_REACT"(:LV_TO_TS,:LV_REACTION_TYPE) C
+					--	WHERE A.INFLUENCE >= :LV_INFLUENCE
+					) B on Z.EVENT_ID = B.EVENT_ID order by Z.CUST_ID 
+				) 
+				where row_num = 1
+				  and "DAYS_TO_REACT"-"EVENT_DAYS" > 0; */
+	
+	/*LT_LAST_EVENT = select * from (
+								SELECT                   
+					                CUST_ID, 
+					                a.EVENT_ID, 
+					                INIT_DATE, 
+					                INIT_TS, 
+					                ROW_NUMBER() OVER (PARTITION BY CUST_ID ORDER BY INIT_DATE desc ,influence desc, a.EVENT_ID asc) rn
+								FROM "SAP_CRI"."sap.cri.db::app.CustomerEvents" as a 
+								left outer join 
+								(
+								                SELECT  "EVENT_ID", "INFLUENCE" 
+								                FROM "SAP_CRI"."sap.cri.db::app.events.influence" -- "SAP_CRI"."sap.cri.db.functions::TF_EVENT_INFLUENCE"(:LV_TO_TS,:LV_REACTION_TYPE)
+								                WHERE "TIME_SEGMENT" = :LV_TO_TS AND "REACTION_TYPE" = :LV_REACTION_TYPE
+								)               as b 
+								on a.event_id=b.event_id
+								WHERE a.CUST_ID in (SELECT CUST_ID FROM :LT_FILTER)
+								  
+								)
+								where 
+								  rn=1
+								  ; */
+	
+	-- Aggregate and get last events
+	LT_LAST_EVENTS = SELECT "CUST_ID" as "CUST_ID", "EVENT_ID.ID" as "EVENT_ID", max(INIT_DATE) INIT_DATE, max(INIT_TS) INIT_TS 
+						FROM "db::app.CustomerEvents" 
+						WHERE "CUST_ID" in (SELECT CUST_ID FROM :LT_FILTER)
+						  AND INIT_TS <= :LV_TO_TS
+						GROUP BY "CUST_ID", "EVENT_ID.ID";
+						  
+	-- Use window function and get highest last event
+	LT_LAST_EVENT = select CUST_ID,EVENT_ID,INIT_DATE,INIT_TS, rn from (
+								SELECT                   
+					                CUST_ID, 
+					                a.EVENT_ID, 
+					                INIT_DATE, 
+					                INIT_TS, 
+					                ROW_NUMBER() OVER (PARTITION BY CUST_ID ORDER BY INIT_DATE desc ,influence desc, a.EVENT_ID asc) rn
+								FROM :LT_LAST_EVENTS as a 
+								left outer join 
+								(
+								                SELECT  "EVENT_ID", "INFLUENCE" 
+								                FROM "functions::TF_EVENT_INFLUENCE"(:LV_TO_TS,:LV_REACTION_TYPE) -- "db::app.events.influence" 
+								                --WHERE "TIME_SEGMENT" = :LV_TO_TS AND "REACTION_TYPE" = :LV_REACTION_TYPE
+								)               as b 
+								on a.event_id=b.event_id
+								)
+								where 
+								  rn=1
+								  ;				  
+						  
+
+	RETURN SELECT 
+			CUST_ID, 					-- Customer ID
+			"EVENT_ID",					-- Event ID (Unique ID for Name/Category combination)
+			INFLUENCE, 					-- Influence (Risk %) = Impact / Total Customers
+			IMPACT, 					-- Impact (No. of Customer reacted)
+			1 as "DAYS_TO_REACT",  			-- Days to React
+			"EVENT_DAYS",
+		--	"DAYS_TO_REACT"-"EVENT_DAYS" AS "ACTUAL_DTR" 
+			1 as "ACTUAL_DTR" 
+			FROM (
+				SELECT 
+					A.CUST_ID,
+					Z.EVENT_ID,
+					P.RISK_SCORE INFLUENCE, 
+					--B.INFLUENCE, 
+					B.IMPACT, 
+				--	B.DAYS_TO_REACT, 
+					DAYS_BETWEEN(Z.INIT_DATE,:LV_START_DATE) "EVENT_DAYS" ,
+					row_number() over (partition by A.cust_id order by P.RISK_SCORE desc)  as row_num
+				FROM :LT_FILTER A
+				-- INNER JOIN	"sap.cri.model.app::CV_CUSTOMER_LAST_EVENT"(placeholder."$$IP_INIT_TS$$"=>:LV_TO_TS) Z ON A."CUST_ID" = Z."CUST_ID"
+				INNER JOIN "db::ml.predict.CustomerRiskResults" P on A."CUST_ID" = P."CUST_ID"
+				INNER JOIN :LT_LAST_EVENT Z ON A."CUST_ID" = Z."CUST_ID"
+				INNER JOIN
+				 (
+						SELECT
+				--			A."EVENT_ID",  
+				--			A.INFLUENCE, 
+				--			A.EVENT_IMPACT "ALL",
+							B.EVENT_ID,
+							B.EVENT_IMPACT "IMPACT" 
+						--	C."DAYS_TO_REACT" "DAYS_TO_REACT"
+						-- INFLUENCE	 
+					--	FROM "SAP_CRI"."sap.cri.db.functions::TF_EVENT_INFLUENCE"(:LV_TO_TS,:LV_REACTION_TYPE) A
+						-- IMPACT
+					--	INNER JOIN "SAP_CRI"."sap.cri.db.functions::TF_EVENT_IMPACT_FILTER"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS,:LV_REACTION_TYPE) B on A.EVENT_ID = B.EVENT_ID
+						FROM "functions::TF_EVENT_IMPACT_FILTER"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS,:LV_REACTION_TYPE) B
+						-- DAYS TO REACT
+						  --INNER JOIN "functions::TF_EVENT_DAYS_TO_REACT"(:LV_TO_TS,:LV_REACTION_TYPE) C on B.EVENT_ID = C.EVENT_ID
+						--INNER JOIN (SELECT "EVENT_ID.ID" as "EVENT_ID", DAYS_TO_REACT FROM "db::app.events.days_to_react" WHERE "TIME_SEGMENT" = :LV_TO_TS AND "REACTION_TYPE" = :LV_REACTION_TYPE  ) C on B.EVENT_ID = C.EVENT_ID
+						--WHERE A.INFLUENCE >= :LV_INFLUENCE
+					) B on Z.EVENT_ID = B.EVENT_ID 
+					WHERE P.RISK_SCORE  >= :LV_INFLUENCE
+					order by Z.CUST_ID
+				) 
+				where row_num = 1;
+				 -- and "DAYS_TO_REACT"-"EVENT_DAYS" > 0; 
+END;

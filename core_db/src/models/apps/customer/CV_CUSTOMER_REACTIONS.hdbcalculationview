@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.apps.customer::CV_CUSTOMER_REACTIONS" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_CUSTOMER_REACTIONS"/>
+<localVariables>
+  <variable id="IP_REACTION_TYPE" parameter="true">
+    <descriptions defaultDescription="Reaction Type"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_CONF_GET_REACTION_TYPE</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::app.Customer">
+    <resourceUri>db::app.Customer</resourceUri>
+  </DataSource>
+  <DataSource id="db::app.CustomerReactions">
+    <resourceUri>db::app.CustomerReactions</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="CustomerUnblocked" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE" aggregationType="min">
+        <descriptions defaultDescription="INIT_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="STATUS" aggregationType="sum">
+        <descriptions defaultDescription="STATUS"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.Customer">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+    </input>
+    <filter>(&quot;STATUS&quot;=0)</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Reactions" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="REACTION_TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE" aggregationType="min">
+        <descriptions defaultDescription="INIT_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="CUST_ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="TIME_SEGMENT" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>&quot;REACTION_TIME_SEGMENT&quot;</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="db::app.CustomerReactions">
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TIME_SEGMENT" source="INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+    </input>
+    <filter>(&quot;REACTION_TYPE&quot;='$$IP_REACTION_TYPE$$')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="CN_N" joinType="referential">
+    <viewAttributes>
+      <viewAttribute id="REACTION_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_INIT_DATE" aggregationType="min">
+        <descriptions defaultDescription="INIT_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="REACTION_FLAG" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>not isnull(&quot;REACTION_CUST_ID&quot;)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="CustomerUnblocked">
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+    </input>
+    <input node="Reactions">
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TIME_SEGMENT" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_CUST_ID" source="CUST_ID"/>
+    </input>
+    <joinAttribute name="REACTION_CUST_ID"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="CUST_ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Customer ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="REACTION_CUST_ID"/>
+    </attribute>
+    <attribute id="CUST_INIT_DATE" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Customer Initial Date/Time"/>
+      <keyMapping columnObjectName="Join_1" columnName="CUST_INIT_DATE"/>
+    </attribute>
+    <attribute id="INIT_TIME_SEGMENT" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Intial Time Segment"/>
+      <keyMapping columnObjectName="Join_1" columnName="INIT_TS"/>
+    </attribute>
+    <attribute id="REACTION_FLAG" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Reaction Flag"/>
+      <keyMapping columnObjectName="Join_1" columnName="REACTION_FLAG"/>
+    </attribute>
+  
+    <attribute id="REACTION_TIME_SEGMENT" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TIME_SEGMENT"/>
+      <keyMapping columnObjectName="Join_1" columnName="REACTION_TIME_SEGMENT"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="208" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="CustomerUnblocked" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="91" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Reactions" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="282" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="208" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="CustomerUnblocked" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Reactions" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

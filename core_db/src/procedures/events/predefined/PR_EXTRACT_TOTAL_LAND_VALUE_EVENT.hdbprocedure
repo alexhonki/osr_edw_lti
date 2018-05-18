@@ -1,0 +1,57 @@
+PROCEDURE "procedures.events.predefined::PR_EXTRACT_TOTAL_LAND_VALUE_EVENT" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+
+	DECLARE LV_TLV NVARCHAR(500) := 'Increase in Total Land Value by 50%';
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+   LT_TEMP = SELECT 
+					*, 
+					TO_TIMESTAMP(LEAST(TAXYRSTARTDT, CHDATE), 'YYYYMMDD') "INIT_DATE", 
+					TO_TIMESTAMP('9999-12-31') "END_DATE",
+					CASE PREV_VAL
+						WHEN 0 THEN NULL
+						ELSE (TOTBPRELVNTVAL / PREV_VAL) * 100
+					END AS RATIO
+				FROM (
+					select TAXYRSTARTDT, TOTBPRELVNTVAL, LAG(TOTBPRELVNTVAL) OVER (PARTITION BY ZZ_PARTNER ORDER BY TAXYRSTARTDT) AS PREV_VAL, ZZ_PARTNER, CHDATE
+					from "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV"
+					group by TAXYRSTARTDT, TOTBPRELVNTVAL, ZZ_PARTNER, CHDATE
+				) A
+				LEFT JOIN (
+					SELECT CUST_ID, EXT_ID
+					FROM "db::app.Customer"
+				) B ON A.ZZ_PARTNER = B.EXT_ID;
+				
+				
+				
+
+    /*Increase in Total Land Value by 50%*/
+   INSERT INTO "db::app.CustomerEvents" 
+   	SELECT
+		CUST_ID,
+		(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_TLV)) as EVENT_ID,
+		(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_TLV))	EVENT_GROUP,
+		:LV_TLV EVENT_NAME,
+		INIT_DATE, 
+		END_DATE, 
+		1 EVENT_VALUE, 
+		:LV_TLV DESCRIPTION,
+		YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
+		YEAR(END_DATE)*100 + MONTH(END_DATE) END_TS
+	FROM :LT_TEMP
+	WHERE RATIO >= 100 + 50
+			AND RATIO <> 0
+			AND CUST_ID IS NOT NULL
+	ORDER BY INIT_DATE; 
+   
+   
+   
+END

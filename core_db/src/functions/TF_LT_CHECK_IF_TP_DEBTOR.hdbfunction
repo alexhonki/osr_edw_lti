@@ -1,0 +1,25 @@
+FUNCTION "functions::TF_LT_CHECK_IF_TP_DEBTOR" ( 
+	IN AUGDT DATE, -- Clearing Date
+	IN FAEDN DATE  -- Due Date
+)
+       RETURNS ISDEBTOR INT 
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+/*****************************  
+       Write your function logic 
+ *****************************/ 
+ DECLARE DATE_TO_COMPARE DATE;
+ IF AUGDT IS NULL  THEN
+   DATE_TO_COMPARE = CURRENT_DATE;
+ ELSE
+  DATE_TO_COMPARE = AUGDT;
+ END IF;
+ IF AUGDT > FAEDN THEN
+  ISDEBTOR = 1;
+ ELSE
+ ISDEBTOR = 0;
+ END IF;
+ 
+
+END;

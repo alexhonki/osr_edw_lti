@@ -1,0 +1,54 @@
+FUNCTION "functions::TF_ADMIN_AUDIT_LOG_CUSTOMER_STATUS" ( )
+       RETURNS table (
+		USER_NAME			NVARCHAR(100),	-- User
+		LOG_DATE			TIMESTAMP,		-- Audit log date	
+		AUDIT_POLICY_NAME	NVARCHAR(100),	-- Policy  Name
+		EVENT_ACTION		VARCHAR(40),
+		STATEMENT_STRING 	NVARCHAR(5000),			-- Data Accessed
+		RAW_STRING			NVARCHAR(5000)
+	)
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+LT_STATUS = SELECT 
+                MAP("USER_NAME", "APPLICATION_USER_NAME", "USER_NAME","USER_NAME" || '/' || "APPLICATION_USER_NAME" ) "USER_NAME",
+               	"functions::TS_UTIL_LOCAL_TO_UTC"("TIMESTAMP") "LOG_DATE",
+                "AUDIT_POLICY_NAME",
+                "EVENT_ACTION",
+                CASE WHEN "EVENT_ACTION" = 'INSERT' THEN
+					SUBSTRING_REGEXPR( 'INSERT INTO "[\w\W]+" \(([\w\W]+)\) VALUES [\w\W]+\(([\W\w]+)\)' IN "STATEMENT_STRING" GROUP 1 )
+					WHEN  "EVENT_ACTION" = 'UPDATE' THEN
+					REPLACE(SUBSTRING_REGEXPR( 'UPDATE[\w\W]+SET ([\w\W]+) WHERE[\w\W]+\(([\w\W]+)\)' IN "STATEMENT_STRING" GROUP 1 ), ' = ?', '')		
+					ELSE
+					''
+				END AS "STATEMENT1",
+				
+				CASE WHEN "EVENT_ACTION" = 'INSERT' THEN
+					SUBSTRING_REGEXPR( 'INSERT INTO "[\w\W]+" \(([\w\W]+)\) VALUES [\w\W]+\(([\W\w]+)\)' IN "STATEMENT_STRING" GROUP 2 ) 
+					WHEN  "EVENT_ACTION" = 'UPDATE' THEN
+					SUBSTRING_REGEXPR( 'UPDATE[\w\W]+SET ([\w\W]+) WHERE[\w\W]+\(([\w\W]+)\)' IN "STATEMENT_STRING" GROUP 2 )		
+					ELSE
+					''
+				END AS "STATEMENT2",
+				"STATEMENT_STRING" "RAW_STRING"
+			FROM 	"synonyms::auditsynonym" 
+			WHERE	AUDIT_POLICY_NAME ='CRI_CUST_STATUS'
+			  AND   EVENT_ACTION in ('INSERT','UPDATE','DELETE');
+
+
+	RETURN SELECT 
+                "USER_NAME",
+               	"LOG_DATE",
+                "AUDIT_POLICY_NAME",
+                "EVENT_ACTION",
+				CASE WHEN LENGTH("STATEMENT1") > 0 and LENGTH("STATEMENT2") > 0 THEN 
+					"functions::TS_UTIL_FORMAT_AUDIT_LOG"(
+						"STATEMENT1",
+						"STATEMENT2",
+						'STATUS,CUST_ID,ID'					
+					) 				
+				END AS "STATEMENT_STRING",
+				
+				CAST("RAW_STRING" AS NVARCHAR(5000)) "RAW_STRING"
+			FROM 	:LT_STATUS;
+END;

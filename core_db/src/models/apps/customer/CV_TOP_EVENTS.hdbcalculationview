@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" schemaVersion="3.0" id="models.apps.customer::CV_TOP_EVENTS" applyPrivilegeType="NONE" dataCategory="DIMENSION" enforceSqlExecution="false" outputViewType="Projection" cacheInvalidationPeriod="NONE">
+<descriptions defaultDescription="CV_TOP_EVENTS"/>
+<localVariables>
+  <variable id="IP_FILTER" parameter="true">
+    <descriptions defaultDescription="IP_FILTER"/>
+    <variableProperties datatype="NVARCHAR" length="5000" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_FROM" parameter="true">
+    <descriptions defaultDescription="IM_FROM"/>
+    <variableProperties datatype="INTEGER" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_TO" parameter="true">
+    <descriptions defaultDescription="IM_TO"/>
+    <variableProperties datatype="INTEGER" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+  <variable id="IM_REACTION_TYPE" parameter="true">
+    <descriptions defaultDescription="IM_REACTION_TYPE"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_CONF_GET_REACTION_TYPE</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+
+  <variable id="IP_REACTION_TYPE" parameter="true">
+    <descriptions defaultDescription=" "/>
+    <variableProperties>
+      <valueDomain type="empty"/>
+      <selection/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.customer::CV_CUSTOMER_LAST_EVENT">
+    <targetVariable name="IP_INIT_TS" resourceUri="models.apps.customer::CV_CUSTOMER_LAST_EVENT"/>
+    <localVariable>IP_FROM</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.customer::CV_CUSTOMER_LAST_EVENT">
+    <targetVariable name="IP_TO" resourceUri="models.apps.customer::CV_CUSTOMER_LAST_EVENT"/>
+    <localVariable>IP_TO</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.event::CV_EVENT_IMPACT_FILTER">
+    <targetVariable name="IP_FILTER" resourceUri="models.apps.event::CV_EVENT_IMPACT_FILTER"/>
+    <localVariable>IP_FILTER</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.event::CV_EVENT_IMPACT_FILTER">
+    <targetVariable name="IP_FROM" resourceUri="models.apps.event::CV_EVENT_IMPACT_FILTER"/>
+    <localVariable>IP_FROM</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.event::CV_EVENT_IMPACT_FILTER">
+    <targetVariable name="IP_TO" resourceUri="models.apps.event::CV_EVENT_IMPACT_FILTER"/>
+    <localVariable>IP_TO</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.event::CV_EVENT_IMPACT_FILTER">
+    <targetVariable name="IP_REACTION_TYPE" resourceUri="models.apps.event::CV_EVENT_IMPACT_FILTER"/>
+    <localVariable>IP_REACTION_TYPE</localVariable>
+  </mapping>
+</variableMappings>
+<dataSources>
+  <DataSource id="models.apps.customer::CV_CUSTOMER_LAST_EVENT">
+    <resourceUri>models.apps.customer::CV_CUSTOMER_LAST_EVENT</resourceUri>
+  </DataSource>
+  <DataSource id="models.apps.event::CV_EVENT_IMPACT_FILTER">
+    <resourceUri>models.apps.event::CV_EVENT_IMPACT_FILTER</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="EVENT_ID">
+        <descriptions defaultDescription="Event ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE">
+        <descriptions defaultDescription="Intial Date/Time"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="Event Name"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_GROUP">
+        <descriptions defaultDescription="Event Category/Group"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute datatype="DATE" id="LAST_3" expressionLanguage="COLUMN_ENGINE">
+        <formula>addmonths(date($$IP_TO$$), -3)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="models.apps.customer::CV_CUSTOMER_LAST_EVENT">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_GROUP" source="EVENT_GROUP"/>
+    </input>
+    <filter>&quot;INIT_DATE&quot;&gt;=&quot;LAST_3&quot;</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="C1_1" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="EVENT_ID" aggregationType="sum">
+        <descriptions defaultDescription="Event ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE" aggregationType="min">
+        <descriptions defaultDescription="Intial Date/Time"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="Event Name"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_GROUP">
+        <descriptions defaultDescription="Event Category/Group"/>
+      </viewAttribute>
+    
+      <viewAttribute id="EVENT_IMPACT" aggregationType="sum">
+        <descriptions defaultDescription="Event Impact"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_GROUP" source="EVENT_GROUP"/>
+    </input>
+    <input node="Impact">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_IMPACT" source="EVENT_IMPACT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+    </input>
+    <joinAttribute name="EVENT_ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Impact">
+    <viewAttributes>
+      <viewAttribute id="EVENT_IMPACT">
+        <descriptions defaultDescription="Event Impact"/>
+      </viewAttribute>
+    
+      <viewAttribute id="EVENT_ID">
+        <descriptions defaultDescription="EVENT_ID"/>
+      </viewAttribute></viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.apps.event::CV_EVENT_IMPACT_FILTER">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_IMPACT" source="EVENT_IMPACT"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="EVENT_ID" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="EVENT_ID"/>
+    </attribute>
+    <attribute id="EVENT_NAME" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event Name"/>
+      <keyMapping columnObjectName="Join_1" columnName="EVENT_NAME"/>
+    </attribute>
+    <attribute id="EVENT_GROUP" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event Category/Group"/>
+      <keyMapping columnObjectName="Join_1" columnName="EVENT_GROUP"/>
+    </attribute>
+  
+    <attribute id="CUST_COUNT" order="4" attributeHierarchyActive="false" semanticType="empty" displayAttribute="false">
+      <descriptions defaultDescription="Event Impact"/>
+  
+      <keyMapping columnObjectName="Join_1" columnName="EVENT_IMPACT"/>
+  
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/></logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="false" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="96" y="105"/>
+    
+      <rectangleSize width="165"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="-16" y="543"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="114" y="350"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectType="JoinNodeInput" modelObjectNameSpace="Join_1">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Impact" modelObjectType="JoinNodeInput" modelObjectNameSpace="Join_1">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Impact" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="191" y="571"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

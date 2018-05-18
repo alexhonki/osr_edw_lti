@@ -1,0 +1,82 @@
+FUNCTION "functions::TF_EVENT_DAYS_TO_REACT" (
+		IN IM_TO VARCHAR(6) default '', 				-- YYYYMM
+		IN IM_REACTION_TYPE VARCHAR(200) default ''
+	) 
+	RETURNS table (
+		"EVENT_ID"		INTEGER,
+		"DAYS_TO_REACT" INTEGER,	-- Median
+		"DTR_AVG"		INTEGER,	-- Average
+		"DTR_COUNT"		INTEGER
+	)
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+-- Default Reaction Type
+	DECLARE LV_REACTION_TYPE 		VARCHAR(200) := 'CHURN';
+	DECLARE LV_TO_TS		 		VARCHAR(6);
+	DECLARE LV_REACTION_DAYS 		VARCHAR(6) := '120';
+	DECLARE LV_REACTION_DAYS_INT 	INTEGER := - TO_INT(:LV_REACTION_DAYS);
+	DECLARE LV_FROM_TS				VARCHAR(6);
+	DECLARE LV_FORECAST				INT;
+	DECLARE LV_LOWER_FORECAST		INT;
+	DECLARE LV_EVENT_FROM			INT;
+		
+	-- Get the Reaction type configured ---> needs to be extended in future to support multiple
+	IF :IM_REACTION_TYPE IS NULL OR length(:IM_REACTION_TYPE) = 0 THEN
+		CALL "procedures.utils::PR_CONF_GET_REACTION_TYPE"(:LV_REACTION_TYPE);
+	ELSE
+		LV_REACTION_TYPE := :IM_REACTION_TYPE;
+	END IF;
+	
+	-- Set Default To Time Segment
+	IF :IM_TO IS NULL OR length(:IM_TO) = 0 THEN
+		-- CALL "SAP_CRI"."sap.cri.db.procedures::PR_LAST_EVENT_TIME_SEGMENT"(:LV_TO_TS);
+		CALL "procedures.utils::PR_CONF_GET_PREDICTION_TIME_SEGMENT"(:LV_TO_TS);
+	ELSE
+		LV_TO_TS := :IM_TO;
+	END IF;
+	
+	-- Reaction days to be considered
+	CALL "procedures.utils::PR_CONF_GET_REACTION_DAYS"(:LV_REACTION_DAYS);
+	LV_REACTION_DAYS_INT := - TO_INT(:LV_REACTION_DAYS);
+
+	CALL "procedures.utils::PR_CONF_GET_FORECAST_WINDOW"(:LV_TO_TS, :LV_FORECAST, :LV_FROM_TS);
+	LV_LOWER_FORECAST := -1 * :LV_FORECAST;
+	LV_EVENT_FROM := YEAR(ADD_DAYS(TO_DATE(:LV_FROM_TS),  LV_LOWER_FORECAST))*100 + MONTH(ADD_DAYS(TO_DATE(:LV_FROM_TS),  LV_LOWER_FORECAST));
+
+
+	------------------------------------------------
+	-- Get Valid Customers
+	------------------------------------------------
+	LT_CUSTOMERS = SELECT "CUST_ID" 
+					FROM "db::app.Customer" 
+					WHERE "STATUS" = 0
+				      AND "INIT_TS" <= TO_INT(:LV_TO_TS);
+
+	return select
+			"EVENT_ID.ID" as "EVENT_ID", 
+			--MEDIAN("DAYS_TO_REACT") "DAYS_TO_REACT",
+			ROUND(AVG("DAYS_TO_REACT") + 30) "DAYS_TO_REACT", 
+			ROUND(AVG("DAYS_TO_REACT") + 30) "DTR_AVG",
+			COUNT(*) "DTR_COUNT"
+		   from (
+				select
+					b."EVENT_ID.ID", 
+					days_between(b."INIT_DATE",a."INIT_DATE") "DAYS_TO_REACT"
+					FROM :LT_CUSTOMERS e
+					-- Join Reactions
+					INNER JOIN "db::app.CustomerReactions" a ON e."CUST_ID" = a."CUST_ID"
+					-- JOIN Events
+					INNER JOIN "db::app.CustomerEvents" b ON a."CUST_ID" = b."CUST_ID"
+					-- Filter Events
+					INNER JOIN "db::adm.config.event.name" c ON b."EVENT_ID.ID" = c."ID"
+					WHERE 	a.reaction_type = :LV_REACTION_TYPE
+				  		AND a.init_ts <= to_int(:LV_TO_TS)
+				  		AND a.init_ts >= to_int(:LV_FROM_TS)
+				  		AND b.init_ts <= to_int(:LV_TO_TS)
+				  		AND b.INIT_TS >= :LV_EVENT_FROM
+				  		AND a.init_date > b.init_date
+				  		AND c."IS_ENABLED" = 1
+				) where "DAYS_TO_REACT" >= 1  -- and TO_INT(:LV_REACTION_DAYS)
+				group by "EVENT_ID.ID";
+END;

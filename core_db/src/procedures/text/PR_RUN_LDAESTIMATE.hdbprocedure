@@ -1,0 +1,101 @@
+PROCEDURE "procedures.text::PR_RUN_LDAESTIMATE" 
+(
+	IN I_LANGUAGE_CODE	VARCHAR(2) DEFAULT 'en'
+)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   AS
+BEGIN
+   --------------------------------------------------------------------------------------------------------
+	--Set parameters in "db.cds::ml.config.MLParameters"
+	--------------------------------------------------------------------------------------------------------
+ 	DECLARE LV_COUNT INT;
+	
+	--------------------------------------------------------------------------------------------------------
+	-- Set Control Parameters
+	--------------------------------------------------------------------------------------------------------
+	-- TOPICS
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('LDA_TOPICS','TOPICS',1,50,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'LDA_TOPICS';
+	END;
+	-- BURNIN
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception
+			insert into  "db::ml.config.MLParameters" values('LDA_BURNIN','BURNIN',1,50,null,null); 
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'LDA_BURNIN';
+	END;
+	-- THIN
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into  "db::ml.config.MLParameters" values('LDA_THIN','THIN',1,10,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'LDA_THIN';
+	END;
+	-- ITERATION
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into  "db::ml.config.MLParameters" values('LDA_ITERATION','ITERATION',1,100,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'LDA_ITERATION';
+	END;
+	-- SEED
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into  "db::ml.config.MLParameters" values('LDA_SEED','SEED',1,33,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'LDA_SEED';
+	END;
+	-- ALPHA
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into  "db::ml.config.MLParameters" values('LDA_ALPHA','ALPHA',1,null,0.1,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'LDA_ALPHA';
+	END;
+	-- THRESHOLD_TOP_WORDS
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into  "db::ml.config.MLParameters" values('LDA_THRESHOLD_TOP_WORDS','THRESHOLD_TOP_WORDS',1,null,0.1,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'LDA_THRESHOLD_TOP_WORDS';
+	END;
+	-- MAX_TOP_WORDS
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into  "db::ml.config.MLParameters" values('LDA_MAX_TOP_WORDS','MAX_TOP_WORDS',1,2,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'LDA_MAX_TOP_WORDS';
+	END;
+		
+	--------------------------------------------------------------------------------------------------------
+	-- Clean stopwords and prepare texts for Text Analysis 
+	--------------------------------------------------------------------------------------------------------
+	CALL "procedures.text::PR_CLEAN_TEXT_LANGUAGE_SUPPORT"(lower(:I_LANGUAGE_CODE),LT_DATA_INPUT);
+	
+	--------------------------------------------------------------------------------------------------------
+	LT_PARAMS = SELECT REPLACE(PARAMETER_NAME,'LDA_','') "NAME", INT_PARAMETER "INTARGS", DOUBLE_PARAMETER "DOUBLEARGS", STRING_PARAMETER "STRINGARGS"
+				FROM "db::ml.config.MLParameters"
+				WHERE ("PARAMETER_NAME" like  'LDA_%')
+				AND IS_ENABLED = 1;	
+	--------------------------------------------------------------------------------------------------------
+	-- CALL PAL LDAESTIMATE 
+	--------------------------------------------------------------------------------------------------------			
+	CALL "procedures.ml::PR_PAL_LDAESTIMATE"(:LT_DATA_INPUT, :LT_PARAMS, LT_DICTIONARY, LT_TOPICWORDDIST, LT_DOCTOPICDIST, LT_GENERAL, TOP_TOPICS);
+	--------------------------------------------------------------------------------------------------------
+	LT_TOKENS = select distinct "TEXT" from :TOP_TOPICS where "TEXT" <> '' or "TEXT" is not null;
+	--------------------------------------------------------------------------------------------------------
+	-- Get internal Customer ID generated on base customer
+	--------------------------------------------------------------------------------------------------------
+	LT_COMPLAINTS = SELECT 
+						a."CUST_ID" 		"CUST_ID", 		-- Internal Customer ID
+						a."EXT_ID" 		"EXT_ID",		-- External Customer ID
+						b."POSTING_DATE"		"INIT_DATE",	-- Query/Complaint Transaction Date as start of event
+						b."POSTING_DATE"	"END_DATE",
+						YEAR(b."POSTING_DATE")*100 + MONTH(b."POSTING_DATE") 	"INIT_TS",
+						YEAR(b."POSTING_DATE")*100 + MONTH(b."POSTING_DATE") 	"END_TS",
+						b."DESCRIPTION"
+					FROM  "db::app.Customer" a
+					INNER JOIN 
+					( 
+						select * from "models.crm::CV_CRM_INTERACTION" 
+						where DESCRIPTION is not null and DESCRIPTION <> ''
+					) b 
+					on a."CUST_ID" = b.CUST_ID;
+END

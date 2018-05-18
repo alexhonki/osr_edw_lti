@@ -1,0 +1,21 @@
+{
+	"authenticationMethod": "route",
+	"routes": [{
+			"source": "^/odata/(.*)$",
+			"target": "$1",
+			"destination": "backend"
+		  },
+		  {
+            "source": "^/(.*)$",
+            "localDir": "resources/webapp",
+            "cacheControl": "public, max-age=1000,must-revalidate",
+            "scope": ["$XSAPPNAME.TrendAnalysis","$XSAPPNAME.EventOverview","$XSAPPNAME.CustomersAtRisk","$XSAPPNAME.CustomerSearch","$XSAPPNAME.CustomerDetails","$XSAPPNAME.Admin"],
+            "replace": {
+                "pathSuffixes": [
+                    "index.html"
+                	],
+                "vars": ["ui5liburl"]
+            	}
+        	}
+        ]
+}

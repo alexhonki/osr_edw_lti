@@ -1,0 +1,39 @@
+.negative {
+  color: #BB0000 !important; }
+
+.positive {
+  color: #2B7D2B !important; }
+
+.neutral {
+  color: #5E696E !important; }
+
+.trendCard {
+  background-color: white; }
+  .trendCard .cardTitle {
+    height: 45px; }
+    .trendCard .cardTitle .title {
+      font-size: 18px;
+      color: #333 !important; }
+    .trendCard .cardTitle .subtitle, .trendCard .cardTitle .cardHeader .kpiSection .kpi .unit, .trendCard .cardHeader .kpiSection .kpi .cardTitle .unit {
+      font-size: 14px;
+      color: #666 !important; }
+  .trendCard .cardHeader {
+    height: 45px; }
+    .trendCard .cardHeader .kpiSection .kpi .value {
+      font-size: 40px; }
+    .trendCard .cardHeader .kpiSection .comparison .label, .trendCard .cardHeader .kpiSection .comparison .value {
+      font-size: 12px;
+      color: #666 !important; }
+  .trendCard .cardContent .listContent {
+    border-top: 1px solid rgba(229, 229, 229, 0.5); }
+    .trendCard .cardContent .listContent .sapMListTbl th {
+      background: none !important; }
+    .trendCard .cardContent .listContent .listItem .value {
+      font-size: 28px; }
+    .trendCard .cardContent .listContent .listItem .measure {
+      font-size: 14px; }
+  .trendCard .cardFooter {
+    height: 40px;
+    border-top: 1px solid rgba(229, 229, 229, 0.5); }
+
+/*# sourceMappingURL=trend-card.css.map */

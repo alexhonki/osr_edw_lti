@@ -1,0 +1,72 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.ApplicationData"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:core="sap.ui.core"
+        xmlns:f="sap.ui.layout.form"
+        xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+        displayBlock="true"
+        height="100%">
+    <Page showHeader="true" title="{i18n>ApplicationData.Title}" enableScrolling="true" floatingFooter="true">
+        <content>
+            <f:Form class="sapUiResponsiveMargin"
+                    minWidth="1024"
+                    maxContainerCols="2"
+                    editable="true">
+                <f:toolbar>
+                    <Toolbar height="3rem">
+                        <Title text="{i18n>ApplicationData.GeneralSettingsTitle}"/>
+                        <ToolbarSpacer />
+                        <Button text="{i18n>Admin.RestoreButton}" press="onRestore" data:area="{/AreaId/Settings}"/>
+                    </Toolbar>
+                </f:toolbar>
+                <f:layout>
+                    <f:ResponsiveGridLayout
+                            labelSpanL="2"
+                            labelSpanM="2"
+                            emptySpanL="4"
+                            emptySpanM="4"
+                            columnsL="2"
+                            columnsM="2" />
+                </f:layout>
+                <f:formContainers>
+                    <f:FormContainer>
+                        <f:formElements>
+                            <f:FormElement label="{i18n>ApplicationData.RetentionDaysSetting}">
+                                <f:fields>
+                                    <HBox alignItems="Center">
+                                        <StepInput class="sapUiSmallMarginEnd"
+                                                   value="{/ApplicationRetentionDays}"
+                                                   valueLiveUpdate="true"
+                                                   min="0"
+                                                   max="120"
+                                                   width="90px"
+                                                   editable="true"/>
+                                        <Label text="Days"/>
+                                    </HBox>
+                                </f:fields>
+                            </f:FormElement>
+                            <f:FormElement label="{i18n>ApplicationData.ReactionTypeSetting}">
+                                <f:fields>
+                                    <HBox alignItems="Center">
+                                        <Select items="{/ReactionTypes}" selectedKey="{/SelectedReactionType}">
+                                            <core:Item key="{key}" text="{displayText}"/>
+                                        </Select>
+                                    </HBox>
+                                </f:fields>
+                            </f:FormElement>
+                        </f:formElements>
+                    </f:FormContainer>
+                </f:formContainers>
+            </f:Form>
+        </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Button type="Emphasized" text="{i18n>Admin.Footer.Save}" press="onSave"/>
+                <Button text="{i18n>Admin.Footer.Cancel}"/>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

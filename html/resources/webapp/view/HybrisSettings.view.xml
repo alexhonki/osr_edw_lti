@@ -1,0 +1,55 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.HybrisSettings"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:l="sap.ui.layout"
+        xmlns:f="sap.ui.layout.form"
+        displayBlock="true"
+        height="100%">
+    <Page id="idHybrisSettingsPage" showHeader="true" title="{i18n>HybrisSettings.Title}" enableScrolling="true">
+        <content>
+            <Panel id="hybrisSettings" width="auto" headerText="{Labels>/HybrisSettingsHeader}" class="sapUiResponsiveMargin" backgroundDesign="Transparent">
+                <FlexBox>
+                    <f:Form id="hybrisSettingsForm"
+                            minWidth="1024"
+                            maxContainerCols="2"
+                            editable="false"
+                            class="isReadonly">
+                        <f:layout>
+                            <f:ResponsiveGridLayout
+                                    labelSpanL="3"
+                                    labelSpanM="3"
+                                    emptySpanL="4"
+                                    emptySpanM="4"
+                                    columnsL="1"
+                                    columnsM="1" />
+                        </f:layout>
+                        <f:formContainers>
+                            <f:FormContainer>
+                                <f:formElements>
+                                    <f:FormElement label="{Labels>/HybrisSettingsFormLabelClientID}">
+                                        <f:fields>
+                                            <Input value="{/clientId}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="{Labels>/HybrisSettingsFormLabelMarketingID}">
+                                        <f:fields>
+                                            <Input value="{/marketingAreaId}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+                        </f:formContainers>
+                    </f:Form>
+                </FlexBox>
+            </Panel>
+        </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Button id="idSaveButton" type="Emphasized" text="{i18n>Admin.Footer.Save}" press="onSave" enabled="true"/>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

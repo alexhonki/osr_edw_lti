@@ -1,0 +1,60 @@
+{
+	"format_version": 1,
+	"imports": [
+		
+		
+		{
+			"target_table": "db::adm.config.bucket",
+			"source_data": {
+				"data_type": "CSV",
+				"file_name": "data.AdminData::ConfigBucket.csv",
+				"has_header": true
+			},
+			"import_settings": {
+				"import_columns": [
+					"BUCKET_ID",    
+		            "SEQ",         
+	                "REACTION_TYPE",
+					"STR_VALUE",       
+	                "DESCRIPTION",     
+	                "IS_ENABLED",   
+	               	"FROM_DEFAULT",  
+	                "TO_DEFAULT",  
+	                "UNIT_OF_MEASURE",
+	                "GROUP"  
+				]
+			}
+		},
+		{
+			"target_table": "db::adm.config.event.name",
+			"source_data": {
+				"data_type": "CSV",
+				"file_name": "data.AdminData::ConfigEventName.csv",
+				"has_header": true
+			},
+			"import_settings": {
+				"import_columns": [
+				    "ID",
+		            "EVENT_NAME",         
+		            "CATEGORY_NAME",  
+	            	"TEMPLATE_ID",  
+	                "DESCRIPTION",     
+	                "IS_ENABLED",
+	                "PRIORITY",
+	                "ICON",
+	                "TYPE",  
+	                "CREATED.BY",
+	                "CREATED.DATE",
+	                "CHANGED.BY",
+	                "CHANGED.DATE",
+	                "PROC_SCHEMA",     
+	                "PROC_NAME", 
+	                "PROC_INTERVAL",
+	                "PROC_START_DATE",
+	                "JOB_ID"
+				]
+			}
+		}
+		
+	]
+}

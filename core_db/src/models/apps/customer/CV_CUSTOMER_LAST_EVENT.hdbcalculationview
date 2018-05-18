@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="3.0" id="models.apps.customer::CV_CUSTOMER_LAST_EVENT" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" enforceSqlExecution="false" outputViewType="Projection" cacheInvalidationPeriod="NONE">
+<descriptions defaultDescription="CV_CUSTOMER_LAST_EVENT"/>
+<localVariables>
+  <variable id="IP_TO" parameter="true">
+    <descriptions defaultDescription="INITIAL TIME SEGMENT"/>
+    <variableProperties datatype="VARCHAR" length="13" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::app.CustomerEvents">
+    <resourceUri>db::app.CustomerEvents</resourceUri>
+  </DataSource>
+  <DataSource id="models.apps.customer::CV_CUSTOMER_EVENTS">
+    <resourceUri>models.apps.customer::CV_CUSTOMER_EVENTS</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE" aggregationType="min">
+        <descriptions defaultDescription="INIT_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.CustomerEvents">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+    </input>
+    <filter>(&quot;INIT_TS&quot; &lt;= '$$IP_TO$$')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE" aggregationType="max">
+        <descriptions defaultDescription="INIT_DATE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ID">
+        <descriptions defaultDescription="Event ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE">
+        <descriptions defaultDescription="Initial Date"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TS">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="Event Name"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_GROUP">
+        <descriptions defaultDescription="Event Group"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.apps.customer::CV_CUSTOMER_EVENTS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_GROUP" source="CATEGORY_NAME"/>
+    </input>
+    <filter>(&quot;INIT_TS&quot; &lt;= int($$IP_TO$$))</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="CN_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ID" aggregationType="sum">
+        <descriptions defaultDescription="Event ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE" aggregationType="min">
+        <descriptions defaultDescription="Initial Date"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="Event Name"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_GROUP">
+        <descriptions defaultDescription="Event Group"/>
+      </viewAttribute>
+      <viewAttribute id="JOIN$CUST_ID$CUST_ID" hidden="true"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Aggregation_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CUST_ID$CUST_ID" source="CUST_ID"/>
+    </input>
+    <input node="Projection_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_GROUP" source="EVENT_GROUP"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CUST_ID$CUST_ID" source="CUST_ID"/>
+    </input>
+    <joinAttribute name="JOIN$CUST_ID$CUST_ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_2">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ID">
+        <descriptions defaultDescription="Event ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE" aggregationType="max">
+        <descriptions defaultDescription="Initial Date"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TS" aggregationType="max">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="Event Name"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_GROUP">
+        <descriptions defaultDescription="Event Group"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Join_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_GROUP" source="EVENT_GROUP"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Aggregation_2">
+  <attributes>
+    <attribute id="CUST_ID" key="true" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Customer ID"/>
+      <keyMapping columnObjectName="Aggregation_2" columnName="CUST_ID"/>
+    </attribute>
+    <attribute id="EVENT_ID" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event ID"/>
+      <keyMapping columnObjectName="Aggregation_2" columnName="EVENT_ID"/>
+    </attribute>
+    <attribute id="INIT_DATE" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Initial Date"/>
+      <keyMapping columnObjectName="Aggregation_2" columnName="INIT_DATE"/>
+    </attribute>
+    <attribute id="INIT_TS" order="4" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="INIT_TS"/>
+      <keyMapping columnObjectName="Aggregation_2" columnName="INIT_TS"/>
+    </attribute>
+    <attribute id="EVENT_NAME" key="true" order="5" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event Name"/>
+      <keyMapping columnObjectName="Aggregation_2" columnName="EVENT_NAME"/>
+    </attribute>
+    <attribute id="EVENT_GROUP" key="true" order="6" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Event Group"/>
+      <keyMapping columnObjectName="Aggregation_2" columnName="EVENT_GROUP"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="100" y="105"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="37" y="458"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="37" y="371"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="234" y="371"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="260"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Aggregation_1" modelObjectType="JoinNodeInput" modelObjectNameSpace="Join_1">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Projection_2" modelObjectType="JoinNodeInput" modelObjectNameSpace="Join_1">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Aggregation_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="182"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

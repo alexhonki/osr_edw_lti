@@ -1,0 +1,251 @@
+PROCEDURE "procedures.ml::PR_RUN_COMBINED_EVENTS"
+	(
+		IN I_FROM			INT,
+		IN I_TO				INT,
+		IN I_REACTION_TYPE	VARCHAR(200),
+		IN I_INFLUENCE_FACTOR INT DEFAULT 2,
+		IN I_WINDOW_PERIOD INT DEFAULT 12,
+		OUT RESULT_TABLE "db::ml.combined.result" 
+	)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   AS
+BEGIN
+-- Custom Exception
+	DECLARE no_reactions CONDITION FOR SQL_ERROR_CODE 10000;
+	
+	DECLARE LA_COMBINED_ID NVARCHAR(500) ARRAY;
+	DECLARE LA_EVENT_ID INT ARRAY;
+	DECLARE LV_EVENT_ID INT;
+	DECLARE LV_ID_LIST NVARCHAR(500) ;
+	DECLARE LV_COUNT INT;
+	DECLARE LV_TEMPLATE_ID INT;
+	
+	DECLARE I_INDEX TIMESTAMP := TO_TIMESTAMP(:I_TO);
+	DECLARE I_GROUP_NO INT := 1;
+	DECLARE V_INDEX INT;
+		
+	--------------------------------------------------------------------------------------------------------
+	-- Set Control Parameters
+	--------------------------------------------------------------------------------------------------------
+	-- THREAD_NUMBER
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT2_THREAD_NUMBER','Thread number',1,10,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT2_THREAD_NUMBER';
+	END;
+	-- MIN_SUPPORT
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT2_MIN_SUPPORT','Minimum Support',1,null,0.1,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT2_MIN_SUPPORT';
+	END;
+	--MIN_CONFIDENCE
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT2_MIN_CONFIDENCE','Minimum Confidence',1,null,0.5,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT2_MIN_CONFIDENCE';
+	END;
+	--MIN_LIFT	
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT2_MIN_LIFT','Minimum Lift',1,null,0.1,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT2_MIN_LIFT';
+	END;
+	-- MAXITEMLENGTH
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT2_MAXITEMLENGTH','Maximum Length',1,1000,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT2_MAXITEMLENGTH';
+	END;
+	-- MAX_CONSEQUENT
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT2_MAX_CONSEQUENT','Max Consequent',1,2,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT2_MAX_CONSEQUENT';
+	END;
+	-- TIMEOUT
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT2_TIMEOUT','Timeout',1,172800,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT2_TIMEOUT';
+	END;
+	-- 
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT2_RHS_RESTRICT','RHS',1,null,null,'00');
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT2_RHS_RESTRICT';
+	END;
+	
+	BEGIN 
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT2_LHS_IS_COMPLEMENTARY_RHS','LHS_IS_COMPLEMENTARY_RHS',1,1,null,null);
+		SELECT 1 INTO LV_COUNT FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT2_LHS_IS_COMPLEMENTARY_RHS';
+	END;
+
+					
+	--------------------------------------------------------------------------------------------------------
+	-- Signature Values
+	--------------------------------------------------------------------------------------------------------
+ 	LT_PARAMS = SELECT REPLACE(PARAMETER_NAME,'FPG_COMB_EVT2_','') "NAME", INT_PARAMETER "INTARGS", DOUBLE_PARAMETER "DOUBLEARGS", STRING_PARAMETER "STRINGARGS"
+				FROM "db::ml.config.MLParameters"
+				WHERE "PARAMETER_NAME" LIKE 'FPG_COMB_EVT2_%'
+				AND IS_ENABLED = 1;
+	
+	--------------------------------------------------------------------------------------------------------
+	-- Create Extra Parameters for Control Table	
+	--------------------------------------------------------------------------------------------------------
+	LT_CONTROL	= 	SELECT CAST( "NAME" AS VARCHAR(100)) "NAME", "INTARGS", "DOUBLEARGS", "STRINGARGS" FROM :LT_PARAMS;
+
+	--------------------------------------------------------------------------------------------------------
+	-- Get Only enabled Events
+	--------------------------------------------------------------------------------------------------------
+	LT_EVENT_NAME = SELECT "ID" FROM "db::adm.config.event.name" WHERE "IS_ENABLED" = 1;
+
+	--------------------------------------------------------------------------------------------------------
+	-- Get Valid Reactions for time period
+	--------------------------------------------------------------------------------------------------------
+	-- GET CUSTOMER WITH ONE EVENT_ID (MAX DATE)
+	TRUNCATE TABLE "db::ml.combined.rawEvents";
+	INSERT INTO "db::ml.combined.rawEvents"
+	(
+		"CUST_ID",
+		EVENT_ID,
+		INIT_DATE,
+		REACTION_DATE
+	)
+	(
+		SELECT  
+			A."CUST_ID" "CUST_ID", 
+			A."EVENT_ID.ID" "EVENT_ID", 
+			MAX(A.INIT_DATE) 	AS INIT_DATE, 
+			B.INIT_DATE 		AS REACTION_DATE
+		FROM "db::app.CustomerEvents" A 
+		INNER JOIN "db::app.CustomerReactions" B
+		ON A."CUST_ID" = B."CUST_ID"
+		WHERE A."EVENT_ID.ID" IN (SELECT "ID" FROM :LT_EVENT_NAME) 
+		  AND A."EVENT_GROUP" != 'COMBINED_EVENT'
+		  AND A."INIT_DATE" BETWEEN ADD_MONTHS(B.INIT_DATE, -I_WINDOW_PERIOD) AND B.INIT_DATE
+		  AND B.REACTION_TYPE = :I_REACTION_TYPE
+		  AND B.INIT_TS BETWEEN :I_FROM AND :I_TO
+		GROUP BY A."CUST_ID", B.INIT_DATE, A."EVENT_ID.ID"
+	);
+
+	--
+	
+	LV_EVENTS = SELECT 	CAST(CONCAT(CUST_ID, CONCAT('_', DENSE_RANK)) AS VARCHAR(100)) 	AS TRANS, 
+						CAST("EVENT_ID" AS VARCHAR(200))		 						AS ITEM
+				FROM 
+				(
+						SELECT CAST("CUST_ID" AS VARCHAR(100)) AS "CUST_ID", "EVENT_ID", REACTION_DATE, 
+							DENSE_RANK() OVER (ORDER BY "CUST_ID", REACTION_DATE) AS DENSE_RANK
+						FROM "db::ml.combined.rawEvents"
+				);
+	
+	
+	
+	LV_REACT_EVENTS = 
+		SELECT TRANS, ITEM FROM 
+		(
+				 SELECT TRANS, ITEM FROM :LV_EVENTS
+				 UNION
+				 SELECT TRANS, '00' AS ITEM FROM :LV_EVENTS
+		) GROUP BY TRANS, ITEM;
+	
+	------------------------------------------------------------------------------------
+	-- INCREASE THE INFLUENCE LEVEL OF REACTED EVENTS
+	------------------------------------------------------------------------------------
+	CREATE LOCAL TEMPORARY COLUMN TABLE #TBL_REACTED_EVENTS (
+		TRANS VARCHAR(100),
+		ITEM VARCHAR(200)
+	);
+		
+	FOR V_INDEX IN 0 .. :I_INFLUENCE_FACTOR DO
+		INSERT INTO #TBL_REACTED_EVENTS (
+			SELECT CONCAT(TRANS, CONCAT('_', V_INDEX)) AS TRANS, ITEM
+			FROM :LV_REACT_EVENTS
+		);
+	END FOR;
+	
+	-----------------------------------------------------------------------------------	
+	-- GET NON-REACTED EVENTS
+	-----------------------------------------------------------------------------------
+	CREATE LOCAL TEMPORARY COLUMN TABLE #TBL_NON_REACTED_EVENTS (
+		TRANS VARCHAR(100),
+		ITEM VARCHAR(200)
+	);
+		
+	WHILE (YEAR(ADD_MONTHS(:I_INDEX, -I_WINDOW_PERIOD)) * 100 + MONTH(ADD_MONTHS(:I_INDEX, -I_WINDOW_PERIOD))) >= :I_FROM
+	DO
+	
+		-- get past events for those customers not reacted for the past x months from a specific date.
+		LV_NON_REACT_EVENTS =	SELECT "CUST_ID" "CUST_ID", "EVENT_ID.ID" "EVENT_ID", MAX(INIT_DATE) AS INIT_DATE
+								FROM "db::app.CustomerEvents"
+								WHERE "CUST_ID" NOT IN (	
+									SELECT DISTINCT "CUST_ID" "CUST_ID" 
+									FROM  "db::app.CustomerReactions"
+									WHERE INIT_TS BETWEEN (YEAR(ADD_MONTHS(:I_INDEX, -I_WINDOW_PERIOD)) * 100 + MONTH(ADD_MONTHS(:I_INDEX, -I_WINDOW_PERIOD))) 
+									AND (YEAR(:I_INDEX) * 100 + MONTH(:I_INDEX))
+								)
+								AND "EVENT_ID.ID" IN (SELECT "ID" FROM :LT_EVENT_NAME) 
+								AND "EVENT_GROUP" != 'COMBINED_EVENT'
+								AND "INIT_DATE" BETWEEN ADD_MONTHS(:I_INDEX, -I_WINDOW_PERIOD) AND :I_INDEX
+								GROUP BY "CUST_ID", "EVENT_ID.ID";
+		
+		
+			INSERT INTO #TBL_NON_REACTED_EVENTS 
+
+			(
+				SELECT CONCAT(CUST_ID, CONCAT('_', CAST(YEAR(:I_INDEX)*100 + MONTH(:I_INDEX) AS VARCHAR(100)))) AS TRANS,  CAST("EVENT_ID" AS VARCHAR(200)) AS ITEM
+				FROM(
+					SELECT CAST(CUST_ID AS VARCHAR(100)) AS CUST_ID, EVENT_ID
+					FROM :LV_NON_REACT_EVENTS
+				)
+			);
+			
+		-- INSERT RECORDS INTO RAW EVENTS TABLE		
+		INSERT INTO "db::ml.combined.rawEvents" 
+		(
+			"CUST_ID",
+			EVENT_ID,
+			INIT_DATE,
+			GROUP_NO
+		)		
+		(
+			SELECT CUST_ID, EVENT_ID, INIT_DATE, :I_GROUP_NO AS GROUP_NO FROM :LV_NON_REACT_EVENTS
+		);
+			
+		I_INDEX := ADD_MONTHS(:I_INDEX, -I_WINDOW_PERIOD);
+		I_GROUP_NO := :I_GROUP_NO + 1;
+	END WHILE;
+
+	--------------------------------------------------------------------------------------------------------
+	-- Prepare Input Data
+	--------------------------------------------------------------------------------------------------------
+	CREATE LOCAL TEMPORARY COLUMN TABLE #PAL_FPGROWTH_DATA_TBL(
+		"TRANS" VARCHAR(100),
+		"ITEM" VARCHAR(200)
+	);
+
+    INSERT INTO  #PAL_FPGROWTH_DATA_TBL
+    (TRANS, ITEM)
+		SELECT TRANS, ITEM FROM 
+		(
+				 SELECT TRANS, ITEM FROM #TBL_REACTED_EVENTS
+				 UNION
+				 SELECT TRANS, ITEM FROM #TBL_NON_REACTED_EVENTS
+		) GROUP BY TRANS, ITEM	 
+	;	
+	
+	--------------------------------------------------------------------------------------------------------
+	-- Run FP-GROWTH Algorithm
+	--------------------------------------------------------------------------------------------------------
+	LT_DATA_IN = select * from #PAL_FPGROWTH_DATA_TBL;
+
+	CALL "procedures.ml::PR_PAL_FPGROWTH" (:LT_DATA_IN, :LT_CONTROL, RESULT_TABLE);	
+
+	DROP TABLE #TBL_NON_REACTED_EVENTS;
+	DROP TABLE #TBL_REACTED_EVENTS;
+	DROP TABLE #PAL_FPGROWTH_DATA_TBL;
+END

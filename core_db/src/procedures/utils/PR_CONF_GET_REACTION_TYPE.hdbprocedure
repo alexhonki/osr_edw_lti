@@ -1,0 +1,17 @@
+PROCEDURE "procedures.utils::PR_CONF_GET_REACTION_TYPE"
+	(
+	out IP_REACTION varchar(200) 
+	)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   READS SQL DATA AS
+BEGIN
+ 	-- Only select the first active Reaction Type (Use Case)
+	SELECT TOP 1 "STR_VALUE" 
+		INTO IP_REACTION 
+		FROM "models.adm::CV_CONFIG"
+		WHERE "BUCKET_ID" = 'REACTION_TYPE'
+		AND "IS_ENABLED" = 1;
+  
+END

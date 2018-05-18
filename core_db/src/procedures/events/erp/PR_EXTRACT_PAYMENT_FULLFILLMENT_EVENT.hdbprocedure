@@ -1,0 +1,71 @@
+PROCEDURE "procedures.events.erp::PR_EXTRACT_PAYMENT_FULLFILLMENT_EVENT" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+    AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   DECLARE LV_PYMNT_FULF_1 NVARCHAR(500) := 'EPO Fulfilled';
+   DECLARE LV_PYMNT_FULF_2 NVARCHAR(500) := 'Instalment Plan Fulfilled';
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+   /*EPO Fufilment*/
+	INSERT INTO "db::app.CustomerEvents"
+	select 
+		SAP.CUST_ID as CUST_ID,
+		(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PYMNT_FULF_1)) as EVENT_ID,
+		(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PYMNT_FULF_1)) as EVENT_GROUP,
+		:LV_PYMNT_FULF_1 as EVENT_NAME,
+		CAST(DUEDATE as date) as INIT_DATE,
+		NULL as END_DATE,
+		1 as EVENT_VALUE,
+		:LV_PYMNT_FULF_1 as DESCRIPTION,
+		LEFT(DUEDATE,6)  as INIT_TS,
+		NULL  as END_TS
+	from(
+		SELECT DISTINCT GPART,DUEDATE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a 
+		LEFT JOIN (SELECT PPKEY,MAX(PRDAT) as DueDate FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" GROUP BY PPKEY) b 
+		ON  a.PPKEY=b.PPKEY
+		WHERE a.PPKEY IN (
+		SELECT PPKEY FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP"
+		WHERE OPBEL IN (
+		SELECT OPBEL FROM"osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE KOFIZ='LT' 
+		)) AND PPSTA = '1' AND PPCAT='Z7'
+		) a
+	INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART
+	WHERE a.GPART >= '0001000335' and a.GPART <= '0001076855'
+	;
+	
+	
+	
+	/*PP Fufilment*/
+	/*Promise to pay fufilled*/
+	INSERT INTO "db::app.CustomerEvents"
+	select 
+		SAP.CUST_ID as CUST_ID,
+		(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PYMNT_FULF_2)) as EVENT_ID,
+		(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PYMNT_FULF_2)) as EVENT_GROUP,
+		:LV_PYMNT_FULF_2 as EVENT_NAME,
+		CAST(DUEDATE as date) as INIT_DATE,
+		NULL as END_DATE,
+		1 as EVENT_VALUE,
+		:LV_PYMNT_FULF_2 as DESCRIPTION,
+		LEFT(DUEDATE,6)  as INIT_TS,
+		NULL  as END_TS
+	from(
+		SELECT DISTINCT GPART,DUEDATE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a 
+		LEFT JOIN (SELECT PPKEY,MAX(PRDAT) as DueDate FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" GROUP BY PPKEY) b 
+		ON  a.PPKEY=b.PPKEY
+		WHERE a.PPKEY IN (
+		SELECT PPKEY FROM"osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP"
+		WHERE OPBEL IN (
+		SELECT OPBEL FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE KOFIZ='LT'
+		)) AND PPSTA='1'  AND PPCAT!='Z7'
+		) a
+	INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART;
+
+	
+   
+END

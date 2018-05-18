@@ -1,0 +1,872 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" id="models.apps.trend::CV_DASHBOARD_TREND" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_DASHBOARD_TREND"/>
+<localVariables>
+  <variable id="IP_FILTER" parameter="true">
+    <descriptions defaultDescription="IP_FILTER"/>
+    <variableProperties datatype="VARCHAR" length="5000" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_FROM" parameter="true">
+    <descriptions defaultDescription="IP_FROM"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_LAST_EVENT_TIME_SEGMENT_MINUS_1Y</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_TO" parameter="true">
+    <descriptions defaultDescription="IP_TO"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_LAST_EVENT_TIME_SEGMENT</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.trend::CV_CUSTOMER_BY_TIME">
+    <targetVariable name="IP_FROM" resourceUri="models.apps.trend::CV_CUSTOMER_BY_TIME"/>
+    <localVariable>IP_FROM</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.trend::CV_CUSTOMER_BY_TIME">
+    <targetVariable name="IP_TO" resourceUri="models.apps.trend::CV_CUSTOMER_BY_TIME"/>
+    <localVariable>IP_TO</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.trend::CV_CUSTOMER_BY_TIME">
+    <targetVariable name="IP_FILTER" resourceUri="models.apps.trend::CV_CUSTOMER_BY_TIME"/>
+    <localVariable>IP_FILTER</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.customer::CV_CUSTOMER_INCOME_LOSS">
+    <targetVariable name="IP_FROM" resourceUri="models.apps.customer::CV_CUSTOMER_INCOME_LOSS"/>
+    <localVariable>IP_FROM</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.customer::CV_CUSTOMER_INCOME_LOSS">
+    <targetVariable name="IP_TO" resourceUri="models.apps.customer::CV_CUSTOMER_INCOME_LOSS"/>
+    <localVariable>IP_TO</localVariable>
+  </mapping>
+</variableMappings>
+<dataSources>
+  <DataSource id="models.apps.trend::CV_CUSTOMER_BY_TIME">
+    <resourceUri>models.apps.trend::CV_CUSTOMER_BY_TIME</resourceUri>
+  </DataSource>
+  <DataSource id="models.apps.customer::CV_CUSTOMER_INCOME_LOSS">
+    <resourceUri>models.apps.customer::CV_CUSTOMER_INCOME_LOSS</resourceUri>
+  </DataSource>
+  <DataSource id="models.adm::CV_CONFIG">
+    <resourceUri>models.adm::CV_CONFIG</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="YEAR">
+        <descriptions defaultDescription="YEAR"/>
+      </viewAttribute>
+      <viewAttribute id="MONTH">
+        <descriptions defaultDescription="MONTH"/>
+      </viewAttribute>
+      <viewAttribute id="TIME_SEGMENT">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="CHURN_TIME_SEGMENT">
+        <descriptions defaultDescription="REACTION_TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TIME_SEGMENT">
+        <descriptions defaultDescription="Initial Time Segment"/>
+      </viewAttribute>
+      <viewAttribute id="CHURNED_CUST_ID_1">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="CHURNED_CUST_ID" datatype="BIGINT" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(&quot;CHURN_TIME_SEGMENT&quot; = &quot;TIME_SEGMENT&quot;, 1, null)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="models.apps.trend::CV_CUSTOMER_BY_TIME">
+      <mapping xsi:type="Calculation:AttributeMapping" target="YEAR" source="YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MONTH" source="MONTH"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHURN_TIME_SEGMENT" source="REACTION_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TIME_SEGMENT" source="INIT_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHURNED_CUST_ID_1" source="CUST_ID_REACT"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="Customer Id"/>
+      </viewAttribute>
+      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="INCOME LOSS(AVG)"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.apps.customer::CV_CUSTOMER_INCOME_LOSS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="INCOME_LOSS"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="C1_1" joinType="leftOuter">
+    <viewAttributes>
+      <viewAttribute id="YEAR">
+        <descriptions defaultDescription="YEAR"/>
+      </viewAttribute>
+      <viewAttribute id="MONTH">
+        <descriptions defaultDescription="MONTH"/>
+      </viewAttribute>
+      <viewAttribute id="TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="CHURNED_CUST_ID_1" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="CHURNED_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CHURNED_CUST_ID"/>
+      </viewAttribute>
+      <viewAttribute id="INCOME_LOSS_DOUBLE" aggregationType="sum">
+        <descriptions defaultDescription="INCOME LOSS(AVG)"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="INCOME_LOSS" datatype="DECIMAL" length="30" scale="2" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isnull(&quot;CHURNED_CUST_ID&quot;),null,&quot;INCOME_LOSS_DOUBLE&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="OPERATING_INCOME_AMOUNT" datatype="DECIMAL" length="30" scale="2" expressionLanguage="COLUMN_ENGINE">
+        <formula>round(&quot;INCOME_LOSS_DOUBLE&quot;,2)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="YEAR" source="YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MONTH" source="MONTH"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHURNED_CUST_ID_1" source="CHURNED_CUST_ID_1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHURNED_CUST_ID" source="CHURNED_CUST_ID"/>
+    </input>
+    <input node="Projection_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS_DOUBLE" source="INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+    </input>
+    <joinAttribute name="CUST_ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="A_TREND">
+    <viewAttributes>
+      <viewAttribute id="TIME_SEGMENT">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="COUNT_CUST_ID" aggregationType="count">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="TOTAL_CHURNED" aggregationType="count">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="CHURNED_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CHURNED_CUST_ID"/>
+      </viewAttribute>
+      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="OPERATING_INCOME_AMOUNT" aggregationType="sum">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="RATE" datatype="DECIMAL" length="30" scale="2" expressionLanguage="COLUMN_ENGINE">
+        <formula>decfloat(&quot;TOTAL_CHURNED&quot;)/decfloat(&quot;COUNT_CUST_ID&quot;)*100</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="JOIN" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>1</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="Join_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="COUNT_CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_CHURNED" source="CHURNED_CUST_ID_1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHURNED_CUST_ID" source="CHURNED_CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="OPERATING_INCOME_AMOUNT" source="OPERATING_INCOME_AMOUNT"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="PrevLast">
+    <viewAttributes>
+      <viewAttribute id="TIME_SEGMENT" aggregationType="max">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="PREV_TS" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(component(date(string(&quot;TIME_SEGMENT&quot;)+'01'),2) = 1, ((component(date(string(&quot;TIME_SEGMENT&quot;)+'01'),1)-1)*100) +12, &quot;TIME_SEGMENT&quot;-1)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="A_TREND">
+      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="PrevTrend" cardinality="CN_N" joinType="referential">
+    <viewAttributes>
+      <viewAttribute id="PREV_TS" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_CHURNED" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_OPERATING_INCOME" aggregationType="sum">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_RATE" aggregationType="sum">
+        <descriptions defaultDescription="RATE"/>
+      </viewAttribute>
+      <viewAttribute id="JOIN" aggregationType="sum">
+        <descriptions defaultDescription="JOIN"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_COUNT_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="A_TREND">
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_TS" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_CHURNED" source="TOTAL_CHURNED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_INCOME_LOSS" source="INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_OPERATING_INCOME" source="OPERATING_INCOME_AMOUNT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_RATE" source="RATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_COUNT_CUST_ID" source="COUNT_CUST_ID"/>
+    </input>
+    <input node="PrevLast">
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_TS" source="PREV_TS"/>
+    </input>
+    <joinAttribute name="PREV_TS"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="LastTrend" cardinality="CN_N" joinType="referential">
+    <viewAttributes>
+      <viewAttribute id="LAST_TS" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_COUNT_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_CHURNED" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_OPERATING_INCOME" aggregationType="sum">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_RATE" aggregationType="sum">
+        <descriptions defaultDescription="RATE"/>
+      </viewAttribute>
+      <viewAttribute id="JOIN" aggregationType="sum">
+        <descriptions defaultDescription="JOIN"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="A_TREND">
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_TS" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_COUNT_CUST_ID" source="COUNT_CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_CHURNED" source="TOTAL_CHURNED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_INCOME_LOSS" source="INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_OPERATING_INCOME" source="OPERATING_INCOME_AMOUNT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_RATE" source="RATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+    </input>
+    <input node="PrevLast">
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_TS" source="TIME_SEGMENT"/>
+    </input>
+    <joinAttribute name="LAST_TS"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:UnionView" id="Combine">
+    <viewAttributes>
+      <viewAttribute id="PREV_TS" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_CHURNED" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_OPERATING_INCOME" aggregationType="sum">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_RATE" aggregationType="sum">
+        <descriptions defaultDescription="RATE"/>
+      </viewAttribute>
+      <viewAttribute id="JOIN" aggregationType="sum">
+        <descriptions defaultDescription="JOIN"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_COUNT_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_TS" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_COUNT_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_CHURNED" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_OPERATING_INCOME" aggregationType="sum">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_RATE" aggregationType="sum">
+        <descriptions defaultDescription="RATE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="PrevTrend" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_TS" source="PREV_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_CHURNED" source="PREV_CHURNED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_INCOME_LOSS" source="PREV_INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_OPERATING_INCOME" source="PREV_OPERATING_INCOME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_RATE" source="PREV_RATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_COUNT_CUST_ID" source="PREV_COUNT_CUST_ID"/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="LAST_TS" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="LAST_COUNT_CUST_ID" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="LAST_CHURNED" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="LAST_INCOME_LOSS" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="LAST_OPERATING_INCOME" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="LAST_RATE" null="true" value=""/>
+    </input>
+    <input node="LastTrend" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PREV_TS" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PREV_CHURNED" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PREV_INCOME_LOSS" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PREV_OPERATING_INCOME" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PREV_RATE" null="true" value=""/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PREV_COUNT_CUST_ID" null="true" value=""/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_TS" source="LAST_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_COUNT_CUST_ID" source="LAST_COUNT_CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_CHURNED" source="LAST_CHURNED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_INCOME_LOSS" source="LAST_INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_OPERATING_INCOME" source="LAST_OPERATING_INCOME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_RATE" source="LAST_RATE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+    <viewAttributes>
+      <viewAttribute id="PREV_TS" aggregationType="max">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_CHURNED" aggregationType="max">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_INCOME_LOSS" aggregationType="max">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_OPERATING_INCOME" aggregationType="max">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_RATE" aggregationType="max">
+        <descriptions defaultDescription="RATE"/>
+      </viewAttribute>
+      <viewAttribute id="JOIN">
+        <descriptions defaultDescription="JOIN"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_COUNT_CUST_ID" aggregationType="max">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_TS" aggregationType="max">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_COUNT_CUST_ID" aggregationType="max">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_CHURNED" aggregationType="max">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_INCOME_LOSS" aggregationType="max">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_OPERATING_INCOME" aggregationType="max">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_RATE" aggregationType="max">
+        <descriptions defaultDescription="RATE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Combine">
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_TS" source="PREV_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_CHURNED" source="PREV_CHURNED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_INCOME_LOSS" source="PREV_INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_OPERATING_INCOME" source="PREV_OPERATING_INCOME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_RATE" source="PREV_RATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_COUNT_CUST_ID" source="PREV_COUNT_CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_TS" source="LAST_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_COUNT_CUST_ID" source="LAST_COUNT_CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_CHURNED" source="LAST_CHURNED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_INCOME_LOSS" source="LAST_INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_OPERATING_INCOME" source="LAST_OPERATING_INCOME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_RATE" source="LAST_RATE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_5" cardinality="C1_N" joinType="leftOuter">
+    <viewAttributes>
+      <viewAttribute id="TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="COUNT_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="TOTAL_CHURNED" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="OPERATING_INCOME_AMOUNT" aggregationType="sum">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+      <viewAttribute id="RATE" aggregationType="sum">
+        <descriptions defaultDescription="RATE"/>
+      </viewAttribute>
+      <viewAttribute id="JOIN" aggregationType="sum">
+        <descriptions defaultDescription="JOIN"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_TS" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_CHURNED" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_OPERATING_INCOME" aggregationType="sum">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_RATE" aggregationType="sum">
+        <descriptions defaultDescription="RATE"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_COUNT_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_TS" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_COUNT_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_CHURNED" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_OPERATING_INCOME" aggregationType="sum">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_RATE" aggregationType="sum">
+        <descriptions defaultDescription="RATE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="A_TREND">
+      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="COUNT_CUST_ID" source="COUNT_CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_CHURNED" source="TOTAL_CHURNED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="OPERATING_INCOME_AMOUNT" source="OPERATING_INCOME_AMOUNT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="RATE" source="RATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+    </input>
+    <input node="Aggregation_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_TS" source="PREV_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_CHURNED" source="PREV_CHURNED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_INCOME_LOSS" source="PREV_INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_OPERATING_INCOME" source="PREV_OPERATING_INCOME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_RATE" source="PREV_RATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_COUNT_CUST_ID" source="PREV_COUNT_CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_TS" source="LAST_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_COUNT_CUST_ID" source="LAST_COUNT_CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_CHURNED" source="LAST_CHURNED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_INCOME_LOSS" source="LAST_INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_OPERATING_INCOME" source="LAST_OPERATING_INCOME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_RATE" source="LAST_RATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+    </input>
+    <joinAttribute name="JOIN"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_CURRENCY" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="CURRENCY">
+        <descriptions defaultDescription="STR_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CURRENCY_DESC">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="REACTION_TYPE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="JOIN" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>1</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="models.adm::CV_CONFIG">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="STR_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY_DESC" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+    </input>
+    <filter>(&quot;BUCKET_ID&quot;='CURRENCY')and(&quot;IS_ENABLED&quot;=1)and(&quot;REACTION_TYPE&quot;='NA')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="J_TREND_CURRENCY" cardinality="C1_1" joinType="leftOuter">
+    <viewAttributes>
+      <viewAttribute id="TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="COUNT_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="TOTAL_CHURNED" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="OPERATING_INCOME_AMOUNT" aggregationType="sum">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+      <viewAttribute id="RATE" aggregationType="sum">
+        <descriptions defaultDescription="RATE"/>
+      </viewAttribute>
+      <viewAttribute id="JOIN" aggregationType="sum">
+        <descriptions defaultDescription="JOIN"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_TS" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_CHURNED" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_OPERATING_INCOME" aggregationType="sum">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_RATE" aggregationType="sum">
+        <descriptions defaultDescription="RATE"/>
+      </viewAttribute>
+      <viewAttribute id="PREV_COUNT_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_TS" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_COUNT_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_CHURNED" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_OPERATING_INCOME" aggregationType="sum">
+        <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      </viewAttribute>
+      <viewAttribute id="LAST_RATE" aggregationType="sum">
+        <descriptions defaultDescription="RATE"/>
+      </viewAttribute>
+      <viewAttribute id="CURRENCY">
+        <descriptions defaultDescription="STR_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CURRENCY_DESC">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Join_5">
+      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="COUNT_CUST_ID" source="COUNT_CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_CHURNED" source="TOTAL_CHURNED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="OPERATING_INCOME_AMOUNT" source="OPERATING_INCOME_AMOUNT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="RATE" source="RATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_TS" source="PREV_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_CHURNED" source="PREV_CHURNED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_INCOME_LOSS" source="PREV_INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_OPERATING_INCOME" source="PREV_OPERATING_INCOME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_RATE" source="PREV_RATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREV_COUNT_CUST_ID" source="PREV_COUNT_CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_TS" source="LAST_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_COUNT_CUST_ID" source="LAST_COUNT_CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_CHURNED" source="LAST_CHURNED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_INCOME_LOSS" source="LAST_INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_OPERATING_INCOME" source="LAST_OPERATING_INCOME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LAST_RATE" source="LAST_RATE"/>
+    </input>
+    <input node="P_CURRENCY">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY_DESC" source="CURRENCY_DESC"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+    </input>
+    <joinAttribute name="JOIN"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="J_TREND_CURRENCY">
+  <attributes>
+    <attribute id="TIME_SEGMENT" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Time Segment"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="TIME_SEGMENT"/>
+    </attribute>
+    <attribute id="COUNT_CUST_ID" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Total"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="COUNT_CUST_ID"/>
+    </attribute>
+    <attribute id="CHURNED" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Total Reacted Customers"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="TOTAL_CHURNED"/>
+    </attribute>
+    <attribute id="INCOME_LOSS" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Total"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="INCOME_LOSS"/>
+    </attribute>
+    <attribute id="OPERATING_INCOME_AMOUNT" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Operating Income"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="OPERATING_INCOME_AMOUNT"/>
+    </attribute>
+    <attribute id="RATE" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Total"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="RATE"/>
+    </attribute>
+    <attribute id="PREV_TS" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PREV_TS"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="PREV_TS"/>
+    </attribute>
+    <attribute id="PREV_CHURNED" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CUST_ID_REACT"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="PREV_CHURNED"/>
+    </attribute>
+    <attribute id="PREV_INCOME_LOSS" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="INCOME_LOSS"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="PREV_INCOME_LOSS"/>
+    </attribute>
+    <attribute id="PREV_OPERATING_INCOME" order="10" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="PREV_OPERATING_INCOME"/>
+    </attribute>
+    <attribute id="PREV_RATE" order="11" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="RATE"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="PREV_RATE"/>
+    </attribute>
+    <attribute id="PREV_COUNT_CUST_ID" order="12" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Customer ID"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="PREV_COUNT_CUST_ID"/>
+    </attribute>
+    <attribute id="LAST_TS" order="13" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TIME_SEGMENT"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="LAST_TS"/>
+    </attribute>
+    <attribute id="LAST_COUNT_CUST_ID" order="14" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Customer ID"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="LAST_COUNT_CUST_ID"/>
+    </attribute>
+    <attribute id="LAST_CHURNED" order="15" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CUST_ID_REACT"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="LAST_CHURNED"/>
+    </attribute>
+    <attribute id="LAST_INCOME_LOSS" order="16" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="INCOME_LOSS"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="LAST_INCOME_LOSS"/>
+    </attribute>
+    <attribute id="LAST_OPERATING_INCOME" order="17" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="OPERATING_INCOME_AMOUNT"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="LAST_OPERATING_INCOME"/>
+    </attribute>
+    <attribute id="LAST_RATE" order="18" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="RATE"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="LAST_RATE"/>
+    </attribute>
+    <attribute id="CURRENCY" order="19" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STR_VALUE"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="CURRENCY"/>
+    </attribute>
+    <attribute id="CURRENCY_DESC" order="20" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DESCRIPTION"/>
+      <keyMapping columnObjectName="J_TREND_CURRENCY" columnName="CURRENCY_DESC"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes>
+    <calculatedAttribute id="MONTH_YEAR" order="21" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Month Year"/>
+      <keyCalculation datatype="VARCHAR" expressionLanguage="SQL" length="100">
+        <formula>left(monthname(to_date(&quot;TIME_SEGMENT&quot;)),3) || ' ' || year(to_date(&quot;TIME_SEGMENT&quot;))</formula>
+      </keyCalculation>
+    </calculatedAttribute>
+    <calculatedAttribute id="PREV_MONTH_YEAR" order="22" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Previous Month Year"/>
+      <keyCalculation datatype="VARCHAR" expressionLanguage="SQL" length="100">
+        <formula>left(monthname(to_date(&quot;PREV_TS&quot;)),3) || ' ' || year(to_date(&quot;PREV_TS&quot;))</formula>
+      </keyCalculation>
+    </calculatedAttribute>
+    <calculatedAttribute id="LAST_MONTH_YEAR" order="23" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MONTH_YEAR"/>
+      <keyCalculation datatype="VARCHAR" expressionLanguage="SQL" length="100">
+        <formula>left(monthname(to_date(&quot;LAST_TS&quot;)),3) || ' ' || year(to_date(&quot;LAST_TS&quot;))</formula>
+      </keyCalculation>
+    </calculatedAttribute>
+    <calculatedAttribute id="CHURNED_CUSTOMERS" order="24" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Churned Customers"/>
+      <keyCalculation datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>-&quot;CHURNED&quot;</formula>
+      </keyCalculation>
+    </calculatedAttribute>
+  </calculatedAttributes>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="356" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="220" y="1271"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="410" y="1271"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="309" y="1131"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Projection_2" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="A_TREND" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="309" y="1026"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="PrevLast" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="260" y="881"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="false" modelObjectName="PrevTrend" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="91" y="741"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="A_TREND" modelObjectNameSpace="PrevTrend" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="647" y="19"/>
+      <rectangleSize width="253"/>
+    </shape>
+    <shape modelObjectName="PrevLast" modelObjectNameSpace="PrevTrend" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="false" modelObjectName="LastTrend" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="281" y="741"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="A_TREND" modelObjectNameSpace="LastTrend" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="668" y="30"/>
+      <rectangleSize width="253"/>
+    </shape>
+    <shape modelObjectName="PrevLast" modelObjectNameSpace="LastTrend" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  
+    <shape expanded="false" modelObjectName="Combine" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="240" y="601"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="240" y="496"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="false" modelObjectName="Join_5" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="262" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="A_TREND" modelObjectNameSpace="Join_5" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="253"/>
+    </shape>
+    <shape modelObjectName="Aggregation_1" modelObjectNameSpace="Join_5" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="P_CURRENCY" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="452" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="J_TREND_CURRENCY" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="356" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Join_5" modelObjectNameSpace="J_TREND_CURRENCY" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="P_CURRENCY" modelObjectNameSpace="J_TREND_CURRENCY" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

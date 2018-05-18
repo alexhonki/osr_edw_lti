@@ -1,0 +1,19 @@
+{
+	"authenticationMethod": "none",
+	"routes": [{
+			"source": "^/odata/(.*)$",
+			"target": "$1",
+			"destination": "backend"
+		  },
+		  {
+            "source": "^/(.*)",
+            "localDir": "resources/webapp",
+            "cacheControl": "public, max-age=1000,must-revalidate",
+            "replace": {
+                "pathSuffixes": [
+                    "index.html"
+                	]
+            	}
+        	}
+        ]
+}

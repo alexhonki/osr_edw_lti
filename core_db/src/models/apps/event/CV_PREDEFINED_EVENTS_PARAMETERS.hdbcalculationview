@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.apps.event::CV_PREDEFINED_EVENTS_PARAMETERS" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="Configured parameters for predefined events"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::adm.config.event.name">
+    <resourceUri>db::adm.config.event.name</resourceUri>
+  </DataSource>
+  <DataSource id="db::adm.config.event.parameters">
+    <resourceUri>db::adm.config.event.parameters</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="PROC_SCHEMA">
+        <descriptions defaultDescription="PROC_SCHEMA"/>
+      </viewAttribute>
+      <viewAttribute id="PROC_NAME">
+        <descriptions defaultDescription="PROC_NAME"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::adm.config.event.name">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PROC_SCHEMA" source="PROC_SCHEMA"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PROC_NAME" source="PROC_NAME"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+    <viewAttributes>
+      <viewAttribute id="EVENT_ID" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_ID"/>
+      </viewAttribute>
+      <viewAttribute id="POSITION" aggregationType="sum">
+        <descriptions defaultDescription="POSITION"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME">
+        <descriptions defaultDescription="PARAMETER_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_VALUE">
+        <descriptions defaultDescription="PARAMETER_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION">
+        <descriptions defaultDescription="PARAMETER_DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE">
+        <descriptions defaultDescription="PARAMETER_TYPE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::adm.config.event.parameters">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT.ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="POSITION" source="POSITION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME" source="PARAMETER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_VALUE" source="PARAMETER_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION" source="PARAMETER_DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE" source="PARAMETER_TYPE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="CN_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="PROC_SCHEMA">
+        <descriptions defaultDescription="PROC_SCHEMA"/>
+      </viewAttribute>
+      <viewAttribute id="PROC_NAME">
+        <descriptions defaultDescription="PROC_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="POSITION" aggregationType="sum">
+        <descriptions defaultDescription="POSITION"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME">
+        <descriptions defaultDescription="PARAMETER_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_VALUE">
+        <descriptions defaultDescription="PARAMETER_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION">
+        <descriptions defaultDescription="PARAMETER_DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE">
+        <descriptions defaultDescription="PARAMETER_TYPE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PROC_SCHEMA" source="PROC_SCHEMA"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PROC_NAME" source="PROC_NAME"/>
+    </input>
+    <input node="Projection_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="POSITION" source="POSITION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME" source="PARAMETER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_VALUE" source="PARAMETER_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION" source="PARAMETER_DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE" source="PARAMETER_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="EVENT_ID"/>
+    </input>
+    <joinAttribute name="ID"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="ID"/>
+    </attribute>
+    <attribute id="PROC_SCHEMA" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Schema"/>
+      <keyMapping columnObjectName="Join_1" columnName="PROC_SCHEMA"/>
+    </attribute>
+    <attribute id="PROC_NAME" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Procedure Name"/>
+      <keyMapping columnObjectName="Join_1" columnName="PROC_NAME"/>
+    </attribute>
+    <attribute id="POSITION" key="true" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="POSITION"/>
+      <keyMapping columnObjectName="Join_1" columnName="POSITION"/>
+    </attribute>
+    <attribute id="PARAMETER_NAME" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Name"/>
+      <keyMapping columnObjectName="Join_1" columnName="PARAMETER_NAME"/>
+    </attribute>
+    <attribute id="PARAMETER_TYPE" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Type"/>
+      <keyMapping columnObjectName="Join_1" columnName="PARAMETER_TYPE"/>
+    </attribute>
+    <attribute id="PARAMETER_VALUE" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Value"/>
+      <keyMapping columnObjectName="Join_1" columnName="PARAMETER_VALUE"/>
+    </attribute>
+    <attribute id="PARAMETER_DESCRIPTION" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Description"/>
+      <keyMapping columnObjectName="Join_1" columnName="PARAMETER_DESCRIPTION"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="208" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="91" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="282" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="208" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Projection_2" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario> 

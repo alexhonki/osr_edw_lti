@@ -1,0 +1,42 @@
+BUCKET_ID,SEQ,REACTION_TYPE,STR_VALUE,DESCRIPTION,IS_ENABLED,FROM_DEFAULT,TO_DEFAULT,UNIT_OF_MEASURE,GROUP
+IMPACT,1,DEBTOR_INITIAL_ASSESSMENT,,Low Impact,1,0,100,,At Risk Events
+IMPACT,2,DEBTOR_INITIAL_ASSESSMENT,,Medium Impact,1,101,200,,At Risk Events
+IMPACT,3,DEBTOR_INITIAL_ASSESSMENT,,High Impact,1,201,500,,At Risk Events
+INFLUENCE,1,DEBTOR_INITIAL_ASSESSMENT,,Low Risk,1,0,25,%,Event Risk Ranking
+INFLUENCE,2,DEBTOR_INITIAL_ASSESSMENT,,Medium Risk,1,26,75,%,Event Risk Ranking
+INFLUENCE,3,DEBTOR_INITIAL_ASSESSMENT,,High Risk,1,76,100,%,Event Risk Ranking
+CUSTOMER_RISK,1,DEBTOR_INITIAL_ASSESSMENT,,Low Risk,1,0,25,%,At Risk Customers
+CUSTOMER_RISK,2,DEBTOR_INITIAL_ASSESSMENT,,Medium Risk,1,26,75,%,At Risk Customers
+CUSTOMER_RISK,3,DEBTOR_INITIAL_ASSESSMENT,,High Risk,1,76,100,%,At Risk Customers
+CUSTOMER_RISK,1,NA,,Low Risk,1,0,25,%,At Risk Customers
+CUSTOMER_RISK,2,NA,,Medium Risk,1,26,75,%,At Risk Customers
+CUSTOMER_RISK,3,NA,,High Risk,1,76,100,%,At Risk Customers
+INCOME_LOSS,1,DEBTOR_INITIAL_ASSESSMENT,,Low Revenue,1,0,100,,At Risk Customers
+INCOME_LOSS,2,DEBTOR_INITIAL_ASSESSMENT,,Medium Revenue,1,101,5000,,At Risk Customers
+INCOME_LOSS,3,DEBTOR_INITIAL_ASSESSMENT,,High Revenue,1,5001,10000,,At Risk Customers
+FORECAST_WINDOW,1,DEBTOR_INITIAL_ASSESSMENT,,Forecast Window,1,120,,Days,Forecast Window
+REACTION_DAYS,1,DEBTOR_INITIAL_ASSESSMENT,,Reaction Days,1,120,,Days,Forecast Window
+INFLUENCE_THRESHOLD,1,DEBTOR_INITIAL_ASSESSMENT,,Influence Base Threshold,1,1,,%,Event Risk Ranking
+IMPACT_THRESHOLD,1,NA,,Impact Threshold,1,1,,,At Risk Customers
+IMPACT_THRESHOLD,1,DEBTOR_INITIAL_ASSESSMENT,,Impact Threshold,1,1,,,At Risk Customers
+REACTION_TYPE,1,NA,DEBTOR_INITIAL_ASSESSMENT,Debtor Initial Assessment,1,1,,,UseCaseSettings
+CURRENCY,1,NA,AUD,AustralianDollar,1,,,,
+CURRENCY,2,NA,USD,USDollar,0,,,,
+PREDICT_START_DATE,1,NA,CURRENT_UTCTIMESTAMP,CurrentDate,1,6,,Months,PredictionSettings
+PREDICT_START_DATE,2,NA,LAST_EVENT,LastEventDate,0,6,,Months,PredictionSettings
+PREDICT_START_DATE,3,NA,1.49E+12,FixedDate,0,6,,Months,PredictionSettings
+FILTER_DATES,1,NA,CURRENT_UTCTIMESTAMP,CurrentDate,0,6,,Months,DefaultFilterSettings
+FILTER_DATES,2,NA,LAST_EVENT,LastEventDate,1,6,,Months,DefaultFilterSettings
+FILTER_DATES,3,NA,1.49E+12,FixedDate,0,6,,Months,DefaultFilterSettings
+FILTER_MONTHS,1,NA,,FilterMonths,6,,,Months,
+DATA_RETENTION_PERIOD,1,NA,,DataRetentionMonths,1,12,,Months,
+CRI_CURRENT_VERSION,1,NA,0.9.6,ProductVersion,1,,,,
+CRI_SEARCH_SCORE_THRESHOLD,1,NA,,CustomerSearchScoreThreshold,1,0.7,,,
+FLPHost,1,NA,,ApplicationURL,1,,,,
+FLPSubscriptionProviderAccount,1,NA,portal,ProviderAccount,1,,,,
+FLPSubscriptionApplicationName,1,NA,sandbox,Applicationname,1,,,,
+OrigIDPName,1,NA,,NameofSAMLidentityprovider,1,,,,
+DefaultConfigLanguage,1,NA,E,DefaultLanguage,1,,,,
+DATA_RETENTION_PERIOD,2,NA,,DataRetentionMonths,1,12,,Months,
+HYBRIS_INTEGRATION,1,NA,,HybrisMarketingIntegration,1,,,,Integrations
+SIMILAR_CUSTOMER_WINDOW,1,DEBTOR_INITIAL_ASSESSMENT,,Similar Customer Window,1,3,,Months,At Risk Customers

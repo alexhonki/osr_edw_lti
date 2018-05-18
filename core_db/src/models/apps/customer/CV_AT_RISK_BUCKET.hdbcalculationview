@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" id="models.apps.customer::CV_AT_RISK_BUCKET" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_AT_RISK_BUCKET"/>
+<localVariables>
+  <variable id="IP_FILTER" parameter="true">
+    <descriptions defaultDescription="IP_FILTER"/>
+    <variableProperties datatype="VARCHAR" length="5000" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.customer::CV_AT_RISK_CUSTOMER">
+    <targetVariable name="IP_FILTER" resourceUri="models.apps.customer::CV_AT_RISK_CUSTOMER"/>
+    <localVariable>IP_FILTER</localVariable>
+  </mapping>
+</variableMappings>
+<dataSources>
+  <DataSource id="functions::TF_CONF_GET_REACTION_TYPE" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_CONF_GET_REACTION_TYPE</resourceUri>
+  </DataSource>
+  <DataSource id="models.adm::CV_CONFIG">
+    <resourceUri>models.adm::CV_CONFIG</resourceUri>
+  </DataSource>
+  <DataSource id="models.apps.customer::CV_AT_RISK_CUSTOMER">
+    <resourceUri>models.apps.customer::CV_AT_RISK_CUSTOMER</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="ReactionType">
+    <viewAttributes>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="REACTION_TYPE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="functions::TF_CONF_GET_REACTION_TYPE">
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Config">
+    <viewAttributes>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="REACTION_TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_VALUE">
+        <descriptions defaultDescription="FROM_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="TO_VALUE">
+        <descriptions defaultDescription="TO_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="JOIN">
+        <descriptions defaultDescription="JOIN"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.adm::CV_CONFIG">
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_VALUE" source="TO_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="J_CONFIG" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="FROM_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="JOIN" aggregationType="sum">
+        <descriptions defaultDescription="JOIN"/>
+      </viewAttribute>
+      <viewAttribute id="TO_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="TO_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$REACTION_TYPE$REACTION_TYPE"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="ReactionType">
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$REACTION_TYPE$REACTION_TYPE" source="REACTION_TYPE"/>
+    </input>
+    <input node="Config">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_VALUE" source="TO_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$REACTION_TYPE$REACTION_TYPE" source="REACTION_TYPE"/>
+    </input>
+    <joinAttribute name="JOIN$REACTION_TYPE$REACTION_TYPE"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Income_Loss_Bucket" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="JOIN" aggregationType="sum">
+        <descriptions defaultDescription="JOIN"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="FROM_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="TO_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="TO_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="J_CONFIG">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_VALUE" source="TO_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+    </input>
+    <filter>(&quot;BUCKET_ID&quot;='INCOME_LOSS')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Risk_Bucket" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="FROM_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="TO_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="TO_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="JOIN" aggregationType="sum">
+        <descriptions defaultDescription="JOIN"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="J_CONFIG">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_VALUE" source="TO_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+    </input>
+    <filter>(&quot;BUCKET_ID&quot; = 'CUSTOMER_RISK')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Income_Loss_Join" cardinality="CN_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="FROM_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="TO_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="TO_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$JOIN$JOIN"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Income_Loss_Bucket">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_VALUE" source="TO_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$JOIN$JOIN" source="JOIN"/>
+    </input>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$JOIN$JOIN" source="JOIN"/>
+    </input>
+    <joinAttribute name="JOIN$JOIN$JOIN"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="INCOME_LOSS_VALUE">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+    
+      <viewAttribute id="INFLUENCE">
+        <descriptions defaultDescription="Influence"/>
+      </viewAttribute>
+      <viewAttribute id="IMPACT">
+        <descriptions defaultDescription="IMPACT"/>
+      </viewAttribute>
+      <viewAttribute id="DAYS_TO_REACT">
+        <descriptions defaultDescription="DAYS_TO_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="PREDICTED_REACTION_DATE">
+        <descriptions defaultDescription="PREDICTED_REACTION_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="CURRENCY_DESC">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="CURRENCY">
+        <descriptions defaultDescription="STR_VALUE"/>
+      </viewAttribute></viewAttributes>
+    <calculatedViewAttributes>
+    
+      <calculatedViewAttribute id="INCOME_LOSS" datatype="DOUBLE" expressionLanguage="COLUMN_ENGINE">
+    
+        <formula>if(isnull(&quot;INCOME_LOSS_VALUE&quot;), 0, &quot;INCOME_LOSS_VALUE&quot;)</formula>
+    
+      </calculatedViewAttribute>
+    
+      <calculatedViewAttribute id="JOIN" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>1</formula>
+      </calculatedViewAttribute></calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="models.apps.customer::CV_AT_RISK_CUSTOMER">
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IMPACT" source="IMPACT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DAYS_TO_REACT" source="DAYS_TO_REACT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREDICTED_REACTION_DATE" source="PREDICTED_REACTION_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY_DESC" source="CURRENCY_DESC"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS_VALUE" source="INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Risk_Join" cardinality="CN_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="FROM_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="TO_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="TO_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE" aggregationType="sum">
+        <descriptions defaultDescription="Influence"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$JOIN$JOIN"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Risk_Bucket">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_VALUE" source="TO_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$JOIN$JOIN" source="JOIN"/>
+    </input>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$JOIN$JOIN" source="JOIN"/>
+    </input>
+    <joinAttribute name="JOIN$JOIN$JOIN"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Income_Loss_Projection">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="FROM_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="TO_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="TO_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="CUSTOMER_COUNT" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(&quot;INCOME_LOSS&quot;&gt;=&quot;FROM_VALUE&quot;and &quot;INCOME_LOSS&quot;&lt;=&quot;TO_VALUE&quot;, 1, 0)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="Income_Loss_Join">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_VALUE" source="TO_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Risk_Count_Projection">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="FROM_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="TO_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="TO_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE" aggregationType="sum">
+        <descriptions defaultDescription="Influence"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="CUSTOMER_COUNT" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(&quot;INFLUENCE&quot; &gt;=&quot;FROM_VALUE&quot;and &quot;INFLUENCE&quot; &lt;= &quot;TO_VALUE&quot;,1,0)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="Risk_Join">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_VALUE" source="TO_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:UnionView" id="Union_1">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="FROM_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="TO_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="TO_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="CUSTOMER_COUNT" aggregationType="sum">
+        <descriptions defaultDescription="CUSTOMER_COUNT"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Income_Loss_Projection" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_VALUE" source="TO_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUSTOMER_COUNT" source="CUSTOMER_COUNT"/>
+    </input>
+    <input node="Risk_Count_Projection" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_VALUE" source="TO_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUSTOMER_COUNT" source="CUSTOMER_COUNT"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Union_1">
+  <attributes>
+    <attribute id="BUCKET_ID" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="BUCKET_ID"/>
+      <keyMapping columnObjectName="Union_1" columnName="BUCKET_ID"/>
+    </attribute>
+    <attribute id="BUCKET_SEQ" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="SEQ"/>
+      <keyMapping columnObjectName="Union_1" columnName="SEQ"/>
+    </attribute>
+    <attribute id="FROM_VALUE" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="FROM_VALUE"/>
+      <keyMapping columnObjectName="Union_1" columnName="FROM_VALUE"/>
+    </attribute>
+    <attribute id="TO_VALUE" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TO_VALUE"/>
+      <keyMapping columnObjectName="Union_1" columnName="TO_VALUE"/>
+    </attribute>
+    <attribute id="BUCKET" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DESCRIPTION"/>
+      <keyMapping columnObjectName="Union_1" columnName="DESCRIPTION"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="CUSTOMER_COUNT" order="6" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="CUSTOMER_COUNT"/>
+      <measureMapping columnObjectName="Union_1" columnName="CUSTOMER_COUNT"/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="477" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="ReactionType" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="364" y="976"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Config" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="174" y="976"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="J_CONFIG" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="281" y="836"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="ReactionType" modelObjectNameSpace="J_CONFIG" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Config" modelObjectNameSpace="J_CONFIG" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Income_Loss_Bucket" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="281" y="704"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Risk_Bucket" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="472" y="704"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Income_Loss_Join" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="440" y="516"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Income_Loss_Bucket" modelObjectNameSpace="Income_Loss_Join" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Income_Loss_Join" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="700" y="717"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Risk_Join" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="630" y="516"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Risk_Bucket" modelObjectNameSpace="Risk_Join" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Risk_Join" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Income_Loss_Projection" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="426" y="391"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Risk_Count_Projection" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="616" y="391"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Union_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="426" y="236"/>
+      <rectangleSize height="30" width="140"/>
+    </shape></shapes>
+</layout>
+</Calculation:scenario>

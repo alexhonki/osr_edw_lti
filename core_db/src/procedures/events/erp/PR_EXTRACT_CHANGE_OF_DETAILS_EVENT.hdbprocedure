@@ -1,0 +1,197 @@
+PROCEDURE "procedures.events.erp::PR_EXTRACT_CHANGE_OF_DETAILS_EVENT" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+	 AS
+BEGIN
+   /*************************************
+       BUT021_FS - Table for Time dependent address Usage
+    		ADR_KIND - Address Type ('LTX_ADD' - Land Tax Residential Address , 'LTX_ADD2' - Land Tax Service Address, 'XXDEFAULT' - Standard Address )
+    		
+    		Need to Figure out if any Address of above mentioned Types are changed.
+    		Table BUT021_FS will hold all the Address changes with validity Period(Valid From and Valid To For an Address)
+    		
+    	
+    	Sort By Partner and Valid From and Generate Row Number for each Partner ValidFrom combination(ROW_NUMBER() OVER(PARTITION BY PARTNER ORDER BY VALID_FROM ASC) ).
+    	If  row number > 1 , it means address has been changed atleast once. 
+    		Get Only those records for which Adrress has been changed atleast once.
+   *************************************/
+   DECLARE LV_SERV_ADDR_CHG NVARCHAR(500) := 'Changed Land Tax Service Address' ;
+   DECLARE LV_RESD_ADDR_CHG NVARCHAR(500) := 'Changed Land Tax Residential Address';
+   DECLARE LV_STD_ADDR_CHG NVARCHAR(500)  := 'Changed Standard Address';
+	DECLARE LV_MAX_LASTSEQ_ID_TSA INTEGER;
+	DECLARE LV_MAX_LASTSEQ_ID_TRA INTEGER;
+	DECLARE LV_MAX_LASTSEQ_ID_SA INTEGER;
+	
+	DECLARE LV_MAX_NEWSEQ_ID_TSA INTEGER;
+	DECLARE LV_EVENT_ID_TSA INTEGER;
+	
+	DECLARE LV_MAX_NEWSEQ_ID_TRA INTEGER;
+	DECLARE LV_EVENT_ID_TRA INTEGER;
+	
+	DECLARE LV_MAX_NEWSEQ_ID_SA INTEGER;
+	DECLARE LV_EVENT_ID_SA INTEGER;
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_TSA from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_SERV_ADDR_CHG);
+	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_TRA from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_RESD_ADDR_CHG);
+	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_SA from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_STD_ADDR_CHG);
+	--LV_MAX_SEQ_ID = SELECT OUT_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_CHRG_REG_DUNN);
+	LT_CUST_EDITED_TSA = SELECT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" inner join
+							"db::app.Customer" on EXT_ID = PARTNER WHERE 
+						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_TSA;
+	LT_CUST_ID_EDITED_TSA = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_TSA;
+	
+	LT_CUST_EDITED_TRA = SELECT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" inner join
+							"db::app.Customer" on EXT_ID = PARTNER WHERE 
+						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_TRA;
+	LT_CUST_ID_EDITED_TRA = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_TRA;
+	
+	LT_CUST_EDITED_SA = SELECT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" inner join
+							"db::app.Customer" on EXT_ID = PARTNER WHERE 
+						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_SA;
+	LT_CUST_ID_EDITED_SA = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_SA;
+	--Delete the events from Customer Events table
+	--delete from "db::app.CustomerEvents" where CUST_ID in (LT_CUST_ID_EDITED) and EVENT_ID = (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_CHRG_REG_DUNN));
+	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+		IV_EVENT_NAME=>:LV_SERV_ADDR_CHG,
+		IT_CUST=>:LT_CUST_ID_EDITED_TSA
+	);
+	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+		IV_EVENT_NAME=>:LV_RESD_ADDR_CHG,
+		IT_CUST=>:LT_CUST_ID_EDITED_TRA
+	);
+	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+		IV_EVENT_NAME=>:LV_STD_ADDR_CHG,
+		IT_CUST=>:LT_CUST_ID_EDITED_SA
+	);
+	LT_CUST_ID = SELECT PARTNER FROM :LT_CUST_EDITED_TSA UNION SELECT PARTNER FROM :LT_CUST_EDITED_TRA UNION SELECT PARTNER FROM :LT_CUST_EDITED_SA;
+   INSERT INTO "db::app.CustomerEvents" 
+   
+   select * from
+   (
+   /* ===================================================================
+       Land Tax SERVICE Address Change
+    =====================================================================*/
+    select cust_id, event_id, event_group, event_name, init_date, end_Date, event_value, description, init_ts, end_ts from (
+		select 
+			CUST_ID as CUST_ID,
+			(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_SERV_ADDR_CHG)) as EVENT_ID,
+			(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_SERV_ADDR_CHG)) as EVENT_GROUP,
+			:LV_SERV_ADDR_CHG as EVENT_NAME,
+			CASE WHEN VALID_FROM = '10101000' THEN TO_TIMESTAMP(CAST('20100701' AS DATE))
+			ELSE TO_TIMESTAMP(cast(VALID_FROM as date))
+			END as INIT_DATE,
+			NULL as END_DATE,
+			1 as EVENT_VALUE,
+			:LV_SERV_ADDR_CHG as DESCRIPTION,
+			CASE WHEN VALID_FROM = '10101000' THEN LEFT('20100701',6)
+			ELSE LEFT(VALID_FROM,6)
+			END as INIT_TS,
+			NULL  as END_TS,
+			INITDATE
+		FROM(
+			SELECT CUST_ID, PARTNER, LEFT(VALID_FROM,8) AS VALID_FROM, INITDATE FROM (
+				select SAP.CUST_ID AS CUST_ID ,PARTNER,VALID_FROM, ROW_NUMBER() OVER(PARTITION BY PARTNER ORDER BY VALID_FROM ASC) RN , init_date as INITDATE
+				from "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" AS B 	
+				INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=B.PARTNER
+				where ADR_KIND = 'LTX_ADD' AND PARTNER IN (SELECT PARTNER FROM :LT_CUST_EDITED_TSA)
+				) WHERE RN>1
+			)  
+		) where INITDATE <= init_date 
+	
+		UNION ALL
+	 /* ===================================================================
+       Land Tax RESIDENTIAL Address Change
+    =====================================================================*/
+     select cust_id, event_id, event_group, event_name, init_date, end_Date, event_value, description, init_ts, end_ts from (
+		select 
+			CUST_ID as CUST_ID,
+			(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_RESD_ADDR_CHG)) as EVENT_ID,
+			(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_RESD_ADDR_CHG)) as EVENT_GROUP,
+			:LV_RESD_ADDR_CHG as EVENT_NAME,
+			CASE WHEN VALID_FROM = '10101000' THEN TO_TIMESTAMP(CAST('20100701' AS DATE))
+			ELSE TO_TIMESTAMP(cast(VALID_FROM as date))
+			END as INIT_DATE,
+			NULL as END_DATE,
+			1 as EVENT_VALUE,
+			:LV_RESD_ADDR_CHG as DESCRIPTION,
+			CASE WHEN VALID_FROM = '10101000' THEN LEFT('20100701',6)
+			ELSE LEFT(VALID_FROM,6)
+			END as INIT_TS,
+			NULL  as END_TS,
+			INITDATE
+		FROM(
+			SELECT CUST_ID, PARTNER, LEFT(VALID_FROM,8) AS VALID_FROM, INITDATE FROM (
+				select SAP.CUST_ID AS CUST_ID ,PARTNER,VALID_FROM, ROW_NUMBER() OVER(PARTITION BY PARTNER ORDER BY VALID_FROM ASC) RN , init_date as INITDATE
+				from "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" AS B 	
+				INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=B.PARTNER
+
+
+				where ADR_KIND = 'LTX_AD2' AND PARTNER IN (SELECT PARTNER FROM :LT_CUST_EDITED_TRA)
+
+				
+
+				) WHERE RN>1
+			)   
+		) where INITDATE <= init_date
+		
+		UNION ALL
+	/* ===================================================================
+       Standard Address Change
+    =====================================================================*/
+    select cust_id, event_id, event_group, event_name, init_date, end_Date, event_value, description, init_ts, end_ts from (
+		select 
+			CUST_ID as CUST_ID,
+			(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_STD_ADDR_CHG)) as EVENT_ID,
+			(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_STD_ADDR_CHG)) as EVENT_GROUP,
+			:LV_STD_ADDR_CHG as EVENT_NAME,
+			CASE WHEN VALID_FROM = '10101000' or VALID_FROM = '10325000' THEN TO_TIMESTAMP(CAST('20100701' AS DATE))
+			ELSE TO_TIMESTAMP(cast(VALID_FROM as date))
+			END as INIT_DATE,
+			NULL as END_DATE,
+			1 as EVENT_VALUE,
+			:LV_STD_ADDR_CHG as DESCRIPTION,
+			CASE WHEN VALID_FROM = '10101000' or VALID_FROM = '10325000' THEN LEFT('20100701',6)
+			ELSE LEFT(VALID_FROM,6)
+			END as INIT_TS,
+			NULL  as END_TS,
+			INITDATE
+		FROM(
+			SELECT CUST_ID, PARTNER, LEFT(VALID_FROM,8) AS VALID_FROM , INITDATE FROM (
+				select SAP.CUST_ID AS CUST_ID ,PARTNER,VALID_FROM, ROW_NUMBER() OVER(PARTITION BY PARTNER ORDER BY VALID_FROM ASC) RN , init_date as INITDATE
+				from "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" AS B 	
+				INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=B.PARTNER
+
+
+				where ADR_KIND = 'XXDEFAULT'  AND PARTNER IN (SELECT PARTNER FROM :LT_CUST_EDITED_SA)
+
+			
+
+				) WHERE RN>1
+			) 
+		) where INITDATE <= init_date  
+   
+   );
+	select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID_TSA from "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS";
+	SELECT EVENT_ID INTO LV_EVENT_ID_TSA FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_SERV_ADDR_CHG);
+	CALL "procedures.utils::PR_UPDATE_SEQ_ID_FOR_EVENTS"(
+		SEQ_ID=> :LV_MAX_NEWSEQ_ID_TSA,
+		EVENT_ID=>:LV_EVENT_ID_TSA
+	);
+	
+	select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID_TRA from "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS";
+	SELECT EVENT_ID INTO LV_EVENT_ID_TRA FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_RESD_ADDR_CHG);
+	CALL "procedures.utils::PR_UPDATE_SEQ_ID_FOR_EVENTS"(
+		SEQ_ID=> :LV_MAX_NEWSEQ_ID_TRA,
+		EVENT_ID=>:LV_EVENT_ID_TSA
+	);
+	
+	select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID_SA from "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS";
+	SELECT EVENT_ID INTO LV_EVENT_ID_SA FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_STD_ADDR_CHG);
+	CALL "procedures.utils::PR_UPDATE_SEQ_ID_FOR_EVENTS"(
+		SEQ_ID=> :LV_MAX_NEWSEQ_ID_SA,
+		EVENT_ID=>:LV_EVENT_ID_SA
+	);
+
+END

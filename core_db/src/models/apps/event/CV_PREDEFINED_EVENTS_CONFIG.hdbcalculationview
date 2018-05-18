@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.apps.event::CV_PREDEFINED_EVENTS_CONFIG" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription=""/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="models.apps.event::CV_PREDEFINED_EVENTS_PARAMETERS">
+    <resourceUri>models.apps.event::CV_PREDEFINED_EVENTS_PARAMETERS</resourceUri>
+  </DataSource>
+  <DataSource id="models.apps.event::CV_PREDEFINED_EVENTS">
+    <resourceUri>models.apps.event::CV_PREDEFINED_EVENTS</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Parameters">
+    <viewAttributes>
+      <viewAttribute id="ID">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="POSITION">
+        <descriptions defaultDescription="POSITION"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_VALUE">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.apps.event::CV_PREDEFINED_EVENTS_PARAMETERS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="POSITION" source="POSITION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME" source="PARAMETER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE" source="PARAMETER_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_VALUE" source="PARAMETER_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION" source="PARAMETER_DESCRIPTION"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="PARAM1" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="POSITION" aggregationType="sum">
+        <descriptions defaultDescription="POSITION"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_VALUE">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Parameters">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="POSITION" source="POSITION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME" source="PARAMETER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE" source="PARAMETER_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_VALUE" source="PARAMETER_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION" source="PARAMETER_DESCRIPTION"/>
+    </input>
+    <filter>(&quot;POSITION&quot; =1)</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="PARAM2" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="POSITION" aggregationType="sum">
+        <descriptions defaultDescription="POSITION"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_VALUE">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Parameters">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="POSITION" source="POSITION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME" source="PARAMETER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE" source="PARAMETER_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_VALUE" source="PARAMETER_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION" source="PARAMETER_DESCRIPTION"/>
+    </input>
+    <filter>(&quot;POSITION&quot; =2)</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="PARAM3" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="POSITION" aggregationType="sum">
+        <descriptions defaultDescription="POSITION"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_VALUE">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Parameters">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="POSITION" source="POSITION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME" source="PARAMETER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE" source="PARAMETER_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_VALUE" source="PARAMETER_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION" source="PARAMETER_DESCRIPTION"/>
+    </input>
+    <filter>(&quot;POSITION&quot; =3)</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="TotalParams">
+    <viewAttributes>
+      <viewAttribute id="ID">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="TOTAL_PARAMETERS" aggregationType="sum">
+        <descriptions defaultDescription="POSITION"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Parameters">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_PARAMETERS" source="POSITION"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:UnionView" id="Union_1">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_VALUE">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME_1">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE_1">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_VALUE_1">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION_1">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME_2">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE_2">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_VALUE_2">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION_2">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+      <viewAttribute id="TOTAL_PARAMETERS" aggregationType="sum">
+        <descriptions defaultDescription="POSITION"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="PARAM1" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME" source="PARAMETER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE" source="PARAMETER_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_VALUE" source="PARAMETER_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION" source="PARAMETER_DESCRIPTION"/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_NAME_1" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_TYPE_1" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_VALUE_1" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_DESCRIPTION_1" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_NAME_2" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_TYPE_2" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_VALUE_2" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_DESCRIPTION_2" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="TOTAL_PARAMETERS" null="true" value=""/>
+    </input>
+    <input node="PARAM2" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_NAME" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_TYPE" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_VALUE" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_DESCRIPTION" null="true" value=""/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME_1" source="PARAMETER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE_1" source="PARAMETER_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_VALUE_1" source="PARAMETER_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION_1" source="PARAMETER_DESCRIPTION"/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_NAME_2" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_TYPE_2" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_VALUE_2" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_DESCRIPTION_2" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="TOTAL_PARAMETERS" null="true" value=""/>
+    </input>
+    <input node="PARAM3" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_NAME" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_TYPE" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_VALUE" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_DESCRIPTION" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_NAME_1" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_TYPE_1" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_VALUE_1" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_DESCRIPTION_1" null="true" value=""/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME_2" source="PARAMETER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE_2" source="PARAMETER_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_VALUE_2" source="PARAMETER_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION_2" source="PARAMETER_DESCRIPTION"/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="TOTAL_PARAMETERS" null="true" value=""/>
+    </input>
+    <input node="TotalParams" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_NAME" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_TYPE" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_VALUE" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_DESCRIPTION" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_NAME_1" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_TYPE_1" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_VALUE_1" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_DESCRIPTION_1" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_NAME_2" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_TYPE_2" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_VALUE_2" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARAMETER_DESCRIPTION_2" null="true" value=""/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_PARAMETERS" source="TOTAL_PARAMETERS"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="A_Parameters">
+    <viewAttributes>
+      <viewAttribute id="ID">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME" aggregationType="count">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE" aggregationType="count">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAM1" aggregationType="count">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION" aggregationType="count">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME_1" aggregationType="count">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE_1" aggregationType="count">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAM2" aggregationType="count">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION_1" aggregationType="count">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME_2" aggregationType="count">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE_2" aggregationType="count">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAM3" aggregationType="count">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION_2" aggregationType="count">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+      <viewAttribute id="TOTAL_PARAMETERS" aggregationType="sum">
+        <descriptions defaultDescription="POSITION"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Union_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME" source="PARAMETER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE" source="PARAMETER_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAM1" source="PARAMETER_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION" source="PARAMETER_DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME_1" source="PARAMETER_NAME_1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE_1" source="PARAMETER_TYPE_1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAM2" source="PARAMETER_VALUE_1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION_1" source="PARAMETER_DESCRIPTION_1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME_2" source="PARAMETER_NAME_2"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE_2" source="PARAMETER_TYPE_2"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAM3" source="PARAMETER_VALUE_2"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION_2" source="PARAMETER_DESCRIPTION_2"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_PARAMETERS" source="TOTAL_PARAMETERS"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="PredefinedEvents" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="ID">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="EVENT_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="CATEGORY_NAME">
+        <descriptions defaultDescription="CATEGORY_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="TYPE">
+        <descriptions defaultDescription="TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="TEMPLATE_ID">
+        <descriptions defaultDescription="TEMPLATE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="STATUS">
+        <descriptions defaultDescription="STATUS"/>
+      </viewAttribute>
+      <viewAttribute id="JOB_STATUS">
+        <descriptions defaultDescription="JOB_STATUS"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.apps.event::CV_PREDEFINED_EVENTS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY_NAME" source="CATEGORY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TEMPLATE_ID" source="TEMPLATE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOB_STATUS" source="JOB_STATUS"/>
+    </input>
+    <filter>(&quot;TYPE&quot; =1)</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="CN_N" joinType="leftOuter">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="EVENT_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="CATEGORY_NAME">
+        <descriptions defaultDescription="CATEGORY_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED" aggregationType="sum">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="TYPE" aggregationType="sum">
+        <descriptions defaultDescription="TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="TEMPLATE_ID" aggregationType="sum">
+        <descriptions defaultDescription="TEMPLATE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="STATUS">
+        <descriptions defaultDescription="STATUS"/>
+      </viewAttribute>
+      <viewAttribute id="JOB_STATUS">
+        <descriptions defaultDescription="JOB_STATUS"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME_1" aggregationType="count">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE_1" aggregationType="count">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER1" aggregationType="count">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION_1" aggregationType="count">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME_2" aggregationType="count">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE_2" aggregationType="count">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER2" aggregationType="count">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION_2" aggregationType="count">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME_3" aggregationType="count">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE_3" aggregationType="count">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER3" aggregationType="count">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION_3" aggregationType="count">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+      <viewAttribute id="TOTAL_PARAMETERS" aggregationType="sum">
+        <descriptions defaultDescription="POSITION"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="PredefinedEvents">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY_NAME" source="CATEGORY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TEMPLATE_ID" source="TEMPLATE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOB_STATUS" source="JOB_STATUS"/>
+    </input>
+    <input node="A_Parameters">
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME_1" source="PARAMETER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE_1" source="PARAMETER_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER1" source="PARAM1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION_1" source="PARAMETER_DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME_2" source="PARAMETER_NAME_1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE_2" source="PARAMETER_TYPE_1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER2" source="PARAM2"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION_2" source="PARAMETER_DESCRIPTION_1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME_3" source="PARAMETER_NAME_2"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE_3" source="PARAMETER_TYPE_2"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER3" source="PARAM3"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION_3" source="PARAMETER_DESCRIPTION_2"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_PARAMETERS" source="TOTAL_PARAMETERS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+    </input>
+    <joinAttribute name="ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Derived" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="EVENT_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="CATEGORY_NAME">
+        <descriptions defaultDescription="CATEGORY_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED" aggregationType="sum">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="TYPE" aggregationType="sum">
+        <descriptions defaultDescription="TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="TEMPLATE_ID" aggregationType="sum">
+        <descriptions defaultDescription="TEMPLATE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="STATUS">
+        <descriptions defaultDescription="STATUS"/>
+      </viewAttribute>
+      <viewAttribute id="JOB_STATUS">
+        <descriptions defaultDescription="JOB_STATUS"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME_1" aggregationType="count">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE_1" aggregationType="count">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER1" aggregationType="count">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION_1" aggregationType="count">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME_2" aggregationType="count">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE_2" aggregationType="count">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER2" aggregationType="count">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION_2" aggregationType="count">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_NAME_3" aggregationType="count">
+        <descriptions defaultDescription="Parameter Name"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_TYPE_3" aggregationType="count">
+        <descriptions defaultDescription="Parameter Type"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER3" aggregationType="count">
+        <descriptions defaultDescription="Parameter Value"/>
+      </viewAttribute>
+      <viewAttribute id="PARAMETER_DESCRIPTION_3" aggregationType="count">
+        <descriptions defaultDescription="Parameter Description"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Join_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY_NAME" source="CATEGORY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TEMPLATE_ID" source="TEMPLATE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOB_STATUS" source="JOB_STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME_1" source="PARAMETER_NAME_1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE_1" source="PARAMETER_TYPE_1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER1" source="PARAMETER1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION_1" source="PARAMETER_DESCRIPTION_1"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME_2" source="PARAMETER_NAME_2"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE_2" source="PARAMETER_TYPE_2"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER2" source="PARAMETER2"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION_2" source="PARAMETER_DESCRIPTION_2"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_NAME_3" source="PARAMETER_NAME_3"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_TYPE_3" source="PARAMETER_TYPE_3"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER3" source="PARAMETER3"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PARAMETER_DESCRIPTION_3" source="PARAMETER_DESCRIPTION_3"/>
+    </input>
+    <filter>(&quot;TYPE&quot; =1)</filter>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Derived">
+  <attributes>
+    <attribute id="ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ID"/>
+      <keyMapping columnObjectName="Derived" columnName="ID"/>
+    </attribute>
+    <attribute id="EVENT_NAME" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="EVENT_NAME"/>
+      <keyMapping columnObjectName="Derived" columnName="EVENT_NAME"/>
+    </attribute>
+    <attribute id="CATEGORY_NAME" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CATEGORY_NAME"/>
+      <keyMapping columnObjectName="Derived" columnName="CATEGORY_NAME"/>
+    </attribute>
+    <attribute id="DESCRIPTION" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DESCRIPTION"/>
+      <keyMapping columnObjectName="Derived" columnName="DESCRIPTION"/>
+    </attribute>
+    <attribute id="IS_ENABLED" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="IS_ENABLED"/>
+      <keyMapping columnObjectName="Derived" columnName="IS_ENABLED"/>
+    </attribute>
+    <attribute id="TYPE" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TYPE"/>
+      <keyMapping columnObjectName="Derived" columnName="TYPE"/>
+    </attribute>
+    <attribute id="TEMPLATE_ID" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TEMPLATE_ID"/>
+      <keyMapping columnObjectName="Derived" columnName="TEMPLATE_ID"/>
+    </attribute>
+    <attribute id="JOB_STATUS" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="JOB_STATUS"/>
+      <keyMapping columnObjectName="Derived" columnName="JOB_STATUS"/>
+    </attribute>
+    <attribute id="PARAMETER_NAME_1" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Name"/>
+      <keyMapping columnObjectName="Derived" columnName="PARAMETER_NAME_1"/>
+    </attribute>
+    <attribute id="PARAMETER_TYPE_1" order="10" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Type"/>
+      <keyMapping columnObjectName="Derived" columnName="PARAMETER_TYPE_1"/>
+    </attribute>
+    <attribute id="PARAMETER1" order="11" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Value"/>
+      <keyMapping columnObjectName="Derived" columnName="PARAMETER1"/>
+    </attribute>
+    <attribute id="PARAMETER_DESCRIPTION_1" order="12" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Description"/>
+      <keyMapping columnObjectName="Derived" columnName="PARAMETER_DESCRIPTION_1"/>
+    </attribute>
+    <attribute id="PARAMETER_NAME_2" order="13" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Name"/>
+      <keyMapping columnObjectName="Derived" columnName="PARAMETER_NAME_2"/>
+    </attribute>
+    <attribute id="PARAMETER_TYPE_2" order="14" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Type"/>
+      <keyMapping columnObjectName="Derived" columnName="PARAMETER_TYPE_2"/>
+    </attribute>
+    <attribute id="PARAMETER2" order="15" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Value"/>
+      <keyMapping columnObjectName="Derived" columnName="PARAMETER2"/>
+    </attribute>
+    <attribute id="PARAMETER_DESCRIPTION_2" order="16" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Description"/>
+      <keyMapping columnObjectName="Derived" columnName="PARAMETER_DESCRIPTION_2"/>
+    </attribute>
+    <attribute id="PARAMETER_NAME_3" order="17" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Name"/>
+      <keyMapping columnObjectName="Derived" columnName="PARAMETER_NAME_3"/>
+    </attribute>
+    <attribute id="PARAMETER_TYPE_3" order="18" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Type"/>
+      <keyMapping columnObjectName="Derived" columnName="PARAMETER_TYPE_3"/>
+    </attribute>
+    <attribute id="PARAMETER3" order="19" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Value"/>
+      <keyMapping columnObjectName="Derived" columnName="PARAMETER3"/>
+    </attribute>
+    <attribute id="PARAMETER_DESCRIPTION_3" order="20" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Parameter Description"/>
+      <keyMapping columnObjectName="Derived" columnName="PARAMETER_DESCRIPTION_3"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Parameters" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="794"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="PARAM1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="-162" y="511"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="PARAM2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="12" y="683"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="PARAM3" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="192" y="511"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="TotalParams" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="361" y="683"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Union_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="90" y="527"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="A_Parameters" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="230" y="443"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="PredefinedEvents" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="-58" y="443"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="341"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="PredefinedEvents" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="A_Parameters" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Derived" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="245"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

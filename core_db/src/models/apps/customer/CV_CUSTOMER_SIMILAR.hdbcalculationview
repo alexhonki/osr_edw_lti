@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" id="models.apps.customer::CV_CUSTOMER_SIMILAR" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_CUSTOMER_SIMILAR"/>
+<localVariables>
+  <variable id="IP_CUST_ID" parameter="true">
+    <descriptions defaultDescription="IP_CUST_ID"/>
+    <variableProperties datatype="BIGINT" length="19">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_SIMILAR">
+    <targetVariable name="MAIN_CUST_ID" resourceUri="functions::TF_CUSTOMER_SIMILAR"/>
+    <localVariable>IP_CUST_ID</localVariable>
+  </mapping>
+</variableMappings>
+<dataSources>
+  <DataSource id="functions::TF_CUSTOMER_SIMILAR" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_CUSTOMER_SIMILAR</resourceUri>
+  </DataSource>
+  <DataSource id="db::app.Customer">
+    <resourceUri>db::app.Customer</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SIMILARITY" aggregationType="sum">
+        <descriptions defaultDescription="SIMILARITY"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="functions::TF_CUSTOMER_SIMILAR">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SIMILARITY" source="SIMILARITY"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Customer" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="EXT_ID">
+        <descriptions defaultDescription="Identifiable External ID"/>
+      </viewAttribute>
+      <viewAttribute id="STATUS" aggregationType="sum">
+        <descriptions defaultDescription="STATUS"/>
+      </viewAttribute>
+      <viewAttribute id="NAME">
+        <descriptions defaultDescription="Customer Name"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.Customer">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EXT_ID" source="EXT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="NAME" source="NAME"/>
+    </input>
+    <filter>(&quot;STATUS&quot;=0)</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SIMILARITY" aggregationType="sum">
+        <descriptions defaultDescription="SIMILARITY"/>
+      </viewAttribute>
+      <viewAttribute id="EXT_ID">
+        <descriptions defaultDescription="Identifiable External ID"/>
+      </viewAttribute>
+      <viewAttribute id="NAME">
+        <descriptions defaultDescription="Customer Name"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SIMILARITY" source="SIMILARITY"/>
+    </input>
+    <input node="Customer">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EXT_ID" source="EXT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="NAME" source="NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+    </input>
+    <joinAttribute name="CUST_ID"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="CUST_ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CUST_ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="CUST_ID"/>
+    </attribute>
+    <attribute id="SIMILARITY" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="SIMILARITY"/>
+      <keyMapping columnObjectName="Join_1" columnName="SIMILARITY"/>
+    </attribute>
+    <attribute id="EXT_ID" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Identifiable External ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="EXT_ID"/>
+    </attribute>
+    <attribute id="NAME" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Customer Name"/>
+      <keyMapping columnObjectName="Join_1" columnName="NAME"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures>
+    <measure id="COUNT_CUST_ID" order="5" aggregationType="sum" measureType="simple" calculatedMeasureType="counter" aggregatable="true" datatype="INTEGER">
+      <descriptions defaultDescription="COUNT_CUST_ID"/>
+      <exceptionAggregation>
+        <attribute attributeName="CUST_ID"/>
+      </exceptionAggregation>
+      <formula>1</formula>
+      </measure>
+  </calculatedMeasures>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="208.81654804810353" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="91.99999999999999" y="356.9999988079071"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Customer" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="282" y="356.9999988079071"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="208.81654804810353" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Customer" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

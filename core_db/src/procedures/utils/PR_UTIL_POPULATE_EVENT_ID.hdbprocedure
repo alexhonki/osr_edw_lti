@@ -1,0 +1,22 @@
+PROCEDURE "procedures.utils::PR_UTIL_POPULATE_EVENT_ID" (IN I_GENERATE_ID INT DEFAULT 1 )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+    AS
+BEGIN
+----------------------------------------------------------
+	-- Generate IDs
+	----------------------------------------------------------
+	IF I_GENERATE_ID = 1 THEN
+		CALL "procedures.utils::PR_CONF_GENERATE_EVENT_ID" ( );
+	END IF;
+	----------------------------------------------------------
+	-- Popuplate Empty Event IDs
+	----------------------------------------------------------
+	UPDATE "db::app.CustomerEvents" a
+		SET "EVENT_ID.ID" = b."ID"
+		FROM "db::app.CustomerEvents" a, "db::adm.config.event.name" b
+		WHERE UPPER(a."EVENT_NAME") = UPPER(b."EVENT_NAME")
+		  AND UPPER(a."EVENT_GROUP") = UPPER(b."CATEGORY_NAME")
+		  AND ( a."EVENT_ID.ID" = 0 OR a."EVENT_ID.ID" IS NULL);
+END

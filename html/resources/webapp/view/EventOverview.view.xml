@@ -1,0 +1,264 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.EventOverview"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:cri="sap.fiori.cri"
+        xmlns:core="sap.ui.core"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:table="sap.ui.table"
+        xmlns:commons="sap.suite.ui.commons"
+        displayBlock="true"
+        height="100%">
+    <Page id="idEventOverviewPage" showHeader="false" enableScrolling="true">
+        <headerContent>
+        </headerContent>
+        <content>
+            <cri:control.FilterBar
+                    id="idFilterBar"
+                    showDateRange='true'
+                    searchFilterKey="EVENT_NAME"
+                    filterChange="onFilterChanged"
+                    clearFilters="onClearFilters"
+            />
+            <Panel width="auto" class="sapUiCompFilterBar sapUiResponsiveContentPadding">
+                <HBox id="idVisualFilters" justifyContent="SpaceBetween" width="100%" height="115px">
+                    <VBox visible="{=${viewModel>/VisualFilters/0/items}.length > 1 ? true : false}" width="45%">
+                        <Label text="{i18n>EventOverview.VisualFilterByRisk}"/>
+                        <cri:control.VisualFilterHBar id="idEventRiskVisualFilter" height="100px" select="onSelectVisualFilter" deselect="onDeselectVisualFilter" items="{path:'viewModel>/VisualFilters/0/items', templateShareable:false}" selectedItem="{viewModel>/VisualFilters/0/selectedItem}">
+                            <cri:control.VisualFilterItem label="{viewModel>BUCKET}" color="{path:'viewModel>SEQ', formatter:'.bucketColorFormatter'}" value="{viewModel>EVENT_COUNTER}" data="{viewModel>}"/>
+                        </cri:control.VisualFilterHBar>
+                    </VBox>
+                    <VBox visible="{=${viewModel>/VisualFilters/1/items}.length > 1 ? true : false}" width="45%">
+                        <Label text="{i18n>EventOverview.VisualFilterByImpact}"/>
+                        <cri:control.VisualFilterHBar id="idEventImpactVisualFilter" height="100px" select="onSelectVisualFilter" deselect="onDeselectVisualFilter" items="{path:'viewModel>/VisualFilters/1/items', templateShareable:false}" selectedItem="{viewModel>/VisualFilters/1/selectedItem}">
+                            <cri:control.VisualFilterItem label="{viewModel>BUCKET}" color="{path:'viewModel>SEQ', formatter:'.bucketColorFormatter'}" value="{viewModel>EVENT_COUNTER}" data="{viewModel>}"/>
+                        </cri:control.VisualFilterHBar>
+                    </VBox>
+                </HBox>
+            </Panel>
+            <Panel width="auto" class="sapSuiteUiCommonsChartContainer sapUiResponsiveContentPadding">
+                <commons:ChartContainer id="idChartContainer" contentChange="onChangeChartContainerContent">
+                    <commons:dimensionSelectors>
+                        <Select id="idEventCategorySelect"
+                                items="{viewModel>/EventCategories}"
+                                change="onEventCategorySelection">
+                            <core:Item key="{viewModel>EVENT_GROUP}" text="{viewModel>EVENT_GROUP}"/>
+                        </Select>
+                    </commons:dimensionSelectors>
+                    <commons:content>
+                        <commons:ChartContainerContent id="idTopEventsChartContent" icon = "sap-icon://list" title="Top Events">
+                            <commons:content>
+                                <HBox id="idTopEventsContainer" justifyContent="SpaceBetween" height="475px">
+                                    <FlexBox width="45%">
+                                        <List id="topRiskEventList" mode="SingleSelectMaster" itemPress="onTopEventSelection" headerText="{i18n>EventOverview.TopEventsByRisk}" width="100%" items="{/Events}">
+                                            <CustomListItem type="Active" id="topRiskEventItemTemplate">
+                                                <VBox width="100%" justifyContent="End">
+                                                    <Label text="{EVENT_NAME}" class="sapUiTinyMarginTopBottom" design="Bold"/>
+                                                    <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                                                        <VBox width="1px">
+                                                            <HBox>
+                                                                <Label text="{i18n>EventOverview.TopEventItemImpactLabel}:" class="sapUiTinyMarginEnd"/>
+                                                                <Label id="idImpactLabel" text="{IMPACT}"/>
+                                                            </HBox>
+                                                            <HBox>
+                                                                <Label text="{i18n>EventOverview.TopEventItemEventGroupLabel}:" class="sapUiTinyMarginEnd"/>
+                                                                <Label text="{EVENT_GROUP}"/>
+                                                            </HBox>
+                                                            <layoutData>
+                                                                <FlexItemData growFactor="1"/>
+                                                            </layoutData>
+                                                        </VBox>
+                                                        <HBox alignItems="End">
+                                                            <FormattedText class="riskValueText" htmlText="&lt;span style='color: #bb0000;font-size: 2em;'&gt;{INFLUENCE}%&lt;/span&gt;"/>
+                                                            <Label text="{i18n>EventOverview.TopEventItemRiskLabel}" class="sapUiTinyMarginBegin sapUiMediumMarginEnd"/>
+                                                        </HBox>
+                                                    </HBox>
+                                                </VBox>
+                                            </CustomListItem>
+                                            <layoutData>
+                                                <FlexItemData growFactor="1" maxWidth="100%" />
+                                            </layoutData>
+                                        </List>
+                                    </FlexBox>
+                                    <FlexBox width="45%">
+                                        <List id="topImpactEventList" mode="SingleSelectMaster" itemPress="onTopEventSelection" headerText="{i18n>EventOverview.TopEventsByImpact}" width="100%" items="{/Events}">
+                                            <CustomListItem type="Active" id="topImpactEventItemTemplate">
+                                                <VBox width="100%" justifyContent="End">
+                                                    <Label text="{EVENT_NAME}" class="sapUiTinyMarginTopBottom" design="Bold"/>
+                                                    <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                                                        <VBox width="1px">
+                                                            <HBox>
+                                                                <Label text="{i18n>EventOverview.TopEventItemRiskLabel}:" class="sapUiTinyMarginEnd"/>
+                                                                <Label text="{INFLUENCE}%"/>
+                                                            </HBox>
+                                                            <HBox>
+                                                                <Label text="{i18n>EventOverview.TopEventItemEventGroupLabel}:" class="sapUiTinyMarginEnd"/>
+                                                                <Label text="{EVENT_GROUP}"/>
+                                                            </HBox>
+                                                            <layoutData>
+                                                                <FlexItemData growFactor="1"/>
+                                                            </layoutData>
+                                                        </VBox>
+                                                        <HBox alignItems="End">
+                                                            <FormattedText htmlText="&lt;span style='color: #bb0000;font-size: 2em;'&gt;{path: 'IMPACT', formatter: '.formatNumericContent'}&lt;/span&gt;"/>
+                                                            <Label text="{i18n>EventOverview.TopEventItemImpactLabel}" class="sapUiTinyMarginBegin sapUiMediumMarginEnd"/>
+                                                            <layoutData>
+                                                                <FlexItemData baseSize="120px" growFactor="0" shrinkFactor="0" />
+                                                            </layoutData>
+                                                        </HBox>
+                                                    </HBox>
+                                                </VBox>
+                                            </CustomListItem>
+                                            <layoutData>
+                                                <FlexItemData growFactor="1" maxWidth="100%" />
+                                            </layoutData>
+                                        </List>
+                                    </FlexBox>
+                                </HBox>
+                            </commons:content>
+                        </commons:ChartContainerContent>
+                        <commons:ChartContainerContent id="idBubbleChartContent" icon = "sap-icon://bubble-chart" title="Bubble Chart">
+                            <commons:content>
+                                <VBox id="idVisualFilterBubbleChartContainer" class="sapUiResponsiveContentPadding" width="100%" height="425px">
+                                    <cri:control.VisualFilterBubbleChart id="idVisualFilterBubbleChart" height="425px" visible="false" select="onSelectVisualFilterBubbles" xAxisLabel="{i18n>EventOverview.BubbleChartDimensionImpact}" yAxisLabel="{i18n>EventOverview.BubbleChartDimensionRisk}"/>
+                                </VBox>
+                            </commons:content>
+                        </commons:ChartContainerContent>
+                        <commons:ChartContainerContent id="idEventListContent" icon = "sap-icon://table-view" title="Event List">
+                            <commons:content>
+                                <VBox/>
+                            </commons:content>
+                        </commons:ChartContainerContent>
+                    </commons:content>
+                </commons:ChartContainer>
+            </Panel>
+            <Panel id="idTableContainer" width="auto" class="sapSuiteUiCommonsChartContainer sapUiResponsiveContentPadding">
+
+                <table:Table
+                        id="idEventListTable"
+                        class="sapUiSmallMarginBottom"
+                        visible="false"
+                        selectionMode="Single"
+                        rows="{/DisplayedEvents}"
+                        rowSelectionChange="onEventSelectionChange"
+                        selectionBehavior="RowOnly"
+                        rowHeight="34"
+                        visibleRowCount="10"
+                        showNoData="false">
+                    <table:toolbar>
+                        <Toolbar class="sapUiTinyMarginTop">
+                            <Title text="{i18n>EventOverview.BubbleChartTableTitle}"/>
+                            <ToolbarSpacer/>
+                            <Button id="idExportEvents" text="Export CSV" press="exportEventList"/>
+                        </Toolbar>
+                    </table:toolbar>
+                    <table:columns>
+                        <table:Column resizable="false">
+                            <Label text="{i18n>EventOverview.BubbleChartTableColumnEventName}"/>
+                            <table:template>
+                                <Text id="idEventName" text="{EVENT_NAME}" maxLines="2"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column width="6rem" resizable="false" sortProperty="INFLUENCE" hAlign="End">
+                            <Label text="{i18n>EventOverview.BubbleChartTableColumnRisk}"/>
+                            <table:template>
+                                <Text text="{INFLUENCE}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column width="9rem" resizable="false" sortProperty="IMPACT" sorted="true" sortOrder="Descending" hAlign="End">
+                            <Label text="{i18n>EventOverview.BubbleChartTableColumnImpact}"/>
+                            <table:template>
+                                <Text text="{IMPACT}" />
+                            </table:template>
+                        </table:Column>
+                        <!--<table:Column width="9rem" resizable="false" sortProperty="DAYS_TO_REACT" hAlign="End">
+                            <Label text="{i18n>EventOverview.BubbleChartTableColumnDaysToReact}"/>
+                            <table:template>
+                                <Text text="{DAYS_TO_REACT}" />
+                            </table:template>
+                        </table:Column>-->
+                    </table:columns>
+                </table:Table>
+
+                <table:Table
+                        id="idCustomerListTable"
+                        rows="{CRI>}"
+                        rowHeight="34"
+                        visibleRowCount="10"
+                        selectionBehavior="RowSelector"
+                        selectionMode="MultiToggle"
+                        rowSelectionChange="updateCustomerSelection"
+                        noData="{i18n>CustomerList.NoData}">
+                    <table:toolbar>
+                        <Toolbar class="sapUiTinyMarginTop">
+                            <Title text="{i18n>EventOverview.CustomerListTitle}{= (${viewModel>/SelectedEventName}) ? ' : \'' + ${viewModel>/SelectedEventName} + '\'' : ''}"/>
+                            <ToolbarSpacer/>
+                            <Button id="idExportCustomers" text="Export" press="exportCustomerList"/>
+                        </Toolbar>
+                    </table:toolbar>
+                    <table:columns>
+                        <table:Column  width="10rem" >
+                            <Label text="{i18n>EventOverview.CustomerListColumnId}"/>
+                            <table:template>
+                                <Text text="{CRI>EXT_ID}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column>
+                            <Label text="{i18n>EventOverview.CustomerListColumnName}"/>
+                            <table:template>
+                                <Text text="{CRI>NAME}" maxLines="2"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column width="6rem" sortProperty="EVENT_YEAR" hAlign="End">
+                            <Label text="{i18n>EventOverview.CustomerListColumnEventYr}"/>
+                            <table:template>
+                                <Text text="{CRI>EVENT_YEAR}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column width="6rem" sortProperty="CHURNED_FLAG" hAlign="End">
+                            <Label text="{i18n>EventOverview.CustomerListColumnReacted}"/>
+                            <table:template>
+                                <Text text="{= (${CRI>CHURNED_FLAG} === 1) ? 'Yes' : 'No' }"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column width="12rem" sortProperty="INCOME_LOSS_ROUND" hAlign="End">
+                            <Label text="{i18n>EventOverview.CustomerListColumnOperatingIncomeLoss}"/>
+                            <table:template>
+                                <ObjectNumber textAlign="Right"
+                                              number="{
+								                    parts:[{path:'CRI>INCOME_LOSS_ROUND'},{path:'CRI>/CURRENCY'}],
+								                    type: 'sap.ui.model.type.Currency',
+								                    formatOptions: {showMeasure: false}
+							                    }"
+                                              unit="{CRI>/CURRENCY}" />
+                            </table:template>
+                        </table:Column>
+                         <table:Column width="10rem" sortProperty="INIT_DATE" hAlign="End">
+                            <Label text="{i18n>EventOverview.CustomerListColumnReactedDate}"/>
+                            <table:template>
+                                <Text text="{path: 'CRI>INIT_DATE',
+        									type: 'sap.ui.model.type.Date',
+        									formatOptions: {
+        									pattern: 'yyyy-MM-dd'
+											}}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column width="6rem" hAlign="Center">
+                            <Label text="{i18n>EventOverview.CustomerListColumnDetails}"/>
+                            <table:template>
+                                <Button icon="sap-icon://navigation-right-arrow" type="Transparent" press="showCustomerPulse"/>
+                            </table:template>
+                        </table:Column>
+                    </table:columns>
+                </table:Table>
+            </Panel>
+        </content>
+        <footer>
+            <!--Toolbar visible="{= ${viewModel>/messagesLength} > 0 }">
+                <Button icon="sap-icon://message-popup" text="{viewModel>/messagesLength}" type="Transparent"
+                        press="handleMessagePopoverPress"/>
+                <ToolbarSpacer/>
+            </Toolbar-->
+        </footer>
+    </Page>
+</mvc:View>

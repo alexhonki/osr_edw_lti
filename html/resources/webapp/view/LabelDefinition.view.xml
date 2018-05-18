@@ -1,0 +1,86 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.LabelDefinition"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:table="sap.ui.table"
+        xmlns:core="sap.ui.core"
+        displayBlock="true"
+        height="100%">
+    <Page id="idLabelDefinition" showHeader="true" title="{i18n>LabelDefinition.Title}" enableScrolling="true">
+        <content>
+            <Panel width="auto" height="95%" headerText="{Labels>/LabelDefinitionHeaderText}" class="sapUiResponsiveMargin" backgroundDesign="Transparent">
+                <VBox height="100%">
+                    <Toolbar>
+                        <Text text="{Labels>/LabelDefinitionUseCaseInput}" class="sapUiMediumMarginEnd"/>
+                        <Select class="sapUiSmallMarginEnd" selectedKey="{/UseCaseKey}" items="{CRI>/UseCaseConfig}" change="onUseCaseChange">
+                            <core:Item key="{CRI>REACTION_TYPE}" text="{CRI>DESCRIPTION}"/>
+                        </Select>
+                        <Text text="{Labels>/LabelDefinitionLanguageTagInput}" class="sapUiMediumLargeMarginBegin sapUiMediumMarginEnd"/>
+                        <Input type="Text" value="{/Language}" editable="false" width="150px"/>
+                        <ToolbarSpacer/>
+                        <Button text="Import" class="sapUiSmallMarginBeginEnd" type="Transparent" press="importLabels"/>
+                        <Button text="Export" class="sapUiSmallMarginBeginEnd" type="Transparent" press="exportLabels"/>
+                    </Toolbar>
+                    <FlexBox class="sapUiTinyMarginTop">
+                        <table:Table
+                                id="labelList"
+                                selectionMode="None"
+                                rows="{/Labels}"
+                                visibleRowCountMode="Auto"
+                                noDataText="{i18n>Admin.GeneralSettings.NoUseCaseData}">
+                            <table:columns>
+                                <table:Column width="10rem">
+                                    <Label text="{Labels>/LabelDefinitionColumnPage}"/>
+                                    <table:template>
+                                        <Text text="{Page}"/>
+                                    </table:template>
+                                </table:Column>
+                                <table:Column>
+                                    <Label text="{Labels>/LabelDefinitionColumnComponent}"/>
+                                    <table:template>
+                                        <Text text="{Component}"/>
+                                    </table:template>
+                                </table:Column>
+                                <table:Column>
+                                    <Label text="{Labels>/LabelDefinitionColumnDescription}"/>
+                                    <table:template>
+                                        <Text text="{Description}"/>
+                                    </table:template>
+                                </table:Column>
+                                <table:Column width="15rem">
+                                    <Label text="{Labels>/LabelDefinitionColumnDefault}"/>
+                                    <table:template>
+                                        <Text text="{LabelDefault}" />
+                                    </table:template>
+                                </table:Column>
+                                <table:Column width="15rem">
+                                    <Label text="{Labels>/LabelDefinitionColumnCurrent}"/>
+                                    <table:template>
+                                        <Input type="Text" value="{Label}" liveChange="labelChanged"/>
+                                    </table:template>
+                                </table:Column>
+                                <table:Column width="8rem" hAlign="Center">
+                                    <Label text="{Labels>/LabelDefinitionColumnRestore}"/>
+                                    <table:template>
+                                        <Button icon="sap-icon://reset" type="Transparent" press="resetLabel"/>
+                                    </table:template>
+                                </table:Column>
+                            </table:columns>
+                        </table:Table>
+                        <layoutData>
+                            <FlexItemData growFactor="1" maxHeight="100%" />
+                        </layoutData>
+                    </FlexBox>
+                </VBox>
+            </Panel>
+        </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Button id="idSaveButton" type="Emphasized" text="{i18n>Admin.Footer.Save}" press="saveLabels" enabled="false"/>
+                <Button id="idCancelButton" type="Default" text="{i18n>Admin.Footer.Cancel}" press="onCancel"/>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

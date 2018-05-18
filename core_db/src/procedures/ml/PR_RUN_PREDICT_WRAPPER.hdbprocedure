@@ -1,0 +1,146 @@
+PROCEDURE "procedures.ml::PR_RUN_PREDICT_WRAPPER"
+	(
+	IN 	REACTION_TYPE VARCHAR(100) DEFAULT 'DEBTOR_INITIAL_ASSESSMENT',
+	IN  WINDOW_TS_SIZE 		INTEGER DEFAULT null,
+	IN  CURRENT_START_TS    INTEGER DEFAULT null, 
+	IN	PREVIOUS_WINDOWS    INTEGER DEFAULT null,	
+	IN  EXCLUDE_MONTHS      INTEGER DEFAULT null,
+	IN 	PREDICTION_WINDOW   INTEGER DEFAULT null,
+	IN  RUN_DAY 			DATE 	DEFAULT null
+	)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+    AS
+BEGIN
+/*****************************************************************************
+	* EXCEPTION HANDLING
+	******************************************************************************/
+	DECLARE PROC_NAME nvarchar(1000) := TO_NVARCHAR('"procedures.ml::PR_RUN_PREDICT_WRAPPER"' );
+  	DECLARE EXIT HANDLER FOR sqlexception
+	INSERT INTO "db::adm.log.error" VALUES(::SQL_ERROR_CODE,:PROC_NAME,::SQL_ERROR_MESSAGE,CURRENT_TIMESTAMP);
+	BEGIN
+		DECLARE LV_PREVIOUS_WINDOWS  INT := COALESCE (:PREVIOUS_WINDOWS,36); -- 36 Months / 3 year training
+		DECLARE LV_PREDICT_START_TS  INT; -- Current Year april
+		DECLARE LV_PREDICT_END_TS    INT := YEAR(CURRENT_UTCTIMESTAMP)*100 + MONTH(CURRENT_UTCTIMESTAMP);
+		DECLARE LV_WINDOW_TS_SIZE    INT := COALESCE (:WINDOW_TS_SIZE,1); -- 1 month
+		DECLARE LV_PREDICTION_WINDOW INT := COALESCE (:PREDICTION_WINDOW, 5); -- Predict how long to the future
+		DECLARE LV_EXCLUDE_MONTHS    INT := COALESCE (:EXCLUDE_MONTHS, 0);
+		DECLARE LV_CUTOFF_MONTH 	 INT;
+		
+		BEGIN
+			DECLARE EXIT HANDLER FOR sqlexception 
+				insert into "db::ml.config.MLParameters" values('ML_PREVIOUS_WINDOWS','Previous windows to include',1,:LV_PREVIOUS_WINDOWS,null,null);
+			SELECT INT_PARAMETER INTO LV_PREVIOUS_WINDOWS FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'ML_PREVIOUS_WINDOWS';
+		END;
+	
+		BEGIN
+			DECLARE EXIT HANDLER FOR sqlexception 
+				insert into "db::ml.config.MLParameters" values('ML_WINDOW_TS_SIZE','Size of windows in months',1,:LV_WINDOW_TS_SIZE,null,null);
+			SELECT INT_PARAMETER INTO LV_WINDOW_TS_SIZE FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'ML_WINDOW_TS_SIZE';
+		END;		
+
+		BEGIN
+			DECLARE EXIT HANDLER FOR sqlexception 
+				insert into "db::ml.config.MLParameters" values('ML_EXCLUDE_MONTHS','Size of windows in months',1,:LV_EXCLUDE_MONTHS,null,null);
+			SELECT INT_PARAMETER INTO LV_EXCLUDE_MONTHS FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'ML_EXCLUDE_MONTHS';
+		END;	
+		
+		-- SELECTING CUTOFF MONTH FOR CREATING PERIODIC FEATURES
+		SELECT INT_PARAMETER INTO LV_CUTOFF_MONTH
+		FROM "db::ml.config.MLParameters"
+		WHERE "PARAMETER_NAME" = 'ML_CUTOFF_MONTH';		
+		
+		-- SET PREDICT START DATE
+		IF MONTH(CURRENT_UTCTIMESTAMP) < :LV_CUTOFF_MONTH THEN
+			LV_PREDICT_START_TS = (YEAR(CURRENT_UTCTIMESTAMP) - 1) * 100 + :LV_CUTOFF_MONTH;
+		ELSE
+			LV_PREDICT_START_TS = YEAR(CURRENT_UTCTIMESTAMP)*100 + :LV_CUTOFF_MONTH;
+		END IF;
+		
+		IF RUN_DAY IS NULL THEN
+			RUN_DAY := CURRENT_UTCDATE;
+		END IF;
+		
+		/*****************************************************************************
+		* CREATE PREDICTION DATASETS
+		******************************************************************************/
+		CALL "procedures.ml::PR_ML_EXTRACT_PREDICTION_SET"(
+			REACTION_TYPE=>:REACTION_TYPE,
+			WINDOW_TS_SIZE=>:LV_WINDOW_TS_SIZE,
+			--PREVIOUS_WINDOWS=>0, --:LV_PREVIOUS_WINDOWS,
+			CURRENT_START_TS=>:LV_PREDICT_START_TS,
+			CURRENT_END_TS=>:LV_PREDICT_END_TS,
+		--  EXCLUDE_MONTHS=>:LV_EXCLUDE_MONTHS -- Not implmented yet
+			RUN_DAY=>RUN_DAY
+		);
+		
+		LT_PREDICT_DATA = SELECT * FROM "db::ml.predict.data";
+		
+		/******************************************************************************
+		* COPY NN_MODEL AND RF_MODEL BY PROPAGATING DATA FROM BACKUP TABLE INTO MAIN TABLE
+		******************************************************************************/
+		-- COPY RF MODEL INTO THE TRUNCATED MAIN MODEL TABLE
+		TRUNCATE TABLE "db::ml.train.rf_model";
+		
+		INSERT INTO "db::ml.train.rf_model"(
+			SELECT "ID","TREEINDEX","MODEL" 
+			FROM "db::ml.bkup.rf_model"
+			WHERE "REACTION_TYPE" = :REACTION_TYPE AND INIT_DATE = 
+				(SELECT MAX(INIT_DATE) FROM "db::ml.bkup.rf_model"
+				WHERE "REACTION_TYPE" = :REACTION_TYPE)
+			ORDER BY ID
+		);
+		 
+		RF_MODEL = SELECT * FROM "db::ml.train.rf_model";
+		
+		-- COPY NN MODEL INTO THE TRUNCATED MAIN MODEL TABLE
+		TRUNCATE TABLE "db::ml.train.nn_model";
+		
+		INSERT INTO "db::ml.train.nn_model"(
+			SELECT "NAME","MODEL" 
+			FROM "db::ml.bkup.nn_model"
+			WHERE "REACTION_TYPE" = :REACTION_TYPE AND INIT_DATE = 
+				(SELECT MAX(INIT_DATE) FROM "db::ml.bkup.nn_model"
+				WHERE "REACTION_TYPE" = :REACTION_TYPE)
+		);
+		
+		NN_MODEL = SELECT * FROM "db::ml.train.nn_model";
+		
+		/******************************************************************************
+		* PERFORM MACHINE LEARNING PREDICTION
+		*******************************************************************************/
+		-- RUN NN PREDICTION
+		CALL "procedures.ml::PR_RUN_PAL_PREDICTION"(0, :LT_PREDICT_DATA,
+			:NN_MODEL, :RF_MODEL, ?, ?, ?);
+		
+		-- RUN RF PREDICTION
+		CALL "procedures.ml::PR_RUN_PAL_PREDICTION"(1, :LT_PREDICT_DATA,
+			:NN_MODEL, :RF_MODEL, ?, ?, ?);
+		
+		/******************************************************************************
+		* GENERATE FINAL RISK SCORES & BACKUP CURRENT MODELS AND RESULT
+		*******************************************************************************/
+		-- TRUNCATE THE CUSTOMER RISK RESULTS TABLE AND INSERT NEW PREDICTION RESULTS INTO TRUNCATED TABLE
+		TRUNCATE TABLE "db::ml.predict.CustomerRiskResults";
+		INSERT INTO "db::ml.predict.CustomerRiskResults"
+		SELECT ID, TO_INT((NN_RISK + RF_RISK)/2 * 100), RF_RISK, NN_RISK
+		FROM (
+			SELECT A.ID, A.REACTED AS NN_REACTED, C.SCORING AS RF_REACTED, B.SOFTMAX AS NN_RISK, 
+			CASE WHEN C.SCORING = '0' THEN 1-C.PROB ELSE C.PROB END AS RF_RISK
+			FROM "db::ml.predict.nn_result" A, "db::ml.predict.nn_softmax" B, "db::ml.predict.rf_result" C
+			WHERE A.ID = B.ID AND B.REACTED = 1 AND A.ID = C.ID
+		);
+		
+		-- REMOVING OLD DATA FROM THE BACKUP RISK SCORES TABLE BUT LEAVING THE LAST BACKUP DATA
+		DELETE FROM "db::ml.bkup.CustomerRiskResults"
+		WHERE REACTION_TYPE = :REACTION_TYPE AND INIT_DATE < 
+			(SELECT MAX(INIT_DATE) FROM "db::ml.bkup.CustomerRiskResults" WHERE REACTION_TYPE = :REACTION_TYPE);
+		
+		-- INSERTING THE CURRENT PREDICTION RESULT TO THE BACKUP TABLE		
+		INSERT INTO "db::ml.bkup.CustomerRiskResults"(
+			SELECT *, :REACTION_TYPE, CURRENT_UTCTIMESTAMP FROM "db::ml.predict.CustomerRiskResults"
+		);
+
+	END;
+END

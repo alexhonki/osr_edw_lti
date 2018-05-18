@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" id="models.apps.customer::CV_CHURNED_LAST_N_MONTHS" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_CHURNED_LAST_N_MONTHS"/>
+<localVariables>
+  <variable id="IP_FILTER" parameter="true">
+    <descriptions defaultDescription="IP_FILTER"/>
+    <variableProperties datatype="NVARCHAR" length="5000" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_FROM" parameter="true">
+    <descriptions defaultDescription="IM_FROM"/>
+    <variableProperties datatype="INTEGER" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_TO" parameter="true">
+    <descriptions defaultDescription="IM_TO"/>
+    <variableProperties datatype="INTEGER" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+  <variable id="IM_REACTION_TYPE" parameter="true">
+    <descriptions defaultDescription="IM_REACTION_TYPE"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_CONF_GET_REACTION_TYPE</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.customer::CV_CUSTOMER_LAST_EVENT">
+    <targetVariable name="IP_INIT_TS" resourceUri="models.apps.customer::CV_CUSTOMER_LAST_EVENT"/>
+    <localVariable>IP_FROM</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_FILTER_REACTION">
+    <targetVariable name="IM_FILTER" resourceUri="functions::TF_CUSTOMER_FILTER_REACTION"/>
+    <localVariable>IP_FILTER</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_FILTER_REACTION">
+    <targetVariable name="IM_TO" resourceUri="functions::TF_CUSTOMER_FILTER_REACTION"/>
+    <localVariable>IP_TO</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_FILTER_REACTION">
+    <targetVariable name="IM_REACTION_TYPE" resourceUri="functions::TF_CUSTOMER_FILTER_REACTION"/>
+    <localVariable>IM_REACTION_TYPE</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_FILTER_REACTION">
+    <targetVariable name="IM_FROM" resourceUri="functions::TF_CUSTOMER_FILTER_REACTION"/>
+    <localVariable>IP_FROM</localVariable>
+  </mapping>
+</variableMappings>
+<dataSources>
+  <DataSource id="models.apps.customer::CV_CUSTOMER_LAST_EVENT">
+    <resourceUri>models.apps.customer::CV_CUSTOMER_LAST_EVENT</resourceUri>
+  </DataSource>
+  <DataSource id="functions::TF_CUSTOMER_FILTER_REACTION" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_CUSTOMER_FILTER_REACTION</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="Customer ID (Internal)"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ID">
+        <descriptions defaultDescription="Event ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE">
+        <descriptions defaultDescription="Intial Date/Time"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="Event Name"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_GROUP">
+        <descriptions defaultDescription="Event Category/Group"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="LAST_3" datatype="DATE" expressionLanguage="COLUMN_ENGINE">
+        <formula>addmonths(date($$IP_TO$$), -3)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="models.apps.customer::CV_CUSTOMER_LAST_EVENT">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_GROUP" source="EVENT_GROUP"/>
+    </input>
+    <filter>&quot;INIT_DATE&quot;&gt;=&quot;LAST_3&quot;</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="functions::TF_CUSTOMER_FILTER_REACTION">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="CN_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID (Internal)"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ID" aggregationType="sum">
+        <descriptions defaultDescription="Event ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE" aggregationType="min">
+        <descriptions defaultDescription="Intial Date/Time"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="Event Name"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_GROUP">
+        <descriptions defaultDescription="Event Category/Group"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_GROUP" source="EVENT_GROUP"/>
+    </input>
+    <input node="Projection_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+    </input>
+    <joinAttribute name="CUST_ID"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="CUST_ID" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Customer ID (Internal)"/>
+      <keyMapping columnObjectName="Join_1" columnName="CUST_ID"/>
+    </attribute>
+    <attribute id="EVENT_ID" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Event ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="EVENT_ID"/>
+    </attribute>
+    <attribute id="EVENT_NAME" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Event Name"/>
+      <keyMapping columnObjectName="Join_1" columnName="EVENT_NAME"/>
+    </attribute>
+    <attribute id="EVENT_GROUP" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Event Category/Group"/>
+      <keyMapping columnObjectName="Join_1" columnName="EVENT_GROUP"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures>
+    <measure id="CUST_COUNT" order="5" aggregationType="sum" measureType="simple" calculatedMeasureType="counter" aggregatable="true" datatype="INTEGER">
+      <descriptions defaultDescription="CUST_COUNT"/>
+      <exceptionAggregation>
+        <attribute attributeName="CUST_ID"/>
+      </exceptionAggregation>
+      <formula>1</formula>
+      </measure>
+  </calculatedMeasures>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="-16" y="543"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="206" y="543"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="114" y="350"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Projection_2" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

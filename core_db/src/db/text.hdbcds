@@ -1,0 +1,35 @@
+namespace db;
+
+context text {
+    entity cleanText {
+        key ID          : Integer;
+            //   		LANGUAGE_CODE	: hana.VARCHAR(2) default 'en';
+            DESCRIPTION : String(5000);
+    }
+    technical configuration {
+        column store;
+        fulltext index Index_CleanedText on (DESCRIPTION)
+            fast preprocess off
+            //configuration 'EXTRACTION_CORE_VOICEOFCUSTOMER'
+            text analysis on;
+    };
+
+    entity StopWords {
+        key LANGUAGE_CODE : hana.VARCHAR(2);
+        key STOPWORD      : String(100);
+    };
+
+    /*@@layout{"layoutInfo":{"x":-359,"y":-183.5}}*/
+    entity Mapping_AbbreviatedWords {
+        key ABBREVIATED_WORD : String(20);
+            EXPANDED_WORD    : String(100);
+    };
+
+    /*@@layout{"layoutInfo":{"x":-135,"y":-203.5}}*/
+    entity CRM_Event_Mapping {
+        key CATEGORY      : String(20);
+        key EVENT_NAME    : String(20);
+        key PRIORITY      : Integer;
+            EXPANDED_WORD : String(10);
+    };
+};

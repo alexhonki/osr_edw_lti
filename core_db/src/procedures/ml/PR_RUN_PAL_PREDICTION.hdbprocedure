@@ -1,0 +1,64 @@
+PROCEDURE "procedures.ml::PR_RUN_PAL_PREDICTION" 
+	(
+		IN 	I_MODEL_FLAG 	TINYINT DEFAULT 1,
+		IN	IT_DATA			"db::ml.predict.data" DEFAULT "db::ml.predict.data",
+		IN  IT_NN_MODEL 	"db::ml.type.train.nn_model" DEFAULT "db::ml.train.nn_model",
+		IN  IT_RF_MODEL 	"db::ml.type.train.rf_model" DEFAULT "db::ml.train.rf_model",
+		OUT OT_RESULT 		"db::ml.predict.nn_result",
+		OUT OT_SOFTMAX 		"db::ml.predict.nn_softmax",
+		OUT OT_RF_RESULT	"db::ml.predict.rf_result"
+	)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   AS
+BEGIN
+ 	-- General Control Parameters
+	DECLARE LA_CON_NAME 	VARCHAR(100) ARRAY 	:= ARRAY('THREAD_NUMBER');
+	DECLARE LA_CON_INTARGS	INTEGER ARRAY 		:= ARRAY(10) ;
+	DECLARE LA_DOUBLEARGS	DOUBLE ARRAY 		:= ARRAY(NULL);
+	DECLARE LA_STRINGARGS 	VARCHAR(100)  ARRAY := ARRAY(NULL) ;
+	
+		-- NN Control Table
+	LT_CONTROL = UNNEST(:LA_CON_NAME,:LA_CON_INTARGS,:LA_DOUBLEARGS, :LA_STRINGARGS)  AS (NAME,INTARGS,DOUBLEARGS,STRINGARGS);
+	
+	-- RF Control Table
+	RF_CONTROL = UNNEST(:LA_CON_NAME,:LA_CON_INTARGS,:LA_DOUBLEARGS, :LA_STRINGARGS)  AS (NAME,INTARGS,DOUBLEARGS,STRINGARGS);
+	
+
+	IF :I_MODEL_FLAG = 1 THEN	-- run NN prediction
+		CALL "procedures.ml::PR_PAL_NN_PREDICT"(:IT_DATA, :IT_NN_MODEL, :LT_CONTROL , OT_RESULT, OT_SOFTMAX);
+
+		-- Persist
+		TRUNCATE TABLE "db::ml.predict.nn_result";
+		TRUNCATE TABLE "db::ml.predict.nn_softmax";
+		INSERT INTO "db::ml.predict.nn_result" (SELECT * FROM :OT_RESULT);
+		INSERT INTO "db::ml.predict.nn_softmax" (SELECT * FROM :OT_SOFTMAX);
+		
+		--Backup Data
+		DELETE FROM "db::ml.bkup.predict_nn_result" WHERE "INIT_DATE" < (SELECT MAX("INIT_DATE") FROM "db::ml.bkup.predict_nn_result");
+		INSERT INTO "db::ml.bkup.predict_nn_result" (SELECT * , CURRENT_UTCTIMESTAMP FROM "db::ml.predict.nn_result");
+		
+		DELETE FROM "db::ml.bkup.nn_softmax" WHERE "INIT_DATE" < (SELECT MAX("INIT_DATE") FROM "db::ml.bkup.nn_softmax");
+		INSERT INTO "db::ml.bkup.nn_softmax" (SELECT * , CURRENT_UTCTIMESTAMP FROM "db::ml.predict.nn_softmax");
+		
+		-- Insert results from softmax to final customer risk table
+		TRUNCATE TABLE "db::ml.predict.CustomerRiskResults";
+		COMMIT;
+	ELSE -- run RF prediction
+		CALL "procedures.ml::PR_PAL_RF_PREDICT"(:IT_DATA,:RF_CONTROL, :IT_RF_MODEL, OT_RF_RESULT);
+
+		-- Persist
+		TRUNCATE TABLE "db::ml.predict.rf_result";
+		INSERT INTO "db::ml.predict.rf_result" (SELECT * FROM :OT_RF_RESULT);
+		
+		--Backup Data
+		DELETE FROM "db::ml.bkup.predict_rf_result" WHERE "INIT_DATE" < (SELECT MAX("INIT_DATE") FROM "db::ml.bkup.predict_rf_result");
+		INSERT INTO "db::ml.bkup.predict_rf_result" (SELECT * , CURRENT_UTCTIMESTAMP FROM "db::ml.predict.rf_result");
+		
+		-- Insert results from softmax to final customer risk table
+		TRUNCATE TABLE "db::ml.predict.CustomerRiskResults";
+		COMMIT;
+	END IF;
+	
+END

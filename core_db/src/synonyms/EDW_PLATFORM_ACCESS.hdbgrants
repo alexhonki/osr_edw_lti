@@ -1,0 +1,16 @@
+{
+	"logical-OSR-EDW-PLATFORM-grantor": {
+		"object_owner": { 
+			"container_roles": [
+				"osr.sec.edw.platform.dac::read_g#"
+				
+			]
+		},
+		"application_user": {
+			"container_roles": [
+				"osr.sec.edw.platform.dac::read"
+			]
+		}
+	}
+} 
+ 

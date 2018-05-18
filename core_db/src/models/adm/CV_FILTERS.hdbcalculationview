@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.adm::CV_FILTERS" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_FILTERS"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::app.AttributeTypes">
+    <resourceUri>db::app.AttributeTypes</resourceUri>
+  </DataSource>
+  <DataSource id="db::app.ValueTypes">
+    <resourceUri>db::app.ValueTypes</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_CUSTOMER_ATTRIBUTES" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="FIELD_ID" aggregationType="sum">
+        <descriptions defaultDescription="ATTRIBUTE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="FIELD_NAME">
+        <descriptions defaultDescription="ATTRIBUTE_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_SENSITIVE" aggregationType="sum">
+        <descriptions defaultDescription="IS_SENSITIVE"/>
+      </viewAttribute>
+      <viewAttribute id="IS_FILTER" aggregationType="sum">
+        <descriptions defaultDescription="IS_FILTER"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="FIELD_GROUP" datatype="VARCHAR" length="100" expressionLanguage="COLUMN_ENGINE">
+        <formula>'Customer Attributes'</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="db::app.AttributeTypes">
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_ID" source="ATTRIBUTE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_NAME" source="ATTRIBUTE_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_FILTER" source="IS_FILTER"/>
+    </input>
+    <filter>(&quot;IS_FILTER&quot;=1)</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_CUSTOMER_VALUES" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="FIELD_ID" aggregationType="sum">
+        <descriptions defaultDescription="VALUE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="FIELD_NAME">
+        <descriptions defaultDescription="VALUE_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_FILTER" aggregationType="sum">
+        <descriptions defaultDescription="IS_FILTER"/>
+      </viewAttribute>
+      <viewAttribute id="IS_SENSITIVE" aggregationType="sum">
+        <descriptions defaultDescription="IS_SENSITIVE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="FIELD_GROUP" datatype="VARCHAR" length="100" expressionLanguage="SQL">
+        <formula>'Customer Values'</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="db::app.ValueTypes">
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_ID" source="VALUE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_NAME" source="VALUE_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_FILTER" source="IS_FILTER"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
+    </input>
+    <filter>(&quot;IS_FILTER&quot;=1)</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:UnionView" id="U_FIELDS">
+    <viewAttributes>
+      <viewAttribute id="FIELD_GROUP">
+        <descriptions defaultDescription="FIELD_GROUP"/>
+      </viewAttribute>
+      <viewAttribute id="FIELD_NAME">
+        <descriptions defaultDescription="ATTRIBUTE_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_SENSITIVE" aggregationType="sum">
+        <descriptions defaultDescription="IS_SENSITIVE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="P_CUSTOMER_ATTRIBUTES">
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_GROUP" source="FIELD_GROUP"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_NAME" source="FIELD_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
+    </input>
+    <input node="P_CUSTOMER_VALUES">
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_GROUP" source="FIELD_GROUP"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_NAME" source="FIELD_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="U_FIELDS">
+  <attributes>
+    <attribute id="FIELD_GROUP" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="FIELD_GROUP"/>
+      <keyMapping columnObjectName="U_FIELDS" columnName="FIELD_GROUP"/>
+    </attribute>
+    <attribute id="FIELD_NAME" key="true" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ATTRIBUTE_NAME"/>
+      <keyMapping columnObjectName="U_FIELDS" columnName="FIELD_NAME"/>
+    </attribute>
+    <attribute id="DESCRIPTION" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DESCRIPTION"/>
+      <keyMapping columnObjectName="U_FIELDS" columnName="DESCRIPTION"/>
+    </attribute>
+    <attribute id="IS_SENSITIVE" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="IS_SENSITIVE"/>
+      <keyMapping columnObjectName="U_FIELDS" columnName="IS_SENSITIVE"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="P_CUSTOMER_ATTRIBUTES" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="30" y="293"/>
+      <rectangleSize height="30" width="188"/>
+    </shape>
+    <shape expanded="true" modelObjectName="P_CUSTOMER_VALUES" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="247" y="298"/>
+      <rectangleSize height="30" width="228"/>
+    </shape>
+    <shape expanded="true" modelObjectName="U_FIELDS" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="187"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

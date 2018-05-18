@@ -1,0 +1,735 @@
+namespace db;
+
+using db :: app;
+
+context ml {
+    context train {
+        @Comment : 'Training Dataset'
+        entity data {
+            "DATA_MONTH"                               : Integer;
+            "TOTAL_EVENTS"                             : BinaryFloat;
+            "TOTAL_EVENTS_30DAYS"                      : BinaryFloat;
+            "TOTAL_EVENTS_90DAYS"                      : BinaryFloat;
+            "TOTAL_EVENTS_180DAYS"                     : BinaryFloat;
+            "TOTAL_EVENTS_360DAYS"                     : BinaryFloat;
+            "TOTAL_EVENTS_HIGH_INFLUENCE"              : BinaryFloat;
+            "TOTAL_EVENTS_MEDIUM_INFLUENCE"            : BinaryFloat;
+            "TOTAL_EVENTS_LOW_INFLUENCE"               : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_30DAYS"             : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_90DAYS"             : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_180DAYS"            : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_360DAYS"            : BinaryFloat;
+            "TOTAL_EVENTS_HIGH_IMPACT"                 : BinaryFloat;
+            "TOTAL_EVENTS_MEDIUM_IMPACT"               : BinaryFloat;
+            "TOTAL_EVENTS_LOW_IMPACT"                  : BinaryFloat;
+            "EVENTS_REACT_30DAYS"                      : BinaryFloat;
+            "EVENTS_REACT_60DAYS"                      : BinaryFloat;
+            "EVENTS_REACT_90DAYS"                      : BinaryFloat;
+            "EVENTS_REACT_120DAYS"                     : BinaryFloat;
+            "TOTAL_PREDEFINED_EVENTS"                  : BinaryFloat;
+            "PREDEFINED_EVENTS_30DAYS"                 : BinaryFloat;
+            "PREDEFINED_EVENTS_90DAYS"                 : BinaryFloat;
+            "PREDEFINED_EVENTS_180DAYS"                : BinaryFloat;
+            "PREDEFINED_EVENTS_360DAYS"                : BinaryFloat;
+            "AVG_MONTHLY_EVENTS"                       : BinaryFloat;
+            "TOTAL_MONTHS_WITH_COMPANY"                : BinaryFloat;
+            "INACTIVE_EVENTS"                          : BinaryFloat;
+            "INACTIVE_EVENTS_30DAYS"                   : BinaryFloat;
+            "INACTIVE_EVENTS_90DAYS"                   : BinaryFloat;
+            "INACTIVE_EVENTS_180DAYS"                  : BinaryFloat;
+            "NEGATIVE_SURVEY"                          : BinaryFloat;
+            "NEGATIVE_SURVEY_30DAYS"                   : BinaryFloat;
+            "NEGATIVE_SURVEY_90DAYS"                   : BinaryFloat;
+            "NEGATIVE_SURVEY_180DAYS"                  : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS"                   : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS_30DAYS"            : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS_90DAYS"            : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS_180DAYS"           : BinaryFloat;
+            "PAYMENT_ARRANGEMENT_EVENTS_WITHIN_WINDOW" : BinaryFloat;
+            "OUT_FINAL_DEMAND_DUNNING_WITHIN_WINDOW"   : BinaryFloat;
+            "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"       : BinaryFloat;
+            "PAYMENT_EXTENSION_ENQ"                    : BinaryFloat;
+            "OUT_GARNISHEE_NOTICE_WITHIN_WINDOW"       : BinaryFloat;
+            "OUT_GARNISHEE_NOTICE_ALL_YEARS"           : BinaryFloat;
+            "LEGAL_LETTER_WITHIN_WINDOW"               : BinaryFloat;
+            "LEGAL_LETTER_ALL_YEARS"                   : BinaryFloat;
+            "PAYMENT_PLAN_WITHIN_WINDOW"               : BinaryFloat;
+            "PAYMENT_PLAN_ALL_YEARS"                   : BinaryFloat;
+            "MORTGAGEE_LETTER_WITHIN_WINDOW"           : BinaryFloat;
+            "MORTGAGEE_LETTER_ALL_YEARS"               : BinaryFloat;
+            "DEBT_MANAGEMENT_EVENTS_WITHIN_WINDOW"     : BinaryFloat;
+            "DEBT_MANAGEMENT_EVENTS_ALL_YEARS"         : BinaryFloat;
+            "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
+            "REACTED"                                  : Integer;
+        }
+        technical configuration {
+            column store;
+        };
+
+        entity nn_model {
+            "NAME"  : hana.VARCHAR(100);
+            "MODEL" : hana.CLOB;
+        }
+        technical configuration {
+            column store;
+        };
+
+        entity nn_result {
+            "NAME"  : hana.VARCHAR(100);
+            "VALUE" : BinaryFloat;
+        }
+        technical configuration {
+            column store;
+        };
+
+        entity rf_model {
+            "ID"        : Integer;
+            "TREEINDEX" : Integer;
+            "MODEL"     : hana.VARCHAR(5000);
+        }
+        technical configuration {
+            column store;
+        };
+
+        entity rf_var_imp {
+            "VAR" : hana.VARCHAR(100);
+            "IMP" : BinaryFloat;
+        }
+        technical configuration {
+            column store;
+        };
+
+        entity rf_error {
+            "TREEINDEX" : Integer;
+            "ERR"       : BinaryFloat;
+        }
+        technical configuration {
+            column store;
+        };
+
+        entity rf_conf_matrix {
+            "ID"      : Integer;
+            "CONTENT" : hana.VARCHAR(1000);
+        }
+        technical configuration {
+            column store;
+        };
+    };
+
+    context predict {
+        @Comment : 'Customer Risk Scores'
+        entity CustomerRiskResults {
+            "CUST_ID"    : Integer64;
+
+            @Comment : 'Final Risk Score'
+            "RISK_SCORE" : BinaryFloat;
+
+            @Comment : 'Random Forest Algorithm Result'
+            "RF_SCORE"   : BinaryFloat;
+
+            @Comment : 'Neural Network Algorithm Result'
+            "NN_SCORE"   : BinaryFloat;
+        }
+        technical configuration {
+            column store;
+        };
+
+        @Comment : 'Prediction Dataset'
+        entity data {
+            "ID"                                       : Integer;
+            "DATA_MONTH"                               : Integer;
+            "TOTAL_EVENTS"                             : BinaryFloat;
+            "TOTAL_EVENTS_30DAYS"                      : BinaryFloat;
+            "TOTAL_EVENTS_90DAYS"                      : BinaryFloat;
+            "TOTAL_EVENTS_180DAYS"                     : BinaryFloat;
+            "TOTAL_EVENTS_360DAYS"                     : BinaryFloat;
+            "TOTAL_EVENTS_HIGH_INFLUENCE"              : BinaryFloat;
+            "TOTAL_EVENTS_MEDIUM_INFLUENCE"            : BinaryFloat;
+            "TOTAL_EVENTS_LOW_INFLUENCE"               : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_30DAYS"             : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_90DAYS"             : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_180DAYS"            : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_360DAYS"            : BinaryFloat;
+            "TOTAL_EVENTS_HIGH_IMPACT"                 : BinaryFloat;
+            "TOTAL_EVENTS_MEDIUM_IMPACT"               : BinaryFloat;
+            "TOTAL_EVENTS_LOW_IMPACT"                  : BinaryFloat;
+            "EVENTS_REACT_30DAYS"                      : BinaryFloat;
+            "EVENTS_REACT_60DAYS"                      : BinaryFloat;
+            "EVENTS_REACT_90DAYS"                      : BinaryFloat;
+            "EVENTS_REACT_120DAYS"                     : BinaryFloat;
+            "TOTAL_PREDEFINED_EVENTS"                  : BinaryFloat;
+            "PREDEFINED_EVENTS_30DAYS"                 : BinaryFloat;
+            "PREDEFINED_EVENTS_90DAYS"                 : BinaryFloat;
+            "PREDEFINED_EVENTS_180DAYS"                : BinaryFloat;
+            "PREDEFINED_EVENTS_360DAYS"                : BinaryFloat;
+            "AVG_MONTHLY_EVENTS"                       : BinaryFloat;
+            "TOTAL_MONTHS_WITH_COMPANY"                : BinaryFloat;
+            "INACTIVE_EVENTS"                          : BinaryFloat;
+            "INACTIVE_EVENTS_30DAYS"                   : BinaryFloat;
+            "INACTIVE_EVENTS_90DAYS"                   : BinaryFloat;
+            "INACTIVE_EVENTS_180DAYS"                  : BinaryFloat;
+            "NEGATIVE_SURVEY"                          : BinaryFloat;
+            "NEGATIVE_SURVEY_30DAYS"                   : BinaryFloat;
+            "NEGATIVE_SURVEY_90DAYS"                   : BinaryFloat;
+            "NEGATIVE_SURVEY_180DAYS"                  : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS"                   : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS_30DAYS"            : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS_90DAYS"            : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS_180DAYS"           : BinaryFloat;
+            "PAYMENT_ARRANGEMENT_EVENTS_WITHIN_WINDOW" : BinaryFloat;
+            "OUT_FINAL_DEMAND_DUNNING_WITHIN_WINDOW"   : BinaryFloat;
+            "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"       : BinaryFloat;
+            "PAYMENT_EXTENSION_ENQ"                    : BinaryFloat;
+            "OUT_GARNISHEE_NOTICE_WITHIN_WINDOW"       : BinaryFloat;
+            "OUT_GARNISHEE_NOTICE_ALL_YEARS"           : BinaryFloat;
+            "LEGAL_LETTER_WITHIN_WINDOW"               : BinaryFloat;
+            "LEGAL_LETTER_ALL_YEARS"                   : BinaryFloat;
+            "PAYMENT_PLAN_WITHIN_WINDOW"               : BinaryFloat;
+            "PAYMENT_PLAN_ALL_YEARS"                   : BinaryFloat;
+            "MORTGAGEE_LETTER_WITHIN_WINDOW"           : BinaryFloat;
+            "MORTGAGEE_LETTER_ALL_YEARS"               : BinaryFloat;
+            "DEBT_MANAGEMENT_EVENTS_WITHIN_WINDOW"     : BinaryFloat;
+            "DEBT_MANAGEMENT_EVENTS_ALL_YEARS"         : BinaryFloat;
+            "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
+        }
+        technical configuration {
+            column store;
+        };
+
+        entity nn_result {
+            "ID"      : Integer;
+            "REACTED" : Integer;
+        }
+        technical configuration {
+            column store;
+        };
+
+        entity nn_softmax {
+            "ID"      : Integer;
+            "REACTED" : Integer;
+            "SOFTMAX" : BinaryFloat;
+        }
+        technical configuration {
+            column store;
+        };
+
+        entity rf_result {
+            "ID"      : Integer;
+            "SCORING" : hana.VARCHAR(50);
+            "PROB"    : BinaryFloat;
+        }
+        technical configuration {
+            column store;
+        };
+    };
+
+    context config {
+        entity MLParameters {
+            @Comment : 'ML Parameter'
+            "PARAMETER_NAME"   : hana.VARCHAR(1000);
+            "DESCRIPTION"      : hana.VARCHAR(5000);
+
+            @Comment : 'Data Visibility Flag'
+            "IS_ENABLED"       : Integer default 0;
+            "INT_PARAMETER"    : Integer null;
+            "DOUBLE_PARAMETER" : BinaryFloat null;
+            "STRING_PARAMETER" : hana.VARCHAR(100) null;
+        }
+        technical configuration {
+            column store;
+        };
+    };
+
+    @Comment : 'Backup Dataset'
+    context bkup {
+        @Comment : 'Backup Training Dataset'
+        entity train_data {
+            "CUST_ID"                                  : Integer64;
+            "DATA_MONTH"                               : Integer;
+            "TOTAL_EVENTS"                             : BinaryFloat;
+            "TOTAL_EVENTS_30DAYS"                      : BinaryFloat;
+            "TOTAL_EVENTS_90DAYS"                      : BinaryFloat;
+            "TOTAL_EVENTS_180DAYS"                     : BinaryFloat;
+            "TOTAL_EVENTS_360DAYS"                     : BinaryFloat;
+            "TOTAL_EVENTS_HIGH_INFLUENCE"              : BinaryFloat;
+            "TOTAL_EVENTS_MEDIUM_INFLUENCE"            : BinaryFloat;
+            "TOTAL_EVENTS_LOW_INFLUENCE"               : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_30DAYS"             : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_90DAYS"             : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_180DAYS"            : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_360DAYS"            : BinaryFloat;
+            "TOTAL_EVENTS_HIGH_IMPACT"                 : BinaryFloat;
+            "TOTAL_EVENTS_MEDIUM_IMPACT"               : BinaryFloat;
+            "TOTAL_EVENTS_LOW_IMPACT"                  : BinaryFloat;
+            "EVENTS_REACT_30DAYS"                      : BinaryFloat;
+            "EVENTS_REACT_60DAYS"                      : BinaryFloat;
+            "EVENTS_REACT_90DAYS"                      : BinaryFloat;
+            "EVENTS_REACT_120DAYS"                     : BinaryFloat;
+            "TOTAL_PREDEFINED_EVENTS"                  : BinaryFloat;
+            "PREDEFINED_EVENTS_30DAYS"                 : BinaryFloat;
+            "PREDEFINED_EVENTS_90DAYS"                 : BinaryFloat;
+            "PREDEFINED_EVENTS_180DAYS"                : BinaryFloat;
+            "PREDEFINED_EVENTS_360DAYS"                : BinaryFloat;
+            "AVG_MONTHLY_EVENTS"                       : BinaryFloat;
+            "TOTAL_MONTHS_WITH_COMPANY"                : BinaryFloat;
+            "INACTIVE_EVENTS"                          : BinaryFloat;
+            "INACTIVE_EVENTS_30DAYS"                   : BinaryFloat;
+            "INACTIVE_EVENTS_90DAYS"                   : BinaryFloat;
+            "INACTIVE_EVENTS_180DAYS"                  : BinaryFloat;
+            "NEGATIVE_SURVEY"                          : BinaryFloat;
+            "NEGATIVE_SURVEY_30DAYS"                   : BinaryFloat;
+            "NEGATIVE_SURVEY_90DAYS"                   : BinaryFloat;
+            "NEGATIVE_SURVEY_180DAYS"                  : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS"                   : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS_30DAYS"            : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS_90DAYS"            : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS_180DAYS"           : BinaryFloat;
+            "PAYMENT_ARRANGEMENT_EVENTS_WITHIN_WINDOW" : BinaryFloat;
+            "OUT_FINAL_DEMAND_DUNNING_WITHIN_WINDOW"   : BinaryFloat;
+            "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"       : BinaryFloat;
+            "PAYMENT_EXTENSION_ENQ"                    : BinaryFloat;
+            "OUT_GARNISHEE_NOTICE_WITHIN_WINDOW"       : BinaryFloat;
+            "OUT_GARNISHEE_NOTICE_ALL_YEARS"           : BinaryFloat;
+            "LEGAL_LETTER_WITHIN_WINDOW"               : BinaryFloat;
+            "LEGAL_LETTER_ALL_YEARS"                   : BinaryFloat;
+            "PAYMENT_PLAN_WITHIN_WINDOW"               : BinaryFloat;
+            "PAYMENT_PLAN_ALL_YEARS"                   : BinaryFloat;
+            "MORTGAGEE_LETTER_WITHIN_WINDOW"           : BinaryFloat;
+            "MORTGAGEE_LETTER_ALL_YEARS"               : BinaryFloat;
+            "DEBT_MANAGEMENT_EVENTS_WITHIN_WINDOW"     : BinaryFloat;
+            "DEBT_MANAGEMENT_EVENTS_ALL_YEARS"         : BinaryFloat;
+            "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
+            "REACTED"                                  : Integer;
+            "REACTION_TYPE"                            : hana.VARCHAR(100);
+            "INIT_DATE"                                : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+
+        entity predict_data {
+            "ID"                                       : Integer;
+            "DATA_MONTH"                               : Integer;
+            "TOTAL_EVENTS"                             : BinaryFloat;
+            "TOTAL_EVENTS_30DAYS"                      : BinaryFloat;
+            "TOTAL_EVENTS_90DAYS"                      : BinaryFloat;
+            "TOTAL_EVENTS_180DAYS"                     : BinaryFloat;
+            "TOTAL_EVENTS_360DAYS"                     : BinaryFloat;
+            "TOTAL_EVENTS_HIGH_INFLUENCE"              : BinaryFloat;
+            "TOTAL_EVENTS_MEDIUM_INFLUENCE"            : BinaryFloat;
+            "TOTAL_EVENTS_LOW_INFLUENCE"               : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_30DAYS"             : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_90DAYS"             : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_180DAYS"            : BinaryFloat;
+            "HIGH_INFLUENCE_EVENTS_360DAYS"            : BinaryFloat;
+            "TOTAL_EVENTS_HIGH_IMPACT"                 : BinaryFloat;
+            "TOTAL_EVENTS_MEDIUM_IMPACT"               : BinaryFloat;
+            "TOTAL_EVENTS_LOW_IMPACT"                  : BinaryFloat;
+            "EVENTS_REACT_30DAYS"                      : BinaryFloat;
+            "EVENTS_REACT_60DAYS"                      : BinaryFloat;
+            "EVENTS_REACT_90DAYS"                      : BinaryFloat;
+            "EVENTS_REACT_120DAYS"                     : BinaryFloat;
+            "TOTAL_PREDEFINED_EVENTS"                  : BinaryFloat;
+            "PREDEFINED_EVENTS_30DAYS"                 : BinaryFloat;
+            "PREDEFINED_EVENTS_90DAYS"                 : BinaryFloat;
+            "PREDEFINED_EVENTS_180DAYS"                : BinaryFloat;
+            "PREDEFINED_EVENTS_360DAYS"                : BinaryFloat;
+            "AVG_MONTHLY_EVENTS"                       : BinaryFloat;
+            "TOTAL_MONTHS_WITH_COMPANY"                : BinaryFloat;
+            "INACTIVE_EVENTS"                          : BinaryFloat;
+            "INACTIVE_EVENTS_30DAYS"                   : BinaryFloat;
+            "INACTIVE_EVENTS_90DAYS"                   : BinaryFloat;
+            "INACTIVE_EVENTS_180DAYS"                  : BinaryFloat;
+            "NEGATIVE_SURVEY"                          : BinaryFloat;
+            "NEGATIVE_SURVEY_30DAYS"                   : BinaryFloat;
+            "NEGATIVE_SURVEY_90DAYS"                   : BinaryFloat;
+            "NEGATIVE_SURVEY_180DAYS"                  : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS"                   : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS_30DAYS"            : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS_90DAYS"            : BinaryFloat;
+            "TOTAL_QUERY_COMPLAINTS_180DAYS"           : BinaryFloat;
+            "PAYMENT_ARRANGEMENT_EVENTS_WITHIN_WINDOW" : BinaryFloat;
+            "OUT_FINAL_DEMAND_DUNNING_WITHIN_WINDOW"   : BinaryFloat;
+            "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"       : BinaryFloat;
+            "PAYMENT_EXTENSION_ENQ"                    : BinaryFloat;
+            "OUT_GARNISHEE_NOTICE_WITHIN_WINDOW"       : BinaryFloat;
+            "OUT_GARNISHEE_NOTICE_ALL_YEARS"           : BinaryFloat;
+            "LEGAL_LETTER_WITHIN_WINDOW"               : BinaryFloat;
+            "LEGAL_LETTER_ALL_YEARS"                   : BinaryFloat;
+            "PAYMENT_PLAN_WITHIN_WINDOW"               : BinaryFloat;
+            "PAYMENT_PLAN_ALL_YEARS"                   : BinaryFloat;
+            "MORTGAGEE_LETTER_WITHIN_WINDOW"           : BinaryFloat;
+            "MORTGAGEE_LETTER_ALL_YEARS"               : BinaryFloat;
+            "DEBT_MANAGEMENT_EVENTS_WITHIN_WINDOW"     : BinaryFloat;
+            "DEBT_MANAGEMENT_EVENTS_ALL_YEARS"         : BinaryFloat;
+            "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
+            "REACTED"                                  : Integer;
+            "REACTION_TYPE"                            : hana.VARCHAR(100);
+            "INIT_DATE"                                : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+
+        @Comment : 'Backup of Customer Risk Scores'
+        entity CustomerRiskResults {
+            "CUST_ID"       : Integer64;
+            "RISK_SCORE"    : BinaryFloat;
+            "RF_SCORE"      : BinaryFloat;
+            "NN_SCORE"      : BinaryFloat;
+            "REACTION_TYPE" : hana.VARCHAR(100);
+            "INIT_DATE"     : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+
+        @Comment : 'Backup Neural Network ML model'
+        entity nn_model {
+            "NAME"          : hana.VARCHAR(100);
+            "MODEL"         : hana.CLOB;
+            "REACTION_TYPE" : hana.VARCHAR(100);
+            "INIT_DATE"     : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+
+        @Comment : 'Backup Random Forest ML model'
+        entity rf_model {
+            "ID"            : Integer;
+            "TREEINDEX"     : Integer;
+            "MODEL"         : hana.VARCHAR(5000);
+            "REACTION_TYPE" : hana.VARCHAR(100);
+            "INIT_DATE"     : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+
+        @Comment : 'Backup NN Training Result'
+        entity train_nn_result {
+            "NAME"      : hana.VARCHAR(100);
+            "VALUE"     : BinaryFloat;
+            "INIT_DATE" : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+
+        @Comment : 'Backup RF Variable Importance'
+        entity rf_var_imp {
+            "VAR"       : hana.VARCHAR(100);
+            "IMP"       : BinaryFloat;
+            "INIT_DATE" : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+
+        @Comment : 'Backup RF Error'
+        entity rf_error {
+            "TREEINDEX" : Integer;
+            "ERR"       : BinaryFloat;
+            "INIT_DATE" : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+
+        @Comment : 'RF Confusion Matrix Backup'
+        entity rf_conf_matrix {
+            "ID"        : Integer;
+            "CONTENT"   : hana.VARCHAR(1000);
+            "INIT_DATE" : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+
+        @Comment : 'Backup of NN Prediction Result'
+        entity predict_nn_result {
+            "ID"        : Integer;
+            "REACTED"   : Integer;
+            "INIT_DATE" : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+
+        @Comment : 'Backup NN Prediction Softmax'
+        entity nn_softmax {
+            "ID"        : Integer;
+            "REACTED"   : Integer;
+            "SOFTMAX"   : BinaryFloat;
+            "INIT_DATE" : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+
+        @Comment : 'Backup RF Prediction Result'
+        entity predict_rf_result {
+            "ID"        : Integer;
+            "SCORING"   : hana.VARCHAR(50);
+            "PROB"      : BinaryFloat;
+            "INIT_DATE" : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+
+        @Comment : 'Backup ML Configuration Parameters'
+        entity MLParameters {
+            @Comment : 'ML Parameter'
+            "PARAMETER_NAME"   : hana.VARCHAR(1000);
+            "DESCRIPTION"      : hana.VARCHAR(5000);
+
+            @Comment : 'Data Visibility Flag'
+            "IS_ENABLED"       : Integer default 0;
+            "INT_PARAMETER"    : Integer null;
+            "DOUBLE_PARAMETER" : BinaryFloat null;
+            "STRING_PARAMETER" : hana.VARCHAR(100) null;
+            "INIT_DATE"        : UTCTimestamp;
+        }
+        technical configuration {
+            column store;
+        };
+    };
+
+    @Comment : 'Table types'
+    context type {
+        context train {
+            table type data {
+                "DATA_MONTH"                               : Integer;
+                "TOTAL_EVENTS"                             : BinaryFloat;
+                "TOTAL_EVENTS_30DAYS"                      : BinaryFloat;
+                "TOTAL_EVENTS_90DAYS"                      : BinaryFloat;
+                "TOTAL_EVENTS_180DAYS"                     : BinaryFloat;
+                "TOTAL_EVENTS_360DAYS"                     : BinaryFloat;
+                "TOTAL_EVENTS_HIGH_INFLUENCE"              : BinaryFloat;
+                "TOTAL_EVENTS_MEDIUM_INFLUENCE"            : BinaryFloat;
+                "TOTAL_EVENTS_LOW_INFLUENCE"               : BinaryFloat;
+                "HIGH_INFLUENCE_EVENTS_30DAYS"             : BinaryFloat;
+                "HIGH_INFLUENCE_EVENTS_90DAYS"             : BinaryFloat;
+                "HIGH_INFLUENCE_EVENTS_180DAYS"            : BinaryFloat;
+                "HIGH_INFLUENCE_EVENTS_360DAYS"            : BinaryFloat;
+                "TOTAL_EVENTS_HIGH_IMPACT"                 : BinaryFloat;
+                "TOTAL_EVENTS_MEDIUM_IMPACT"               : BinaryFloat;
+                "TOTAL_EVENTS_LOW_IMPACT"                  : BinaryFloat;
+                "EVENTS_REACT_30DAYS"                      : BinaryFloat;
+                "EVENTS_REACT_60DAYS"                      : BinaryFloat;
+                "EVENTS_REACT_90DAYS"                      : BinaryFloat;
+                "EVENTS_REACT_120DAYS"                     : BinaryFloat;
+                "TOTAL_PREDEFINED_EVENTS"                  : BinaryFloat;
+                "PREDEFINED_EVENTS_30DAYS"                 : BinaryFloat;
+                "PREDEFINED_EVENTS_90DAYS"                 : BinaryFloat;
+                "PREDEFINED_EVENTS_180DAYS"                : BinaryFloat;
+                "PREDEFINED_EVENTS_360DAYS"                : BinaryFloat;
+                "AVG_MONTHLY_EVENTS"                       : BinaryFloat;
+                "TOTAL_MONTHS_WITH_COMPANY"                : BinaryFloat;
+                "INACTIVE_EVENTS"                          : BinaryFloat;
+                "INACTIVE_EVENTS_30DAYS"                   : BinaryFloat;
+                "INACTIVE_EVENTS_90DAYS"                   : BinaryFloat;
+                "INACTIVE_EVENTS_180DAYS"                  : BinaryFloat;
+                "NEGATIVE_SURVEY"                          : BinaryFloat;
+                "NEGATIVE_SURVEY_30DAYS"                   : BinaryFloat;
+                "NEGATIVE_SURVEY_90DAYS"                   : BinaryFloat;
+                "NEGATIVE_SURVEY_180DAYS"                  : BinaryFloat;
+                "TOTAL_QUERY_COMPLAINTS"                   : BinaryFloat;
+                "TOTAL_QUERY_COMPLAINTS_30DAYS"            : BinaryFloat;
+                "TOTAL_QUERY_COMPLAINTS_90DAYS"            : BinaryFloat;
+                "TOTAL_QUERY_COMPLAINTS_180DAYS"           : BinaryFloat;
+                "PAYMENT_ARRANGEMENT_EVENTS_WITHIN_WINDOW" : BinaryFloat;
+                "OUT_FINAL_DEMAND_DUNNING_WITHIN_WINDOW"   : BinaryFloat;
+                "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"       : BinaryFloat;
+                "PAYMENT_EXTENSION_ENQ"                    : BinaryFloat;
+                "OUT_GARNISHEE_NOTICE_WITHIN_WINDOW"       : BinaryFloat;
+                "OUT_GARNISHEE_NOTICE_ALL_YEARS"           : BinaryFloat;
+                "LEGAL_LETTER_WITHIN_WINDOW"               : BinaryFloat;
+                "LEGAL_LETTER_ALL_YEARS"                   : BinaryFloat;
+                "PAYMENT_PLAN_WITHIN_WINDOW"               : BinaryFloat;
+                "PAYMENT_PLAN_ALL_YEARS"                   : BinaryFloat;
+                "MORTGAGEE_LETTER_WITHIN_WINDOW"           : BinaryFloat;
+                "MORTGAGEE_LETTER_ALL_YEARS"               : BinaryFloat;
+                "DEBT_MANAGEMENT_EVENTS_WITHIN_WINDOW"     : BinaryFloat;
+                "DEBT_MANAGEMENT_EVENTS_ALL_YEARS"         : BinaryFloat;
+                "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
+                "REACTED"                                  : Integer;
+            };
+            table type nn_model {
+                "NAME"  : hana.VARCHAR(100);
+                "MODEL" : hana.CLOB;
+            };
+            table type nn_result {
+                "NAME"  : hana.VARCHAR(100);
+                "VALUE" : BinaryFloat;
+            };
+            table type rf_model {
+                "ID"        : Integer;
+                "TREEINDEX" : Integer;
+                "MODEL"     : hana.VARCHAR(5000);
+            };
+            table type rf_var_imp {
+                "VAR" : hana.VARCHAR(100);
+                "IMP" : BinaryFloat;
+            };
+            table type rf_error {
+                "TREEINDEX" : Integer;
+                "ERR"       : BinaryFloat;
+            };
+            table type rf_conf_matrix {
+                "ID"      : Integer;
+                "CONTENT" : hana.VARCHAR(1000);
+            };
+        };
+
+        context predict {
+            table type data {
+                "ID"                                       : Integer;
+                "DATA_MONTH"                               : Integer;
+                "TOTAL_EVENTS"                             : BinaryFloat;
+                "TOTAL_EVENTS_30DAYS"                      : BinaryFloat;
+                "TOTAL_EVENTS_90DAYS"                      : BinaryFloat;
+                "TOTAL_EVENTS_180DAYS"                     : BinaryFloat;
+                "TOTAL_EVENTS_360DAYS"                     : BinaryFloat;
+                "TOTAL_EVENTS_HIGH_INFLUENCE"              : BinaryFloat;
+                "TOTAL_EVENTS_MEDIUM_INFLUENCE"            : BinaryFloat;
+                "TOTAL_EVENTS_LOW_INFLUENCE"               : BinaryFloat;
+                "HIGH_INFLUENCE_EVENTS_30DAYS"             : BinaryFloat;
+                "HIGH_INFLUENCE_EVENTS_90DAYS"             : BinaryFloat;
+                "HIGH_INFLUENCE_EVENTS_180DAYS"            : BinaryFloat;
+                "HIGH_INFLUENCE_EVENTS_360DAYS"            : BinaryFloat;
+                "TOTAL_EVENTS_HIGH_IMPACT"                 : BinaryFloat;
+                "TOTAL_EVENTS_MEDIUM_IMPACT"               : BinaryFloat;
+                "TOTAL_EVENTS_LOW_IMPACT"                  : BinaryFloat;
+                "EVENTS_REACT_30DAYS"                      : BinaryFloat;
+                "EVENTS_REACT_60DAYS"                      : BinaryFloat;
+                "EVENTS_REACT_90DAYS"                      : BinaryFloat;
+                "EVENTS_REACT_120DAYS"                     : BinaryFloat;
+                "TOTAL_PREDEFINED_EVENTS"                  : BinaryFloat;
+                "PREDEFINED_EVENTS_30DAYS"                 : BinaryFloat;
+                "PREDEFINED_EVENTS_90DAYS"                 : BinaryFloat;
+                "PREDEFINED_EVENTS_180DAYS"                : BinaryFloat;
+                "PREDEFINED_EVENTS_360DAYS"                : BinaryFloat;
+                "AVG_MONTHLY_EVENTS"                       : BinaryFloat;
+                "TOTAL_MONTHS_WITH_COMPANY"                : BinaryFloat;
+                "INACTIVE_EVENTS"                          : BinaryFloat;
+                "INACTIVE_EVENTS_30DAYS"                   : BinaryFloat;
+                "INACTIVE_EVENTS_90DAYS"                   : BinaryFloat;
+                "INACTIVE_EVENTS_180DAYS"                  : BinaryFloat;
+                "NEGATIVE_SURVEY"                          : BinaryFloat;
+                "NEGATIVE_SURVEY_30DAYS"                   : BinaryFloat;
+                "NEGATIVE_SURVEY_90DAYS"                   : BinaryFloat;
+                "NEGATIVE_SURVEY_180DAYS"                  : BinaryFloat;
+                "TOTAL_QUERY_COMPLAINTS"                   : BinaryFloat;
+                "TOTAL_QUERY_COMPLAINTS_30DAYS"            : BinaryFloat;
+                "TOTAL_QUERY_COMPLAINTS_90DAYS"            : BinaryFloat;
+                "TOTAL_QUERY_COMPLAINTS_180DAYS"           : BinaryFloat;
+                "PAYMENT_ARRANGEMENT_EVENTS_WITHIN_WINDOW" : BinaryFloat;
+                "OUT_FINAL_DEMAND_DUNNING_WITHIN_WINDOW"   : BinaryFloat;
+                "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"       : BinaryFloat;
+                "PAYMENT_EXTENSION_ENQ"                    : BinaryFloat;
+                "OUT_GARNISHEE_NOTICE_WITHIN_WINDOW"       : BinaryFloat;
+                "OUT_GARNISHEE_NOTICE_ALL_YEARS"           : BinaryFloat;
+                "LEGAL_LETTER_WITHIN_WINDOW"               : BinaryFloat;
+                "LEGAL_LETTER_ALL_YEARS"                   : BinaryFloat;
+                "PAYMENT_PLAN_WITHIN_WINDOW"               : BinaryFloat;
+                "PAYMENT_PLAN_ALL_YEARS"                   : BinaryFloat;
+                "MORTGAGEE_LETTER_WITHIN_WINDOW"           : BinaryFloat;
+                "MORTGAGEE_LETTER_ALL_YEARS"               : BinaryFloat;
+                "DEBT_MANAGEMENT_EVENTS_WITHIN_WINDOW"     : BinaryFloat;
+                "DEBT_MANAGEMENT_EVENTS_ALL_YEARS"         : BinaryFloat;
+                "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
+            };
+            table type nn_result {
+                "ID"      : Integer;
+                "REACTED" : Integer;
+            };
+            table type nn_softmax {
+                "ID"      : Integer;
+                "REACTED" : Integer;
+                "SOFTMAX" : BinaryFloat;
+            };
+            table type rf_result {
+                "ID"      : Integer;
+                "SCORING" : hana.VARCHAR(50);
+                "PROB"    : BinaryFloat;
+            };
+        };
+
+        table type customer_list {
+            "CUST_ID"       : Integer64;
+            "REACTED"       : Integer;
+            "REACTION_DATE" : UTCTimestamp;
+        };
+        table type control {
+            "NAME"       : hana.VARCHAR(100);
+            "INTARGS"    : Integer;
+            "DOUBLEARGS" : BinaryFloat;
+            "STRINGARGS" : hana.VARCHAR(100);
+        };
+
+        context fpgrowth {
+            table type input {
+                TRANS : hana.VARCHAR(200);
+                ITEM  : hana.VARCHAR(200);
+            };
+            table type output {
+                PRERULE    : hana.VARCHAR(500);
+                POSTRULE   : hana.VARCHAR(500);
+                SUPPORT    : BinaryFloat;
+                CONFIDENCE : BinaryFloat;
+                LIFT       : BinaryFloat;
+            };
+        };
+
+        // LDA Estimate Types
+        context lda {
+            table type input {
+                ID   : Integer;
+                TEXT : String(5000);
+            };
+            table type dictionary {
+                WORDID : Integer;
+                TEXT   : String(5000);
+            };
+            //Document Topic Distribution
+            table type docTopicDistribution {
+                DOCUMENTID  : Integer;
+                TOPICID     : Integer;
+                PROBABILITY : BinaryFloat; // Same as Double
+            };
+            //Topic Word Distribution
+            table type topicWordDistribution {
+                TOPICID     : Integer;
+                WORDID      : Integer;
+                PROBABILITY : BinaryFloat; // Same as Double				
+            };
+            //Topic Top Words
+            table type output {
+                TOPICID : Integer;
+                TEXT    : String(1000);
+            };
+        };
+    };
+
+    @Comment : 'Combined Events'
+    context combined {
+        entity rawEvents {
+            CUST_ID       : Integer64;
+            EVENT_ID      : Integer;
+            INIT_DATE     : UTCTimestamp;
+            REACTION_DATE : UTCTimestamp;
+            GROUP_NO      : Integer;
+        };
+
+        entity result {
+            PRERULE    : hana.VARCHAR(500);
+            POSTRULE   : hana.VARCHAR(500);
+            SUPPORT    : BinaryFloat;
+            CONFIDENCE : BinaryFloat;
+            LIFT       : BinaryFloat;
+        };
+    };
+};

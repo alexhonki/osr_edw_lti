@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.apps.event::CV_EVENT_INFLUENCE_NEW" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_EVENT_INFLUENCE_NEW"/>
+<localVariables>
+  <variable id="IP_TO" parameter="true">
+    <descriptions defaultDescription="IP_TO"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_CONF_GET_PREDICTION_TIME_SEGMENT</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_REACTION_TYPE" parameter="true">
+    <descriptions defaultDescription="IP_REACTION_TYPE"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_CONF_GET_REACTION_TYPE</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::app.events.influence">
+    <resourceUri>db::app.events.influence</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="EVENT_INFLUENCE" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="EVENT_ID" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="REACTION_TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_IMPACT" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_IMPACT"/>
+      </viewAttribute>
+      <viewAttribute id="TOTAL_CUSTOMERS" aggregationType="sum">
+        <descriptions defaultDescription="TOTAL_CUSTOMERS"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE_DOUBLE" aggregationType="sum">
+        <descriptions defaultDescription="Event Influence"/>
+      </viewAttribute>
+    
+      <viewAttribute id="INFLUENCE" aggregationType="sum">
+        <descriptions defaultDescription="Event Influence"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.events.influence">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID.ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_IMPACT" source="EVENT_IMPACT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_CUSTOMERS" source="TOTAL_CUSTOMERS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE_DOUBLE" source="INFLUENCE_DOUBLE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+    </input>
+  
+    <filter>(&quot;TIME_SEGMENT&quot; &lt;=$$IP_TO$$) AND (&quot;REACTION_TYPE&quot; ='$$IP_REACTION_TYPE$$')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="LAST_EVENT">
+    <viewAttributes>
+      <viewAttribute id="EVENT_ID">
+        <descriptions defaultDescription="EVENT_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="TIME_SEGMENT" aggregationType="max">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="EVENT_INFLUENCE">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Last_Event_Influence" cardinality="CN_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="EVENT_ID_ID" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_IMPACT" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_IMPACT"/>
+      </viewAttribute>
+      <viewAttribute id="TOTAL_CUSTOMERS" aggregationType="sum">
+        <descriptions defaultDescription="TOTAL_CUSTOMERS"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE_DOUBLE" aggregationType="sum">
+        <descriptions defaultDescription="Event Influence"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE" aggregationType="sum">
+        <descriptions defaultDescription="Event Influence"/>
+      </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$EVENT_ID$EVENT_ID"/>
+      <viewAttribute hidden="true" id="JOIN$TIME_SEGMENT$TIME_SEGMENT"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="LAST_EVENT">
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$EVENT_ID$EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$TIME_SEGMENT$TIME_SEGMENT" source="TIME_SEGMENT"/>
+    </input>
+    <input node="EVENT_INFLUENCE">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_IMPACT" source="EVENT_IMPACT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_CUSTOMERS" source="TOTAL_CUSTOMERS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE_DOUBLE" source="INFLUENCE_DOUBLE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$EVENT_ID$EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$TIME_SEGMENT$TIME_SEGMENT" source="TIME_SEGMENT"/>
+    </input>
+    <joinAttribute name="JOIN$EVENT_ID$EVENT_ID"/>
+    <joinAttribute name="JOIN$TIME_SEGMENT$TIME_SEGMENT"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Last_Event_Influence">
+  <attributes>
+    <attribute id="EVENT_ID_ID" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="EVENT_ID_ID"/>
+      <keyMapping columnObjectName="Last_Event_Influence" columnName="EVENT_ID_ID"/>
+    </attribute>
+    <attribute id="EVENT_IMPACT" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="EVENT_IMPACT"/>
+      <keyMapping columnObjectName="Last_Event_Influence" columnName="EVENT_IMPACT"/>
+    </attribute>
+    <attribute id="TOTAL_CUSTOMERS" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TOTAL_CUSTOMERS"/>
+      <keyMapping columnObjectName="Last_Event_Influence" columnName="TOTAL_CUSTOMERS"/>
+    </attribute>
+    <attribute id="INFLUENCE_DOUBLE" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Event Influence"/>
+      <keyMapping columnObjectName="Last_Event_Influence" columnName="INFLUENCE_DOUBLE"/>
+    </attribute>
+    <attribute id="INFLUENCE" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Event Influence"/>
+      <keyMapping columnObjectName="Last_Event_Influence" columnName="INFLUENCE"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="EVENT_INFLUENCE" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="122" y="453"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="LAST_EVENT" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="-29" y="358"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Last_Event_Influence" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="122" y="233"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="LAST_EVENT" modelObjectNameSpace="Last_Event_Influence" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="EVENT_INFLUENCE" modelObjectNameSpace="Last_Event_Influence" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

@@ -1,0 +1,31 @@
+ID: OSR_LTI
+_schema-version: '2.0'
+description: OSR Land Tax Insights
+version: 0.0.1
+
+modules:
+ - name: core_db
+   type: hdb
+   path: core_db
+   requires:
+    - name: hdi_core_db
+
+
+ - name: core_js
+   type: nodejs
+   path: core_js
+   provides:
+    - name: core_js_api
+      properties:
+         url: ${default-url}
+
+
+ - name: html
+   type: html5
+   path: html
+
+resources:
+ - name: hdi_core_db
+   properties:
+      hdi-container-name: ${service-name}
+   type: com.sap.xs.hdi-container

@@ -1,0 +1,81 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.PredefinedEventsSettings"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:table="sap.ui.table"
+        xmlns:core="sap.ui.core"
+        displayBlock="true"
+        height="100%">
+    <Page id="idPredefinedEventsSettingsPage" showHeader="true" title="{i18n>PredefinedEventSettings.Title}" enableScrolling="true">
+        <content>
+            <Panel height="100%" width="auto" backgroundDesign="Transparent">
+                <FlexBox height="100%">
+                    <table:Table
+                            id="predefinedEventList"
+                            selectionMode="MultiToggle"
+                            visibleRowCountMode="Auto"
+                            rows="{CRI>/PredefinedEventsConfig}"
+                            noDataText="{i18n>Admin.GeneralSettings.NoUseCaseData}"
+                            rowSelectionChange="onRowSelectionChange"
+                            enableBusyIndicator="true">
+                        <table:toolbar>
+                            <Toolbar class="sapUiTinyMarginTop">
+                                <Title text="{i18n>PredefinedEventsSettings.PredefinedEventSettingsToolbarTitle}"/>
+                                <ToolbarSpacer/>
+                                <SearchField
+                                        placeholder="{i18n>PredefinedEventsSettings.PredefinedEventSettingsSearchPlaceholder}"
+                                        value="{/eventFilterString}"
+                                        search="filterEvents"
+                                        width="15rem"/>
+                                <Button
+                                        icon="sap-icon://show"
+                                        text="{i18n>EventManagement.EventList.ActivateSelected} {= ${/SelectedRowCount} > 0 ? '(' + ${/SelectedRowCount} + ')' : ''}"
+                                        press="doActivate"
+                                        enabled="{= ${/SelectedRowCount} > 0}"/>
+                                <Button
+                                        icon="sap-icon://hide"
+                                        text="{i18n>EventManagement.EventList.DeactivateSelected} {= ${/SelectedRowCount} > 0 ? '(' + ${/SelectedRowCount} + ')' : ''}"
+                                        press="doDeactivate"
+                                        enabled="{= ${/SelectedRowCount} > 0}"/>
+                                <Button text="Create New" press="createPredefinedEvent"/>
+                            </Toolbar>
+                        </table:toolbar>
+                        <table:columns>
+                            <table:Column width="10rem">
+                                <Label text="{i18n>PredefinedEventsSettings.IDColumnTitle}"/>
+                                <table:template>
+                                    <Text text="{CRI>ID}" maxLines="2"/>
+                                </table:template>
+                            </table:Column>
+                            <table:Column width="15rem">
+                                <Label text="{i18n>PredefinedEventsSettings.EventNameColumnTitle}"/>
+                                <table:template>
+                                    <Text text="{CRI>EVENT_NAME}"/>
+                                </table:template>
+                            </table:Column>
+                            <table:Column width="15rem">
+                                <Label text="{i18n>PredefinedEventsSettings.EventCategoryColumnTitle}"/>
+                                <table:template>
+                                    <Text text="{CRI>CATEGORY_NAME}"/>
+                                </table:template>
+                            </table:Column>
+                            <table:Column>
+                                <Label text="{i18n>PredefinedEventsSettings.DescriptionColumnTitle}"/>
+                                <table:template>
+                                    <Text text="{CRI>DESCRIPTION}"/>
+                                </table:template>
+                            </table:Column>
+                            <table:Column width="10rem">
+                                <Label text="{i18n>PredefinedEventsSettings.JobStatusColumnTitle}"/>
+                                <table:template>
+                                    <Text text="{CRI>JOB_STATUS}"/>
+                                </table:template>
+                            </table:Column>
+                        </table:columns>
+                    </table:Table>
+                </FlexBox>
+            </Panel>
+        </content>
+    </Page>
+</mvc:View>

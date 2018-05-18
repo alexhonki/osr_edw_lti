@@ -1,0 +1,130 @@
+PROCEDURE "procedures.events.erp::PR_EXTRACT_CONCESSION_EVENT" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+    AS
+BEGIN
+   /*************************************
+       /OSRQLD/LTCNEXMD - Land tax: Contract exemption/deductions per parcel and nano
+         INVALID_EXMD - Invalid Exemp/Ded ('X' - Yes , '' - No)
+         Received Concession - If it's not an invalid Exemption/Deduction (INVALID_EXMD = '')
+         Removed Concession - If it's not an invalid Exemption but Current Date > ValidTo of the Exemption/Deduction Received
+         Invalid Concession - If it's an invalid Exemption(INVALID_EXMD = 'X')
+   *************************************/
+   DECLARE LV_REC_CON_HOME NVARCHAR(500) := 'Received Concession For Home' ;
+   DECLARE LV_REC_CON_PROD NVARCHAR(500) := 'Received Concession For Primary Production';
+   DECLARE LV_REC_CON_OTH NVARCHAR(500)  := 'Received Concession For Other Concession';
+   DECLARE LV_REC_CON_SUBD NVARCHAR(500) := 'Received Concession For Subdivider Discount';
+   DECLARE LV_REM_CON_HOME NVARCHAR(500) := 'Removed Concession For Home';
+   DECLARE LV_REM_CON_PROD NVARCHAR(500) := 'Removed Concession For Primary Production';
+   DECLARE LV_REM_CON_OTH NVARCHAR(500)  := 'Removed Concession For Other Concession';
+   DECLARE LV_REM_CON_SUBD NVARCHAR(500) := 'Removed Concession For Subdivider Discount';
+   
+   
+   DECLARE LV_CATEGORY NVARCHAR(100) := 'CONCESSION';
+   DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+   LT_TEMP_RESV = SELECT CONCESSCODE, ZZ_PARTNER ,INTRENOPL , TAXYRSTARTDT
+                , LAG(CONCESSCODE)  OVER(PARTITION BY ZZ_PARTNER,INTRENOPL ORDER BY TAXYRSTARTDT ASC) as CONCESSCODE_LAG
+                FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV";
+	CALL "procedures.events.erp.concession::PR_DELETE_CONCESSION_DATA"(OT_CUST_ID=>LT_CUST_ID,OT_CUST_ID_SUBD=>LT_CUST_ID_SUBD);
+    INSERT INTO "db::app.CustomerEvents" 
+    
+	select * from(
+		/*Received Concession*/
+		select
+			SAP.CUST_ID as CUST_ID,
+			CASE WHEN CONCESSCODE = 'H' THEN (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REC_CON_HOME))
+				 WHEN CONCESSCODE = 'P' THEN (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REC_CON_PROD))
+				 ELSE (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REC_CON_OTH))  
+			END as EVENT_ID,
+			CASE WHEN CONCESSCODE = 'H' THEN (SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REC_CON_HOME))
+				 WHEN CONCESSCODE = 'P' THEN (SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REC_CON_PROD))
+				 ELSE (SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REC_CON_OTH))  
+			END as EVENT_GROUP,
+			CASE WHEN CONCESSCODE = 'H' THEN :LV_REC_CON_HOME
+				 WHEN CONCESSCODE = 'P' THEN :LV_REC_CON_PROD
+				 ELSE   :LV_REC_CON_OTH
+			END as EVENT_NAME,
+			CAST(VALIDFROM as date) as INIT_DATE,
+			NULL as END_DATE,
+			1 as EVENT_VALUE,
+			CASE WHEN CONCESSCODE = 'H' THEN :LV_REC_CON_HOME
+				 WHEN CONCESSCODE = 'P' THEN :LV_REC_CON_PROD
+				 ELSE   :LV_REC_CON_OTH
+			END as DESCRIPTION,
+			LEFT(VALIDFROM,6)  as INIT_TS,
+			NULL  as END_TS
+		from "osr.edw.staging.md.rms.proxy.synonym::CV_LTCNEXMD" as A
+		INNER JOIN  "db::app.Customer" as SAP on SAP.EXT_ID=A.BPARTNER
+		where INVALID_EXMD=''  AND 	SAP.INIT_DATE <= CAST(VALIDFROM as date) 
+		AND BPARTNER IN (SELECT BPARTNER FROM :LT_CUST_ID)
+
+	UNION ALL
+		
+		/*Removed Concession*/
+		select 
+			SAP.CUST_ID as CUST_ID,
+			CASE WHEN CONCESSCODE = 'H' THEN (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REM_CON_HOME))
+				 WHEN CONCESSCODE = 'P' THEN (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REM_CON_PROD))
+				 ELSE (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REM_CON_OTH))  
+			END as EVENT_ID,
+			CASE WHEN CONCESSCODE = 'H' THEN (SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REM_CON_HOME))
+				 WHEN CONCESSCODE = 'P' THEN (SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REM_CON_PROD))
+				 ELSE (SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REM_CON_OTH))  
+			END as EVENT_GROUP,
+			CASE WHEN CONCESSCODE = 'H' THEN :LV_REM_CON_HOME
+			 	 WHEN CONCESSCODE = 'P' THEN :LV_REM_CON_PROD
+			 	 ELSE :LV_REM_CON_OTH
+			END as EVENT_NAME,
+			CAST(VALIDTO as date) as INIT_DATE,
+			NULL as END_DATE,
+			1  as EVENT_VALUE,
+			CASE WHEN CONCESSCODE = 'H' THEN :LV_REM_CON_HOME
+			 	 WHEN CONCESSCODE = 'P' THEN :LV_REM_CON_PROD
+			 	 ELSE :LV_REM_CON_OTH
+			END as DESCRIPTION,
+			LEFT(VALIDTO,6)   as INIT_TS,
+			NULL  as END_TS
+		from "osr.edw.staging.md.rms.proxy.synonym::CV_LTCNEXMD" as A
+		INNER JOIN  "db::app.Customer" as SAP on SAP.EXT_ID=A.BPARTNER
+		where CAST(VALIDTO AS DATE)<cast(NOW() as date) and  INVALID_EXMD='' AND 	SAP.INIT_DATE <= CAST(VALIDFROM as date) 
+				AND BPARTNER IN (SELECT BPARTNER FROM :LT_CUST_ID)
+		
+		UNION ALL
+		/*SubDivider Concession - Received*/
+		select 
+			SAP.CUST_ID as CUST_ID,
+			(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REC_CON_SUBD)) as EVENT_ID,
+		    (SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REC_CON_SUBD)) as EVENT_GROUP,
+			:LV_REC_CON_SUBD  as EVENT_NAME,
+			CAST(TAXYRSTARTDT as date) as INIT_DATE,
+			NULL as END_DATE,
+			1  as EVENT_VALUE,
+			:LV_REC_CON_SUBD as DESCRIPTION,
+			LEFT(TAXYRSTARTDT,6)   as INIT_TS,
+			NULL  as END_TS 
+	      FROM :LT_TEMP_RESV as A INNER JOIN
+          "db::app.Customer" as SAP on SAP.EXT_ID=A.ZZ_PARTNER 
+          WHERE CONCESSCODE = '*' AND (CONCESSCODE_LAG IS NULL OR CONCESSCODE_LAG != '*') AND 
+          ZZ_PARTNER IN (SELECT ZZ_PARTNER FROM :LT_CUST_ID_SUBD)
+			UNION ALL
+		/*SubDivider Concession - Removed*/
+		select 
+			SAP.CUST_ID as CUST_ID,
+			(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REM_CON_SUBD)) as EVENT_ID,
+		    (SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_REM_CON_SUBD)) as EVENT_GROUP,
+			:LV_REM_CON_SUBD  as EVENT_NAME,
+			CAST(TAXYRSTARTDT as date) as INIT_DATE,
+			NULL as END_DATE,
+			1  as EVENT_VALUE,
+			:LV_REM_CON_SUBD as DESCRIPTION,
+			LEFT(TAXYRSTARTDT,6)   as INIT_TS,
+			NULL  as END_TS 
+	      FROM :LT_TEMP_RESV as A INNER JOIN
+          "db::app.Customer" as SAP on SAP.EXT_ID=A.ZZ_PARTNER 
+          WHERE (CONCESSCODE = '' OR CONCESSCODE != '*') AND CONCESSCODE_LAG ='*' AND 
+          ZZ_PARTNER IN (SELECT ZZ_PARTNER FROM :LT_CUST_ID_SUBD)
+);
+   	call "procedures.events.erp.concession::PR_UPDATE_CONCESSION_DATA"();
+END

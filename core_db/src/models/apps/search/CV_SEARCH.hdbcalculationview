@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" id="models.apps.search::CV_SEARCH" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_SEARCH"/>
+<localVariables>
+  <variable id="IP_SEARCH_PARAMETER" parameter="true">
+    <descriptions defaultDescription="IP_SEARCH_PARAMETER"/>
+    <variableProperties datatype="NVARCHAR" length="500">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings/>
+<dataSources/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:TableFunctionView" id="Search" tableFunctionName="functions::TF_CONSOLIDATED_SEARCH">
+    <viewAttributes/>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <variableMapping xsi:type="Variable:VariableMapping">
+      <targetVariable name="I_SEARCH_PARAMETER"/>
+      <localVariable>IP_SEARCH_PARAMETER</localVariable>
+    </variableMapping>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Search">
+  <attributes>
+    <attribute id="CONSOLIDATED_ID" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CONSOLIDATED_ID"/>
+      <keyMapping columnObjectName="Search" columnName="CONSOLIDATED_ID"/>
+    </attribute>
+    <attribute id="CONSOLIDATED_NAME" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CONSOLIDATED_NAME"/>
+      <keyMapping columnObjectName="Search" columnName="CONSOLIDATED_NAME"/>
+    </attribute>
+    <attribute id="SCORE" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="SCORE"/>
+      <keyMapping columnObjectName="Search" columnName="SCORE"/>
+    </attribute>
+    <attribute id="RECORD_ID" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="RECORD_ID"/>
+      <keyMapping columnObjectName="Search" columnName="RECORD_ID"/>
+    </attribute>
+    <attribute id="SOURCE" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="SOURCE"/>
+      <keyMapping columnObjectName="Search" columnName="SOURCE"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes>
+    <calculatedAttribute id="EVENT_ID" order="6" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="EVENT_ID"/>
+      <keyCalculation datatype="BIGINT" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(&quot;SOURCE&quot;='Event',&quot;RECORD_ID&quot;,null)</formula>
+      </keyCalculation>
+    </calculatedAttribute>
+    <calculatedAttribute id="ENTITY_ID" order="7" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ENTITY_ID"/>
+      <keyCalculation datatype="NVARCHAR" expressionLanguage="COLUMN_ENGINE" length="500">
+        <formula>if(&quot;SOURCE&quot;='Customer',&quot;RECORD_ID&quot;,null)</formula>
+      </keyCalculation>
+    </calculatedAttribute>
+  </calculatedAttributes>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="92" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Search" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

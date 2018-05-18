@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" id="models.apps.event::CV_EVENT_IMPACT_FILTER" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_EVENT_IMPACT_FILTER"/>
+<localVariables>
+  <variable id="IP_FILTER" parameter="true">
+    <descriptions defaultDescription="IP_FILTER"/>
+    <variableProperties datatype="NVARCHAR" length="5000" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_FROM" parameter="true">
+    <descriptions defaultDescription="From Time Segment (YYYYMM)"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_LAST_EVENT_TIME_SEGMENT_MINUS_1Y</resourceUri>
+      </derivationRule>
+    </variableProperties>
+  </variable>
+  <variable id="IP_TO" parameter="true">
+    <descriptions defaultDescription="To Time Segment (YYYYMM)"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_LAST_EVENT_TIME_SEGMENT</resourceUri>
+      </derivationRule>
+    </variableProperties>
+  </variable>
+  <variable id="IP_REACTION_TYPE" parameter="true">
+    <descriptions defaultDescription="Reaction Type"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_CONF_GET_REACTION_TYPE</resourceUri>
+      </derivationRule>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_IMPACT_FILTER">
+    <targetVariable name="IM_FILTER" resourceUri="functions::TF_EVENT_IMPACT_FILTER"/>
+    <localVariable>IP_FILTER</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_IMPACT_FILTER">
+    <targetVariable name="IM_FROM" resourceUri="functions::TF_EVENT_IMPACT_FILTER"/>
+    <localVariable>IP_FROM</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_IMPACT_FILTER">
+    <targetVariable name="IM_TO" resourceUri="functions::TF_EVENT_IMPACT_FILTER"/>
+    <localVariable>IP_TO</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_IMPACT_FILTER">
+    <targetVariable name="IM_REACTION_TYPE" resourceUri="functions::TF_EVENT_IMPACT_FILTER"/>
+    <localVariable>IP_REACTION_TYPE</localVariable>
+  </mapping>
+</variableMappings>
+<dataSources>
+  <DataSource id="functions::TF_EVENT_IMPACT_FILTER" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_EVENT_IMPACT_FILTER</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="EVENT_ID" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_IMPACT" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_IMPACT"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="functions::TF_EVENT_IMPACT_FILTER">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_IMPACT" source="EVENT_IMPACT"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Projection_1">
+  <attributes>
+    <attribute id="EVENT_ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="EVENT_ID"/>
+      <keyMapping columnObjectName="Projection_1" columnName="EVENT_ID"/>
+    </attribute>
+    <attribute id="EVENT_IMPACT" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Event Impact"/>
+      <keyMapping columnObjectName="Projection_1" columnName="EVENT_IMPACT"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="200"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

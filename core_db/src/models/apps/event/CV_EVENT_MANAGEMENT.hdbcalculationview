@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.apps.event::CV_EVENT_MANAGEMENT" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="Event Name Configuration"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::adm.config.event.name">
+    <resourceUri>db::adm.config.event.name</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_EVENT_NAME">
+    <viewAttributes>
+      <viewAttribute id="ID" aggregationType="sum">
+        <descriptions defaultDescription="ID"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_NAME">
+        <descriptions defaultDescription="EVENT_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="CATEGORY_NAME">
+        <descriptions defaultDescription="CATEGORY_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="TEMPLATE_ID" aggregationType="sum">
+        <descriptions defaultDescription="TEMPLATE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED" aggregationType="sum">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="TYPE" aggregationType="sum">
+        <descriptions defaultDescription="TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="CREATED_BY">
+        <descriptions defaultDescription="CREATED.BY"/>
+      </viewAttribute>
+      <viewAttribute id="CREATED_ON" aggregationType="min">
+        <descriptions defaultDescription="CREATED.DATE"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_BY">
+        <descriptions defaultDescription="CHANGED.BY"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED.DATE" aggregationType="min">
+        <descriptions defaultDescription="CHANGED.DATE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::adm.config.event.name">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ID" source="ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY_NAME" source="CATEGORY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TEMPLATE_ID" source="TEMPLATE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CREATED_BY" source="CREATED.BY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CREATED_ON" source="CREATED.DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_BY" source="CHANGED.BY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED.DATE" source="CHANGED.DATE"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="P_EVENT_NAME">
+  <attributes>
+    <attribute id="ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Event ID"/>
+      <keyMapping columnObjectName="P_EVENT_NAME" columnName="ID"/>
+    </attribute>
+    <attribute id="EVENT_NAME" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Event Name"/>
+      <keyMapping columnObjectName="P_EVENT_NAME" columnName="EVENT_NAME"/>
+    </attribute>
+    <attribute id="CATEGORY_NAME" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Category Name"/>
+      <keyMapping columnObjectName="P_EVENT_NAME" columnName="CATEGORY_NAME"/>
+    </attribute>
+    <attribute id="DESCRIPTION" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Description"/>
+      <keyMapping columnObjectName="P_EVENT_NAME" columnName="DESCRIPTION"/>
+    </attribute>
+    <attribute id="IS_ENABLED" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Is Enabled"/>
+      <keyMapping columnObjectName="P_EVENT_NAME" columnName="IS_ENABLED"/>
+    </attribute>
+    <attribute id="TYPE" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Type"/>
+      <keyMapping columnObjectName="P_EVENT_NAME" columnName="TYPE"/>
+    </attribute>
+    <attribute id="CREATED_BY" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Created By"/>
+      <keyMapping columnObjectName="P_EVENT_NAME" columnName="CREATED_BY"/>
+    </attribute>
+    <attribute id="CREATED_ON" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Created Date/Time"/>
+      <keyMapping columnObjectName="P_EVENT_NAME" columnName="CREATED_ON"/>
+    </attribute>
+    <attribute id="CHANGED_BY" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Changed By"/>
+      <keyMapping columnObjectName="P_EVENT_NAME" columnName="CHANGED_BY"/>
+    </attribute>
+    <attribute id="CHANGED_ON" order="10" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Changed Date/Time"/>
+      <keyMapping columnObjectName="P_EVENT_NAME" columnName="CHANGED.DATE"/>
+    </attribute>
+    <attribute id="TEMPLATE_ID" order="11" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Template ID"/>
+      <keyMapping columnObjectName="P_EVENT_NAME" columnName="TEMPLATE_ID"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="92" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="P_EVENT_NAME" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

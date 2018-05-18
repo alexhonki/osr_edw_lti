@@ -1,0 +1,251 @@
+PROCEDURE "procedures.masterData::PR_EXTRACT_LT_CUSTOMER_ATTRIBUTES" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+  
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+   LT_RESV_CUSTOMERS =   SELECT TO_BIGINT("ZZ_PARTNER") AS CUST_ID, 
+						  ZZ_PARTNER AS EXT_ID,
+						  TAXYRSTARTDT,
+						  TAXYRENDDT,
+						  TAXYRSTARTDT AS "INIT_DATE",
+						  TAXYRENDDT AS "END_DATE",
+						  INDIVORG,
+						  TOTBPRELVNTVAL,
+						  BIRTHDT,
+						  PARCELCNT
+						  FROM
+							(SELECT A."ZZ_PARTNER",
+							 -- MIN(TO_DATE(A."TAXYRSTARTDT")) AS "INIT_DATE",
+							 --MAX(TO_DATE(A."TAXYRENDDT")) AS "END_DATE",
+							  TO_TIMESTAMP(A."TAXYRSTARTDT") AS "TAXYRSTARTDT", 
+							  TO_TIMESTAMP(A."TAXYRENDDT") AS "TAXYRENDDT",
+							  TO_DATE(C."BIRTHDT") AS "BIRTHDT",
+							  A."INDIVORG" AS "INDIVORG",
+							  A."TOTBPRELVNTVAL" AS "TOTBPRELVNTVAL",
+							  A."PARCELCNT" AS "PARCELCNT"
+							  FROM  "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" AS A 
+							  INNER JOIN "db::app.Customer" AS B ON B.EXT_ID = A.ZZ_PARTNER
+							  INNER JOIN "osr.edw.staging.md.rms.proxy.synonym::CV_BUT000" AS C ON A.ZZ_PARTNER = C.PARTNER
+							  WHERE  A.TAXAMOUNT > 0
+							 -- GROUP BY A.ZZ_PARTNER,C."BIRTHDT" 
+							  ) ;
+							  
+							  
+	
+	LT_AGE_TEMP = SELECT CUST_ID, 
+						  MIN(TO_DATE(TAXYRSTARTDT)) AS "INIT_DATE",
+						  MAX(TO_DATE(TAXYRENDDT)) AS "END_DATE",
+						  BIRTHDT
+						  FROM :LT_RESV_CUSTOMERS
+						  GROUP BY CUST_ID,BIRTHDT;
+						  
+	LT_BP_VALUE_TEMP = SELECT CUST_ID, 
+						  MIN(TO_DATE(TAXYRSTARTDT)) AS "INIT_DATE",
+						  MAX(TO_DATE(TAXYRENDDT)) AS "END_DATE",
+						  TOTBPRELVNTVAL
+						  FROM :LT_RESV_CUSTOMERS
+						  GROUP BY CUST_ID,TOTBPRELVNTVAL;
+    
+    --Age Group Attribute
+    --End Date from Customer table or it should be Current Time Stamp??
+    LT_CUSTOMER_AGE_GROUP = SELECT
+    						CUST_ID,INIT_DATE,END_DATE,
+    						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
+    						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
+						    CASE WHEN ("AGE">=0 and "AGE"<=20 ) THEN '0-20' 
+						    WHEN ("AGE">20 and "AGE"<=25 ) THEN '21-25'
+						    WHEN ("AGE">25 and "AGE"<=30 ) THEN '26-30'
+						    WHEN ("AGE">30 and "AGE"<=35 ) THEN '31-35'
+						    WHEN ("AGE">35 and "AGE"<=40 ) THEN '36-40'
+						    WHEN ("AGE">40 and "AGE"<=45 ) THEN '41-45'
+						    WHEN ("AGE">45 and "AGE"<=50 ) THEN '46-50'
+						    WHEN ("AGE">50 and "AGE"<=55 ) THEN '51-55'
+						    WHEN ("AGE">55 and "AGE"<=60 ) THEN '56-60'
+						    WHEN ("AGE">60 and  "AGE"<=75 ) THEN '61-75' 
+						    WHEN ("AGE">75                ) THEN '75 PLUS' 
+						    ELSE 'NOT APPLICABLE' END AS "ATTRIBUTE_VALUE",
+						    'AGE_GROUP' AS "ATTRIBUTE_NAME"
+						    FROM
+						    (SELECT CUST_ID,INIT_DATE,END_DATE,
+						    ROUND(DAYS_BETWEEN("BIRTHDT","END_DATE")/365,1) "AGE" 
+						    FROM :LT_AGE_TEMP 
+						    WHERE BIRTHDT > '0000-00-00' ); 
+						    
+	--Partner Type
+	LT_PARTNER_TYPE     = SELECT 
+							CUST_ID,INIT_DATE,END_DATE,
+    						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
+    						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
+    						to_varchar(INDIVORG) AS "ATTRIBUTE_VALUE",
+    						'TAXPAYER_TYPE' AS "ATTRIBUTE_NAME"
+    						FROM :LT_RESV_CUSTOMERS;
+    						
+    --BP Value
+    LT_BP_VALUE         = SELECT
+    						CUST_ID,INIT_DATE,END_DATE,
+    						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
+    						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
+    						 CASE WHEN (TOTBPRELVNTVAL>=0 and TOTBPRELVNTVAL<150000 ) THEN '0 TO 150K'
+    						 WHEN (TOTBPRELVNTVAL>=150000 and TOTBPRELVNTVAL<500000 ) THEN '150K TO 500K'
+    						 WHEN (TOTBPRELVNTVAL>=500000 and TOTBPRELVNTVAL<1000000 ) THEN '500K TO 1M'
+    						 WHEN (TOTBPRELVNTVAL>=1000000 and TOTBPRELVNTVAL<5000000 ) THEN '1M TO 5M'
+    						 WHEN (TOTBPRELVNTVAL>=5000000 and TOTBPRELVNTVAL<15000000 ) THEN '5M TO 15M'
+    						 WHEN (TOTBPRELVNTVAL>=15000000 ) THEN '15M+'
+    						 END  AS "ATTRIBUTE_VALUE",
+    						'CUSTOMER_SEGMENT' AS "ATTRIBUTE_NAME" 
+    						FROM :LT_BP_VALUE_TEMP;
+    						
+    -- Parcel Count
+    LT_PARCEL_COUNT    = SELECT 
+							CUST_ID,INIT_DATE,END_DATE,
+    						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
+    						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
+    						CASE WHEN (PARCELCNT>=1 and PARCELCNT<=2) THEN '01 TO 02' 
+    						WHEN (PARCELCNT>=3 and PARCELCNT<=5) THEN '03 TO 05' 
+    						WHEN (PARCELCNT>=6 and PARCELCNT<=15) THEN '06 TO 15'
+    						WHEN (PARCELCNT>=16 and PARCELCNT<=55) THEN '16 TO 55'
+    						WHEN (PARCELCNT>55                   ) THEN '55 PLUS' 
+    						END AS "ATTRIBUTE_VALUE",
+    						'PARCEL_COUNT' AS "ATTRIBUTE_NAME"
+    						FROM :LT_RESV_CUSTOMERS;
+    						
+    -- First Time Tax Payer
+    LT_FIRST_TIME_TP  =  SELECT 
+							A.CUST_ID,A.INIT_DATE,A.END_DATE,
+    						((YEAR(A."INIT_DATE")*100) + MONTH(A."INIT_DATE")) AS INIT_TS,
+    						((YEAR(A."END_DATE")*100) + MONTH(A."END_DATE")) AS END_TS,
+    						 CASE WHEN A.INIT_DATE = B.INIT_DATE THEN 'Yes' ELSE 'No' END AS "ATTRIBUTE_VALUE",
+    						'FIRST_TIME_TAX_PAYER' AS "ATTRIBUTE_NAME"
+    						FROM :LT_RESV_CUSTOMERS AS A
+    						INNER JOIN :LT_AGE_TEMP AS B
+    						ON A.CUST_ID = B.CUST_ID ;
+	
+	LT_PPR_CODE =     SELECT
+    						CUST_ID,INIT_DATE,END_DATE,
+    						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
+    						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
+    						POST_CODE AS "ATTRIBUTE_VALUE",
+    						'PPR_POSTCODE' AS "ATTRIBUTE_NAME"
+    						FROM (SELECT DISTINCT  TO_BIGINT("ZZ_PARTNER") AS CUST_ID ,to_timestamp(TAXYRSTARTDT) as INIT_DATE ,to_timestamp(TAXYRENDDT) as END_DATE,
+						(CASE WHEN a.POST_CODE1 is not null THEN a.POST_CODE1
+						WHEN a.POST_CODE2 is not null and POST_CODE1 is null THEN POST_CODE2
+						WHEN a.POST_CODE3 is not null and POST_CODE2 is null THEN POST_CODE3
+						ELSE '' END) as POST_CODE  FROM  "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" as l 
+						LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_VIBPADDRREL" as v
+						ON v.INTRENO=l.INTRENOPL
+						LEFT JOIN "osr.edw.staging.md.rms.proxy.synonym::CV_ADRC" as a
+						on v.ADDRNO=a.ADDRNUMBER
+						WHERE CONCESSCODE='R');	
+
+						
+						
+	-- Customer Attributes Table
+	LT_CUST_ATTRIBUTES  = ( SELECT CUST_ID,
+						  B.ATTRIBUTE_ID AS "ATTRIBUTE_ID",
+						  ATTRIBUTE_VALUE,
+						  INIT_DATE,
+						  END_DATE,
+						  INIT_TS,
+						  END_TS
+						  FROM :LT_CUSTOMER_AGE_GROUP AS A
+						  INNER JOIN "db::app.AttributeTypes" AS B
+						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
+						  
+						  UNION
+						  
+						  ( SELECT CUST_ID,
+						  B.ATTRIBUTE_ID AS "ATTRIBUTE_ID",
+						  ATTRIBUTE_VALUE,
+						  INIT_DATE,
+						  END_DATE,
+						  INIT_TS,
+						  END_TS
+						  FROM :LT_PARTNER_TYPE AS A
+						  INNER JOIN "db::app.AttributeTypes" AS B
+						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
+						  
+						  UNION
+						  
+						  ( SELECT CUST_ID,
+						  B.ATTRIBUTE_ID AS "ATTRIBUTE_ID",
+						  ATTRIBUTE_VALUE,
+						  INIT_DATE,
+						  END_DATE,
+						  INIT_TS,
+						  END_TS
+						  FROM :LT_BP_VALUE AS A
+						  INNER JOIN "db::app.AttributeTypes" AS B
+						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
+						  
+						  UNION
+						  
+						  ( SELECT CUST_ID,
+						  B.ATTRIBUTE_ID AS "ATTRIBUTE_ID",
+						  ATTRIBUTE_VALUE,
+						  INIT_DATE,
+						  END_DATE,
+						  INIT_TS,
+						  END_TS
+						  FROM :LT_PARCEL_COUNT AS A
+						  INNER JOIN "db::app.AttributeTypes" AS B
+						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
+						  
+						   UNION
+						  
+						  ( SELECT CUST_ID,
+						  B.ATTRIBUTE_ID AS "ATTRIBUTE_ID",
+						  ATTRIBUTE_VALUE,
+						  INIT_DATE,
+						  END_DATE,
+						  INIT_TS,
+						  END_TS
+						  FROM :LT_FIRST_TIME_TP AS A
+						  INNER JOIN "db::app.AttributeTypes" AS B
+						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
+						  
+						   UNION
+						  
+						  ( SELECT CUST_ID,
+						  B.ATTRIBUTE_ID AS "ATTRIBUTE_ID",
+						  ATTRIBUTE_VALUE,
+						  INIT_DATE,
+						  END_DATE,
+						  INIT_TS,
+						  END_TS
+						  FROM :LT_PPR_CODE AS A
+						  INNER JOIN "db::app.AttributeTypes" AS B
+						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
+						  ;
+						  
+
+	--Delete any existing records from the table before extracting and populating the Customer Attributes
+	TRUNCATE TABLE "db::app.CustomerAttributes";
+
+	UPSERT "db::app.CustomerAttributes"
+	("CUST_ID",
+	"ATTRIBUTE_ID",
+	"ATTRIBUTE_VALUE",
+	"INIT_DATE",
+	"END_DATE",
+	"INIT_TIME_SEGMENT",
+	"END_TIME_SEGMENT"
+	)
+    SELECT CUST_ID,
+		   ATTRIBUTE_ID,
+		   ATTRIBUTE_VALUE,
+		   INIT_DATE,
+		   END_DATE,
+		   INIT_TS,
+		   END_TS 
+		   FROM :LT_CUST_ATTRIBUTES;
+						
+						  
+END

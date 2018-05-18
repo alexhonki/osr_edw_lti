@@ -1,0 +1,73 @@
+PROCEDURE "procedures.events.predefined::PR_EXTRACT_LATE_PAYMENT_INTEREST_EVENT" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   DECLARE LV_LATE_PMNT_1 NVARCHAR(500) := 'Late Payment Interest Occurred >50 times in a Financial Year';
+   DECLARE LV_LATE_PMNT_2 NVARCHAR(500) := 'Late Payment Interest Occurred >25 times in a Financial Year';
+   DECLARE LV_LATE_PMNT_3 NVARCHAR(500) := 'Late Payment Interest Occurred >15 times in a Financial Year' ;
+   DECLARE LV_LATE_PMNT_4 NVARCHAR(500) := 'Late Payment Interest Occurred >5 times in a Financial Year';
+   /*DELETE FROM "db::app.CustomerEvents" WHERE EVENT_NAME = 'Late Payment Interest Occurred >50 times in a Year'
+											OR EVENT_NAME = 'Late Payment Interest Occurred >25 times in a Year'
+											OR EVENT_NAME = 'Late Payment Interest Occurred >15 times in a Year'
+											OR EVENT_NAME = 'Late Payment Interest Occurred >5 times in a Year';*/
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";								
+	LT_LATEPAYMENT = 	SELECT 	CUST_ID, 	--COUNT(CUST_ID) AS NUM, 
+							INIT_DATE "INIT_DATE",
+							TO_TIMESTAMP('9999-12-31') "END_DATE",
+							ROW_NUMBER() OVER (PARTITION BY CUST_ID, YEAR(INIT_DATE) ORDER BY CUST_ID, INIT_DATE) AS NUM
+						FROM "db::app.CustomerEvents"
+						WHERE EVENT_NAME = 'Occured Late Payment Interest'
+						--AND CUST_ID = 0001001023
+						GROUP BY CUST_ID, INIT_DATE
+						ORDER BY CUST_ID, INIT_DATE;
+						
+	INSERT INTO "db::app.CustomerEvents" 
+	SELECT 	CUST_ID,(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LATE_PMNT_4)) as "EVENT_ID",
+			(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LATE_PMNT_4)) as EVENT_GROUP,
+			:LV_LATE_PMNT_4 EVENT_NAME,
+		    INIT_DATE, END_DATE, 	1 EVENT_VALUE, 
+			'Customer Incurred Late Payment Interest More than 5 times in the Year' DESCRIPTION,
+			YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
+			YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) END_TS
+						FROM (	SELECT *	FROM :LT_LATEPAYMENT	WHERE NUM = 6);
+
+	INSERT INTO "db::app.CustomerEvents" 
+	SELECT  CUST_ID, (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LATE_PMNT_3)) as "EVENT_ID",
+			(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LATE_PMNT_3)) as EVENT_GROUP,
+			:LV_LATE_PMNT_3 EVENT_NAME,
+			INIT_DATE, END_DATE, 	1 EVENT_VALUE, 
+			'Customer Incurred Late Payment Interest More than 15 times in the Year' DESCRIPTION,
+				YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
+				YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) END_TS
+			FROM (SELECT * FROM :LT_LATEPAYMENT WHERE NUM = 16);
+	
+	INSERT INTO "db::app.CustomerEvents" 
+	SELECT	CUST_ID,(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LATE_PMNT_2)) as "EVENT_ID",
+			(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LATE_PMNT_2)) as EVENT_GROUP,
+			:LV_LATE_PMNT_2 EVENT_NAME,
+			INIT_DATE, END_DATE, 	1 EVENT_VALUE,
+			'Customer Incurred Late Payment Interest More than 25 times in the Year' DESCRIPTION,
+				YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
+				YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) END_TS
+					FROM (	SELECT * FROM :LT_LATEPAYMENT	WHERE NUM = 26	);
+	
+	INSERT INTO "db::app.CustomerEvents" 
+	SELECT	CUST_ID,(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LATE_PMNT_1)) as "EVENT_ID",
+			(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LATE_PMNT_1)) as EVENT_GROUP,
+			:LV_LATE_PMNT_1 EVENT_NAME,
+			INIT_DATE, 	END_DATE, 	1 EVENT_VALUE,
+			'Customer Incurred Late Payment Interest More than 50 times in the Year' DESCRIPTION,
+				YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
+				YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) END_TS
+	FROM (	SELECT * FROM :LT_LATEPAYMENT	WHERE NUM = 51	);
+
+	
+
+
+END

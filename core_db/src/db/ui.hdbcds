@@ -1,0 +1,31 @@
+namespace db;
+
+using db :: historyT;
+
+context ui {
+
+	context label {
+		entity definition {
+			KEY	REACTION_TYPE	: String(100);
+			KEY PAGE			: String(100);
+			KEY	COMPONENT		: String(100);
+			KEY LANGUAGE		: String(10) default 'en_US';
+				LABEL			: String(100);
+				CREATED         : historyT;
+                CHANGED         : historyT;							
+		
+		};
+	};
+	
+	entity settings {
+		KEY	SETTING_ID			: String(100);
+		KEY	TYPE				: String(10);
+			INT_VALUE			: Integer default null;
+			STRING_VALUE		: LargeString;
+			FLOAT_VALUE			: BinaryFloat default null;
+			CREATED             : historyT; // CREATED.BY , CREATED.DATE
+			CHANGED             : historyT;
+	} technical configuration { 
+    	column store ;
+    };
+};

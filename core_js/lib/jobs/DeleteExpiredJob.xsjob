@@ -1,0 +1,9 @@
+{
+	"description": "Delete Expired Data",
+	"action": "procedures.utils::PR_UTIL_DELETE_EXPIRED_DATA",
+	"schedules": [{
+		"description": "Perform my task every * * * * 13 10 0", 
+		"xscron": "2016 * * * 13 0 0",
+		"parameter": {"I_FLAG": 1} 
+	}]
+}

@@ -1,0 +1,13 @@
+namespace db;
+
+@Comment : 'History'
+type historyT {
+    @Comment : 'User'
+    BY     : String(200);
+
+    @Comment : 'Date Time'
+    "DATE" : UTCDateTime;
+};
+
+@Comment : 'Customer ID'
+type CustomerIdT : Integer64;

@@ -1,0 +1,60 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:table="sap.ui.table">
+    <Dialog title="{i18n>ExportToEmailDialogFragment.TitleTextEmailFragment}" contentWidth="800px">
+        <Panel headerText="{i18n>ExportToEmailDialogFragment.HeaderTextEmailFragment}" width="auto" height="440px">
+            <VBox>
+                <VBox width="100%">
+                    <VBox>
+                        <Label text="{i18n>ExportToEmailDialogFragment.RecipientEmail}"/>
+                        <Input type="Text" value="{/EmailTargets}" valueLiveUpdate="true" width="100%"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="{i18n>ExportToEmailDialogFragment.SubjectOfEmail}"/>
+                        <Input type="Text" value="{/EmailHeader}" valueLiveUpdate="true" width="100%"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="{i18n>ExportToEmailDialogFragment.MessageOfEmail}"/>
+                        <TextArea width="100%" value="{/EmailBody}" valueLiveUpdate="true"/>
+                    </VBox>
+                </VBox>
+                <VBox>
+                    <table:Table
+                            id="idEmailCustomerListTable"
+                            selectionMode="None"
+                            rows="{path: '/Customers'}"
+                            rowHeight="34"
+                            visibleRowCount="5">
+                        <table:columns>
+                            <table:Column width="15rem">
+                                <Label text="{i18n>CustomerList.Number}"/>
+                                <table:template>
+                                    <Text text="{CustomerId}"/>
+                                </table:template>
+                            </table:Column>
+                            <table:Column>
+                                <Label text="{i18n>CustomerList.Name}"/>
+                                <table:template>
+                                    <Text text="{CustomerName}"/>
+                                </table:template>
+                            </table:Column>
+                            <table:Column width="12rem" hAlign="End">
+                                <Label text="{i18n>CustomerList.IncomeAtRisk}"/>
+                                <table:template>
+                                    <Text text="{parts:[{path:'OperatingIncome'},{path:'Currency'}],
+								                    type: 'sap.ui.model.type.Currency',
+								                    formatOptions: {showMeasure: false}}"/>
+                                </table:template>
+                            </table:Column>
+                        </table:columns>
+                    </table:Table>
+                </VBox>
+            </VBox>
+        </Panel>
+        <buttons>
+            <Button type="Accept" text="{i18n>ExportToEmailDialogFragment.SendButton}"  press="onSend"/>
+            <Button text="{i18n>ExportToEmailDialogFragment.CancelButton}" press="onCloseDialog"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

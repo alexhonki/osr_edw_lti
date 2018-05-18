@@ -1,0 +1,14 @@
+{
+	"edw-ext-access-grantor": {
+		"object_owner": { 
+			"roles": [
+				"osr_security_common::EDW_EXTERNAL_ACCESS_G"
+			]
+		},
+		"application_user": {
+			"roles": [
+				"osr_security_common::EDW_EXTERNAL_ACCESS"
+			]
+		}
+	}
+}

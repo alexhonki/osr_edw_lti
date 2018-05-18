@@ -1,0 +1,127 @@
+$semantic-color: (
+        negative: #BB0000 !important,
+        critical: #E78C07 !important,
+        positive: #2B7D2B !important,
+        neutral: #5E696E !important,
+        negativeLight: #F77E80 !important
+);
+
+$qualatative-color: (
+        blue: #49AAE2 !important,
+        gold: #EFCC2C !important
+);
+
+$text-color: (
+        normal: #333 !important,
+        light: #666 !important
+);
+
+$border-color: rgba(229,229,229, 0.5);
+
+$font-size: (
+        normal:18px,
+        small: 14px,
+        x-small: 12px,
+        large: 28px,
+        x-large: 40px
+);
+
+@mixin semantic-color($arg) {
+  color: map_get($semantic-color, $arg);
+}
+
+@mixin qualatative-color($arg) {
+  color: map_get($qualatative-color, $arg);
+}
+
+@mixin text-color($arg) {
+  color: map_get($text-color, $arg);
+}
+
+@mixin font-size($arg) {
+  font-size: map_get($font-size, $arg);
+}
+
+.negative {
+  @include semantic-color(negative);
+}
+
+.positive {
+  @include semantic-color(positive);
+}
+
+.neutral {
+  @include semantic-color(neutral);
+}
+
+.trendCard{
+
+  background-color: white;
+
+  .cardTitle {
+
+      height: 45px;
+
+      .title {
+        @include font-size(normal);
+        @include text-color(normal);
+      }
+
+      .subtitle {
+        @include font-size(small);
+        @include text-color(light);
+      }
+  }
+
+  .cardHeader {
+
+    height: 45px;
+
+    .kpiSection {
+
+      .kpi {
+        .value {
+          @include font-size(x-large);
+        }
+        .unit {
+          @extend .subtitle;
+        }
+      }
+
+      .comparison {
+        .label, .value {
+          @include font-size(x-small);
+          @include text-color(light);
+        }
+      }
+
+    }
+  }
+
+  .cardContent {
+
+    .listContent {
+
+      border-top: 1px solid $border-color;
+
+      .sapMListTbl th {
+        background: none !important;
+      }
+
+      .listItem {
+
+        .value {
+          @include font-size(large);
+        }
+        .measure {
+          @include font-size(small);
+        }
+      }
+    }
+  }
+
+  .cardFooter {
+    height:40px;
+    border-top: 1px solid $border-color;
+  }
+}

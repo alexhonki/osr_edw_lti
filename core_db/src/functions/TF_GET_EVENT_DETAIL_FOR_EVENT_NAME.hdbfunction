@@ -1,0 +1,16 @@
+FUNCTION "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME" ( 
+		IN EVENT_NAME NVARCHAR(500)
+		)
+        RETURNS TABLE (
+		"EVENT_ID" 			BIGINT,
+		"EVENT_GROUP" 		NVARCHAR(200)
+	) 
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+/*****************************  
+       Write your function logic 
+ *****************************/ 
+ RETURN SELECT "ID" AS "EVENT_ID", CATEGORY_NAME AS "EVENT_GROUP" FROM "db::adm.config.event.name" WHERE EVENT_NAME = :EVENT_NAME;
+ 
+END;

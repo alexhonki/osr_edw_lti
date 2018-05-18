@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="3.0" id="models.apps.customer::CV_CUSTOMER_LIST" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" enforceSqlExecution="false" outputViewType="Projection" cacheInvalidationPeriod="NONE">
+<descriptions defaultDescription="CV_CUSTOMER_LIST"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="models.apps.customer::CV_CUSTOMER_BY_TIME_SEGMENT">
+    <resourceUri>models.apps.customer::CV_CUSTOMER_BY_TIME_SEGMENT</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="CustomerByTimeSegment">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE">
+        <descriptions defaultDescription="Initial Date Time"/>
+      </viewAttribute>
+      <viewAttribute id="END_DATE">
+        <descriptions defaultDescription="End Date Time"/>
+      </viewAttribute>
+      <viewAttribute id="STATUS">
+        <descriptions defaultDescription="STATUS"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TS">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+      <viewAttribute id="NAME">
+        <descriptions defaultDescription="Customer Name"/>
+      </viewAttribute>
+      <viewAttribute id="EXT_ID">
+        <descriptions defaultDescription="Identifiable External ID"/>
+      </viewAttribute>
+    
+      <viewAttribute id="END_TS">
+        <descriptions defaultDescription="END_TS"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.apps.customer::CV_CUSTOMER_BY_TIME_SEGMENT">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="END_DATE" source="END_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="NAME" source="NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EXT_ID" source="EXT_ID"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="END_TS" source="END_TS"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="CustomerByTimeSegment">
+  <attributes>
+    <attribute id="CUST_ID" key="true" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Customer ID"/>
+      <keyMapping columnObjectName="CustomerByTimeSegment" columnName="CUST_ID"/>
+    </attribute>
+    <attribute id="NAME" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Customer Name"/>
+      <keyMapping columnObjectName="CustomerByTimeSegment" columnName="NAME"/>
+    </attribute>
+    <attribute id="INIT_DATE" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Initial Date Time"/>
+      <keyMapping columnObjectName="CustomerByTimeSegment" columnName="INIT_DATE"/>
+    </attribute>
+    <attribute id="END_DATE" order="4" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="End Date Time"/>
+      <keyMapping columnObjectName="CustomerByTimeSegment" columnName="END_DATE"/>
+    </attribute>
+    <attribute id="INIT_TS" order="5" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="INIT_TS"/>
+      <keyMapping columnObjectName="CustomerByTimeSegment" columnName="INIT_TS"/>
+    </attribute>
+    <attribute id="STATUS" order="6" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="STATUS"/>
+      <keyMapping columnObjectName="CustomerByTimeSegment" columnName="STATUS"/>
+    </attribute>
+    <attribute id="EXT_ID" order="7" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Identifiable External ID"/>
+      <keyMapping columnObjectName="CustomerByTimeSegment" columnName="EXT_ID"/>
+    </attribute>
+  
+    <attribute id="END_TS" order="8" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="END_TS"/>
+      <keyMapping columnObjectName="CustomerByTimeSegment" columnName="END_TS"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="CustomerByTimeSegment" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="219"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

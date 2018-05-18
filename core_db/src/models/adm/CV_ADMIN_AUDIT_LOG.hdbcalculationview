@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="3.0" id="models.adm::CV_ADMIN_AUDIT_LOG" applyPrivilegeType="NONE" dataCategory="CUBE" enforceSqlExecution="false" outputViewType="Aggregation" cacheInvalidationPeriod="NONE">
+<descriptions defaultDescription="CV_ADMIN_AUDIT_LOG"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="functions::TF_ADMIN_AUDIT_LOG_PULSE" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_ADMIN_AUDIT_LOG_PULSE</resourceUri>
+  </DataSource>
+  <DataSource id="functions::TF_ADMIN_AUDIT_LOG_EVENTS" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_ADMIN_AUDIT_LOG_EVENTS</resourceUri>
+  </DataSource>
+  <DataSource id="functions::TF_ADMIN_AUDIT_LOG_CUSTOMER_STATUS" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_ADMIN_AUDIT_LOG_CUSTOMER_STATUS</resourceUri>
+  </DataSource>
+  <DataSource id="functions::TF_ADMIN_AUDIT_LOG_CONFIG" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_ADMIN_AUDIT_LOG_CONFIG</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="CustomerPulseAccess">
+    <viewAttributes>
+      <viewAttribute id="USER_NAME">
+        <descriptions defaultDescription="USER_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="LOG_DATE" aggregationType="min">
+        <descriptions defaultDescription="LOG_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="AUDIT_POLICY_NAME">
+        <descriptions defaultDescription="AUDIT_POLICY_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ACTION">
+        <descriptions defaultDescription="EVENT_ACTION"/>
+      </viewAttribute>
+      <viewAttribute id="STATEMENT_STRING">
+        <descriptions defaultDescription="STATEMENT_STRING"/>
+      </viewAttribute>
+      <viewAttribute id="RAW_STRING">
+        <descriptions defaultDescription="RAW_STRING"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="functions::TF_ADMIN_AUDIT_LOG_PULSE">
+      <mapping xsi:type="Calculation:AttributeMapping" target="USER_NAME" source="USER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOG_DATE" source="LOG_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="AUDIT_POLICY_NAME" source="AUDIT_POLICY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ACTION" source="EVENT_ACTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATEMENT_STRING" source="STATEMENT_STRING"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="RAW_STRING" source="RAW_STRING"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="EventNameConfig">
+    <viewAttributes>
+      <viewAttribute id="USER_NAME">
+        <descriptions defaultDescription="USER_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="LOG_DATE" aggregationType="min">
+        <descriptions defaultDescription="LOG_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="AUDIT_POLICY_NAME">
+        <descriptions defaultDescription="AUDIT_POLICY_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ACTION">
+        <descriptions defaultDescription="EVENT_ACTION"/>
+      </viewAttribute>
+      <viewAttribute id="STATEMENT_STRING">
+        <descriptions defaultDescription="STATEMENT_STRING"/>
+      </viewAttribute>
+      <viewAttribute id="RAW_STRING">
+        <descriptions defaultDescription="RAW_STRING"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="functions::TF_ADMIN_AUDIT_LOG_EVENTS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="USER_NAME" source="USER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOG_DATE" source="LOG_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="AUDIT_POLICY_NAME" source="AUDIT_POLICY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ACTION" source="EVENT_ACTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATEMENT_STRING" source="STATEMENT_STRING"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="RAW_STRING" source="RAW_STRING"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="CustomerStatus">
+    <viewAttributes>
+      <viewAttribute id="USER_NAME">
+        <descriptions defaultDescription="USER_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="LOG_DATE" aggregationType="min">
+        <descriptions defaultDescription="LOG_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="AUDIT_POLICY_NAME">
+        <descriptions defaultDescription="AUDIT_POLICY_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ACTION">
+        <descriptions defaultDescription="EVENT_ACTION"/>
+      </viewAttribute>
+      <viewAttribute id="STATEMENT_STRING">
+        <descriptions defaultDescription="STATEMENT_STRING"/>
+      </viewAttribute>
+      <viewAttribute id="RAW_STRING">
+        <descriptions defaultDescription="RAW_STRING"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="functions::TF_ADMIN_AUDIT_LOG_CUSTOMER_STATUS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="USER_NAME" source="USER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOG_DATE" source="LOG_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="AUDIT_POLICY_NAME" source="AUDIT_POLICY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ACTION" source="EVENT_ACTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATEMENT_STRING" source="STATEMENT_STRING"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="RAW_STRING" source="RAW_STRING"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Config">
+    <viewAttributes>
+      <viewAttribute id="USER_NAME">
+        <descriptions defaultDescription="USER_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="LOG_DATE" aggregationType="min">
+        <descriptions defaultDescription="LOG_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="AUDIT_POLICY_NAME">
+        <descriptions defaultDescription="AUDIT_POLICY_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ACTION">
+        <descriptions defaultDescription="EVENT_ACTION"/>
+      </viewAttribute>
+      <viewAttribute id="STATEMENT_STRING">
+        <descriptions defaultDescription="STATEMENT_STRING"/>
+      </viewAttribute>
+      <viewAttribute id="RAW_STRING">
+        <descriptions defaultDescription="RAW_STRING"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="functions::TF_ADMIN_AUDIT_LOG_CONFIG">
+      <mapping xsi:type="Calculation:AttributeMapping" target="USER_NAME" source="USER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOG_DATE" source="LOG_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="AUDIT_POLICY_NAME" source="AUDIT_POLICY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ACTION" source="EVENT_ACTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATEMENT_STRING" source="STATEMENT_STRING"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="RAW_STRING" source="RAW_STRING"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:UnionView" id="U_AUDIT_LOG">
+    <viewAttributes>
+      <viewAttribute id="USER_NAME">
+        <descriptions defaultDescription="USER_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="LOG_DATE" aggregationType="min">
+        <descriptions defaultDescription="LOG_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="AUDIT_POLICY_NAME">
+        <descriptions defaultDescription="AUDIT_POLICY_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ACTION">
+        <descriptions defaultDescription="EVENT_ACTION"/>
+      </viewAttribute>
+      <viewAttribute id="STATEMENT_STRING">
+        <descriptions defaultDescription="STATEMENT_STRING"/>
+      </viewAttribute>
+      <viewAttribute id="RAW_STRING">
+        <descriptions defaultDescription="RAW_STRING"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="CustomerPulseAccess" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="USER_NAME" source="USER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOG_DATE" source="LOG_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="AUDIT_POLICY_NAME" source="AUDIT_POLICY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ACTION" source="EVENT_ACTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATEMENT_STRING" source="STATEMENT_STRING"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="RAW_STRING" source="RAW_STRING"/>
+    </input>
+    <input node="EventNameConfig" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="USER_NAME" source="USER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOG_DATE" source="LOG_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="AUDIT_POLICY_NAME" source="AUDIT_POLICY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ACTION" source="EVENT_ACTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATEMENT_STRING" source="STATEMENT_STRING"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="RAW_STRING" source="RAW_STRING"/>
+    </input>
+    <input node="CustomerStatus" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="USER_NAME" source="USER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOG_DATE" source="LOG_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="AUDIT_POLICY_NAME" source="AUDIT_POLICY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ACTION" source="EVENT_ACTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATEMENT_STRING" source="STATEMENT_STRING"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="RAW_STRING" source="RAW_STRING"/>
+    </input>
+    <input node="Config" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:AttributeMapping" target="USER_NAME" source="USER_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LOG_DATE" source="LOG_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="AUDIT_POLICY_NAME" source="AUDIT_POLICY_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ACTION" source="EVENT_ACTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATEMENT_STRING" source="STATEMENT_STRING"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="RAW_STRING" source="RAW_STRING"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="U_AUDIT_LOG">
+  <attributes>
+    <attribute id="USER_NAME" key="true" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="USER_NAME"/>
+      <keyMapping columnObjectName="U_AUDIT_LOG" columnName="USER_NAME"/>
+    </attribute>
+    <attribute id="LOG_DATE" key="true" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="LOG_DATE"/>
+      <keyMapping columnObjectName="U_AUDIT_LOG" columnName="LOG_DATE"/>
+    </attribute>
+    <attribute id="AUDIT_POLICY_NAME" key="true" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="AUDIT_POLICY_NAME"/>
+      <keyMapping columnObjectName="U_AUDIT_LOG" columnName="AUDIT_POLICY_NAME"/>
+    </attribute>
+    <attribute id="EVENT_ACTION" order="4" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="EVENT_ACTION"/>
+      <keyMapping columnObjectName="U_AUDIT_LOG" columnName="EVENT_ACTION"/>
+    </attribute>
+    <attribute id="STATEMENT_STRING" order="5" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="STATEMENT_STRING"/>
+      <keyMapping columnObjectName="U_AUDIT_LOG" columnName="STATEMENT_STRING"/>
+    </attribute>
+    <attribute id="RAW_STRING" order="6" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="RAW_STRING"/>
+      <keyMapping columnObjectName="U_AUDIT_LOG" columnName="RAW_STRING"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes>
+    <calculatedAttribute id="AUDIT_POLICY_DESC" order="8" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="AUDIT_POLICY_DESC"/>
+      <keyCalculation datatype="VARCHAR" expressionLanguage="COLUMN_ENGINE" length="20">
+        <formula>case(&quot;AUDIT_POLICY_NAME&quot;,'CRI_CONFIG', 'Use Case Setting',
+'CRI_CUST_STATUS', 'Customer Status ',
+'CRI_EVENT_NAME', 'Event Name', 'Default')</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+  </calculatedAttributes>
+  <baseMeasures/>
+  <calculatedMeasures>
+    <measure id="COUNT_USER_NAME" order="7" aggregationType="sum" measureType="simple" aggregatable="true" calculatedMeasureType="counter" datatype="INTEGER">
+      <descriptions defaultDescription="COUNT_USER_NAME"/>
+      <exceptionAggregation>
+        <attribute attributeName="USER_NAME"/>
+      </exceptionAggregation>
+      <formula>1</formula>
+      
+      </measure>
+  </calculatedMeasures>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="CustomerPulseAccess" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="30" y="562"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="EventNameConfig" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="195" y="562"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="CustomerStatus" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="366" y="562"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Config" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="531" y="562"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="U_AUDIT_LOG" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="274" y="401"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

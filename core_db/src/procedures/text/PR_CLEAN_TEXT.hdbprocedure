@@ -1,0 +1,90 @@
+/*
+ *  Procedure for cleaning free texts before they are fed to text analysis procedure
+ *	Base table(s) to run on:  "db.base::sys.QueryComplaint"
+ *  @return table Cleaned texts to be inserted into the text.cleanText table (with a fulltext index Text Analysis).
+ */
+PROCEDURE "procedures.text::PR_CLEAN_TEXT" ( 
+	IN 	I_LANGUAGE_CODE VARCHAR(2) DEFAULT 'en'
+)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   AS
+BEGIN
+   DECLARE STOP_WORDS NVARCHAR(5000);
+   DECLARE STOP_WORDS_STR NVARCHAR(5000);
+	/*****************************************************************************
+	* EXCEPTION HANDLING
+	******************************************************************************/
+	DECLARE no_stop_words CONDITION FOR SQL_ERROR_CODE 10002;
+	DECLARE PROC_NAME nvarchar(1000) := ::CURRENT_OBJECT_SCHEMA || '.' || ::CURRENT_OBJECT_NAME;
+  	DECLARE EXIT HANDLER FOR sqlexception
+  	BEGIN
+  		INSERT INTO "db::adm.log.error" VALUES(::SQL_ERROR_CODE,:PROC_NAME,::SQL_ERROR_MESSAGE,CURRENT_TIMESTAMP);
+  		-- Propagate Exception
+  		RESIGNAL;
+  	END;
+
+	-- Truncate calc.cleanText table and its resulted tokens table
+	 TRUNCATE TABLE "db::text.cleanText";
+	 --TRUNCATE TABLE "$TA_db::text.cleanText.Index_CleanedText";
+	
+	-- Rebuild index using dynamic SQL please use with causion
+	EXECUTE IMMEDIATE 'DROP FULLTEXT INDEX "db::text.cleanText.Index_CleanedText"';
+	EXECUTE IMMEDIATE 'CREATE FULLTEXT INDEX "db::text.cleanText.Index_CleanedText" ON "db::text.cleanText" ("DESCRIPTION") CONFIGURATION ''db::text_analysis'' TEXT ANALYSIS ON';	 
+	 
+	/*********************************** PERFORM TEXT CLEANING **************************************************
+			Do the following:
+				1. Lower case
+				2. Remove punctuations & number
+				3. Remove stopwords
+	**********************************************************/
+	
+	 
+	 -- Use REGEX to replace non-letters and punctuations /* Lower the text */
+--TBC	
+TBL_SOURCE_TEXT = SELECT OBJECT_ID, LOWER(REPLACE_REGEXPR('([^a-zA-Z])' IN "DESCRIPTION" WITH ' ' OCCURRENCE ALL)) 
+AS "DESCRIPTION" FROM "models.crm::CV_CRM_INTERACTION";
+		
+	-- Read Stop words table
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception SIGNAL no_stop_words SET MESSAGE_TEXT = 'No stop words found for language code: ' || lower(:I_LANGUAGE_CODE);
+		--determine stopwords
+		select '\b(' || STRING_AGG(STOPWORD,'|') || ')\b' into STOP_WORDS_STR from "db::text.StopWords" where lower("LANGUAGE_CODE") = lower(:I_LANGUAGE_CODE);	
+		-- If no Stop words then error
+		IF :STOP_WORDS_STR IS NULL THEN
+			SIGNAL no_stop_words SET MESSAGE_TEXT = 'No stop words found for language code: ' || lower(:I_LANGUAGE_CODE);
+		END IF;
+	END;
+TBL_SOURCE_TEXT = SELECT "OBJECT_ID", REPLACE_REGEXPR(:STOP_WORDS_STR IN "DESCRIPTION" WITH '' OCCURRENCE ALL) 
+AS "DESCRIPTION" FROM :TBL_SOURCE_TEXT;
+/*
+	-- Remove all stopwords from the text. Insert the clean text to the CleanedText table
+	STOP_WORDS := '\b(i|me|my|myself|we|our|ours|ourselves|you|your|yours|' ||
+	'yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|'||
+	'they|them|their|theirs|themselves|what|which|who|whom|this|that|these|those|am|is|are|' || 
+	'was|were|would|be|been|being|have|has|had|having|do|does|did|doing|a|an|the|and|' ||
+	'but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|' ||
+	'through|during|before|after|above|below|to|from|up|down|in|out|on|off|over|under|'||
+	'again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|'||
+	'most|other|some|such|no|nor|not|only|own|same|so|than|too|very|s|t|can|will|just|don|'||
+	'can|cannot|should|now)\b';
+
+TBL_SOURCE_TEXT = SELECT "OBJECT_ID", REPLACE_REGEXPR(:STOP_WORDS IN "DESCRIPTION" WITH '' OCCURRENCE ALL)
+AS "DESCRIPTION" FROM :TBL_SOURCE_TEXT;
+*/
+------------------------------------------------------------------------------------------------
+------NEW CODE------------------------------------------------------------------------------------------------	
+------------------------------------------------------------------------------------------------
+	-- Remove multiple spaces in the text and insert texts to the table for Text Analysis
+	--TBC 
+	--TBL_ABBR_WORD = SELECT * FROM "db::text.Mapping_AbbreviatedWords";
+	
+--	TBL_SOURCE_TEXT = SELECT "OBJECT_ID", REPLACE_REGEXPR(:TBL_ABBR_WORD.ABBREVIATED_WORD IN "DESCRIPTION" WITH :TBL_ABBR_WORD.EXPANDED_WORD
+--	OCCURRENCE   ALL) AS "DESCRIPTION" FROM :TBL_SOURCE_TEXT;
+	
+	INSERT INTO "db::text.cleanText" ("ID","DESCRIPTION") (  SELECT OBJECT_ID as ID, REPLACE_REGEXPR('[ ]{2,}' 
+	IN "DESCRIPTION" WITH ' ' OCCURRENCE ALL) AS "DESCRIPTION"
+										 FROM :TBL_SOURCE_TEXT )  ; 
+
+END

@@ -1,0 +1,43 @@
+{
+	"format_version": 1,
+	"imports": [
+		{
+			"target_table": "db::app.AttributeTypes",
+			"source_data": {
+				"data_type": "CSV",
+				"file_name": "data.masterData::AttributeTypes.csv",
+				"has_header": true
+			},
+			"import_settings": {
+				"import_columns": [
+					"ATTRIBUTE_ID",
+					"ATTRIBUTE_NAME",
+	                "DESCRIPTION",
+	                "IS_FILTER",
+	                "IS_SENSITIVE",
+	                "IS_SHOW_DETAILS",
+					"FILTER_ORDER_ID"
+				]
+			}
+		},
+		
+		{
+			"target_table": "db::app.ValueTypes",
+			"source_data": {
+				"data_type": "CSV",
+				"file_name": "data.masterData::ValueTypes.csv",
+				"has_header": true
+			},
+			"import_settings": {
+				"import_columns": [
+					"VALUE_ID",
+					"VALUE_NAME" ,     
+	                "DESCRIPTION" ,    
+	                "IS_SENSITIVE",  
+	                "IS_SHOW_DETAILS"
+				]
+			}
+		}
+		
+	]
+}

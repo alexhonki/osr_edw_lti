@@ -1,0 +1,202 @@
+PROCEDURE "procedures.ml::PR_RUN_COMBINED_EVENTS_WRAPPER" 
+	(
+		IN I_TO				INT,
+		IN I_REACTION_TYPE	VARCHAR(200)
+	)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   AS
+BEGIN
+	DECLARE I_FROM INT;
+	DECLARE I_INFLUENCE_FACTOR INT;
+	DECLARE I_WINDOW_PERIOD INT;
+
+	--------------------------------------------------------------------------------------------------------
+	-- Set Control Parameters
+	--------------------------------------------------------------------------------------------------------
+	-- I_FROM
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT_PARAM_LAST_RUN','Last run date of the combined events procedure',1,200907,null,null);
+		SELECT TOP 1 INT_PARAMETER INTO I_FROM FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT_PARAM_LAST_RUN';
+	END;
+	
+	-- I_INFLUENCE_FACTOR
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT_PARAM_INFLUENCE_FACTOR','Factor rate for increasing the influence of reacted customer events',1,2,null,null);
+		SELECT TOP 1 INT_PARAMETER INTO I_INFLUENCE_FACTOR FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT_PARAM_INFLUENCE_FACTOR';
+	END;
+	
+	-- I_WINDOW_PERIOD
+	BEGIN
+		DECLARE EXIT HANDLER FOR sqlexception 
+			insert into "db::ml.config.MLParameters" values('FPG_COMB_EVT_PARAM_WINDOW_PERIOD','The period of window for generating features',1,12,null,null);
+		SELECT TOP 1 INT_PARAMETER INTO I_WINDOW_PERIOD FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT_PARAM_WINDOW_PERIOD';
+	END;
+	
+	-------------------------------------------------------------------------------------------------------
+	-- Call Another Procedure to Run FP-Growth
+	-------------------------------------------------------------------------------------------------------
+	CALL "procedures.ml::PR_RUN_COMBINED_EVENTS"( I_FROM=>:I_FROM, I_TO=>:I_TO, I_REACTION_TYPE=>:I_REACTION_TYPE, 
+			I_INFLUENCE_FACTOR => :I_INFLUENCE_FACTOR, I_WINDOW_PERIOD => :I_WINDOW_PERIOD, RESULT_TABLE=>LT_RESULT );
+	
+	IF IS_EMPTY(:LT_RESULT) 
+	THEN
+	 	DECLARE EXIT HANDLER FOR SQLEXCEPTION RESIGNAL SET MESSAGE_TEXT = 'No combined events returned';
+		RETURN;
+	ELSE 	
+		------------------------------------------------------------------------------------------------------------
+		-- DELETE ALL COMBINED EVENTS IN CUST EVENTS TABLE WITHIN THE PERIOD
+		------------------------------------------------------------------------------------------------------------
+		LV_PAST_COMB_EVENTS = SELECT "EVENT_ID.ID" "EVENT_ID"
+			FROM "db::app.CustomerEvents"
+			WHERE EVENT_GROUP = 'COMBINED_EVENT'
+			AND INIT_TS BETWEEN :I_FROM AND :I_TO;
+		
+		DELETE FROM "db::app.CustomerEvents"
+		WHERE EVENT_GROUP = 'COMBINED_EVENT'
+		AND INIT_TS BETWEEN :I_FROM AND :I_TO;
+		
+		DELETE FROM "db::adm.config.event.name" 
+		WHERE CATEGORY_NAME = 'COMBINED_EVENT' 
+		AND ID IN 
+			(SELECT EVENT_ID FROM :LV_PAST_COMB_EVENTS);	
+		
+		/***********************************************************************************************************
+		 * Side note that we need to revise the usage of nested procedure calls to reduce dependancies
+		 *
+		 *
+		 ***********************************************************************************************************/
+		
+		------------------------------------------------------------------------------------------------------------
+		-- Generate Combined Events
+		------------------------------------------------------------------------------------------------------------
+		-- Create Temporary Table to store all combined events
+		CREATE LOCAL TEMPORARY COLUMN TABLE #TBL_FINAL_COMB_EVENTS(
+			"CUST_ID" BIGINT,
+			"EVENT_NAME" VARCHAR(200),
+			"INIT_DATE" TIMESTAMP
+		);
+		
+		BEGIN
+			DECLARE LA_COMBINED_ID 			NVARCHAR(500) ARRAY;
+			DECLARE LA_EVENT_ID 			INT ARRAY;	
+			DECLARE LV_ID_LIST 				NVARCHAR(500);
+			DECLARE LV_INDEX 				INT;
+			DECLARE LV_COUNT 				INT;
+			
+			-- For each combined events row
+			DECLARE CURSOR c_cursor1  FOR SELECT PRERULE FROM :LT_RESULT;
+			FOR cur_row AS c_cursor1
+			DO
+				------------------------------------------------------------------------------------------------
+				-- Divide the combined events results 
+				------------------------------------------------------------------------------------------------
+				-- Get count of items in list
+				SELECT OCCURRENCES_REGEXPR('(&)' IN cur_row."PRERULE") + 1 as "COUNT"  INTO LV_COUNT from "synonyms::dummy";
+				-- Set initial text to split
+	        	LV_ID_LIST	:= cur_row."PRERULE";
+	        	IF :LV_COUNT > 1
+	        	THEN
+				 	FOR LV_INDEX IN 1..:LV_COUNT DO
+				 		-- Set Key
+						LA_COMBINED_ID[CARDINALITY(:LA_COMBINED_ID) + 1]	:= cur_row."PRERULE";
+						IF :LV_INDEX = :LV_COUNT  THEN
+							-- Get Last Entry
+							LA_EVENT_ID[CARDINALITY(:LA_EVENT_ID) + 1] 	:= :LV_ID_LIST;
+						ELSE
+							-- Get event
+							LA_EVENT_ID[CARDINALITY(:LA_EVENT_ID) + 1] 	:= SUBSTR_BEFORE (:LV_ID_LIST, '&');
+							
+							-- Set next sequence of items to process
+							LV_ID_LIST 				:= SUBSTR_AFTER (:LV_ID_LIST, '&');
+						END IF;
+					END FOR;
+					
+					-- Create list of Event IDs
+					LT_LIST = unnest(:LA_COMBINED_ID,:LA_EVENT_ID) as ("COMBINED.ID","EVENT_ID");   	
+					
+					
+					----------------------------------------------------------------------------------------
+					-- Create combined events for Reacted and non reacted customers 
+					----------------------------------------------------------------------------------------
+					LT_NONREACTED_EVENTS =
+					   -- SEARCH AND CREATE COMBINED EVENTS FROM NON-REACTED CUSTOMERS
+					   SELECT B."CUST_ID" "CUST_ID", B.INIT_DATE, B.GROUP_NO
+								FROM :LT_LIST A INNER JOIN "db::ml.combined.rawEvents" B
+								ON A.EVENT_ID = B.EVENT_ID
+								WHERE B.GROUP_NO IS NOT NULL;
+					
+					-- SEARCH AND CREATE COMBINED EVENTS FROM REACTED CUSTOMERS
+					LT_REACTED_EVENTS = SELECT B."CUST_ID" "CUST_ID", B.INIT_DATE, B.REACTION_DATE
+							FROM :LT_LIST A INNER JOIN "db::ml.combined.rawEvents" B
+							ON A.EVENT_ID = B.EVENT_ID
+							WHERE B.GROUP_NO IS NULL;
+		
+					INSERT INTO #TBL_FINAL_COMB_EVENTS(		
+							SELECT 
+								CUST_ID,
+								CONCAT('COMB_EVENT:', cur_row.PRERULE) AS EVENT_NAME,
+								INIT_DATE
+							FROM 
+							(
+								SELECT CUST_ID, NULL AS GROUP_NO, MAX(INIT_DATE) AS INIT_DATE, COUNT(*) AS NO_OF_EVENTS
+								FROM :LT_REACTED_EVENTS
+								GROUP BY CUST_ID, REACTION_DATE
+								UNION
+								SELECT CUST_ID, GROUP_NO, MAX(INIT_DATE) AS INIT_DATE, COUNT(*) AS NO_OF_EVENTS
+								FROM :LT_NONREACTED_EVENTS
+								GROUP BY CUST_ID, GROUP_NO
+							)
+							WHERE NO_OF_EVENTS >= LV_COUNT
+					);  
+					-- Reset Arrays    	
+					LA_COMBINED_ID := ARRAY();
+					LA_EVENT_ID := ARRAY ();  
+					
+					-- Insert list of events ID into the combined list event config table
+					INSERT INTO "db::adm.config.event.combined.list" 
+					(
+						SELECT "COMBINED.ID","EVENT_ID" 
+						FROM :LT_LIST
+						WHERE "COMBINED.ID" NOT IN 
+						(
+							SELECT DISTINCT "COMBINED.ID"
+							FROM "db::adm.config.event.combined.list"
+						)
+					);
+	        	END IF;
+	    	END FOR;
+		END;
+		
+		-- INSERT COMBINED EVENTS INTO CUSTOMER EVENTS TABLE
+		INSERT INTO "db::app.CustomerEvents" (
+				SELECT 
+					CUST_ID "CUST_ID", 
+					NULL AS "EVENT_ID.ID",
+					'COMBINED_EVENT' AS EVENT_GROUP,
+					EVENT_NAME,  
+					INIT_DATE,
+					NULL AS END_DATE,
+					1 AS EVENT_VALUE,
+					EVENT_NAME AS DESC,
+					YEAR(INIT_DATE) * 100 + MONTH(INIT_DATE) AS INIT_TS,
+					NULL AS END_TS
+				FROM #TBL_FINAL_COMB_EVENTS);	
+				
+
+			-- Drop the temporary table
+		DROP TABLE #TBL_FINAL_COMB_EVENTS;
+--------------------------TBC----------------------------------------------------	    
+	    -- Populate event id in cust events and event config tables
+	    CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();
+----------------------------------------------------------------------------------	    
+	    -- Update last run date of the combined events procedure
+	    UPDATE "db::ml.config.MLParameters"
+	    SET INT_PARAMETER = :I_TO
+	    WHERE PARAMETER_NAME = 'FPG_COMB_EVT_PARAM_LAST_RUN';
+	    
+	END IF;
+END

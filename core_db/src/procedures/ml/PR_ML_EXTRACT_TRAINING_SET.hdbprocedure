@@ -1,0 +1,322 @@
+/*
++---------------------- +-------------+-------------+-------------+--------------------+
+|EXCLUDE_MONTHS         | value: 5 <---,,,,,---------,,,,,               ,-> Current TS|
+| data included         |             |     ********|     ********|     *V             |
++---------------------- +-------------+-------------+-------------+--------------------+
+|ML_PREVIOUS_WINDOWS	| value: 2 <--------,--------------,                           |
+|                       |                   1              2             ,-> Current TS|
+| data included         |             |*************|*************|******V             |
++---------------------- +-------------+-------------+-------------+--------------------+
+|ML_CURRENT_START_TS	|										    201704 (2017-04-01)|
++---------------------- +-------------+-------------+-------------+-------------+      |
+|ML_WINDOW_TS_SIZE	    | 12 MONTHS   | 12 MONTHS   | 12 MONTHS   | 12 MONTHS   |      |
++---------------------- +-------------+-------------+-------------+-------------+      |
+	                    | PREV (Wc-3) | PREV (Wc-2) | PREV  (Wc-1)| CURRENT (Wc)|      |
++---------------------- +-------------+-------------+-------------+-------------+      |
+| SEASON				|201404-201503|201504-201603|201604-201703|201704-201803|      |
++---------------------- +-------------+-------------+-------------+-------------+      |
+|                       |             |             |             |             |      |
+|                       |             |             |             |             |      |
++--------------- +------v------+------v------+------v------+------v------+------v------+
+| YEAR			 |    2014     |    2015     |    2016     |    2017     |    2018     |
++--------------- +-------------+-------------+-------------+-------------+-------------+
+
+WINDOW_TS_SIZE		: Size of windows in months
+CURRENT_START_TS	: Current start time segment for current season
+PREVIOUS_WINDOWS	: The count of previous windows that should be used
+EXCLUDE_MONTHS		: Exlude months from training example +5 will exlude first 5 months 
+					 
+
+ */
+PROCEDURE "procedures.ml::PR_ML_EXTRACT_TRAINING_SET" 
+	(
+		IN 	REACTION_TYPE VARCHAR(100) DEFAULT 'DEBTOR_INITIAL_ASSESSMENT',
+		IN  WINDOW_TS_SIZE 		INTEGER DEFAULT 1,     -- ML_WINDOW_TS_SIZE
+		IN  CURRENT_START_TS    INTEGER DEFAULT 201606, -- ML_CURRENT_START_TS
+		IN  CURRENT_END_TS		INTEGER DEFAULT 201606,
+		IN	PREVIOUS_WINDOWS    INTEGER DEFAULT 36,		-- ML_PREVIOUS_WINDOWS
+		IN  PREDICTION_WINDOW	INTEGER DEFAULT 6,
+		IN  EXCLUDE_MONTHS      INTEGER DEFAULT 0
+	)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   AS
+BEGIN
+ 	-- START AND END DATES OF THE DATASET FOR TRAINING
+	DECLARE START_DATE 			DATE;
+	DECLARE END_DATE 			DATE;
+	DECLARE START_DATE_WINDOWS  DATE;
+	-- DECLARE PREDICTION_WINDOW   INT := 5;	
+	--String variable for generating windows
+    DECLARE STR_TS_INPUT 		VARCHAR(500) := 'INTERVAL 12 MONTH';
+    DECLARE STR_SEASON_INPUT 	VARCHAR(500) := 'INTERVAL 12 MONTH';
+	DECLARE SEASON_END_DATE     DATE;
+
+	DECLARE UNBALANCED_PARAM VARCHAR(100);
+	DECLARE UNBALANCED_RATIO DOUBLE;
+	DECLARE TOTAL_UNCHURNED_CUST INT;
+	DECLARE TOTAL_CHURNED_CUST INT;
+	
+	DECLARE TOTAL_RECORDS INT;
+	DECLARE NEED_TO_ADD INT;
+	DECLARE DESIRED_CHURNED INT;
+	DECLARE MUL INT;
+	DECLARE REMINDER INT;
+	DECLARE v_index INT;
+	
+
+	/* create input parameter for generating windows*/
+	IF :WINDOW_TS_SIZE > 0 THEN
+    	STR_TS_INPUT := 'INTERVAL ' || TO_NVARCHAR(:WINDOW_TS_SIZE) || ' MONTH';
+    END IF;
+    
+	IF :PREVIOUS_WINDOWS > 0 THEN
+    	--STR_SEASON_INPUT := 'INTERVAL ' || TO_NVARCHAR(:PREVIOUS_WINDOWS) || ' MONTH';
+    	STR_SEASON_INPUT := 'INTERVAL 12 MONTH';
+    END IF;     
+
+	-- Calculate start date
+	START_DATE_WINDOWS  := ADD_MONTHS ( TO_DATE(:CURRENT_START_TS), :WINDOW_TS_SIZE * :PREVIOUS_WINDOWS * -1 );	
+	START_DATE 			:= START_DATE_WINDOWS;
+	END_DATE 			:= TO_DATE(:CURRENT_END_TS);
+
+	-- Fetch Events
+	LT_CUST_EVENTS = 
+		SELECT 	    RECORD_ID,
+					"CUST_ID" "CUST_ID",
+					"EVENT_ID.ID" "EVENT_ID",
+					"EVENT_GROUP",
+					"EVENT_NAME",
+					"INIT_DATE",
+					null "END_DATE", 	-- Not used
+					null "EVENT_VALUE", -- Not Used
+					null "DESCRIPTION", -- Not Used
+					"INIT_TS",
+					null "END_TS"  		-- Not Used
+		FROM "db::app.CustomerEvents" A
+		WHERE "INIT_DATE" >= :START_DATE
+		AND "INIT_DATE" <= :END_DATE 
+		AND "CUST_ID" IN 
+			(SELECT CUST_ID FROM "models.apps.customer::CV_ACTIVE_CUSTOMER"); -- Customers are not in 'BLOCKED' OR DELETED state
+		
+	
+    
+    /* generate not overlapped not-overlapped windows*/
+    LT_TIME_SEGMENT = 
+    	SELECT ADD_MONTHS(GENERATED_PERIOD_START, :EXCLUDE_MONTHS) "GENERATED_PERIOD_START", GENERATED_PERIOD_END, ELEMENT_NUMBER  as INTERVAL_NUM,
+    	       YEAR(ADD_MONTHS(GENERATED_PERIOD_START, :EXCLUDE_MONTHS))*100 + MONTH(ADD_MONTHS(GENERATED_PERIOD_START, :EXCLUDE_MONTHS)) "START_TS",
+    	       YEAR(GENERATED_PERIOD_END)*100 + MONTH(GENERATED_PERIOD_END) "END_TS"
+    	FROM "synonyms::seriesgeneratetimestamp"(:STR_TS_INPUT, :START_DATE_WINDOWS , :END_DATE); -- ADD_MONTHS(:END_DATE, -:PREDICTION_WINDOW));
+    	
+    	
+ 	select * from :LT_TIME_SEGMENT;
+ 	
+ 	-- calculate end date for season
+ 	-- this is used if end_ts is greater than the start_ts
+ 	IF :CURRENT_END_TS >= :CURRENT_START_TS THEN
+ 		SELECT ADD_MONTHS(TO_DATE(:CURRENT_START_TS) , 12) INTO SEASON_END_DATE FROM "synonyms::dummy";
+ 	END IF;
+ 	
+ 	LT_SEASON = 
+    	SELECT ADD_MONTHS(GENERATED_PERIOD_START, :EXCLUDE_MONTHS) "GENERATED_PERIOD_START", GENERATED_PERIOD_END, ELEMENT_NUMBER  as INTERVAL_NUM,
+    	       YEAR(ADD_MONTHS(GENERATED_PERIOD_START, :EXCLUDE_MONTHS))*100 + MONTH(ADD_MONTHS(GENERATED_PERIOD_START, :EXCLUDE_MONTHS)) "START_TS",
+    	       YEAR(GENERATED_PERIOD_END)*100 + MONTH(GENERATED_PERIOD_END) "END_TS"
+    	FROM "synonyms::seriesgeneratetimestamp"(:STR_SEASON_INPUT, :START_DATE_WINDOWS , :SEASON_END_DATE);
+ 	
+ 	select * from :LT_SEASON;
+ 	
+ 	
+	/*
+		:STR_TS_INPUT       = 'INTERVAL 12 MONTH'
+		:START_DATE_WINDOWS = 01/04/2016 12:00:00.0 AM
+		:END_DATE           = 01/04/2018 12:00:00.0 AM
+		+------------------------+------------------------+------------+--------+-------+
+		|GENERATED_PERIOD_START  |GENERATED_PERIOD_END    |INTERVAL_NUM|START_TS|END_TS |
+		+------------------------+------------------------+------------+--------+-------+
+		|01/04/2016 12:00:00.0 AM|01/04/2017 12:00:00.0 AM|1           |201,604 |201,704|
+		+------------------------+------------------------+------------+--------+-------+
+		|01/04/2017 12:00:00.0 AM|01/04/2018 12:00:00.0 AM|2           |201,704 |201,804|	
+		+------------------------+------------------------+------------+--------+-------+
+		
+		_DATE_ >= GENERATED_PERIOD_START AND _DATE_ < GENERATED_PERIOD_END
+		_TIME_SEGMENT_ >= START_TS AND _TIME_SEGMENT_ < END_TS
+	 */
+	 	 
+	------------------------------------------------------------------------------------------------------
+    -- CREATE TABLE TO TEMPORARY STORE THE CREATED FEATURES
+    ------------------------------------------------------------------------------------------------------
+    CREATE LOCAL TEMPORARY TABLE #LOCAL_FEATURES_TABLE like "db::ml.train.data";
+	
+	------------------------------------------------------------------------------------------------------
+    -- CREATE TABLE TO TEMPORARY STORE THE CREATED FEATURES
+    ------------------------------------------------------------------------------------------------------
+    CREATE LOCAL TEMPORARY TABLE #BACKUP_TABLE like "db::ml.bkup.train_data";
+		
+	-- Generate features for all customers 
+	BEGIN
+		DECLARE LV_SEASON_START TIMESTAMP;
+		DECLARE LV_SEASON_END TIMESTAMP;
+		DECLARE LV_SEASON_TS INT;
+		
+		DECLARE CURSOR c_season (v_start timestamp) FOR
+			 SELECT GENERATED_PERIOD_START, GENERATED_PERIOD_END, START_TS -- , END_TS  
+			 	FROM :LT_SEASON 
+			 	WHERE :v_start between GENERATED_PERIOD_START AND GENERATED_PERIOD_END;
+		
+		DECLARE CURSOR c_time FOR
+			SELECT GENERATED_PERIOD_START, GENERATED_PERIOD_END, START_TS, END_TS FROM :LT_TIME_SEGMENT;
+		
+		FOR cur_row AS c_time DO
+			OPEN c_season(cur_row.GENERATED_PERIOD_START);
+			FETCH c_season INTO LV_SEASON_START, LV_SEASON_END, LV_SEASON_TS;
+			CLOSE c_season;
+			
+			LT_REACTED_CUST = SELECT "CUST_ID" "CUST_ID", REACTION_TYPE, INIT_DATE  --cur_row.GENERATED_PERIOD_END, * 
+								--TBCFROM "SAP_CRI"."ML_REACTION_TABLE_14JUN"--"SAP_CRI"."sap.cri.db::app.CustomerReactions"
+								FROM "db::app.CustomerReactions"
+								WHERE INIT_DATE >= ADD_DAYS(cur_row.GENERATED_PERIOD_END, -1) 
+								AND INIT_DATE <= ADD_MONTHS(cur_row.GENERATED_PERIOD_END, :PREDICTION_WINDOW)
+								AND REACTION_TYPE = :REACTION_TYPE;
+			
+			LT_INTERVAL_EVENTS = 
+				SELECT 
+				    A."RECORD_ID",
+					A."CUST_ID" "CUST_ID",
+					A."EVENT_ID" "EVENT_ID.ID",
+					A."EVENT_GROUP",
+					A."EVENT_NAME",
+					A."INIT_DATE",
+					A."END_DATE",
+					A."EVENT_VALUE",
+					A."DESCRIPTION",
+					A."INIT_TS",
+					A."END_TS" 
+				FROM :LT_CUST_EVENTS A
+				JOIN "models.apps.customer::CV_ACTIVE_CUSTOMER" B
+				ON A.CUST_ID = B.CUST_ID
+				WHERE A.INIT_DATE >= :LV_SEASON_START
+				  and A.INIT_TS < cur_row.END_TS
+				AND B.END_TS > cur_row.END_TS;
+			
+			LT_INTERVAL_CUSTOMERS = 
+				SELECT
+					"CUST_ID" "CUST_ID",
+					CASE WHEN REACTION_TYPE IS NOT NULL THEN 1 ELSE 0 END AS REACTED,
+					REACTION_DATE
+				FROM (
+					SELECT 
+						DISTINCT A."CUST_ID",
+						B.REACTION_TYPE,
+						B.INIT_DATE AS "REACTION_DATE" 
+					FROM :LT_INTERVAL_EVENTS A
+					LEFT JOIN :LT_REACTED_CUST B
+					ON A."CUST_ID" = B.CUST_ID
+					WHERE A."CUST_ID" IN 
+						(SELECT CUST_ID FROM "models.apps.customer::CV_ACTIVE_CUSTOMER" -- Customers are not in 'BLOCKED' OR DELETED state
+						)
+				);
+			
+			
+				CALL "procedures.ml::PR_ML_GENERIC_FEATURE"(1, :REACTION_TYPE,
+					cur_row.GENERATED_PERIOD_END, :LT_INTERVAL_CUSTOMERS, :LT_INTERVAL_EVENTS);
+					
+				INSERT INTO #LOCAL_FEATURES_TABLE (
+					SELECT * FROM "db::ml.train.data");
+					
+				INSERT INTO #BACKUP_TABLE (
+					SELECT * FROM "db::ml.bkup.train_data");
+		
+		END FOR;
+	END; -- END INNER BEGIN
+	
+	-------------------------------------------------------------------------------------
+	-- Treat Imbalanced Dataset
+	-------------------------------------------------------------------------------------
+
+	SELECT "STRING_PARAMETER"
+		INTO UNBALANCED_PARAM
+		FROM "db::ml.config.MLParameters"
+		WHERE "PARAMETER_NAME" = 'ML_UNBALANCED_PARAM'
+		AND IS_ENABLED = 1;
+
+	-- OVERSAMPLING - MULTIPLYING MINORITY METHOD
+	---------------------------------------------------------------------------------------------------------
+
+	SELECT COUNT(*) INTO TOTAL_CHURNED_CUST 
+	FROM #LOCAL_FEATURES_TABLE
+	WHERE REACTED = 1;
+
+	SELECT COUNT(*) INTO TOTAL_RECORDS 
+	FROM #LOCAL_FEATURES_TABLE;
+	
+	-- get the percentage of desired churned ratio
+	SELECT TO_DOUBLE(SUBSTRING(:UNBALANCED_PARAM, 0, LOCATE(:UNBALANCED_PARAM, ':')-1))/100 * TOTAL_RECORDS INTO DESIRED_CHURNED FROM "synonyms::dummy";
+	
+	-- find out how many more churned records to add in order to get the desired ratio 
+	NEED_TO_ADD = :DESIRED_CHURNED - :TOTAL_CHURNED_CUST;
+	
+	IF :NEED_TO_ADD > 0
+	THEN
+		-- find out how many times the churned set must be multiplied to get the desired churn ratio (floor rounding is used)
+		MUL = TO_INT(:NEED_TO_ADD / :TOTAL_CHURNED_CUST);
+		-- reminder is used to calculate the rest of records that need to be sampled out
+		REMINDER = :NEED_TO_ADD - (:MUL * :TOTAL_CHURNED_CUST);
+		
+		-- temporary tables to add the 		
+		CREATE LOCAL TEMPORARY TABLE #LT_CHURNED_DS AS (
+			SELECT * FROM #LOCAL_FEATURES_TABLE WHERE "REACTED" = 1
+		);
+		
+		CREATE LOCAL TEMPORARY TABLE #LT_CHURNED_BKUP AS (
+			SELECT * FROM #BACKUP_TABLE WHERE "REACTED" = 1
+		);
+
+		-- looping to create exact copy of churned records
+		-- looping (v_index) starts at 2 as there is already churned records in the original #LOCAL_FEATURES_TABLE
+		FOR v_index IN 2 .. :MUL DO
+			
+			INSERT INTO #LT_CHURNED_DS (
+				SELECT * FROM #LOCAL_FEATURES_TABLE WHERE "REACTED" = 1
+			);
+			
+			INSERT INTO #LT_CHURNED_BKUP (
+				SELECT * FROM #BACKUP_TABLE WHERE "REACTED" = 1
+			);
+			
+		END FOR;
+		
+		INSERT INTO #LT_CHURNED_DS (
+			SELECT TOP :REMINDER * FROM #LOCAL_FEATURES_TABLE WHERE "REACTED" = 1
+		);
+		
+		INSERT INTO #LT_CHURNED_BKUP (
+			SELECT TOP :REMINDER * FROM #BACKUP_TABLE WHERE "REACTED" = 1
+		);
+		
+	END IF;
+
+	-- INSERT DATA INTO TRAIN AND BACKUP TABLES
+	-- insert generated features into ml.train.data
+	TRUNCATE TABLE "db::ml.train.data";
+	INSERT INTO "db::ml.train.data" (
+		SELECT * FROM #LOCAL_FEATURES_TABLE 
+		UNION ALL
+		SELECT * FROM #LT_CHURNED_DS
+	);
+		
+	TRUNCATE TABLE "db::ml.bkup.train_data";
+	INSERT INTO "db::ml.bkup.train_data" (
+		SELECT * FROM #BACKUP_TABLE 
+		UNION ALL
+		SELECT * FROM #LT_CHURNED_BKUP
+	);
+	
+	-- drop temporary tables used for oversampling
+	DROP TABLE #LT_CHURNED_DS;
+	DROP TABLE #LT_CHURNED_BKUP;	
+
+	-- drop the temporary tables	
+	DROP TABLE #LOCAL_FEATURES_TABLE;
+	DROP TABLE #BACKUP_TABLE;
+END

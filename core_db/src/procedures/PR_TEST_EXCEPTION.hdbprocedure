@@ -1,0 +1,18 @@
+PROCEDURE "procedures::PR_TEST_EXCEPTION" (IN in_var INTEGER )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   READS SQL DATA AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+  /** DECLARE invalid_input CONDITION FOR SQL_ERROR_CODE 10000;
+  IF :in_var = 0 THEN
+	SIGNAL invalid_input SET MESSAGE_TEXT = 'Invalid input value >' ||:in_var;
+
+END IF;**/
+DECLARE EXIT HANDLER FOR SQLEXCEPTION
+SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	SELECT 1/:in_var as I FROM "synonyms::dummy";
+END

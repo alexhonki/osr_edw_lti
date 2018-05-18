@@ -1,0 +1,86 @@
+PROCEDURE "procedures.events.erp::PR_EXTRACT_LAND_EVENT" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+  /*************************************
+       Get the events for Land
+       
+       VIBPOBJREL - Table for Business Partner-Object Relationship (Partner and Parcel Number relation with validity and share)
+    		INTRENO - Internal Key of Real Estate Object
+    		
+   *************************************/
+   
+   
+   
+   
+    DECLARE LV_LAND_ACQUIRED NVARCHAR(500) := 'Acquired Land';
+	DECLARE LV_LAND_LOST NVARCHAR(500) := 'Lost Land';
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	/*
+	LEAD - Will get the Next Value in the list as Partitioned by PARTNER , INTRENO and order By VALIDFROM
+	LAG - Will get previous value in the list as Partitioned by PARTNER , INTRENO and Order by VALIDFROM
+	*/
+   	V_VIBPOBJREL = 
+   	SELECT *
+   	, DAYS_BETWEEN(VALIDTO,LEAD(VALIDFROM) OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)) as DAYDIFF_LEAD
+   	, DAYS_BETWEEN(LAG(VALIDTO)  OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC) , VALIDFROM) as DAYDIFF_LAG
+   	FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" WHERE ROLE='TR0800';
+
+	/*Acquired Land*/
+	/*=========================================================================================================================
+	   	If a Land is acquired then it will always have Valid From entry (Only Entry For Customer/Parcel )- Straight Forward scenario - DAYDIFF_LAG will be null
+    		as there will not be any preceeding entry for that Customer/Parcel.
+    	If a land is being Owned by multiple Owners on Share Percent basis.
+    			Then we need to check For Per Customer Per Parcel, if ValidFrom of current entry and ValidTo of Previous entry is same or not 
+    				If Yes, then land acquisition hasn't happened.
+    				If No, then Land acquisition has happened again - DAYDIFF_LAG > 0
+	=========================================================================================================================*/
+   	INSERT INTO "db::app.CustomerEvents"
+	select
+	c.CUST_ID as CUST_ID,
+	(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_ACQUIRED)) as EVENT_ID,
+	(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_ACQUIRED)) as EVENT_GROUP,
+	:LV_LAND_ACQUIRED as EVENT_NAME,
+	(CASE WHEN a.VALIDFROM<=0 THEN CAST(DERF as date) 
+	ELSE CAST(a.VALIDFROM as date) END) as INIT_DATE,
+	NULL as END_DATE,
+	1 as EVENT_VALUE,
+	:LV_LAND_ACQUIRED as DESCRIPTION,
+	(CASE WHEN a.VALIDFROM<=0 THEN LEFT(DERF,6) 
+	ELSE LEFT(a.VALIDFROM,6) END) as INIT_TS,
+	NULL  as END_TS
+	from :V_VIBPOBJREL a
+	INNER JOIN "db::app.Customer" c on c.EXT_ID = a.PARTNER
+	LEFT JOIN "osr.edw.staging.md.rms.proxy.synonym::CV_VILMPL" b on a.INTRENO=b.INTRENO
+	WHERE (DAYDIFF_LAG IS NULL OR DAYDIFF_LAG> 1);
+	
+	/*Lost Land*/
+	/*=========================================================================================================================
+	   	If a Land is Lost then it will always have Valid To entry ( Entry For Customer/Parcel )- Straight Forward scenario - DAYDIFF_LEAD will be null
+    		as there will not be any succeeding entry for that Customer/Parcel.
+    	If a land is being Owned by multiple Owners on Share Percent basis.
+    			Then we need to check For Per Customer Per Parcel, if VALIDTO of current entry and VALIDFROM of next entry is same or not 
+    				If Yes, then land wasn't lost
+    				If No, then Land was lost(sold) - DAYDIFF_LEAD > 0 OR DAYDIFF_LEAD is NULL and also VALIDTO shouldn't be equal to '99991231'
+	=========================================================================================================================*/
+	INSERT INTO "db::app.CustomerEvents"
+	select DISTINCT
+	c.CUST_ID as CUST_ID,
+	(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_LOST)) as EVENT_ID,
+	(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_LOST)) as EVENT_GROUP,
+	:LV_LAND_LOST as EVENT_NAME,
+	CAST(a.VALIDTO as date)  as INIT_DATE,
+	NULL as END_DATE,
+	1 as EVENT_VALUE,
+	:LV_LAND_LOST as DESCRIPTION,
+	LEFT(a.VALIDTO ,6) as INIT_TS,
+	NULL  as END_TS
+	from :V_VIBPOBJREL  a 
+	INNER JOIN "db::app.Customer" c on c.EXT_ID = a.PARTNER
+	WHERE ( DAYDIFF_LEAD>1 OR DAYDIFF_LEAD IS NULL ) and (a.VALIDTO != '99991231');
+
+END

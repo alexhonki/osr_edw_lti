@@ -1,0 +1,186 @@
+namespace db;
+
+using db :: historyT;
+using db :: CustomerIdT;
+
+context adm {
+
+    // Configuration Objects
+    context config {
+        @Comment : 'Event configuration Table'
+        context event {
+            entity name {
+                    @Comment : 'Event ID'
+                key ID                        : Integer not null; //generated always as identity(start with 1 increment by 1); // Sequence
+
+                    @Comment : 'Event Name'
+                    EVENT_NAME                : String(200); // Unique
+
+                    @Comment : 'Event Group'
+                    CATEGORY_NAME             : String(200);
+                    TEMPLATE_ID               : Integer;
+                    DESCRIPTION               : String(500);
+                    IS_ENABLED                : Integer default 0;
+                    PRIORITY                  : Integer;
+                    ICON                      : String(200);
+
+                    // Event extraction fields
+                    LATEST_EXTRACTED_SEQUENCE : Integer default 0;
+                    LAST_EXTRACTED_DATE       : UTCTimestamp null;
+                    // 0 = SYSTEM TEMPLATE, 1 = SYSTEM DEFINED EVENT, 2 = USER-DEFINED TEMPLATE, 3 = Atomic Event, 4 = USER-DEFINED EVENT
+                    TYPE                      : Integer default 1;
+                    // Change History
+                    CREATED                   : historyT;
+                    CHANGED                   : historyT;
+
+                    // Parameters	
+                    PROC_SCHEMA               : String(256) null;
+                    PROC_NAME                 : String(256) null;
+                    PROC_INTERVAL             : String(10) null; /* HOURLY, DAILY, WEEKLY, MONTHLY, QUATERLY, YEARLY */
+                    PROC_START_DATE           : UTCTimestamp null;
+                    JOB_ID                    : Integer64 null;
+                //PARAMETERS      : association[*] to parameters on PARAMETERS.EVENT.ID = ID;
+            }
+            technical configuration {
+                fulltext index fti_event_name    on (EVENT_NAME)
+                    fuzzy search index on;
+                fulltext index fti_category_name on (CATEGORY_NAME)
+                    fuzzy search index on;
+            };
+
+            @Comment : 'Event Parameters Table'
+            entity parameters {
+                    //		KEY ID				:Integer;
+                key EVENT                 : association to name { ID };
+                key POSITION              : Integer;
+                    PARAMETER_NAME        : String(256) not null;
+                    PARAMETER_VALUE       : String(256) null;
+                    PARAMETER_DESCRIPTION : String(256) null;
+                    PARAMETER_TYPE        : String(256) null;
+            };
+
+            @Comment : 'Combined Events'
+            context combined {
+                entity name {
+                    key ID            : String(500);
+                        DESCRIPTION   : String(500);
+                        REACTION_TYPE : String(100);
+                        IS_ENABLED    : hana.TINYINT default 0;
+                        SUPPORT       : BinaryFloat;
+                        CONFIDENCE    : BinaryFloat;
+                        LIFT          : BinaryFloat;
+                        EVENT_ID_REF  : Integer;
+                };
+
+                entity list {
+                    key COMBINED : association to name { ID };
+                    key EVENT_ID : Integer;
+                };
+            };
+        };
+
+        @Comment : 'Configuration Table'
+        entity bucket {
+                @Comment : 'Configuration Name'
+            key BUCKET_ID       : String(100) not null;
+            key SEQ             : Integer;
+
+                @Comment : 'Reaction Type'
+            key REACTION_TYPE   : String(100) default 'NA';
+
+                @Comment : ' Value'
+                STR_VALUE       : String(100);
+
+                @Comment : 'Configuration Description'
+                DESCRIPTION     : String(100);
+                IS_ENABLED      : Integer     default 1;
+
+                @Comment : 'From default value'
+                FROM_DEFAULT    : DecimalFloat null;
+
+                @Comment : 'To default value'
+                TO_DEFAULT      : DecimalFloat null;
+                UNIT_OF_MEASURE : String(100);
+                "GROUP"         : String(100);
+        };
+
+        @Comment : 'Custom Configuration Table'
+        entity bucketCustom {
+            key BUCKET_ID       : String(100) not null;
+            key SEQ             : Integer;
+            key REACTION_TYPE   : String(100) default 'NA';
+
+                @Comment : 'From default value'
+                FROM_VALUE      : DecimalFloat null;
+
+                @Comment : 'To default value'
+                TO_VALUE        : DecimalFloat null;
+                STR_VALUE       : String(100);
+                DESCRIPTION     : String(100);
+                IS_ENABLED      : Integer     default 1;
+                CHANGED         : historyT;
+                UNIT_OF_MEASURE : String(100);
+                "GROUP"         : String(100);
+        };
+
+/* entity ConfigEventsParameters {
+    EVENT_TEMPLATE_ID   : String(200);
+    EVENT_TEMPLATE_NAME : String(1000);
+    EVENT_GROUP         : String(200);
+    DESCRIPTION         : String(1000);
+    //			 LAST_RUN					: UTCTimestamp;
+    PARAMETER1          : String(1000);
+    PARAMETER2          : String(500);
+    PARAMETER3          : String(500);
+}; */
+    };
+
+    context types {
+        type Guid : Binary(16);
+        type Id : Integer64;
+        table type parameters {
+            PARAMETER_NAME  : String(256);
+            PARAMETER_VALUE : String(256);
+        };
+    };
+
+    @Comment : 'Customer Block/Delete Table'
+    context Customer {
+         entity Block {
+             key ID             : Integer not null;
+                 CUST_ID        : CustomerIdT not null;
+                 BLOCKED_BY     : String(30);
+                 BLOCKED_DATE   : UTCTimestamp;
+                 UNBLOCKED_BY   : String(30);
+                 UNBLOCKED_DATE : UTCTimestamp;
+                 STATUS         : Integer default 0;
+         };
+
+         entity Delete {
+             key ID           : Integer not null;
+                 CUST_ID      : CustomerIdT not null;
+                 DELETED_BY   : String(30);
+                 DELETED_DATE : UTCTimestamp;
+                 STATUS       : Integer;
+                 COMMENTS     : String(1000);
+         };
+
+         entity Status {  // to be removed
+            key ID          : Integer   not null;
+            key LANG        : String(1) default 'E';
+                STATUS_CODE : String(10);
+                STATUS_TEXT : String(30);
+                DESCRIPTION : String(100); 
+        };
+    };
+
+    @Comment : 'Error Logging Table'
+    context log {
+        entity error {
+            ERROR_CODE : String(10);
+            ERROR_LOC  : String(200);
+            ERROR_MSG  : String(2000);
+            TIME_STAMP : UTCTimestamp default current_utctimestamp;
+        };
+    };
+};

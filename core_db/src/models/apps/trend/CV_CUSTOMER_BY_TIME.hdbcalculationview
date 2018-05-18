@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" id="models.apps.trend::CV_CUSTOMER_BY_TIME" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_CUSTOMER_BY_TIME"/>
+<localVariables>
+  <variable id="IP_FROM" parameter="true">
+    <descriptions defaultDescription="IP_FROM"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_LAST_EVENT_TIME_SEGMENT_MINUS_1Y</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_TO" parameter="true">
+    <descriptions defaultDescription="IP_TO"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_LAST_EVENT_TIME_SEGMENT</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_FILTER" parameter="true">
+    <descriptions defaultDescription="IP_FILTER"/>
+    <variableProperties datatype="VARCHAR" length="5000" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.trend::CV_CUSTOMER_FOR_TREND">
+    <targetVariable name="IP_FROM" resourceUri="models.apps.trend::CV_CUSTOMER_FOR_TREND"/>
+    <localVariable>IP_FROM</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.trend::CV_CUSTOMER_FOR_TREND">
+    <targetVariable name="IP_TO" resourceUri="models.apps.trend::CV_CUSTOMER_FOR_TREND"/>
+    <localVariable>IP_TO</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.trend::CV_CUSTOMER_FOR_TREND">
+    <targetVariable name="IP_FILTER" resourceUri="models.apps.trend::CV_CUSTOMER_FOR_TREND"/>
+    <localVariable>IP_FILTER</localVariable>
+  </mapping>
+</variableMappings>
+<dataSources>
+  <DataSource id="models.apps.customer::CV_MONTH_TS">
+    <resourceUri>models.apps.customer::CV_MONTH_TS</resourceUri>
+  </DataSource>
+  <DataSource id="models.apps.trend::CV_CUSTOMER_FOR_TREND">
+    <resourceUri>models.apps.trend::CV_CUSTOMER_FOR_TREND</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="TIME" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="YEAR">
+        <descriptions defaultDescription="YEAR"/>
+      </viewAttribute>
+      <viewAttribute id="MONTH">
+        <descriptions defaultDescription="MONTH"/>
+      </viewAttribute>
+      <viewAttribute id="YEAR_INT">
+        <descriptions defaultDescription="YEAR_INT"/>
+      </viewAttribute>
+      <viewAttribute id="MONTH_INT">
+        <descriptions defaultDescription="MONTH_INT"/>
+      </viewAttribute>
+      <viewAttribute id="JOIN">
+        <descriptions defaultDescription="JOIN"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="TIME_SEGMENT" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>&quot;YEAR_INT&quot; * 100 +&quot;MONTH_INT&quot;</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="models.apps.customer::CV_MONTH_TS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="YEAR" source="YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MONTH" source="MONTH"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="YEAR_INT" source="YEAR_INT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MONTH_INT" source="MONTH_INT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN" source="JOIN"/>
+    </input>
+    <filter>(&quot;TIME_SEGMENT&quot; &gt;='$$IP_FROM$$'and&quot;TIME_SEGMENT&quot;&lt;='$$IP_TO$$')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TIME_SEGMENT">
+        <descriptions defaultDescription="REACTION_TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TIME_SEGMENT">
+        <descriptions defaultDescription="Initial Time Segment"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="JOIN" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>1</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="models.apps.trend::CV_CUSTOMER_FOR_TREND">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TIME_SEGMENT" source="REACTION_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TIME_SEGMENT" source="INIT_TIME_SEGMENT"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="CN_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="YEAR">
+        <descriptions defaultDescription="YEAR"/>
+      </viewAttribute>
+      <viewAttribute id="MONTH">
+        <descriptions defaultDescription="MONTH"/>
+      </viewAttribute>
+      <viewAttribute id="TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="REACTION_TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="Initial Time Segment"/>
+      </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$JOIN$JOIN"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="TIME">
+      <mapping xsi:type="Calculation:AttributeMapping" target="YEAR" source="YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MONTH" source="MONTH"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$JOIN$JOIN" source="JOIN"/>
+    </input>
+    <input node="Projection_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TIME_SEGMENT" source="REACTION_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TIME_SEGMENT" source="INIT_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$JOIN$JOIN" source="JOIN"/>
+    </input>
+    <joinAttribute name="JOIN$JOIN$JOIN"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="YEAR">
+        <descriptions defaultDescription="YEAR"/>
+      </viewAttribute>
+      <viewAttribute id="MONTH">
+        <descriptions defaultDescription="MONTH"/>
+      </viewAttribute>
+      <viewAttribute id="TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="REACTION_TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="Initial Time Segment"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="CUST_ID_REACT" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(&quot;REACTION_TIME_SEGMENT&quot; =&quot;TIME_SEGMENT&quot;,&quot;CUST_ID&quot;,null)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="Join_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="YEAR" source="YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="MONTH" source="MONTH"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TIME_SEGMENT" source="REACTION_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TIME_SEGMENT" source="INIT_TIME_SEGMENT"/>
+    </input>
+    <filter>(&quot;TIME_SEGMENT&quot; &gt;= &quot;INIT_TIME_SEGMENT&quot;)and(&quot;TIME_SEGMENT&quot;&lt;= &quot;REACTION_TIME_SEGMENT&quot;)</filter>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Projection_1">
+  <attributes>
+    <attribute id="YEAR" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="YEAR"/>
+      <keyMapping columnObjectName="Projection_1" columnName="YEAR"/>
+    </attribute>
+    <attribute id="MONTH" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="MONTH"/>
+      <keyMapping columnObjectName="Projection_1" columnName="MONTH"/>
+    </attribute>
+    <attribute id="TIME_SEGMENT" key="true" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TIME_SEGMENT"/>
+      <keyMapping columnObjectName="Projection_1" columnName="TIME_SEGMENT"/>
+    </attribute>
+    <attribute id="CUST_ID" key="true" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Customer ID"/>
+      <keyMapping columnObjectName="Projection_1" columnName="CUST_ID"/>
+    </attribute>
+    <attribute id="REACTION_TIME_SEGMENT" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="REACTION_TIME_SEGMENT"/>
+      <keyMapping columnObjectName="Projection_1" columnName="REACTION_TIME_SEGMENT"/>
+    </attribute>
+    <attribute id="INIT_TIME_SEGMENT" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Initial Time Segment"/>
+      <keyMapping columnObjectName="Projection_1" columnName="INIT_TIME_SEGMENT"/>
+    </attribute>
+    <attribute id="CUST_ID_REACT" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CUST_ID_REACT"/>
+      <keyMapping columnObjectName="Projection_1" columnName="CUST_ID_REACT"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="229.9632123527728" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="TIME" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92.00000000000004" y="481.9999976158142"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="282" y="481.9999976158142"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="213.4294423938989" y="341.9999988079071"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="TIME" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Projection_2" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="213.4294423938989" y="236.9999988079071"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

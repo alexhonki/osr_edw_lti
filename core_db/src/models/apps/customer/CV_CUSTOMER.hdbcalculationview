@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.apps.customer::CV_CUSTOMER" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="Customer"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::app.Customer">
+    <resourceUri>db::app.Customer</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews/>
+<logicalModel id="db::app.Customer">
+  <attributes>
+    <attribute id="CUST_ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Customer ID"/>
+      <keyMapping columnObjectName="app.Customer" columnName="CUST_ID"/>
+    </attribute>
+    <attribute id="EXT_ID" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Identifiable External ID"/>
+      <keyMapping columnObjectName="app.Customer" columnName="EXT_ID"/>
+    </attribute>
+    <attribute id="INIT_DATE" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Initial Date Time"/>
+      <keyMapping columnObjectName="app.Customer" columnName="INIT_DATE"/>
+    </attribute>
+    <attribute id="END_DATE" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="End Date Time"/>
+      <keyMapping columnObjectName="app.Customer" columnName="END_DATE"/>
+    </attribute>
+    <attribute id="STATUS" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STATUS"/>
+      <keyMapping columnObjectName="app.Customer" columnName="STATUS"/>
+    </attribute>
+    <attribute id="NAME" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Customer Name"/>
+      <keyMapping columnObjectName="app.Customer" columnName="NAME"/>
+    </attribute>
+    <attribute id="IS_SENSITIVE" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Data Sensitivity Flag"/>
+      <keyMapping columnObjectName="app.Customer" columnName="IS_SENSITIVE"/>
+    </attribute>
+    <attribute id="INIT_TS" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="INIT_TS"/>
+      <keyMapping columnObjectName="app.Customer" columnName="INIT_TS"/>
+    </attribute>
+    <attribute id="END_TS" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="END_TS"/>
+      <keyMapping columnObjectName="app.Customer" columnName="END_TS"/>
+    </attribute></attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

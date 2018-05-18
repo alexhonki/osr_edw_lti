@@ -1,0 +1,14 @@
+PROCEDURE "procedures.utils::PR_UTIL_DELETE_EXPIRED_DATA" (IN I_FLAG INTEGER) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	--DEFAULT SCHEMA <default_schema_name>
+	AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+
+	
+	
+END;
+

@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="3.0" id="models.apps.customer::CV_CUSTOMER_DETAILS" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" enforceSqlExecution="false" outputViewType="Projection" cacheInvalidationPeriod="NONE">
+<descriptions defaultDescription="CV_CUSTOMER_DETAILS"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::app.CustomerAttributes">
+    <resourceUri>db::app.CustomerAttributes</resourceUri>
+  </DataSource>
+  <DataSource id="db::app.AttributeTypes">
+    <resourceUri>db::app.AttributeTypes</resourceUri>
+  </DataSource>
+  <DataSource id="db::app.ValueTypes">
+    <resourceUri>db::app.ValueTypes</resourceUri>
+  </DataSource>
+  <DataSource id="db::app.CustomerValues">
+    <resourceUri>db::app.CustomerValues</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Attributes">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_ID_ID" aggregationType="sum">
+        <descriptions defaultDescription="ATTRIBUTE_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_VALUE">
+        <descriptions defaultDescription="Attribute Value"/>
+      </viewAttribute>
+      <viewAttribute id="END_DATE">
+        <descriptions defaultDescription="End Date Time"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.CustomerAttributes">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID_ID" source="ATTRIBUTE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="END_DATE" source="END_DATE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="AttributeInfo">
+    <viewAttributes>
+      <viewAttribute id="ATTRIBUTE_ID" aggregationType="sum">
+        <descriptions defaultDescription="Attribute ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_NAME">
+        <descriptions defaultDescription="Attribute Name"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="Description"/>
+      </viewAttribute>
+    
+      <viewAttribute id="IS_SENSITIVE" aggregationType="sum">
+        <descriptions defaultDescription="Data Sensitivity Flag"/>
+      </viewAttribute>
+    
+      <viewAttribute id="IS_FILTER" aggregationType="sum">
+        <descriptions defaultDescription="Filter Flag"/>
+      </viewAttribute>
+    
+      <viewAttribute id="IS_SHOW_DETAILS" aggregationType="sum">
+        <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.AttributeTypes">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_NAME" source="ATTRIBUTE_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_FILTER" source="IS_FILTER"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SHOW_DETAILS" source="IS_SHOW_DETAILS"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="ValueInfo">
+    <viewAttributes>
+      <viewAttribute id="VALUE_ID" aggregationType="sum">
+        <descriptions defaultDescription="Value ID"/>
+      </viewAttribute>
+      <viewAttribute id="VALUE_NAME">
+        <descriptions defaultDescription="Value Name"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="Description"/>
+      </viewAttribute>
+    
+      <viewAttribute id="IS_SENSITIVE" aggregationType="sum">
+        <descriptions defaultDescription="IS_SENSITIVE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.ValueTypes">
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_ID" source="VALUE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_NAME" source="VALUE_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Values">
+    <viewAttributes>
+      <viewAttribute id="VALUE_ID" aggregationType="sum">
+        <descriptions defaultDescription="VALUE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="VALUE" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="END_DATE">
+        <descriptions defaultDescription="END_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.CustomerValues">
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_ID" source="VALUE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE" source="VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="END_DATE" source="END_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID_ID" source="CUST_ID"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:RankView" id="LastAttribute">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_ID_ID" aggregationType="sum">
+        <descriptions defaultDescription="ATTRIBUTE_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_VALUE">
+        <descriptions defaultDescription="Attribute Value"/>
+      </viewAttribute>
+      <viewAttribute id="END_DATE">
+        <descriptions defaultDescription="End Date Time"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Attributes">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID_ID" source="CUST_ID_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID_ID" source="ATTRIBUTE_ID_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="END_DATE" source="END_DATE"/>
+    </input>
+    <windowFunction dynamicPartitionAttributes="false">
+      <partitionViewAttributeName>ATTRIBUTE_ID_ID</partitionViewAttributeName>
+      <partitionViewAttributeName>CUST_ID_ID</partitionViewAttributeName>
+      <order byViewAttributeName="END_DATE" direction="DESC"/>
+      <rankThreshold>
+        <value>1</value>
+      </rankThreshold>
+    </windowFunction>
+  </calculationView>
+  <calculationView xsi:type="Calculation:RankView" id="LastValue">
+    <viewAttributes>
+      <viewAttribute id="VALUE_ID" aggregationType="sum">
+        <descriptions defaultDescription="VALUE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="VALUE" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="END_DATE">
+        <descriptions defaultDescription="END_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Values">
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_ID" source="VALUE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE" source="VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="END_DATE" source="END_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID_ID" source="CUST_ID_ID"/>
+    </input>
+    <windowFunction dynamicPartitionAttributes="false">
+      <partitionViewAttributeName>VALUE_ID</partitionViewAttributeName>
+      <partitionViewAttributeName>CUST_ID_ID</partitionViewAttributeName>
+      <order byViewAttributeName="END_DATE" direction="DESC"/>
+      <rankThreshold>
+        <value>1</value>
+      </rankThreshold>
+    </windowFunction>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="C1_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="ATTRIBUTE_ID" aggregationType="sum">
+        <descriptions defaultDescription="Attribute ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_NAME">
+        <descriptions defaultDescription="Attribute Name"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="Description"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_VALUE">
+        <descriptions defaultDescription="Attribute Value"/>
+      </viewAttribute>
+    
+      <viewAttribute id="IS_SENSITIVE" aggregationType="sum">
+        <descriptions defaultDescription="Data Sensitivity Flag"/>
+      </viewAttribute>
+    
+      <viewAttribute id="IS_FILTER" aggregationType="sum">
+        <descriptions defaultDescription="Filter Flag"/>
+      </viewAttribute>
+    
+      <viewAttribute id="IS_SHOW_DETAILS" aggregationType="sum">
+        <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="AttributeInfo">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_NAME" source="ATTRIBUTE_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_FILTER" source="IS_FILTER"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SHOW_DETAILS" source="IS_SHOW_DETAILS"/>
+    </input>
+    <input node="LastAttribute">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID_ID" source="CUST_ID_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID" source="ATTRIBUTE_ID_ID"/>
+    </input>
+    <joinAttribute name="ATTRIBUTE_ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_2" cardinality="CN_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="VALUE_ID" aggregationType="sum">
+        <descriptions defaultDescription="Value ID"/>
+      </viewAttribute>
+      <viewAttribute id="VALUE_NAME">
+        <descriptions defaultDescription="Value Name"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="Description"/>
+      </viewAttribute>
+      <viewAttribute id="VALUE" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+    
+      <viewAttribute id="IS_SENSITIVE" aggregationType="sum">
+        <descriptions defaultDescription="IS_SENSITIVE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute datatype="NVARCHAR" id="VALUE_STR" length="500" expressionLanguage="COLUMN_ENGINE">
+        <formula>string(&quot;VALUE&quot;)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="ValueInfo">
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_ID" source="VALUE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_NAME" source="VALUE_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
+    </input>
+    <input node="LastValue">
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE" source="VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID_ID" source="CUST_ID_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_ID" source="VALUE_ID"/>
+    </input>
+    <joinAttribute name="VALUE_ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:UnionView" id="Details">
+    <viewAttributes>
+      <viewAttribute id="DETAIL_ID" aggregationType="sum">
+        <descriptions defaultDescription="Attribute ID"/>
+      </viewAttribute>
+      <viewAttribute id="DETAIL_NAME">
+        <descriptions defaultDescription="Attribute Name"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="Description"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_VALUE">
+        <descriptions defaultDescription="Attribute Value"/>
+      </viewAttribute>
+      <viewAttribute id="VALUE" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+    
+      <viewAttribute id="IS_SENSITIVE" aggregationType="sum">
+        <descriptions defaultDescription="Data Sensitivity Flag"/>
+      </viewAttribute>
+    
+      <viewAttribute id="IS_FILTER" aggregationType="sum">
+        <descriptions defaultDescription="Filter Flag"/>
+      </viewAttribute>
+    
+      <viewAttribute id="IS_SHOW_DETAILS" aggregationType="sum">
+        <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute datatype="VARCHAR" id="TYPE" length="13" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(&quot;ATTRIBUTE_VALUE&quot;,'ATTRIBUTE','VALUE')</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input emptyUnionBehavior="NO_ROW" node="Join_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="DETAIL_ID" source="ATTRIBUTE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DETAIL_NAME" source="ATTRIBUTE_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="VALUE" null="true" value=""/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_FILTER" source="IS_FILTER"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SHOW_DETAILS" source="IS_SHOW_DETAILS"/>
+    </input>
+    <input emptyUnionBehavior="NO_ROW" node="Join_2">
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DETAIL_ID" null="true" value=""/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DETAIL_NAME" null="true" value=""/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CUST_ID" null="true" value=""/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="VALUE_STR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE" source="VALUE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
+    
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="IS_FILTER" null="true" value=""/>
+    
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="IS_SHOW_DETAILS" null="true" value=""/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Details">
+  <attributes>
+    <attribute id="FIELD_ID" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Attribute ID"/>
+      <keyMapping columnObjectName="Details" columnName="DETAIL_ID"/>
+    </attribute>
+    <attribute id="FIELD_NAME" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Attribute Name"/>
+      <keyMapping columnObjectName="Details" columnName="DETAIL_NAME"/>
+    </attribute>
+    <attribute id="FIELD_DESCRIPTION" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Description"/>
+      <keyMapping columnObjectName="Details" columnName="DESCRIPTION"/>
+    </attribute>
+    <attribute id="CUST_ID" order="4" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Customer ID"/>
+      <keyMapping columnObjectName="Details" columnName="CUST_ID"/>
+    </attribute>
+    <attribute id="FIELD_VALUE" order="5" attributeHierarchyActive="false" descriptionColumnName="FIELD_DESCRIPTION" displayAttribute="false">
+      <descriptions defaultDescription="Attribute Value"/>
+      <keyMapping columnObjectName="Details" columnName="ATTRIBUTE_VALUE"/>
+    </attribute>
+    <attribute id="IS_SENSITIVE" order="6" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Data Sensitivity Flag"/>
+      <keyMapping columnObjectName="Details" columnName="IS_SENSITIVE"/>
+    </attribute>
+  
+    <attribute id="IS_FILTER" order="7" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Filter Flag"/>
+  
+      <keyMapping columnObjectName="Details" columnName="IS_FILTER"/>
+  
+    </attribute>
+  
+    <attribute id="IS_SHOW_DETAILS" order="8" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      <keyMapping columnObjectName="Details" columnName="IS_SHOW_DETAILS"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="423" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Attributes" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="309" y="621"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="AttributeInfo" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="496"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="ValueInfo" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="499" y="496"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Values" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="676" y="621"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="LastAttribute" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="309" y="496"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="LastValue" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="689" y="496"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="286" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="AttributeInfo" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="LastAttribute" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="522" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="ValueInfo" modelObjectType="JoinNodeInput" modelObjectNameSpace="Join_2">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="LastValue" modelObjectType="JoinNodeInput" modelObjectNameSpace="Join_2">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Details" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="423" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

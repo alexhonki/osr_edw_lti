@@ -1,0 +1,71 @@
+FUNCTION "functions::TF_CUSTOMER_FILTER_REACTION" ( 
+		IN IM_FILTER NVARCHAR(5000) default '',
+		IN IM_FROM VARCHAR(6) default '',
+		IN IM_TO VARCHAR(6), 
+		IN IM_REACTION_TYPE VARCHAR(200) DEFAULT '' 
+	) 
+	RETURNS TABLE (
+		"CUST_ID" 		BIGINT,
+		"REACTION_DATE"	TIMESTAMP
+	)
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER AS
+BEGIN
+	----------------------------------------------
+	-- Declare variables
+	----------------------------------------------
+
+	DECLARE LV_FROM INT := 200001;
+
+	-- Default Reaction Type
+	DECLARE LV_REACTION_TYPE 	VARCHAR(200);
+	
+	-- Get the Reaction type configured ---> needs to be extended in future to support multiple
+	IF :IM_REACTION_TYPE IS NULL OR LENGTH(:IM_REACTION_TYPE) = 0 THEN
+		CALL "procedures.utils::PR_CONF_GET_REACTION_TYPE"(:LV_REACTION_TYPE);
+	ELSE
+		LV_REACTION_TYPE := :IM_REACTION_TYPE;
+	END IF;
+		
+	--------------------------------------------------------------------------------------------------
+	-- Get First Reaction In system
+	--------------------------------------------------------------------------------------------------
+	IF :IM_FROM IS NULL OR LENGTH(:IM_FROM) <= 0 THEN	
+		SELECT MIN(INIT_TS) into LV_FROM FROM "db::app.CustomerReactions" where "REACTION_TYPE" = :LV_REACTION_TYPE;
+    ELSE
+    	LV_FROM := :IM_FROM;
+    END IF;
+
+	--------------------------------------------------------------------------------------------------
+	-- Get Valid Customers
+	--------------------------------------------------------------------------------------------------
+	LT_CUSTOMERS = SELECT "CUST_ID" 
+					FROM "db::app.Customer" 
+					WHERE "STATUS" = 0
+				      AND "INIT_TS" <= TO_INT(:IM_TO)
+				      AND "END_TS"  >= TO_INT(:LV_FROM);
+    
+ 	--------------------------------------------------------------------------------------------------
+ 	-- Select data valid for a period in time
+ 	--------------------------------------------------------------------------------------------------	 
+	IF length(:IM_FILTER) = 0 OR :IM_FILTER IS NULL then
+		RETURN select c."CUST_ID", b."INIT_DATE" AS "REACTION_DATE"
+					FROM :LT_CUSTOMERS c
+					INNER JOIN "db::app.CustomerReactions" B ON c."CUST_ID" = b."CUST_ID"
+				--	INNER JOIN "SAP_CRI"."sap.cri.db::app.Customer" a on b.cust_id = a.cust_id
+					WHERE B."REACTION_TYPE" = :LV_REACTION_TYPE 
+					AND B."INIT_TS" <= TO_INT(:IM_TO) 
+					AND B."INIT_TS" >= to_int(:LV_FROM);
+			--	    AND A."INIT_TS" <= to_int(:IM_TO) 
+			--	    AND A."END_TS" >= to_int(:LV_FROM) ;		
+	ELSE
+		RETURN 
+	             select c."CUST_ID", b."INIT_DATE" AS "REACTION_DATE"
+					FROM "functions::TF_CUSTOMER_FILTER_FROM_TO"(:IM_FILTER,:LV_FROM,:IM_TO) c
+					INNER JOIN "db::app.CustomerReactions" B ON c."CUST_ID" = b."CUST_ID" 
+	             	WHERE B."REACTION_TYPE" = :LV_REACTION_TYPE and B."INIT_TS" <= TO_INT(IM_TO) and B.INIT_TS >= to_int(:LV_FROM) 
+	            ;	
+	END IF;
+
+
+END;

@@ -1,4 +1,76 @@
 ID: OSR_LTI
 _schema-version: '2.0'
-description: OSR Land Tax Insights
 version: 0.0.1
+modules:
+  - name: OSR_LTI-Database
+    type: hdb
+    path: core_db
+    requires:
+      - name: OSR_LTI-Container
+        properties:
+          TARGET_CONTAINER: '~{hdi-container-name}'
+      - name: OSR-EDW-PLATFORM-grantor
+        group: SERVICE_REPLACEMENTS
+        properties:
+          key: logical-OSR-EDW-PLATFORM-grantor
+          service: '~{OSR-EDW-PLATFORM-grantor-service}'
+      - name: edw-ext-access-grantor
+  - name: OSR_LTI-Services
+    type: nodejs
+    path: core_js
+    requires:
+      - name: OSR_LTI-Container
+      - name: OSR_LTI-JobScheduler
+      - name: OSR_LTI-uaa
+    provides:
+      - name: ti_core_api
+        properties:
+          url: '${default-url}'
+    properties:
+      SAP_JWT_TRUST_ACL: '[{"clientid":"*", "identityzone":"*"}]'
+  - name: OSR_LTI-Web
+    type: html5
+    path: html
+    requires:
+      - name: sapui5-provider
+        properties:
+          sapui5url: '~{url}'
+      - name: ti_core_api
+        group: destinations
+        properties:
+          name: backend
+          url: '~{url}'
+          forwardAuthToken: true
+      - name: OSR_LTI-uaa
+
+resources:
+  - name: OSR_LTI-Container
+    type: com.sap.xs.hdi-container
+    properties:
+      hdi-container-name: '${service-name}'
+  - name: OSR-EDW-PLATFORM-grantor
+    properties:
+      OSR-EDW-PLATFORM-grantor-service: '${service-name}'
+    parameters:
+      service-name: OSR_EDW_PLATFORM-deploy
+    type: org.cloudfoundry.existing-service
+  - name: edw-ext-access-grantor
+    type: org.cloudfoundry.existing-service
+    description: edw-ext-access-grantor
+  - name: OSR_LTI-JobScheduler
+    type: com.sap.xs.job-scheduler
+  - name: sapui5-provider
+    type: configuration
+    parameters:
+      provider-id: 'com.sap.ui5.dist.sapui5-dist-xsa.XSAC_UI5_FESV3:sapui5_fesv3'
+      version: '>=1.42.0'
+      provider-nid: mta
+  - name: OSR_LTI-uaa
+    type: com.sap.xs.uaa-space
+    parameters:
+      service-plan: space
+      path: ./xs-security.json
+
+copyright: SAP
+description: Tax Insights service
+provider: SAP

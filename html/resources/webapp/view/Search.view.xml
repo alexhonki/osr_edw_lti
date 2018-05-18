@@ -1,0 +1,79 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    controllerName="sap.fiori.cri.controller.Search"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    displayBlock="true"
+    height="100%">
+    <Page id="idSearchPage" showHeader="false" >
+        <headerContent>
+        </headerContent>
+        <content>
+            <Panel id="idSearchPanel">
+                <VBox>
+                    <HBox justifyContent="Center">
+                        <VBox width="90%" height="160px" backgroundDesign="Solid" class="searchPanel">
+                            <HBox justifyContent="Center">
+                                <SearchField
+                                        class="sapUiLargeMarginBeginEnd sapUiLargeMarginTopBottom"
+                                        id="idSearchInput"
+                                        placeholder="{i18n>Search.SearchPlaceholder}"
+                                        value="{viewModel>/SearchString}"
+                                        search="filterSearch"
+                                        width="400px"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                    <HBox justifyContent="Center">
+                        <VBox width="90%">
+                            <IconTabBar id="idTabContainer" select="onTabSelection">
+                                <items>
+                                    <IconTabFilter
+                                        showAll="true"
+                                        count="{viewModel>/NumItems}"
+                                        text="{i18n>Search.AllTabTitle}"
+                                        key="idConsolidatedList"
+                                    />
+                                    <IconTabFilter
+                                        icon="sap-icon://person-placeholder"
+                                        count="{viewModel>/NumCustomers}"
+                                        text="{i18n>Search.CustomerTabTitle}"
+                                        key="idCustomerList"
+                                    />
+                                    <IconTabFilter
+                                        icon="sap-icon://example"
+                                        count="{viewModel>/NumEvents}"
+                                        text="{i18n>Search.EventTabTitle}"
+                                        key="idEventList"
+                                    />
+                                </items>
+                            </IconTabBar>
+                        </VBox>
+                    </HBox>
+                    <HBox justifyContent="Center">
+                        <VBox width="90%" class="listItemBorder">
+                            <HBox justifyContent="Center" class="sapUiMediumMarginTopBottom">
+                                <VBox width="90%">
+                                    <HBox justifyContent="Center">
+                                        <VBox width="100%" class="sapUiSmallMarginTop">
+                                            <List
+                                                    id="idResultList"
+                                                    busyIndicatorDelay="0"
+                                                    growing="true"
+                                                    growingScrollToLoad="true"
+                                                    inset="false"
+                                                    items="{path:'/SearchListItems', factory:'.searchListItemFactory'}"
+                                                    mode="none"
+                                                    noDataText="{i18n>Search.ResultsTableEmptyQuery}">
+                                            </List>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </Panel>
+        </content>
+    </Page>
+</mvc:View>

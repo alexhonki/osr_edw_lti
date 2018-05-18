@@ -1,0 +1,163 @@
+{
+  "osr.edw.integration.ti.ltax.synonym::CV_LT_CRM_INTERACTION": {
+    "target": {
+      "object": "osr.edw.integration.ti.ltax::CV_LT_CRM_INTERACTION",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.md.rms.proxy.synonym::CV_ADRC": {
+    "target": {
+      "object": "osr.edw.staging.md.rms.proxy::CV_ADRC",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.md.rms.proxy.synonym::CV_BUT000": {
+    "target": {
+      "object": "osr.edw.staging.md.rms.proxy::CV_BUT000",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS": {
+    "target": {
+      "object": "osr.edw.staging.md.rms.proxy::CV_BUT021FS",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.md.rms.proxy.synonym::CV_LTCNEXMD": {
+    "target": {
+      "object": "osr.edw.staging.md.rms.proxy::CV_LTCNEXMD",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.md.rms.proxy.synonym::CV_VIBDMEAS": {
+    "target": {
+      "object": "osr.edw.staging.md.rms.proxy::CV_VIBDMEAS",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL": {
+    "target": {
+      "object": "osr.edw.staging.md.rms.proxy::CV_VIBPOBJREL",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.md.rms.proxy.synonym::CV_VILMPL": {
+    "target": {
+      "object": "osr.edw.staging.md.rms.proxy::CV_VILMPL",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.md.rms.proxy.synonym::CV_ZBUT0000HJCXO9": {
+    "target": {
+      "object": "osr.edw.staging.md.rms.proxy::CV_ZBUT0000HJCXO9",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKINVDOC_H": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_DFKKINVDOC_H",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_DFKKOP",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_DFKKPP",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_DFKKPPD",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPI": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_DFKKPPI",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_DFKKPPP",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_FKKMAKO": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_FKKMAKO",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_LTAXASFB": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_LTAXASFB",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_LTCNRESV",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESX": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_LTCNRESX",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_LTNAPLVL": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_LTNAPLVL",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_VIBPADDRREL": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_VIBPADDRREL",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNA": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_VILMNA",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+  
+  "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNAVAL": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_VILMNAVAL",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  }
+  
+}

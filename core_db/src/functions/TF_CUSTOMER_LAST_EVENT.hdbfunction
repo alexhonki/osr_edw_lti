@@ -1,0 +1,68 @@
+FUNCTION "functions::TF_CUSTOMER_LAST_EVENT" ( 
+		IM_FROM	  VARCHAR(6) default '',
+		IM_TO     VARCHAR(6) default ''
+	) 
+	RETURNS TABLE (
+		CUST_ID 		BIGINT,		-- Customer ID
+		EVENT_ID		INTEGER,
+		EVENT_GROUP		NVARCHAR(200),
+		EVENT_NAME		NVARCHAR(200),
+		INIT_DATE		Timestamp,
+		INIT_TS			INT,
+		EVENT_DAYS		INT
+	)
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+DECLARE LV_FROM_TS			VARCHAR(6);
+	DECLARE LV_TO_TS			VARCHAR(6);
+	DECLARE LV_REACTION_TYPE	VARCHAR(200);
+
+	------------------------------------------------------------------------------------------------------------	
+	-- Get the Reaction type configured ---> needs to be extended in future to support multiple
+	------------------------------------------------------------------------------------------------------------
+	CALL "procedures.utils::PR_CONF_GET_REACTION_TYPE"(:LV_REACTION_TYPE);		
+	
+	IF :IM_FROM IS NULL OR LENGTH(:IM_FROM) <= 0 OR
+	   :IM_TO IS NULL OR LENGTH(:IM_TO) <= 0 THEN
+	    DECLARE LV_FORECAST			INT;
+	    DECLARE LV_START_DATE		TIMESTAMP;
+		--CALL "SAP_CRI"."sap.cri.db.procedures::PR_LAST_EVENT_TIME_SEGMENT"(:LV_TO_TS);
+		CALL "procedures.utils::PR_CONF_GET_PREDICTION_DATE"(:LV_START_DATE);
+		CALL "procedures.utils::PR_CONF_GET_PREDICTION_TIME_SEGMENT"(:LV_TO_TS);
+		CALL "procedures.utils::PR_CONF_GET_FORECAST_WINDOW"(:LV_TO_TS, :LV_FORECAST, :LV_FROM_TS);
+	ELSE
+		LV_TO_TS 	:= :IM_TO;
+		LV_FROM_TS	:= :IM_FROM;
+	END IF;
+				
+		LT_LAST_EVENT = select * from (
+								SELECT                   
+								                a."CUST_ID" AS "CUST_ID",
+								                a."EVENT_ID.ID" as "EVENT_ID", 
+								                INIT_DATE, 
+								                INIT_TS, 
+								                ROW_NUMBER() OVER (PARTITION BY a."CUST_ID" ORDER BY INIT_DATE desc ,b.influence desc, a."EVENT_ID.ID" asc) rn
+								FROM  "db::app.CustomerEvents" as a 
+								left outer join 
+								(
+								                SELECT  "EVENT_ID", "INFLUENCE" 
+								                FROM "functions::TF_EVENT_INFLUENCE"(:LV_TO_TS,:LV_REACTION_TYPE)     
+								)               as b 
+								on a."EVENT_ID.ID"=b.event_id
+								where a.INIT_TS <= :LV_TO_TS
+								  and a."EVENT_ID.ID" in (SELECT ID FROM "db::adm.config.event.name" WHERE "IS_ENABLED" = 1)
+								)
+								where rn=1;	
+								
+	RETURN SELECT 
+			a."CUST_ID",
+			a."EVENT_ID", 
+			b.CATEGORY_NAME event_group, 
+			b.event_name,
+			a.init_date,
+			a.init_ts,
+			DAYS_BETWEEN(INIT_DATE,CURRENT_UTCTIMESTAMP) "EVENT_DAYS" 
+			from :LT_LAST_EVENT  as a 
+			INNER JOIN "db::adm.config.event.name" b on a."EVENT_ID" = b."ID";
+END;

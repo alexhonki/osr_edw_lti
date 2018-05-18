@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" id="models.apps.trend::CV_CUSTOMER_CHANGES" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_CUSTOMER_CHANGES"/>
+<localVariables>
+  <variable id="IP_FILTER" parameter="true">
+    <descriptions defaultDescription="Filter Query"/>
+    <variableProperties datatype="NVARCHAR" length="5000" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_FROM" parameter="true">
+    <descriptions defaultDescription="From Year/Month"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_UTIL_GET_PREDICTED_FILTER_FROM_TIME_SEGMENT</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_TO" parameter="true">
+    <descriptions defaultDescription="To Year/Month"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_UTIL_GET_PREDICTED_FILTER_TO_TIME_SEGMENT</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_CHANGES">
+    <targetVariable name="IM_FILTER" resourceUri="functions::TF_CUSTOMER_CHANGES"/>
+    <localVariable>IP_FILTER</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_CHANGES">
+    <targetVariable name="IM_FROM" resourceUri="functions::TF_CUSTOMER_CHANGES"/>
+    <localVariable>IP_FROM</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_CHANGES">
+    <targetVariable name="IM_TO" resourceUri="functions::TF_CUSTOMER_CHANGES"/>
+    <localVariable>IP_TO</localVariable>
+  </mapping>
+</variableMappings>
+<dataSources>
+  <DataSource id="functions::TF_CUSTOMER_CHANGES" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_CUSTOMER_CHANGES</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews/>
+<logicalModel id="functions::TF_CUSTOMER_CHANGES">
+  <attributes>
+    <attribute id="TIME_SEGMENT" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TIME_SEGMENT"/>
+      <keyMapping columnObjectName="TF_CUSTOMER_CHANGES" columnName="TIME_SEGMENT"/>
+    </attribute>
+    <attribute id="TOTAL_NEW_CUSTOMERS" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Total New Customers"/>
+      <keyMapping columnObjectName="TF_CUSTOMER_CHANGES" columnName="TOTAL_NEW_CUSTOMERS"/>
+    </attribute>
+    <attribute id="TOTAL_REACT_CUSTOMERS" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Total Reacted Customers"/>
+      <keyMapping columnObjectName="TF_CUSTOMER_CHANGES" columnName="TOTAL_REACT_CUSTOMERS"/>
+    </attribute>
+    <attribute id="FILTER_NEW_CUSTOMERS" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="FILTER_NEW_CUSTOMERS"/>
+      <keyMapping columnObjectName="TF_CUSTOMER_CHANGES" columnName="FILTER_NEW_CUSTOMERS"/>
+    </attribute>
+    <attribute id="FILTER_REACT_CUSTOMERS" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="FILTER_REACT_CUSTOMERS"/>
+      <keyMapping columnObjectName="TF_CUSTOMER_CHANGES" columnName="FILTER_REACT_CUSTOMERS"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes>
+    <calculatedAttribute id="TOTAL_DIFF" order="6" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TOTAL_DIFF"/>
+      <keyCalculation datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>&quot;TOTAL_NEW_CUSTOMERS&quot; + &quot;TOTAL_REACT_CUSTOMERS&quot;</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+    <calculatedAttribute id="MONTH_YEAR" order="7" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Month Year"/>
+      <keyCalculation datatype="NVARCHAR" expressionLanguage="SQL" length="100">
+        <formula>left(monthname(to_date(&quot;TIME_SEGMENT&quot;)),3) || ' ' || year(to_date(&quot;TIME_SEGMENT&quot;))</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+  </calculatedAttributes>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

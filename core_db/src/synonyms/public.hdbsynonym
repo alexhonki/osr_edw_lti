@@ -1,0 +1,32 @@
+{
+  "synonyms::dummy": {
+    "target": {
+      "object": "DUMMY",
+      "schema": "SYS"
+    }
+  },
+  "synonyms::seriesgeneratetimestamp": {
+    "target": {
+      "object": "SERIES_GENERATE_TIMESTAMP",
+      "schema": "SYS"
+    }
+  },
+  "synonyms::auditsynonym": {
+    "target": {
+      "object": "AUDIT_LOG",
+      "schema": "SYS"
+    }
+  },
+  "synonyms::proceduresynonym": {
+    "target": {
+      "object": "PROCEDURES",
+      "schema": "SYS"
+    }
+  },
+  "synonyms::mtimedimensionmonth": {
+    "target": {
+      "object": "M_TIME_DIMENSION_MONTH",
+      "schema": "_SYS_BI"
+    }    
+  }
+} 

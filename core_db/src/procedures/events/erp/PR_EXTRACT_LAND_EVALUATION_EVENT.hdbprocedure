@@ -1,0 +1,55 @@
+PROCEDURE "procedures.events.erp::PR_EXTRACT_LAND_EVALUATION_EVENT" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+       VILMNA - Table for Notice of Assessment
+    		NANO - Number of Notice of Assessment
+    		INTRENO - Internal Key of Real Estate Object
+       VILMNAVAL - Table for Notice of Assessment: Annual Values
+    		NANO - Number of Notice of Assessment
+    		INTRENO - Internal Key of Real Estate Object
+    		NASTMNTTYPE	- Determination Type in Notice of Assessment(ANV  - LAST YEAR EVALUATION)
+   *************************************/
+   
+    DECLARE LV_LAND_EVAL NVARCHAR(500) := 'Receive new land evaluation';
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+   	INSERT INTO "db::app.CustomerEvents"
+   	
+   	/*New Land Evaluations*/
+		   SELECT SAP.CUST_ID AS CUST_ID, 
+			(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_EVAL)) as EVENT_ID,
+			(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_EVAL)) as EVENT_GROUP,
+			:LV_LAND_EVAL as EVENT_NAME,
+			CAST(VALIDFROM as date) AS INIT_DATE, 
+			NULL AS END_DATE, 
+			count(*) AS EVENT_VALUE, 
+			:LV_LAND_EVAL AS DESCRIPTION, 
+			LEFT(VALIDFROM,6)  as INIT_TS,
+			NULL AS END_TS
+		FROM (
+				SELECT a.ZZ_PARTNER, 
+					c.VALIDFROM
+				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" AS a
+					LEFT OUTER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNA" AS b
+					ON a.NANO = b.NANO
+					INNER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNAVAL" AS c
+					ON b.INTRENO = c.INTRENO
+						AND a.TAXYRSTARTDT = CONCAT(
+								YEAR(c.VALIDFROM), 
+								'0701'
+							)
+				WHERE NASTMNTTYPE != 'ANV'
+			) AS a
+			INNER JOIN "db::app.Customer" AS SAP
+			ON SAP.EXT_ID = a.ZZ_PARTNER
+		GROUP BY CUST_ID, 
+			VALIDFROM; 
+
+   
+END

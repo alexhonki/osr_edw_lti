@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.adm::CV_CONFIG" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_CONFIG"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::adm.config.bucket">
+    <resourceUri>db::adm.config.bucket</resourceUri>
+  </DataSource>
+  <DataSource id="db::adm.config.bucketCustom">
+    <resourceUri>db::adm.config.bucketCustom</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="DEFAULT">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="Configuration Name"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="Reaction Type"/>
+      </viewAttribute>
+      <viewAttribute id="STR_VALUE">
+        <descriptions defaultDescription=" Value"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="Configuration Description"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED" aggregationType="sum">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_DEFAULT" aggregationType="sum">
+        <descriptions defaultDescription="From default value"/>
+      </viewAttribute>
+      <viewAttribute id="TO_DEFAULT" aggregationType="sum">
+        <descriptions defaultDescription="To default value"/>
+      </viewAttribute>
+      <viewAttribute id="UNIT_OF_MEASURE">
+        <descriptions defaultDescription="UNIT_OF_MEASURE"/>
+      </viewAttribute>
+      <viewAttribute id="GROUP">
+        <descriptions defaultDescription="GROUP"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::adm.config.bucket">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STR_VALUE" source="STR_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_DEFAULT" source="FROM_DEFAULT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_DEFAULT" source="TO_DEFAULT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="UNIT_OF_MEASURE" source="UNIT_OF_MEASURE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="GROUP" source="GROUP"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="CUSTOM">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED" aggregationType="sum">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="From default value"/>
+      </viewAttribute>
+      <viewAttribute id="TO_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="To default value"/>
+      </viewAttribute>
+      <viewAttribute id="STR_VALUE">
+        <descriptions defaultDescription="STR_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_BY">
+        <descriptions defaultDescription="User"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_DATE">
+        <descriptions defaultDescription="Date Time"/>
+      </viewAttribute>
+      <viewAttribute id="UNIT_OF_MEASURE">
+        <descriptions defaultDescription="UNIT_OF_MEASURE"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="REACTION_TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="GROUP">
+        <descriptions defaultDescription="GROUP"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::adm.config.bucketCustom">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_VALUE" source="TO_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STR_VALUE" source="STR_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_BY" source="CHANGED.BY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_DATE" source="CHANGED.DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="UNIT_OF_MEASURE" source="UNIT_OF_MEASURE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="GROUP" source="GROUP"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="C1_1" joinType="fullOuter">
+    <viewAttributes>
+      <viewAttribute id="DEFAULT_BUCKET_ID">
+        <descriptions defaultDescription="Configuration Name"/>
+      </viewAttribute>
+      <viewAttribute id="DEFAULT_SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="DEFAULT_DESCRIPTION">
+        <descriptions defaultDescription="Configuration Description"/>
+      </viewAttribute>
+      <viewAttribute id="DEFAULT_IS_ENABLED" aggregationType="sum">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_DEFAULT" aggregationType="sum">
+        <descriptions defaultDescription="From default value"/>
+      </viewAttribute>
+      <viewAttribute id="TO_DEFAULT" aggregationType="sum">
+        <descriptions defaultDescription="To default value"/>
+      </viewAttribute>
+      <viewAttribute id="CUSTOM_FROM" aggregationType="sum">
+        <descriptions defaultDescription="From default value"/>
+      </viewAttribute>
+      <viewAttribute id="CUSTOM_TO" aggregationType="sum">
+        <descriptions defaultDescription="To default value"/>
+      </viewAttribute>
+      <viewAttribute id="CUSTOM_IS_ENABLED" aggregationType="sum">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_BY">
+        <descriptions defaultDescription="User"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_ON">
+        <descriptions defaultDescription="Date Time"/>
+      </viewAttribute>
+      <viewAttribute id="DEFAULT_STR_VALUE">
+        <descriptions defaultDescription=" Value"/>
+      </viewAttribute>
+      <viewAttribute id="CUSTOM_STR_VALUE">
+        <descriptions defaultDescription="STR_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CUSTOM_BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="CUSTOM_SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="DEFAULT_UOM">
+        <descriptions defaultDescription="UNIT_OF_MEASURE"/>
+      </viewAttribute>
+      <viewAttribute id="CUSTOM_UOM">
+        <descriptions defaultDescription="UNIT_OF_MEASURE"/>
+      </viewAttribute>
+      <viewAttribute id="CUSTOM_DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="DEFAULT_REACTION_TYPE">
+        <descriptions defaultDescription="Reaction Type"/>
+      </viewAttribute>
+      <viewAttribute id="CUSTOM_REACTION_TYPE">
+        <descriptions defaultDescription="REACTION_TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="DEFAULT_GROUP">
+        <descriptions defaultDescription="GROUP"/>
+      </viewAttribute>
+      <viewAttribute id="CUSTOM_GROUP">
+        <descriptions defaultDescription="GROUP"/>
+      </viewAttribute>
+    
+      <viewAttribute id="FROM_VALUE_1" aggregationType="sum">
+        <descriptions defaultDescription="From default value"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="TO_VALUE" datatype="DOUBLE" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;CUSTOM_TO&quot;), &quot;TO_DEFAULT&quot;, &quot;CUSTOM_TO&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="FROM_VALUE" datatype="DOUBLE" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;CUSTOM_FROM&quot;), &quot;FROM_DEFAULT&quot;, &quot;CUSTOM_FROM&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="IS_ENABLED" datatype="TINYINT" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;CUSTOM_IS_ENABLED&quot;), &quot;DEFAULT_IS_ENABLED&quot;, &quot;CUSTOM_IS_ENABLED&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="STR_VALUE" datatype="NVARCHAR" length="100" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;CUSTOM_STR_VALUE&quot;), &quot;DEFAULT_STR_VALUE&quot;, &quot;CUSTOM_STR_VALUE&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="BUCKET_ID" datatype="NVARCHAR" length="100" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;CUSTOM_BUCKET_ID&quot;), &quot;DEFAULT_BUCKET_ID&quot;, &quot;CUSTOM_BUCKET_ID&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="SEQ" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;CUSTOM_SEQ&quot;), &quot;DEFAULT_SEQ&quot;, &quot;CUSTOM_SEQ&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="UNIT_OF_MEASURE" datatype="NVARCHAR" length="100" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;CUSTOM_UOM&quot;), &quot;DEFAULT_UOM&quot;, &quot;CUSTOM_UOM&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="DESCRIPTION" datatype="NVARCHAR" length="100" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;CUSTOM_DESCRIPTION&quot;), &quot;DEFAULT_DESCRIPTION&quot;, &quot;CUSTOM_DESCRIPTION&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="REACTION_TYPE" datatype="NVARCHAR" length="100" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;CUSTOM_REACTION_TYPE&quot;), &quot;DEFAULT_REACTION_TYPE&quot;, &quot;CUSTOM_REACTION_TYPE&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="GROUP" datatype="NVARCHAR" length="100" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;CUSTOM_GROUP&quot;), &quot;DEFAULT_GROUP&quot;, &quot;CUSTOM_GROUP&quot;)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="DEFAULT">
+      <mapping xsi:type="Calculation:AttributeMapping" target="DEFAULT_BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DEFAULT_SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DEFAULT_DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DEFAULT_IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_DEFAULT" source="FROM_DEFAULT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_DEFAULT" source="TO_DEFAULT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DEFAULT_STR_VALUE" source="STR_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DEFAULT_UOM" source="UNIT_OF_MEASURE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DEFAULT_REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DEFAULT_GROUP" source="GROUP"/>
+    </input>
+    <input node="CUSTOM">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUSTOM_FROM" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUSTOM_TO" source="TO_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUSTOM_IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_BY" source="CHANGED_BY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_ON" source="CHANGED_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUSTOM_STR_VALUE" source="STR_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUSTOM_BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUSTOM_SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUSTOM_UOM" source="UNIT_OF_MEASURE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUSTOM_DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUSTOM_REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUSTOM_GROUP" source="GROUP"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE_1" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DEFAULT_BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DEFAULT_SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DEFAULT_REACTION_TYPE" source="REACTION_TYPE"/>
+    </input>
+    <joinAttribute name="DEFAULT_BUCKET_ID"/>
+    <joinAttribute name="DEFAULT_SEQ"/>
+    <joinAttribute name="DEFAULT_REACTION_TYPE"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="DESCRIPTION" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DESCRIPTION"/>
+      <keyMapping columnObjectName="Join_1" columnName="DESCRIPTION"/>
+    </attribute>
+    <attribute id="IS_ENABLED" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="IS_ENABLED"/>
+      <keyMapping columnObjectName="Join_1" columnName="IS_ENABLED"/>
+    </attribute>
+    <attribute id="FROM_DEFAULT" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="From default value"/>
+      <keyMapping columnObjectName="Join_1" columnName="FROM_DEFAULT"/>
+    </attribute>
+    <attribute id="TO_DEFAULT" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="To default value"/>
+      <keyMapping columnObjectName="Join_1" columnName="TO_DEFAULT"/>
+    </attribute>
+    <attribute id="CHANGED_BY" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="User"/>
+      <keyMapping columnObjectName="Join_1" columnName="CHANGED_BY"/>
+    </attribute>
+    <attribute id="CHANGED_ON" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Date Time"/>
+      <keyMapping columnObjectName="Join_1" columnName="CHANGED_ON"/>
+    </attribute>
+    <attribute id="UNIT_OF_MEASURE" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="UNIT_OF_MEASURE"/>
+      <keyMapping columnObjectName="Join_1" columnName="UNIT_OF_MEASURE"/>
+    </attribute>
+    <attribute id="STR_DEFAULT" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription=" Value"/>
+      <keyMapping columnObjectName="Join_1" columnName="DEFAULT_STR_VALUE"/>
+    </attribute>
+    <attribute id="REACTION_TYPE" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="REACTION_TYPE"/>
+      <keyMapping columnObjectName="Join_1" columnName="REACTION_TYPE"/>
+    </attribute>
+    <attribute id="GROUP" order="10" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="GROUP"/>
+      <keyMapping columnObjectName="Join_1" columnName="GROUP"/>
+    </attribute>
+    <attribute id="DEFAULT_IS_ENABLED" order="11" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="IS_ENABLED"/>
+      <keyMapping columnObjectName="Join_1" columnName="DEFAULT_IS_ENABLED"/>
+    </attribute>
+    <attribute id="BUCKET_ID" key="true" order="12" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="BUCKET_ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="BUCKET_ID"/>
+    </attribute>
+    <attribute id="SEQ" order="13" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="SEQ"/>
+      <keyMapping columnObjectName="Join_1" columnName="SEQ"/>
+    </attribute>
+    <attribute id="TO_VALUE" order="14" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TO_VALUE"/>
+      <keyMapping columnObjectName="Join_1" columnName="TO_VALUE"/>
+    </attribute>
+    <attribute id="STR_VALUE" order="15" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STR_VALUE"/>
+      <keyMapping columnObjectName="Join_1" columnName="STR_VALUE"/>
+    </attribute>
+  
+    <attribute id="FROM_VALUE" order="18" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="FROM_VALUE"/>
+      <keyMapping columnObjectName="Join_1" columnName="FROM_VALUE"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes>
+    <calculatedAttribute id="KEY" order="16" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="KEY"/>
+      <keyCalculation datatype="VARCHAR" expressionLanguage="COLUMN_ENGINE" length="102">
+        <formula>&quot;BUCKET_ID&quot; + ':' + string(&quot;SEQ&quot;) + ':' + &quot;REACTION_TYPE&quot;</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+    <calculatedAttribute id="JOIN" order="17" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="JOIN"/>
+      <keyCalculation datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>1</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+  </calculatedAttributes>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="208" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="DEFAULT" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="91" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="CUSTOM" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="282" y="356"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="208" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="DEFAULT" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="CUSTOM" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

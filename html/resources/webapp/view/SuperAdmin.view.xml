@@ -1,0 +1,21 @@
+<mvc:View
+        xmlns:mvc="sap.ui.core.mvc"
+        controllerName="sap.fiori.cri.controller.SuperAdmin"
+        xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+        xmlns="sap.m">
+    <SplitApp id="superAdminPanel" initialMaster="pageList">
+        <masterPages>
+            <Page id="pageList">
+                <content>
+                    <List>
+                        <items>
+                            <StandardListItem data:target="generalSettings" title="{i18n>GeneralSettings.Title}" type="Active" icon="sap-icon://settings" press="onNavigate"/>
+                            <StandardListItem data:target="labelDefinition" title="{i18n>LabelDefinition.Title}" type="Active" icon="sap-icon://text-formatting" press="onNavigate"/>
+                            <StandardListItem data:target="predefinedEventSettings" title="{i18n>PredefinedEventSettings.Title}" type="Active" icon="sap-icon://overview-chart" press="onNavigate"/>
+                        </items>
+                    </List>
+                </content>
+            </Page>
+        </masterPages>
+    </SplitApp>
+</mvc:View>

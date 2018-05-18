@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.adm::CV_ATTRIBUTE_TYPES" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CRI: Application Attribute Types Configuration"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::app.AttributeTypes">
+    <resourceUri>db::app.AttributeTypes</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="ATTRIBUTE_ID" aggregationType="sum">
+        <descriptions defaultDescription="ATTRIBUTE_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_NAME">
+        <descriptions defaultDescription="ATTRIBUTE_NAME"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_FILTER" aggregationType="sum">
+        <descriptions defaultDescription="IS_FILTER"/>
+      </viewAttribute>
+      <viewAttribute id="IS_SENSITIVE" aggregationType="sum">
+        <descriptions defaultDescription="IS_SENSITIVE"/>
+      </viewAttribute>
+      <viewAttribute id="IS_SHOW_DETAILS" aggregationType="sum">
+        <descriptions defaultDescription="IS_SHOW_DETAILS"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.AttributeTypes">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_NAME" source="ATTRIBUTE_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_FILTER" source="IS_FILTER"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SHOW_DETAILS" source="IS_SHOW_DETAILS"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Projection_1">
+  <attributes>
+    <attribute id="ATTRIBUTE_ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Attribute ID"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ATTRIBUTE_ID"/>
+    </attribute>
+    <attribute id="ATTRIBUTE_NAME" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Attribute Name"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ATTRIBUTE_NAME"/>
+    </attribute>
+    <attribute id="DESCRIPTION" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Description"/>
+      <keyMapping columnObjectName="Projection_1" columnName="DESCRIPTION"/>
+    </attribute>
+    <attribute id="IS_FILTER" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Filter Flag"/>
+      <keyMapping columnObjectName="Projection_1" columnName="IS_FILTER"/>
+    </attribute>
+    <attribute id="IS_SENSITIVE" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Sensitivity Flag"/>
+      <keyMapping columnObjectName="Projection_1" columnName="IS_SENSITIVE"/>
+    </attribute>
+    <attribute id="IS_SHOW_DETAILS" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Show In Details Flag"/>
+      <keyMapping columnObjectName="Projection_1" columnName="IS_SHOW_DETAILS"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="92" y="112"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

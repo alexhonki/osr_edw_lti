@@ -1,0 +1,54 @@
+FUNCTION "functions::TF_EVENT_IMPACT" 
+	(
+		IN IM_TO INTEGER, 
+		IN IM_REACTION_TYPE VARCHAR(200)
+	)
+       RETURNS table (
+		"EVENT_ID"		INTEGER,
+		"EVENT_IMPACT" 	INTEGER	
+	) 
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+-- Default Reaction Type
+	DECLARE LV_REACTION_TYPE 	VARCHAR(200);
+	-- Impact Threshold Variable
+	DECLARE LV_IMPACT_THRESHOLD INT := 1;
+	
+	-- Get the Reaction type configured ---> needs to be extended in future to support multiple
+	IF :IM_REACTION_TYPE IS NULL OR LENGTH(:IM_REACTION_TYPE) = 0 THEN
+		CALL "procedures.utils::PR_CONF_GET_REACTION_TYPE"(:LV_REACTION_TYPE);
+	ELSE
+		LV_REACTION_TYPE := :IM_REACTION_TYPE;
+	END IF;
+
+
+	-- Set Impact Threshold
+	SELECT TOP 1 TO_INT(COALESCE("FROM_VALUE","TO_VALUE","FROM_DEFAULT")) 
+	 	INTO LV_IMPACT_THRESHOLD
+	 	FROM "models.adm::CV_CONFIG"
+	 	WHERE "BUCKET_ID" 		= 'IMPACT_THRESHOLD'
+	 	  AND "REACTION_TYPE"	= :LV_REACTION_TYPE
+	 	  ;
+
+	return SELECT
+			-- Fields
+				b."EVENT_ID.ID" "EVENT_ID", 
+				TO_INT(count(distinct a."CUST_ID")) "EVENT_IMPACT"
+			-- Table
+			FROM "db::app.Customer" e
+			
+			-- Join
+			INNER JOIN "db::app.CustomerReactions" a ON e."CUST_ID" = a."CUST_ID"
+			INNER JOIN "db::app.CustomerEvents" b on a."CUST_ID" = b."CUST_ID"
+			INNER JOIN "db::adm.config.event.name" c ON b."EVENT_ID.ID" = c."ID"
+			WHERE 	e."STATUS" = 0
+			  AND	a.reaction_type = :LV_REACTION_TYPE
+		  	  AND 	a.init_ts <= TO_INT(:IM_TO)
+		  	  AND 	b.init_ts <= TO_INT(:IM_TO)
+		  	  AND   b.init_date <= a.init_date
+		  	  AND	c."IS_ENABLED" = 1 -- Only select enabled events
+			GROUP BY b."EVENT_ID.ID"
+			HAVING count(distinct a."CUST_ID") >= :LV_IMPACT_THRESHOLD
+			;
+END;

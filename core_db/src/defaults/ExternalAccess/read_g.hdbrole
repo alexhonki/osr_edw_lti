@@ -1,0 +1,6 @@
+{
+	"role":{
+		"name": "osr.sec.lti.backend.dac::read_g#",
+		"schema_privileges":[{  "privileges":[ "SELECT", "SELECT CDS METADATA", "EXECUTE" ]}]
+    }
+}

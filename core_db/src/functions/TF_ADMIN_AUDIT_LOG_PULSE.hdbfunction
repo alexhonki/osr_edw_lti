@@ -1,0 +1,60 @@
+FUNCTION "functions::TF_ADMIN_AUDIT_LOG_PULSE" ( )
+       RETURNS table (
+		USER_NAME			NVARCHAR(100),	-- User
+		LOG_DATE			TIMESTAMP,		-- Audit log date		
+		AUDIT_POLICY_NAME	NVARCHAR(100),	-- Policy  Name
+		EVENT_ACTION		VARCHAR(40),
+		STATEMENT_STRING 	NVARCHAR(5000),			-- Data Accessed
+		RAW_STRING			NVARCHAR(5000)
+	)
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+
+LT_Q = SELECT 
+                MAP("USER_NAME", "APPLICATION_USER_NAME", "USER_NAME","USER_NAME" || '/' || "APPLICATION_USER_NAME" ) "USER_NAME",
+               	"functions::TS_UTIL_LOCAL_TO_UTC"("TIMESTAMP") "LOG_DATE",
+                "AUDIT_POLICY_NAME",
+                "EVENT_ACTION",
+                
+          		REPLACE_REGEXPR('(\W[\w]+\W\.)' IN SUBSTR_BEFORE( SUBSTR_AFTER (STATEMENT_STRING, 'select'), 'from')  WITH '') "COLUMNS",
+				SUBSTR_REGEXPR('\,\((\d+)((|,[\w\W]+))\)$' IN STATEMENT_STRING GROUP 1) "CUST_ID2",
+				TO_NVARCHAR("STATEMENT_STRING") "RAW_STRING"
+			FROM 	"synonyms::auditsynonym" 
+			WHERE	AUDIT_POLICY_NAME ='CUSTOMER_PULSE'
+			AND "STATEMENT_STRING" LIKE '%CustomerDetailsType%'
+			;
+
+LT_PULSE = SELECT 	USER_NAME,
+        "LOG_DATE",
+        "AUDIT_POLICY_NAME",
+        "EVENT_ACTION",
+        'CUST_ID:' || B."CUST_ID" || ', ' || STRING_AGG( "ATTRIBUTE_NAME" || ':' || "ATTRIBUTE_VALUE",', ') "STATEMENT_STRING",
+        CAST("RAW_STRING" AS NVARCHAR(5000)) "RAW_STRING"
+   FROM "db::app.AttributeTypes" A
+   LEFT OUTER JOIN ( 
+        SELECT "CUST_ID" "CUST_ID", "ATTRIBUTE_ID" "ATTRIBUTE_ID", "ATTRIBUTE_VALUE",
+        "USER_NAME", "LOG_DATE", "AUDIT_POLICY_NAME",  "EVENT_ACTION","RAW_STRING"
+        /*TBC- Database error 7: Can't use * in table variale joined with CDS ; replaced '*' with fields */  
+        FROM "db::app.CustomerAttributes" Z
+        INNER JOIN :LT_Q Y ON Y.CUST_ID2 = Z."CUST_ID" and Y.LOG_DATE BETWEEN Z.INIT_DATE AND Z.END_DATE
+
+  ) B ON B.ATTRIBUTE_ID = A.ATTRIBUTE_ID
+ group by USER_NAME,
+        "LOG_DATE",
+        "AUDIT_POLICY_NAME",
+        "EVENT_ACTION",
+        "CUST_ID",
+        "RAW_STRING"
+		;
+
+	RETURN SELECT 
+                "USER_NAME", 
+               	"LOG_DATE",
+                "AUDIT_POLICY_NAME",
+                "EVENT_ACTION",
+                TO_NVARCHAR("STATEMENT_STRING")"STATEMENT_STRING",
+                CAST("RAW_STRING" AS NVARCHAR(5000)) "RAW_STRING"
+			FROM 	:LT_PULSE WHERE USER_NAME IS NOT NULL;
+
+END;

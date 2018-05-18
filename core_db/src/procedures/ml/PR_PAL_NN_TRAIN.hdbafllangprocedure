@@ -1,0 +1,22 @@
+{ 
+  "area" : "AFLPAL", 
+  "function" : "CREATEBPNN", 
+  "parameters" : [ 
+    { 
+      "type" : "db::ml.type.train.data", 
+      "direction" : "IN" 
+    }, 
+    { 
+      "type" : "db::ml.type.control", 
+      "direction" : "IN" 
+    }, 
+    { 
+      "type" : "db::ml.type.train.nn_result", 
+      "direction" : "OUT" 
+    }, 
+    { 
+      "type" : "db::ml.type.train.nn_model", 
+      "direction" : "OUT" 
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+	"format_version": 1,
+	"imports": [
+		{
+			"target_table": "db::text.StopWords",
+			"source_data": {
+				"data_type": "CSV",
+				"file_name": "data.TextData::StopWords.csv",
+				"has_header": true
+			},
+			"import_settings": {
+				"import_columns": [
+					"LANGUAGE_CODE",
+					"STOPWORD"
+				]
+			}
+		},
+		{
+			"target_table": "db::text.CRM_Event_Mapping",
+			"source_data": {
+				"data_type": "CSV",
+				"file_name": "data.TextData::EventMapping.csv",
+				"has_header": true
+			},
+			"import_settings": {
+				"import_columns": [
+					"CATEGORY",
+					"EVENT_NAME",
+					"EXPANDED_WORD",
+					"PRIORITY"
+				]
+			}
+		},
+		{
+			"target_table": "db::text.Mapping_AbbreviatedWords",
+			"source_data": {
+				"data_type": "CSV",
+				"file_name": "data.TextData::AbbreviatedWords.csv",
+				"has_header": true
+			},
+			"import_settings": {
+				"import_columns": [
+					"ABBREVIATED_WORD",
+					"EXPANDED_WORD"
+				]
+			}
+		}
+	]
+}

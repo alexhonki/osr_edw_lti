@@ -1,0 +1,95 @@
+{
+    "xsappname": "OSR_LTI",
+    "authorities": ["$ACCEPT_GRANTED_AUTHORITIES"],
+    "scopes": [
+        {
+            "name": "$XSAPPNAME.TrendAnalysis",
+            "description": "Trend Analysis Access"
+        },
+        {
+            "name": "$XSAPPNAME.EventOverview",
+            "description": "Event Overview Access"
+        },
+        {
+            "name": "$XSAPPNAME.CustomersAtRisk",
+            "description": "Customers At Risk Access"
+        },
+        {
+            "name": "$XSAPPNAME.CustomerSearch",
+            "description": "Customer Search Access"
+        },
+        {
+            "name": "$XSAPPNAME.CustomerDetails",
+            "description": "Customer Details Access"
+        },
+        {
+            "name": "$XSAPPNAME.Settings",
+            "description": "Settings Access"
+        },
+        {
+            "name": "$XSAPPNAME.Admin",
+            "description": "Admin Settings Access"
+        },
+        {
+            "name": "$XSAPPNAME.SuperAdmin",
+            "description": "Super Admin Settings Access"
+        }, 
+        {
+			"name": "$XSAPPNAME.JOBSCHEDULER",
+			"description": "Scope for Job Scheduler",
+			"grant-as-authority-to-apps": ["jobscheduler"]
+		}
+    ],
+    "role-templates": [
+        {
+            "name": "StandardUserTemplate",
+            "description": "Role for Standard User",
+            "scope-references": [
+                "$XSAPPNAME.TrendAnalysis",
+                "$XSAPPNAME.EventOverview",
+                "$XSAPPNAME.CustomersAtRisk",
+                "$XSAPPNAME.CustomerSearch",
+                "$XSAPPNAME.CustomerDetails"
+            ]
+        },
+        {
+            "name": "SuperUserTemplate",
+            "description": "Role for Super User",
+            "scope-references": [
+                "$XSAPPNAME.TrendAnalysis",
+                "$XSAPPNAME.EventOverview",
+                "$XSAPPNAME.CustomersAtRisk",
+                "$XSAPPNAME.CustomerSearch",
+                "$XSAPPNAME.CustomerDetails",
+                "$XSAPPNAME.Settings"
+            ]
+        },
+        {
+            "name": "AdminUserTemplate",
+            "description": "Role for Admin",
+            "scope-references": [
+                "$XSAPPNAME.TrendAnalysis",
+                "$XSAPPNAME.EventOverview",
+                "$XSAPPNAME.CustomersAtRisk",
+                "$XSAPPNAME.CustomerSearch",
+                "$XSAPPNAME.CustomerDetails",
+                "$XSAPPNAME.Settings",
+                "$XSAPPNAME.Admin"
+            ]
+        },
+        {
+            "name": "InternalUserTemplate",
+            "description": "Role for Internal User",
+            "scope-references": [
+                "$XSAPPNAME.TrendAnalysis",
+                "$XSAPPNAME.EventOverview",
+                "$XSAPPNAME.CustomersAtRisk",
+                "$XSAPPNAME.CustomerSearch",
+                "$XSAPPNAME.CustomerDetails",
+                "$XSAPPNAME.Settings",
+                "$XSAPPNAME.Admin",
+                "$XSAPPNAME.SuperAdmin"
+            ]
+        }
+    ]
+}

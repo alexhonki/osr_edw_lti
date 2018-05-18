@@ -1,0 +1,9 @@
+{
+	"description": "Extract Financial Consideration Event Data",
+	"action": "procedures.events.erp::PR_EXTRACT_FINANCIAL_CONSIDERATION_EVENT",
+	"schedules": [{
+		"description": "Perform my task every * * * * 21 10 0", 
+		"xscron": "2016 * * * 21 10 0",
+		"parameter": {} 
+	}]
+}

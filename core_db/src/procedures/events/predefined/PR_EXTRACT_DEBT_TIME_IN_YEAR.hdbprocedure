@@ -1,0 +1,22 @@
+PROCEDURE "procedures.events.predefined::PR_EXTRACT_DEBT_TIME_IN_YEAR" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+    AS
+BEGIN
+   /*************************************
+       Write your procedure logic  - INCOMPLETE
+   *************************************/
+   INSERT INTO "db::app.CustomerEvents" (CUST_ID, EVENT_GROUP, INIT_DATE, END_DATE, EVENT_VALUE, EVENT_NAME, DESCRIPTION)
+		SELECT
+		CUST_ID, 'PREDEFINED EVENTS'	EVENT_GROUP, INIT_DATE, END_DATE, 1 EVENT_VALUE, 
+		'Having Debt >2 times in a Year' AS EVENT_NAME,
+		'Taxpayer having debt >2 times in a year' AS DESCRIPTION
+			FROM ( SELECT 	CUST_ID, LEFT(INIT_TS,4), MAX(INIT_DATE) AS "INIT_DATE", COUNT(*) AS NO_OF_DEBTS,	TO_TIMESTAMP('9999-12-31') "END_DATE"
+    				FROM "db::app.CustomerEvents"
+					 WHERE EVENT_NAME = 'Become debtor - initial assessment'
+					 GROUP BY CUST_ID, LEFT(INIT_TS,4)
+				) WHERE NO_OF_DEBTS >= 3 ORDER BY CUST_ID DESC;
+				
+	
+END

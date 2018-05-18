@@ -1,0 +1,48 @@
+PROCEDURE "procedures.events.generic::PR_EVENTS_PRIORITY" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA
+   AS
+BEGIN
+   /*************************************
+       Event Category priority defaulted as :
+       1 - Assessment
+       2 - Re-assessment
+       3 - Payment
+       4 - Dunning Contact
+       5 - Capacity
+       6 - Contact
+       7 - Dunning
+       8 - Land
+       9 - Organisation Events
+       10 - CRM
+       default priority & icon for those not matching above category - 11, e117
+   *************************************/
+UPDATE "db::adm.config.event.name"
+SET "PRIORITY" = CASE WHEN lower(CATEGORY_NAME) = 'assessment' THEN 1 
+					WHEN lower(CATEGORY_NAME) = 're-assessment' THEN 2
+					WHEN lower(CATEGORY_NAME) = 'payment' THEN 3
+					WHEN lower(CATEGORY_NAME) = 'dunning contact' THEN 4
+					WHEN lower(CATEGORY_NAME) = 'capacity' THEN 5
+					WHEN lower(CATEGORY_NAME) = 'contact' THEN 6
+					WHEN lower(CATEGORY_NAME) = 'dunning' THEN 7
+					WHEN lower(CATEGORY_NAME) = 'land' THEN 8
+					WHEN lower(CATEGORY_NAME) = 'organisation events' THEN 9
+					WHEN lower(CATEGORY_NAME) = 'crm' THEN 10
+					ELSE 11
+					END ,
+	"ICON" = CASE WHEN lower(CATEGORY_NAME) = 'assessment' THEN 'e125' 
+					WHEN lower(CATEGORY_NAME) = 're-assessment' THEN 'e125'
+					WHEN lower(CATEGORY_NAME) = 'payment' THEN 'e020'
+					WHEN lower(CATEGORY_NAME) = 'dunning contact' THEN 'e1a6'
+					WHEN lower(CATEGORY_NAME) = 'capacity' THEN 'e117'
+					WHEN lower(CATEGORY_NAME) = 'contact' THEN 'e1a6'
+					WHEN lower(CATEGORY_NAME) = 'dunning' THEN 'e1a6'
+					WHEN lower(CATEGORY_NAME) = 'land' THEN 'e054'
+					WHEN lower(CATEGORY_NAME) = 'organisation events' THEN 'e054'
+					WHEN lower(CATEGORY_NAME) = 'crm' THEN 'e114'
+					ELSE 'e117'
+					END
+					;
+END

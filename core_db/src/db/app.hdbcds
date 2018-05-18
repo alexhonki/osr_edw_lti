@@ -1,0 +1,197 @@
+namespace db;
+
+using db :: historyT;
+using db :: CustomerIdT;
+using db :: adm;
+
+//using db :: app.Customer as Customer;
+
+context app {
+    @Comment : 'Main Customer Table'
+    entity Customer {
+            @Comment : 'Customer ID'
+        key CUST_ID      : CustomerIdT not null; //generated always as identity(start with 1 increment by 1);
+
+            @Comment : 'Identifiable External ID'
+            EXT_ID       : String(32);
+
+            @Comment : 'Initial Date Time'
+            INIT_DATE    : UTCTimestamp; // Start/Initial Date Time
+
+            @Comment : 'End Date Time'
+            END_DATE     : UTCTimestamp; // End Date Time
+            STATUS       : Integer     default 0; // Customer Status 0 = blocked, 1 = blocked, 2 = to be deleted
+
+            @Comment : 'Customer Name'
+            NAME         : String(200); // Customer Name
+
+            @Comment : 'Data Sensitivity Flag'
+            IS_SENSITIVE : Integer     default 0;
+            INIT_TS      : Integer null;
+            END_TS       : Integer null;
+            CREATED      : historyT;
+            CHANGED      : historyT;
+    }
+    technical configuration {
+                 index CustName  on (NAME) asc;
+        fulltext index fti_extId on (EXT_ID)
+            fuzzy search index on;
+        fulltext index fti_name  on (NAME)
+            fuzzy search index on;
+    };
+
+    @Comment : 'CustomerEvents Type Table'
+    entity CustomerEvents {
+        key RECORD_ID   : Integer64 generated always as identity(start with 1 increment by 1);
+            CUST_ID     : Integer64;
+            EVENT_ID    : association[1] to adm.config.event.name { ID };
+            EVENT_GROUP : String(200);
+            EVENT_NAME  : String(200);
+            INIT_DATE   : UTCTimestamp;
+            END_DATE    : UTCTimestamp;
+            EVENT_VALUE : Integer;
+            DESCRIPTION : String(1000);
+            INIT_TS     : Integer null;
+            END_TS      : Integer null;
+    }
+    technical configuration {
+        fulltext index fti_eventName   on (EVENT_NAME)
+            fuzzy search index on;
+        fulltext index fti_description on (DESCRIPTION)
+            fuzzy search index on;
+    };
+
+    @Comment : 'Attribute Type Table'
+    entity AttributeTypes {
+            @Comment : 'Attribute ID'
+        key ATTRIBUTE_ID    : Integer not null; //generated always as identity(start with 1 increment by 1);
+
+            @Comment : 'Attribute Name'
+            ATTRIBUTE_NAME  : String(100);
+
+            @Comment : 'Description'
+            DESCRIPTION     : String(200);
+
+            @Comment : 'Filter Flag'
+            IS_FILTER       : Integer default 0;
+
+            @Comment : 'Data Sensitivity Flag'
+            IS_SENSITIVE    : Integer default 0;
+
+            @Comment : 'Show Data in Customer Details Flag'
+            IS_SHOW_DETAILS : Integer default 0; // Visible in Customer details
+
+            @Comment : 'Filter Order ID'
+            FILTER_ORDER_ID : Integer null;
+    }
+    technical configuration {
+        column store;
+    };
+
+    @Comment : 'Entity Attribute Extension Table'
+    entity CustomerAttributes {
+            @Comment : 'Record ID'
+        key RECORD_ID         : Integer64 generated always as identity(start with 1 increment by 1);
+            CUST_ID           : Integer64;
+            ATTRIBUTE_ID      : Integer;
+
+            @Comment : 'Attribute Value'
+            ATTRIBUTE_VALUE   : String(200);
+
+            @Comment : 'Initial Date Time'
+            INIT_DATE         : UTCDateTime;
+
+            @Comment : 'End Date Time'
+            END_DATE          : UTCDateTime;
+
+        //Time Segment
+            @Comment : 'Initial Calendar Month YYYYMM'
+            INIT_TIME_SEGMENT : Integer null;
+
+            @Comment : 'End Calendar Month YYYYMM'
+            END_TIME_SEGMENT  : Integer null;
+    }
+    technical configuration {
+        column store;
+        fulltext index fti_attribute_value on (ATTRIBUTE_VALUE)
+            fuzzy search index on;
+    };
+
+    @Comment : 'Value Type Table'
+    entity ValueTypes {
+            @Comment : 'Value ID'
+        key VALUE_ID        : Integer not null; //generated always as identity(start with 1 increment by 1);
+
+            @Comment : 'Value Name'
+            VALUE_NAME      : String(100);
+
+            @Comment : 'Description'
+            DESCRIPTION     : String(200);
+            IS_FILTER       : Integer default 0;
+            IS_SENSITIVE    : Integer default 0;
+            IS_SHOW_DETAILS : Integer default 0; // Visible in Customer details
+        //    FILTER_ORDER_ID : Integer null;
+    };
+
+    @Comment : 'Customer Value Table'
+    entity CustomerValues {
+            @Comment : 'Record ID/Row ID'
+        key RECORD_ID         : Integer64 generated always as identity(start with 1 increment by 1);
+            TIME_SEGMENT      : Integer not null;
+            CUST_ID           : Integer64;
+            VALUE_ID          : Integer;
+            VALUE             : BinaryFloat; // Double
+            INIT_DATE         : UTCDateTime;
+            END_DATE          : UTCDateTime;
+            //Time Segment
+            INIT_TIME_SEGMENT : Integer null;
+            END_TIME_SEGMENT  : Integer null;
+    };
+
+    @Comment : 'Customer Reactions'
+    entity CustomerReactions {
+        key RECORD_ID      : Integer64 generated always as identity(start with 1 increment by 1);
+            CUST_ID        : Integer64;
+            REACTION_TYPE  : String(100);
+            INIT_DATE      : UTCTimestamp;
+            END_DATE       : UTCTimestamp;
+            REACTION_VALUE : Integer;
+            INIT_TS        : Integer null;
+            END_TS         : Integer null;
+    }
+    technical configuration {
+        column store;
+    };
+
+    context events {
+        @Comment : 'Event Influence'
+        entity influence {
+            key EVENT_ID         : association[1] to adm.config.event.name { ID };
+            key TIME_SEGMENT     : Integer;
+            key REACTION_TYPE    : String(100);
+                EVENT_IMPACT     : Integer;
+                TOTAL_CUSTOMERS  : Integer;
+
+                @Comment : 'Event Influence'
+                INFLUENCE_DOUBLE : BinaryFloat;
+
+                @Comment : 'Event Influence'
+                INFLUENCE        : Integer;
+                CREATED          : historyT;
+                CHANGED          : historyT;
+        };
+
+        @Comment : 'Days to react'
+        entity days_to_react {
+            key EVENT_ID      : association[1] to adm.config.event.name { ID };
+            key TIME_SEGMENT  : Integer;
+            key REACTION_TYPE : String(100);
+
+                @Comment : 'Days to react'
+                DAYS_TO_REACT : Integer;
+                //			DAYS_TO_REACT_MEDIAN: Integer;
+                CREATED       : historyT;
+                CHANGED       : historyT;
+        };
+    };
+};

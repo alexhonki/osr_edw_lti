@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" id="models.apps.trend::CV_CUSTOMER_FOR_TREND" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV"/>
+<localVariables>
+  <variable id="IP_FROM" parameter="true">
+    <descriptions defaultDescription="IP_FROM"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_LAST_EVENT_TIME_SEGMENT_MINUS_1Y</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_TO" parameter="true">
+    <descriptions defaultDescription="IP_TO"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_LAST_EVENT_TIME_SEGMENT</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_FILTER" parameter="true">
+    <descriptions defaultDescription="IP_FILTER"/>
+    <variableProperties datatype="VARCHAR" length="5000" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+
+  <variable id="IP_REACTION_TYPE" parameter="true">
+    <descriptions defaultDescription="IP_REACTION_TYPE"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_CONF_GET_REACTION_TYPE</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_FILTER_FROM_TO">
+    <targetVariable name="IM_FILTER" resourceUri="functions::TF_CUSTOMER_FILTER_FROM_TO"/>
+    <localVariable>IP_FILTER</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_FILTER_FROM_TO">
+    <targetVariable name="IM_FROM" resourceUri="functions::TF_CUSTOMER_FILTER_FROM_TO"/>
+    <localVariable>IP_FROM</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_FILTER_FROM_TO">
+    <targetVariable name="IM_TO" resourceUri="functions::TF_CUSTOMER_FILTER_FROM_TO"/>
+    <localVariable>IP_TO</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.customer::CV_CUSTOMER_REACTIONS">
+    <targetVariable name="IP_REACTION_TYPE" resourceUri="models.apps.customer::CV_CUSTOMER_REACTIONS"/>
+    <localVariable>IP_REACTION_TYPE</localVariable>
+  </mapping>
+</variableMappings>
+<dataSources>
+  <DataSource id="functions::TF_CUSTOMER_FILTER_FROM_TO" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_CUSTOMER_FILTER_FROM_TO</resourceUri>
+  </DataSource>
+  <DataSource id="db::app.Customer">
+    <resourceUri>db::app.Customer</resourceUri>
+  </DataSource>
+  <DataSource id="models.apps.customer::CV_CUSTOMER_REACTIONS">
+    <resourceUri>models.apps.customer::CV_CUSTOMER_REACTIONS</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="C1_1" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID"/>
+      </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$CUST_ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Projection_4">
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CUST_ID" source="CUST_ID"/>
+    </input>
+    <input node="functions::TF_CUSTOMER_FILTER_FROM_TO">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CUST_ID" source="CUST_ID"/>
+    </input>
+    <joinAttribute name="JOIN$CUST_ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_4">
+    <viewAttributes>
+      <viewAttribute id="INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+    
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute></viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.Customer">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TIME_SEGMENT">
+        <descriptions defaultDescription="Intial Time Segment"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TIME_SEGMENT">
+        <descriptions defaultDescription="REACTION_TIME_SEGMENT"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.apps.customer::CV_CUSTOMER_REACTIONS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TIME_SEGMENT" source="INIT_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TIME_SEGMENT" source="REACTION_TIME_SEGMENT"/>
+    </input>
+    <filter>(&quot;INIT_TIME_SEGMENT&quot;&lt;='$$IP_TO$$')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_2" cardinality="C1_N" joinType="leftOuter">
+    <viewAttributes>
+      <viewAttribute id="INIT_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="Intial Time Segment"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="REACTION_TIME_SEGMENT"/>
+      </viewAttribute>
+    
+      <viewAttribute id="INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="INIT_TS"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="NEW_REACTION_TIME_SEGMENT" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;REACTION_TIME_SEGMENT&quot;),999912,&quot;REACTION_TIME_SEGMENT&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="NEW_INIT_TIME_SEGMENT" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isnull(&quot;INIT_TS&quot;),999912,&quot;INIT_TS&quot;)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="Join_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+    </input>
+    <input node="Projection_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TIME_SEGMENT" source="INIT_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TIME_SEGMENT" source="REACTION_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+    </input>
+    <joinAttribute name="CUST_ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_3">
+    <viewAttributes>
+      <viewAttribute id="REACTION_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="NEW_REACTION_TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="NEW_INIT_TIME_SEGMENT"/>
+      </viewAttribute>
+    
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Join_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TIME_SEGMENT" source="NEW_REACTION_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TIME_SEGMENT" source="NEW_INIT_TIME_SEGMENT"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Projection_3">
+  <attributes>
+    <attribute id="REACTION_TIME_SEGMENT" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="NEW_REACTION_TIME_SEGMENT"/>
+      <keyMapping columnObjectName="Projection_3" columnName="REACTION_TIME_SEGMENT"/>
+    </attribute>
+    <attribute id="INIT_TIME_SEGMENT" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="NEW_INIT_TIME_SEGMENT"/>
+      <keyMapping columnObjectName="Projection_3" columnName="INIT_TIME_SEGMENT"/>
+    </attribute>
+    <attribute id="CHURN_TIME_SEGMENT" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="NEW_REACTION_TIME_SEGMENT"/>
+      <keyMapping columnObjectName="Projection_3" columnName="REACTION_TIME_SEGMENT"/>
+    </attribute>
+  
+    <attribute id="CUST_ID" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CUST_ID"/>
+  
+      <keyMapping columnObjectName="Projection_3" columnName="CUST_ID"/>
+  
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="-114" y="580"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Projection_4" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="920" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="functions::TF_CUSTOMER_FILTER_FROM_TO" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="1413" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_4" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="-114" y="732"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  
+  
+    <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="143" y="580"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="16" y="444"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Join_1" modelObjectNameSpace="Join_2" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Projection_2" modelObjectNameSpace="Join_2" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_3" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="86" y="306"/>
+      <rectangleSize height="30" width="140"/>
+    </shape></shapes>
+</layout>
+</Calculation:scenario>

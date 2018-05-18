@@ -1,0 +1,160 @@
+/***************
+@BEGIN_DEFINITION
+@TYPE: TEMPLATE;
+@PROCESS_INTERVAL: MONTHLY;
+@EVENT_NAME: Decreased time between events by {1}% for category of {2};
+@CATEGORY_NAME: PredefinedEvents;
+@DESCRIPTION: {1}% decrease in time between events compared to personal average for category of {2};
+@PARAMETER_NAME: I_PERCENTAGE|I_EVENT_CATEGORY; 
+@PARAMETER_TYPE: Integer|String; 
+@PARAMETER_DESC: Percentage|Category; 
+@PARAMETER_DEFAULTS: 80|Default group; 
+@END_DEFINITION
+****************/
+PROCEDURE "procedures.events.generic::PR_DECREASED_EVENTS_TIME" (
+		IN I_EVENT_ID INT DEFAULT 0
+	) 
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+   /*****************************************************************************
+	*                         EXCEPTION HANDLING                                 *
+	******************************************************************************/
+	DECLARE no_param_value CONDITION FOR SQL_ERROR_CODE 10003;
+	DECLARE PROC_NAME nvarchar(1000) := TO_NVARCHAR( ::CURRENT_OBJECT_SCHEMA || '.' || ::CURRENT_OBJECT_NAME );
+	DECLARE EXIT HANDLER FOR sqlexception
+	BEGIN
+	-- Throw Exception
+		INSERT INTO "db::adm.log.error" VALUES(::SQL_ERROR_CODE,:PROC_NAME,::SQL_ERROR_MESSAGE,CURRENT_TIMESTAMP);
+		RESIGNAL; 
+	END;
+
+	BEGIN
+	
+		--DECREASED TIME BETWEEN EVENTS BY X% COMPARED TO PERSONAL AVERAGE NUMBER OF EVENTS OVER TIME
+		--VARIABLES TO CONTAIN INSERT DATA
+		-- Template Data
+		DECLARE LV_EVENT_CATEGORY 	NVARCHAR(500);
+		DECLARE LV_EVENT_NAME		NVARCHAR(500);
+		DECLARE LV_EVENT_ID			INT := :I_EVENT_ID;
+		DECLARE LV_INIT_DATE		TIMESTAMP := CURRENT_UTCTIMESTAMP;
+		DECLARE LV_EVENT_DESCRIPTION NVARCHAR(2000);
+		DECLARE LV_EVENT_SOURCE		NVARCHAR(500);
+		DECLARE	LV_LAST_EVENT_DATE TIMESTAMP := null; 
+		--Parameters
+		DECLARE LV_PERCENTAGE INT;
+		DECLARE LV_CATEGORY NVARCHAR(500); 
+			
+		
+		LT_EVENT = SELECT TOP 1 *
+			FROM "db::adm.config.event.name"
+			WHERE "ID" 			= :LV_EVENT_ID
+			  AND "PROC_SCHEMA" = ::CURRENT_OBJECT_SCHEMA
+			  AND "PROC_NAME"   = ::CURRENT_OBJECT_NAME;
+	
+		--IF THE EVENT EXISTS THEN
+		IF NOT IS_EMPTY(:LT_EVENT) THEN
+		/********************************************************
+		*	 					LOGIC							*
+		*********************************************************/
+			--IMPORT PARAMS
+			LT_PARAMETERS = SELECT  *
+					FROM "db::adm.config.event.parameters"
+					WHERE "EVENT.ID" = :I_EVENT_ID 
+					ORDER BY POSITION;
+					
+			--FILL VARIABLES WITH EVENT DATA		
+			LV_EVENT_CATEGORY 	:= :LT_EVENT.CATEGORY_NAME[1];	  
+			LV_EVENT_NAME 		:= :LT_EVENT.EVENT_NAME[1];
+			LV_EVENT_DESCRIPTION := :LT_EVENT.DESCRIPTION[1];
+	
+			-- Check Parameters
+			IF NOT IS_EMPTY(:LT_PARAMETERS) THEN
+				BEGIN
+					DECLARE EXIT HANDLER FOR SQLEXCEPTION SIGNAL no_param_value SET MESSAGE_TEXT = 'No value set for parameter: I_PERCENTAGE';
+					LV_PERCENTAGE 	:= TO_INT(:LT_PARAMETERS.PARAMETER_VALUE[1]);
+					IF :LT_PARAMETERS.PARAMETER_VALUE[1] IS NULL OR :LT_PARAMETERS.PARAMETER_VALUE[1] = '' THEN
+						SIGNAL no_param_value SET MESSAGE_TEXT = 'No value set for parameter: ' || :LT_PARAMETERS.PARAMETER_NAME[1];
+					END IF;					
+				END;
+
+				BEGIN 
+					DECLARE EXIT HANDLER FOR SQLEXCEPTION SIGNAL no_param_value SET MESSAGE_TEXT = 'No value set for parameter: I_EVENT_CATEGORY'; 
+					LV_CATEGORY 	:= TO_NVARCHAR(:LT_PARAMETERS.PARAMETER_VALUE[2]); 
+					IF :LT_PARAMETERS.PARAMETER_VALUE[2] IS NULL OR :LT_PARAMETERS.PARAMETER_VALUE[2] = '' THEN 
+						SIGNAL no_param_value SET MESSAGE_TEXT = 'No value set for parameter: ' || :LT_PARAMETERS.PARAMETER_NAME[2]; 
+					END IF;			
+				END; 
+
+			ELSE
+				-- Throw Exception
+				SIGNAL no_param_value SET MESSAGE_TEXT = 'No value set for parameters';
+			END IF;
+			--Capturing Last Running Time
+			SELECT 
+				MAX("INIT_DATE") INTO LV_LAST_EVENT_DATE 
+				FROM "db::app.CustomerEvents" 
+				WHERE "EVENT_ID.ID" = :I_EVENT_ID; 
+
+			IF :LV_LAST_EVENT_DATE IS NULL THEN 
+				LV_LAST_EVENT_DATE := TO_DATE(100001);
+			END IF; 
+		
+			--SELECT CUST ID WITH CURRENT EVENT DATE AND LAST TWO EVENTS
+			CUST_ID_WITH_LEADS = 
+				SELECT DISTINCT
+					"CUST_ID",
+					"EVENT_DATE",  -- "A" IS A EVENT DATE
+					"PRIOR_TO_EVENT_DATE",  -- "B" IS THE MOST RECENT EVENT DATE PRIOR TO "A"
+					"PRIOR_TO_EVENT_DATE_2"   -- "C" IS THE MOST RECENT EVENT DATE PRIOR TO "B"
+				FROM (
+					SELECT 
+						"CUST_ID" "CUST_ID", 
+						INIT_DATE "EVENT_DATE",
+				        LEAD(INIT_DATE) OVER (PARTITION BY "CUST_ID" ORDER BY init_date DESC) "PRIOR_TO_EVENT_DATE",
+				        LEAD(INIT_DATE, 2) OVER (PARTITION BY "CUST_ID" ORDER BY init_date DESC) "PRIOR_TO_EVENT_DATE_2" 
+				    FROM "db::app.CustomerEvents"-- Changed from db::bank.VCustomerEvents
+				    WHERE EVENT_GROUP = :LV_CATEGORY 
+				)
+				WHERE EVENT_DATE > :LV_LAST_EVENT_DATE;
+	
+	
+			--SELECT CUST ID WITH PERCENTAGE CHANGE BETWEEN DATES
+			CUST_ID_WITH_CHANGE = 
+			SELECT 
+				"CUST_ID", "EVENT_DATE",
+				CASE WHEN DAYS_BETWEEN("PRIOR_TO_EVENT_DATE_2", "PRIOR_TO_EVENT_DATE") != 0 THEN
+				  -- calculate the % change between the 3 event dates
+					(TO_DOUBLE(DAYS_BETWEEN("PRIOR_TO_EVENT_DATE_2", "PRIOR_TO_EVENT_DATE")) - TO_DOUBLE(DAYS_BETWEEN("PRIOR_TO_EVENT_DATE", "EVENT_DATE"))) / TO_DOUBLE(DAYS_BETWEEN("PRIOR_TO_EVENT_DATE_2", "PRIOR_TO_EVENT_DATE")) 
+				ELSE 
+					NULL 
+					-- to avoid "divide by zero"
+				END AS "DIFFERENCE"
+			FROM :CUST_ID_WITH_LEADS
+			WHERE "PRIOR_TO_EVENT_DATE" IS NOT NULL AND "PRIOR_TO_EVENT_DATE_2" IS NOT NULL;
+
+			--Test Percentage Change	
+			LV_EVENTS = 
+					SELECT CUST_ID, EVENT_DATE as "INIT_DATE"
+						FROM :CUST_ID_WITH_CHANGE
+						WHERE DIFFERENCE * 100 >= :LV_PERCENTAGE;
+						
+			
+			INSERT INTO "db::app.CustomerEvents"
+			("CUST_ID","EVENT_ID.ID",EVENT_GROUP,EVENT_NAME,INIT_DATE,EVENT_VALUE,DESCRIPTION,INIT_TS)
+				SELECT
+					A.CUST_ID 									AS "CUST_ID",
+					:LV_EVENT_ID 								AS "EVENT_ID",
+					:LV_EVENT_CATEGORY 							AS "EVENT_GROUP",
+					:LV_EVENT_NAME 								AS "EVENT_NAME",
+					A.INIT_DATE 								AS "INIT_DATE",
+					1 											AS "EVENT_VALUE", 
+					:LV_EVENT_DESCRIPTION 						AS "DESCRIPTION",
+					YEAR(A.INIT_DATE)*100 + MONTH(A.INIT_DATE)	AS INIT_TS	
+				FROM :LV_EVENTS AS A;
+		END IF;
+	END;
+END

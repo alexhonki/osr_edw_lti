@@ -1,0 +1,30 @@
+{ 
+  "area" : "AFLPAL", 
+  "function" : "RANDOMFORESTTRAIN", 
+  "parameters" : [ 
+    { 
+      "type" : "db::ml.type.train.data", 
+      "direction" : "IN" 
+    }, 
+    { 
+      "type" : "db::ml.type.control", 
+      "direction" : "IN" 
+    }, 
+    { 
+      "type" : "db::ml.type.train.rf_model", 
+      "direction" : "OUT" 
+    }, 
+    { 
+      "type" : "db::ml.type.train.rf_var_imp", 
+      "direction" : "OUT" 
+    }, 
+    { 
+      "type" : "db::ml.type.train.rf_error", 
+      "direction" : "OUT" 
+    }, 
+    { 
+      "type" : "db::ml.type.train.rf_conf_matrix", 
+      "direction" : "OUT" 
+    } 
+  ]
+}

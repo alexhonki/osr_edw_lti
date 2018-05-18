@@ -1,0 +1,19 @@
+<mvc:View
+        xmlns:mvc="sap.ui.core.mvc"
+        controllerName="sap.fiori.cri.controller.UseCaseMaster"
+        xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+        xmlns="sap.m">
+    <SplitApp id="adminPanel" initialMaster="pageList">
+        <masterPages>
+            <Page id="pageList" showNavButton="true" title="Use Cases" navButtonPress="backToAdmin">
+                <content>
+                    <List items="{CRI>/UseCaseConfig}">
+                        <items>
+                            <StandardListItem title="{CRI>DESCRIPTION}" type="Active" icon="sap-icon://edit" data:target="{CRI>REACTION_TYPE}" press="changeUseCase"/>
+                        </items>
+                    </List>
+                </content>
+            </Page>
+        </masterPages>
+    </SplitApp>
+</mvc:View>
