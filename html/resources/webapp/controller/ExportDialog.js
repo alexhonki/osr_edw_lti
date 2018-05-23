@@ -25,13 +25,13 @@ sap.ui.define([
                 var model = new JSONModel();
 
                 //TODO: Work out how to pass to hybris dialog
-                var hybrisTargetGroupModel = new ODataModel("/hybris/API_MKT_TARGET_GROUP_SRV", {
-                    loadMetadataAsync: true
-                });
+                //var hybrisTargetGroupModel = new ODataModel("/hybris/API_MKT_TARGET_GROUP_SRV", {
+                //    loadMetadataAsync: true
+               // });
 
-                hybrisTargetGroupModel.attachMetadataLoaded(null, function () {
+                /*hybrisTargetGroupModel.attachMetadataLoaded(null, function () {
                     model.setProperty("/HybrisEnabled", true);
-                });
+                });*/
 
                 this._oDialog.setModel(model);
                 model.setProperty("/HybrisEnabled", false);
@@ -55,10 +55,12 @@ sap.ui.define([
             this._getDialog().close();
         },
         exportCSV: function () {
-            var labels = this._getDialog().getModel("Labels");
-
+            //var labels = this._getDialog().getModel("Labels");
+			var i18nModel = this._view.getModel("i18n").getResourceBundle();
             var arrayOfData = [
-                [labels.getProperty("/CustomerListColumnId"), labels.getProperty("/CustomerListColumnName"), labels.getProperty("/CustomerListColumnOperatingIncomeLoss")]
+                [i18nModel.getText("CustomersAtRisk.CustomerListColumnId"), 
+                i18nModel.getText("CustomersAtRisk.CustomerListColumnName"),
+                i18nModel.getText("CustomersAtRisk.CustomerListColumnOperatingIncomeLoss")]
             ];
             var customers = this._getDialog().getModel().getProperty("/customerList");
             customers.forEach(function (entry) {

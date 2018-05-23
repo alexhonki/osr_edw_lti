@@ -334,7 +334,7 @@ sap.ui.define([
                 var sCustomerName = this.getCustomerSearchFilterValue();
                 var sODataString = "";
                 if(sCustomerName) {
-                    var sEncodedName = encodeURIComponent("'" + sCustomerName.toLowerCase() + "'");
+                    var sEncodedName = "'" + sCustomerName.toLowerCase() + "'";
                     sODataString = "?$filter=substringof(tolower(NAME)," + sEncodedName + ")";
                 }
                 return sODataString;
@@ -377,7 +377,7 @@ sap.ui.define([
 
                 var sCustomerName = this.getCustomerSearchFilterValue();
                 if(sCustomerName) {
-                    var sEncodedFilterString = encodeURIComponent("'" + sCustomerName.toLowerCase() + "'");
+                    var sEncodedFilterString = "'" + sCustomerName.toLowerCase() + "'";
                     var oSearchFilter = new Filter("tolower(NAME)", FilterOperator.Contains, sEncodedFilterString);
                     aODataFilters.push(oSearchFilter);
                 }
