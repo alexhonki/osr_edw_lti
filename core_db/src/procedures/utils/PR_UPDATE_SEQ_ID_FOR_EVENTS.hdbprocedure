@@ -11,5 +11,5 @@ BEGIN
    /*************************************
        Write your procedure logic 
    *************************************/
-   UPSERT "db::adm.config.event.name"("ID", "LATEST_EXTRACTED_SEQUENCE") values (:EVENT_ID, :SEQ_ID) where ID = :EVENT_ID;
+   UPSERT "db::adm.config.event.name"("LATEST_EXTRACTED_SEQUENCE") values (:SEQ_ID) where ID = :EVENT_ID;
 END
