@@ -21,5 +21,6 @@
   "osr.edw.staging.td.rms.proxy.synonym::CV_LTNAPLVL": {},
   "osr.edw.staging.td.rms.proxy.synonym::CV_VIBPADDRREL": {},
   "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNAVAL": {},
-  "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNA": {}
+  "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNA": {},
+  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP_HIS":{}
 }

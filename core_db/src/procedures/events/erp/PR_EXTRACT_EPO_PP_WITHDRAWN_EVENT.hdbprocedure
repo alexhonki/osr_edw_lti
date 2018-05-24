@@ -1,0 +1,59 @@
+PROCEDURE "procedures.events.erp::PR_EXTRACT_EPO_PP_WITHDRAWN_EVENT" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+    AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   
+   /*EPO Withdrawn*/
+    DECLARE LV_EPO_WITHDRAWN NVARCHAR(500) := 'EPO Withdrawn';
+	DECLARE LV_PP_WITHDRAWN NVARCHAR(500) := 'Instalment Plan Withdrawn';
+	
+		INSERT INTO "db::app.CustomerEvents"
+		select 
+		SAP.CUST_ID as CUST_ID,
+		(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_EPO_WITHDRAWN)) as EVENT_ID,
+		(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_EPO_WITHDRAWN)) as EVENT_GROUP,
+		:LV_EPO_WITHDRAWN as EVENT_NAME,
+		CAST(AEDAT as date) as INIT_DATE,
+		NULL as END_DATE,
+		1 as EVENT_VALUE,
+		:LV_EPO_WITHDRAWN as DESCRIPTION,
+		LEFT(AEDAT,6)  as INIT_TS,
+		NULL  as END_TS
+		from(
+			SELECT a.GPART,b.AEDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a
+			INNER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP_HIS" b ON a.PPKEY=b.PPKEY
+			WHERE COMMT='Promise to Pay Withdrawn' AND PPCAT='Z7'
+			) a
+		INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART;
+
+
+/*PP Withdrawn*/
+
+		INSERT INTO "db::app.CustomerEvents"
+		select 
+		SAP.CUST_ID as CUST_ID,
+		(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PP_WITHDRAWN)) as EVENT_ID,
+		(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_PP_WITHDRAWN)) as EVENT_GROUP,
+		:LV_PP_WITHDRAWN as EVENT_NAME,
+		CAST(AEDAT as date) as INIT_DATE,
+		NULL as END_DATE,
+		1 as EVENT_VALUE,
+		:LV_PP_WITHDRAWN as DESCRIPTION,
+		LEFT(AEDAT,6)  as INIT_TS,
+		NULL  as END_TS
+		from(
+			SELECT a.GPART,b.AEDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a
+			INNER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP_HIS" b ON a.PPKEY=b.PPKEY
+			WHERE COMMT='Promise to Pay Withdrawn'  AND PPCAT!='Z7'
+			) a
+		INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART;
+
+
+
+
+END

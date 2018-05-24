@@ -158,6 +158,12 @@
       "object": "osr.edw.staging.td.rms.proxy::CV_VILMNAVAL",
       "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
     }
-  }
+  },
+    "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP_HIS" : {
+  	"target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_DFKKOP_HIS",
+       "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+	 }
+    }
   
 }
