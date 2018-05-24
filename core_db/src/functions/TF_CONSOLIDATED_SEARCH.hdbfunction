@@ -9,29 +9,58 @@ FUNCTION "functions::TF_CONSOLIDATED_SEARCH" ( IN I_SEARCH_PARAMETER NVARCHAR(25
 	LANGUAGE SQLSCRIPT 
     SQL SECURITY INVOKER AS 
 BEGIN 
-
-	RETURN
-	SELECT SCORE, RECORD_ID, SOURCE, CONSOLIDATED_ID, CONSOLIDATED_NAME 
-	FROM 
-	(
-		select  TO_INT(ROUND(SCORE()*100)) AS "SCORE", 
-				"ID" AS "RECORD_ID",
-				CAST('Event' AS NVARCHAR(20)) AS "SOURCE",
-				TO_NVARCHAR("ID") AS "CONSOLIDATED_ID",
-				"CATEGORY_NAME" || ': ' || "EVENT_NAME" AS "CONSOLIDATED_NAME"	
-		FROM "db::adm.config.event.name"
-		WHERE ( CONTAINS("EVENT_NAME", :I_SEARCH_PARAMETER, FUZZY(0.75, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')) )
-		AND "IS_ENABLED" = 1
-	UNION
-		select TO_INT(ROUND(SCORE()*100)) AS "SCORE",
-				"CUST_ID" AS "RECORD_ID",
-				CAST('Customer' AS NVARCHAR(20)) AS "SOURCE",
-				"EXT_ID" AS "CONSOLIDATED_ID", 
-				"NAME" AS "CONSOLIDATED_NAME"
-		FROM "models.apps.customer::CV_CUSTOMER_LIST"
-		WHERE ( CONTAINS("NAME", :I_SEARCH_PARAMETER, FUZZY(0.75, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')) OR
-				CONTAINS("CUST_ID", :I_SEARCH_PARAMETER, FUZZY(0.9) ) )
-				AND "STATUS" = 0
-		) ORDER BY SCORE desc;
-
+	DECLARE LV_CONTAINS_SPACE INT;
+	SELECT 
+							CASE WHEN :I_SEARCH_PARAMETER LIKE_REGEXPR '[ \t]' THEN 0 ELSE 1 END 
+						INTO LV_CONTAINS_SPACE FROM  "synonyms::dummy" ;
+	
+	IF :LV_CONTAINS_SPACE = 1 THEN
+		RETURN
+			SELECT SCORE, RECORD_ID, SOURCE, CONSOLIDATED_ID, CONSOLIDATED_NAME 
+			FROM 
+			(
+				select  TO_INT(ROUND(SCORE()*100)) AS "SCORE", 
+						"ID" AS "RECORD_ID",
+						CAST('Event' AS NVARCHAR(20)) AS "SOURCE",
+						TO_NVARCHAR("ID") AS "CONSOLIDATED_ID",
+						"CATEGORY_NAME" || ': ' || "EVENT_NAME" AS "CONSOLIDATED_NAME"	
+				FROM "db::adm.config.event.name"
+				WHERE ( CONTAINS("EVENT_NAME", :I_SEARCH_PARAMETER, FUZZY(0.75, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')) )
+				AND "IS_ENABLED" = 1
+			UNION
+				select TO_INT(ROUND(SCORE()*100)) AS "SCORE",
+						"CUST_ID" AS "RECORD_ID",
+						CAST('Customer' AS NVARCHAR(20)) AS "SOURCE",
+						"EXT_ID" AS "CONSOLIDATED_ID", 
+						"NAME" AS "CONSOLIDATED_NAME"
+				FROM "models.apps.customer::CV_CUSTOMER_LIST"
+				WHERE ( CONTAINS("CUST_ID", :I_SEARCH_PARAMETER, FUZZY(0.9)) OR 
+						CONTAINS("NAME", :I_SEARCH_PARAMETER, FUZZY(0.75, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')))
+						AND "STATUS" = 0
+					) ORDER BY SCORE desc;
+				
+	ELSEIF :LV_CONTAINS_SPACE = 0 THEN
+		RETURN
+			SELECT SCORE, RECORD_ID, SOURCE, CONSOLIDATED_ID, CONSOLIDATED_NAME 
+			FROM 
+			(
+				select  TO_INT(ROUND(SCORE()*100)) AS "SCORE", 
+						"ID" AS "RECORD_ID",
+						CAST('Event' AS NVARCHAR(20)) AS "SOURCE",
+						TO_NVARCHAR("ID") AS "CONSOLIDATED_ID",
+						"CATEGORY_NAME" || ': ' || "EVENT_NAME" AS "CONSOLIDATED_NAME"	
+				FROM "db::adm.config.event.name"
+				WHERE ( CONTAINS("EVENT_NAME", :I_SEARCH_PARAMETER, FUZZY(0.75, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')) )
+				AND "IS_ENABLED" = 1
+			UNION
+				select TO_INT(ROUND(SCORE()*100)) AS "SCORE",
+						"CUST_ID" AS "RECORD_ID",
+						CAST('Customer' AS NVARCHAR(20)) AS "SOURCE",
+						"EXT_ID" AS "CONSOLIDATED_ID", 
+						"NAME" AS "CONSOLIDATED_NAME"
+				FROM "models.apps.customer::CV_CUSTOMER_LIST"
+				WHERE ( CONTAINS("NAME", :I_SEARCH_PARAMETER, FUZZY(0.75, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')))
+						AND "STATUS" = 0
+					) ORDER BY SCORE desc;
+	END IF;
 END;

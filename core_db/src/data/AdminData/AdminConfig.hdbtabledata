@@ -34,7 +34,6 @@
 			},
 			"import_settings": {
 				"import_columns": [
-				    "ID",
 		            "EVENT_NAME",         
 		            "CATEGORY_NAME",  
 	            	"TEMPLATE_ID",  

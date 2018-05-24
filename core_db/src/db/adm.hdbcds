@@ -15,7 +15,7 @@ context adm {
         context event {
             entity name {
                     @Comment : 'Event ID'
-                key ID                        : Integer not null; //generated always as identity(start with 1 increment by 1); // Sequence
+                key ID                        : Integer generated always as identity(start with 1 increment by 1); // Sequence
 
                     @Comment : 'Event Name'
                     EVENT_NAME                : String(200); // Unique
