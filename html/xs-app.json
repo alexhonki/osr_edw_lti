@@ -2,8 +2,12 @@
 	"authenticationMethod": "route",
 	"routes": [{
 			"source": "^/odata/(.*)$",
-			"target": "$1",
-			"destination": "backend"
+    		"target": "/http/odata/services.xsodata/$1",
+			"destination": "backend",
+			"authenticationType": "xsuaa",
+			"csrfProtection": false,
+		
+			"scope": ["$XSAPPNAME.TrendAnalysis","$XSAPPNAME.EventOverview","$XSAPPNAME.CustomersAtRisk","$XSAPPNAME.CustomerSearch","$XSAPPNAME.CustomerDetails","$XSAPPNAME.Admin"]
 		  },
 		  {
             "source": "^/(.*)$",

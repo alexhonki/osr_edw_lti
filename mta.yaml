@@ -20,8 +20,8 @@ modules:
     path: core_js
     requires:
       - name: OSR_LTI-Container
-      #- name: OSR_LTI-JobScheduler
       - name: OSR_LTI-uaa
+      - name: OSR_LTI-JobScheduler
     provides:
       - name: ti_core_api
         properties:
@@ -35,7 +35,7 @@ modules:
       - name: sapui5-provider
         properties:
           sapui5url: '~{url}'
-      - name: cr_event_api
+      - name: ti_core_api
         group: destinations
         properties:
           name: backend
