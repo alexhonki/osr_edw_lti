@@ -75,6 +75,9 @@ context adm {
                 entity list {
                     key COMBINED : association to name { ID };
                     key EVENT_ID : Integer;
+                    	SUPPORT : BinaryFloat;
+                        CONFIDENCE : BinaryFloat;
+            		    LIFT	   : BinaryFloat;
                 };
             };
         };

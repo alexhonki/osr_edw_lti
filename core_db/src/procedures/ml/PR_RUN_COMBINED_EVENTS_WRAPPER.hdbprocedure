@@ -11,6 +11,7 @@ BEGIN
 	DECLARE I_FROM INT;
 	DECLARE I_INFLUENCE_FACTOR INT;
 	DECLARE I_WINDOW_PERIOD INT;
+	DECLARE LV_COUNT_ENTRY INT;
 
 	--------------------------------------------------------------------------------------------------------
 	-- Set Control Parameters
@@ -74,10 +75,12 @@ BEGIN
 		-- Generate Combined Events
 		------------------------------------------------------------------------------------------------------------
 		-- Create Temporary Table to store all combined events
-		CREATE LOCAL TEMPORARY COLUMN TABLE #TBL_FINAL_COMB_EVENTS(
+		CREATE LOCAL TEMPORARY  TABLE #TBL_FINAL_COMB_EVENTS(
 			"CUST_ID" BIGINT,
 			"EVENT_NAME" VARCHAR(200),
-			"INIT_DATE" TIMESTAMP
+			"INIT_DATE" TIMESTAMP,
+			"IS_SUBSET" INT,
+			"DESC"      NVARCHAR(5000)
 		);
 		
 		BEGIN
@@ -86,9 +89,17 @@ BEGIN
 			DECLARE LV_ID_LIST 				NVARCHAR(500);
 			DECLARE LV_INDEX 				INT;
 			DECLARE LV_COUNT 				INT;
+			DECLARE LV_INDEX_1				INT;
+			DECLARE LV_COMBD_EVT_NAME       NVARCHAR(5000);
+			DECLARE LV_ATOMIC_EVENT_NAME    NVARCHAR(1000);
+		    DECLARE LA_COMBD_EVT_NAME       NVARCHAR(5000) ARRAY;
+		    DECLARE LA_COMBD_EVT_SUPPORT     FLOAT ARRAY;
+		    DECLARE LA_COMBD_EVT_CONDIFENCE  FLOAT ARRAY;
+		    DECLARE LA_COMBD_EVT_LIFT		FLOAT ARRAY;
+		    DECLARE LV_EVT_NAME_INDEX		INT;
 			
 			-- For each combined events row
-			DECLARE CURSOR c_cursor1  FOR SELECT PRERULE FROM :LT_RESULT;
+			DECLARE CURSOR c_cursor1  FOR SELECT PRERULE,SUPPORT,CONFIDENCE,LIFT FROM :LT_RESULT ORDER BY LENGTH(PRERULE) DESC;
 			FOR cur_row AS c_cursor1
 			DO
 				------------------------------------------------------------------------------------------------
@@ -102,7 +113,10 @@ BEGIN
 	        	THEN
 				 	FOR LV_INDEX IN 1..:LV_COUNT DO
 				 		-- Set Key
-						LA_COMBINED_ID[CARDINALITY(:LA_COMBINED_ID) + 1]	:= cur_row."PRERULE";
+						LA_COMBINED_ID[CARDINALITY(:LA_COMBINED_ID) + 1]	:= replace (cur_row."PRERULE",'&',',');
+						LA_COMBD_EVT_CONDIFENCE[CARDINALITY(:LA_COMBD_EVT_CONDIFENCE) + 1] = cur_row."CONFIDENCE";
+						LA_COMBD_EVT_SUPPORT[CARDINALITY(:LA_COMBD_EVT_SUPPORT) +1]  = cur_row."SUPPORT";
+						LA_COMBD_EVT_LIFT[CARDINALITY(:LA_COMBD_EVT_LIFT) + 1] = cur_row."LIFT";
 						IF :LV_INDEX = :LV_COUNT  THEN
 							-- Get Last Entry
 							LA_EVENT_ID[CARDINALITY(:LA_EVENT_ID) + 1] 	:= :LV_ID_LIST;
@@ -113,10 +127,17 @@ BEGIN
 							-- Set next sequence of items to process
 							LV_ID_LIST 				:= SUBSTR_AFTER (:LV_ID_LIST, '&');
 						END IF;
+						LV_EVT_NAME_INDEX := CARDINALITY(:LA_EVENT_ID);
+						SELECT EVENT_NAME INTO LV_ATOMIC_EVENT_NAME FROM "db::adm.config.event.name" where ID = :LA_EVENT_ID[:LV_EVT_NAME_INDEX];
+						IF LV_INDEX = 1 THEN 
+							LV_COMBD_EVT_NAME := :LV_ATOMIC_EVENT_NAME;
+						ELSE 
+							LV_COMBD_EVT_NAME := CONCAT(CONCAT(:LV_COMBD_EVT_NAME,' | '),:LV_ATOMIC_EVENT_NAME);
+						END IF;
+						
 					END FOR;
-					
 					-- Create list of Event IDs
-					LT_LIST = unnest(:LA_COMBINED_ID,:LA_EVENT_ID) as ("COMBINED.ID","EVENT_ID");   	
+					LT_LIST = unnest(:LA_COMBINED_ID,:LA_EVENT_ID,:LA_COMBD_EVT_SUPPORT,:LA_COMBD_EVT_CONDIFENCE,:LA_COMBD_EVT_LIFT) as ("COMBINED.ID","EVENT_ID","SUPPORT","CONFIDENCE","LIFT");   	
 					
 					
 					----------------------------------------------------------------------------------------
@@ -134,12 +155,23 @@ BEGIN
 							FROM :LT_LIST A INNER JOIN "db::ml.combined.rawEvents" B
 							ON A.EVENT_ID = B.EVENT_ID
 							WHERE B.GROUP_NO IS NULL;
-		
+				/*	FOR LV_INDEX_1 IN 1..CARDINALITY(:LA_EVENT_ID) DO
+						IF :LV_INDEX_1 = 1 THEN
+							LT_TEMP1 = SELECT * FROM  #TBL_FINAL_COMB_EVENTS WHERE EVENT_NAME LIKE CONCAT('%',CONCAT(:LA_EVENT_ID[:LV_INDEX_1],'%'));
+						ELSE
+							 LT_TEMP1 = SELECT * FROM :LT_TEMP1 WHERE EVENT_NAME LIKE CONCAT('%',CONCAT(:LA_EVENT_ID[:LV_INDEX_1],'%'));
+						END IF;
+						LV_INDEX_1 := :LV_INDEX_1 + 1;
+					END FOR;
+					SELECT COUNT(*) INTO LV_COUNT_ENTRY FROM :LT_TEMP1;*/
+				--	IF :LV_COUNT_ENTRY = 0 THEN 
 					INSERT INTO #TBL_FINAL_COMB_EVENTS(		
 							SELECT 
 								CUST_ID,
-								CONCAT('COMB_EVENT:', cur_row.PRERULE) AS EVENT_NAME,
-								INIT_DATE
+								CONCAT('COMB_EVENT:', replace (cur_row."PRERULE",'&',',')) AS EVENT_NAME,
+								INIT_DATE,
+								0,
+								:LV_COMBD_EVT_NAME
 							FROM 
 							(
 								SELECT CUST_ID, NULL AS GROUP_NO, MAX(INIT_DATE) AS INIT_DATE, COUNT(*) AS NO_OF_EVENTS
@@ -152,14 +184,17 @@ BEGIN
 							)
 							WHERE NO_OF_EVENTS >= LV_COUNT
 					);  
+					--END IF;
 					-- Reset Arrays    	
 					LA_COMBINED_ID := ARRAY();
-					LA_EVENT_ID := ARRAY ();  
+					LA_EVENT_ID := ARRAY (); 
+				    LA_COMBD_EVT_SUPPORT :=  ARRAY();
+		    	    LA_COMBD_EVT_CONDIFENCE := ARRAY();
 					
 					-- Insert list of events ID into the combined list event config table
 					INSERT INTO "db::adm.config.event.combined.list" 
 					(
-						SELECT "COMBINED.ID","EVENT_ID" 
+						SELECT "COMBINED.ID", "EVENT_ID", "SUPPORT", "CONFIDENCE", "LIFT"
 						FROM :LT_LIST
 						WHERE "COMBINED.ID" NOT IN 
 						(
@@ -170,7 +205,6 @@ BEGIN
 	        	END IF;
 	    	END FOR;
 		END;
-		
 		-- INSERT COMBINED EVENTS INTO CUSTOMER EVENTS TABLE
 		INSERT INTO "db::app.CustomerEvents" (
 				SELECT 
@@ -181,7 +215,7 @@ BEGIN
 					INIT_DATE,
 					NULL AS END_DATE,
 					1 AS EVENT_VALUE,
-					EVENT_NAME AS DESC,
+					DESC AS DESC,
 					YEAR(INIT_DATE) * 100 + MONTH(INIT_DATE) AS INIT_TS,
 					NULL AS END_TS
 				FROM #TBL_FINAL_COMB_EVENTS);	
