@@ -28,9 +28,14 @@ BEGIN
    /*************************************
        Write your procedure logic 
    *************************************/
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
    	LT_TEMP = SELECT CUST_ID,
 					OBJECT_ID,
-					:IV_EVENT_NAME as DESCRIPTION,
+					CONCAT(CONCAT(:IV_EVENT_NAME, 'CRM'), 
+					(CASE when DIRECTION = '1' then 'OUTBOUND'
+						 WHEN DIRECTION = '0' THEN 'INBOUND'
+					END)) as DESCRIPTION,
 					:IV_EVENT_NAME as EVENT_NAME,
 					:IV_EVENT_GROUP as EVENT_GROUP,
 					POSTING_DATE as INIT_DATE,
