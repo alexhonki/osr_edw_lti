@@ -1,0 +1,144 @@
+PROCEDURE "procedures.text::PR_CRM_EVENT_CREATION" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   /**add not in subsequently
+   add field to dis bw CRM and ERP in customer events*/
+   --Payment Arrangement
+----------------------START OF PAYMENT-------------------------------------------   
+   	
+/*	LT_PAYMENT_ARRANGEMENT =  SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE 
+									description like '%pym%arr%'
+								or description like '%refund%'
+								or description like '%pay%'
+								or description like '%pp%';
+	LT_PAYMENT_ARRANGEMENT_TEMP = SELECT CUST_ID,
+							OBJECT_ID,
+						  'REFUND' as DESCRIPTION,
+						  'REFUND' as EVENT_NAME,
+						  'PAYMENT' as EVENT_GROUP,
+						  POSTING_DATE as INIT_DATE,
+						  POSTING_DATE as END_DATE,
+						  LEFT(POSTING_DATE,6) as INIT_TS,
+						  
+						  NULL as END_TS FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%pay%arr%' 
+								or description like '%pym%arr%'
+								or description like '%refund%'
+								or description like '%pay%'
+								or description like '%pp%';
+	LT_PAYMENT_ARRANGEMENT_ID = SELECT CUST_ID AS CUST_ID,
+							 
+							EVENT_NAME as EVENT_NAME,
+							EVENT_GROUP as EVENT_GROUP,
+							INIT_DATE as INIT_DATE,
+							END_DATE as END_DATE,
+							INIT_TS as INIT_TS,
+							END_TS AS END_TS,
+							DESCRIPTION as DESCRIPTION from :LT_PAYMENT_ARRANGEMENT_TEMP;
+							
+---------------------------END OF PAYMENT-------------------------
+---------------------------START OF FINAL DEMAND-----------------------
+   	SELECT MAX(ID)+1 INTO LV_EVENT_ID FROM "db::adm.config.event.name";
+	INSERT INTO	"db::adm.config.event.name" 
+			("ID","EVENT_NAME", "CATEGORY_NAME", "DESCRIPTION", "IS_ENABLED", "TYPE", "CREATED.BY", "CREATED.DATE")
+			(SELECT :LV_EVENT_ID,'FINAL DEMAND', 'DEBT MANAGEMENT', 'FINAL DEMAND', 1, 3, SESSION_USER, CURRENT_UTCTIMESTAMP
+			FROM "synonyms::dummy");
+
+	LT_FINAL_DEMAND_TEMP = SELECT CUST_ID,
+							OBJECT_ID,
+						  'FINAL DEMAND' as DESCRIPTION,
+						  'FINAL DEMAND' as EVENT_NAME,
+						  'DEBT MANAGEMENT' as EVENT_GROUP,
+						  POSTING_DATE as INIT_DATE,
+						  POSTING_DATE as END_DATE,
+						  LEFT(POSTING_DATE,6) as INIT_TS,
+						  
+						  NULL as END_TS FROM "models.crm::CV_CRM_INTERACTION"WHERE description like '%final%dem%' 
+																		or description like '%demand%' AND OBJECT_ID NOT IN 
+																		(SELECT OBJECT_ID FROM :LT_PAYMENT_ARRANGEMENT_TEMP);
+	LT_FINAL_DEMAND_ID = SELECT A.CUST_ID AS CUST_ID,
+							 B.ID AS "EVENT_ID",
+							A.EVENT_NAME as EVENT_NAME,
+							A.EVENT_GROUP as EVENT_GROUP,
+							A.INIT_DATE as INIT_DATE,
+							A.END_DATE as END_DATE,
+							A.INIT_TS as INIT_TS,
+							A.END_TS AS END_TS,
+							A.DESCRIPTION as DESCRIPTION from :LT_FINAL_DEMAND_TEMP as A
+							inner join "db::adm.config.event.name" as B on
+							B.EVENT_NAME = A.EVENT_NAME;
+	--Final Demand
+	LT_FINAL_DEMAND = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%final%dem%' 
+																		or description like '%demand%';
+					--UNION SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%fin%dem%'
+					--UNION SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%f%dem%';
+---------------------------------END OF FINAL DEMAND-------------------------
+	LT_PAYMENT_EXTENSION = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%pay%ext%' or description like '%pym%ext';
+						--UNION SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%pay%ext%';
+	--covers slearance application as well 
+	--LT_GARNISHEE = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%garn%';
+			--	UNION SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%garnishee%';
+---------------GARNISHEE-----------------------------
+	SELECT MAX(ID)+1 INTO LV_EVENT_ID FROM "db::adm.config.event.name";
+	INSERT INTO	"db::adm.config.event.name" 
+			("ID","EVENT_NAME", "CATEGORY_NAME", "DESCRIPTION", "IS_ENABLED", "TYPE", "CREATED.BY", "CREATED.DATE")
+			(SELECT :LV_EVENT_ID,'Garnishee', 'CLEARANCE APPLICATION', 'Garnishee', 1, 3, SESSION_USER, CURRENT_UTCTIMESTAMP
+			FROM "synonyms::dummy");
+
+	LT_GARNISHEE_TEMP = SELECT CUST_ID,
+							OBJECT_ID,
+						  'Garnishee' as DESCRIPTION,
+						  'Garnishee' as EVENT_NAME,
+						  'CLEARANCE APPLICATION' as EVENT_GROUP,
+						  POSTING_DATE as INIT_DATE,
+						  POSTING_DATE as END_DATE,
+						  LEFT(POSTING_DATE,6) as INIT_TS,
+						  
+						  NULL as END_TS FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%garn%';
+	LT_GARNISHEE_ID = SELECT A.CUST_ID AS CUST_ID,
+							 B.ID AS "EVENT_ID",
+							A.EVENT_NAME as EVENT_NAME,
+							A.EVENT_GROUP as EVENT_GROUP,
+							A.INIT_DATE as INIT_DATE,
+							A.END_DATE as END_DATE,
+							A.INIT_TS as INIT_TS,
+							A.END_TS AS END_TS,
+							A.DESCRIPTION as DESCRIPTION from :LT_GARNISHEE_TEMP as A
+							inner join "db::adm.config.event.name" as B on
+							B.EVENT_NAME = A.EVENT_NAME;
+	INSERT INTO "db::app.CustomerEvents"
+	("CUST_ID", "EVENT_GROUP", "EVENT_NAME", "INIT_DATE", "END_DATE", "DESCRIPTION", "INIT_TS", "END_TS")
+			(SELECT CUST_ID, EVENT_GROUP, EVENT_NAME, INIT_DATE, END_DATE, DESCRIPTION, INIT_TS, END_TS from :LT_GARNISHEE_ID);	
+	
+	LT_LEGAL_LETTER = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%legal%letter%';
+					--UNION SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%legal%let%' verify with legal let
+					--UNION SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%leg%le%';
+	
+	LT_PAY_PLAN = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%pay%plan%';
+				--UNION SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%pay%plan%';
+	
+	LT_MORTGAGE_LETTER = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%mort%letter%';
+	--debt management
+	LT_DEBT_MANAGEMENT = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%debt%manag%' 
+							or description like '%debt%mgmt%';
+	LT_WAIVE_INTEREST = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%waive%'
+																			OR description like '%remit%';
+	LT_CHARGE = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%charge%'
+																	OR description like '%register%';
+	LT_RESET_PAYMENT =  SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%reset%';
+	--End of debt management
+	--Non Payment
+	LT_NON_PAYMENT = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%dishonour%';
+	--ACCOUNT ENQUIRY
+	LT_ACC_ENQ = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%balance%';
+	--Assessment
+	LT_REISSUE = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%reissue%';
+	LT_BUCKET = SELECT * FROM "models.crm::CV_CRM_INTERACTION" WHERE description like '%bucket%';*/
+	 
+END
