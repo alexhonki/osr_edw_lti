@@ -89,7 +89,7 @@
     
       <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TIME_SEGMENT" source="INIT_TIME_SEGMENT"/>
     </input>
-    <filter>(&quot;TIME_SEGMENT&quot; &gt;= $$IP_FROM$$ AND &quot;TIME_SEGMENT&quot;&lt;=$$IP_TO$$)</filter>
+    <filter>&quot;TIME_SEGMENT&quot;&lt;=$$IP_TO$$</filter>
   </calculationView>
   <calculationView xsi:type="Calculation:ProjectionView" id="P_CURRENCY" filterExpressionLanguage="COLUMN_ENGINE">
     <viewAttributes>
