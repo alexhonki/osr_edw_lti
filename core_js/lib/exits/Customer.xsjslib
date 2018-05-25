@@ -27,16 +27,16 @@ function updateCustomer(param) {
 	var newID_block = Utils.recordSetToJSON(pStmt_block.executeQuery(),'NewID');
 	// GET BLOCKED DATA, CUSTOMER DATA, CUSTOMER DELETE DATA
 	var promiseImportEntities = Utils.getImportEntitiesPromise([
-		"EDW_PLATFORM"."osr.edw.integration.ti.ltax::adm.Customer.Block",
+		"db::adm.Customer.Block",
 		// "db::app.Customer",
-		"EDW_PLATFORM"."osr.edw.integration.ti.ltax::adm.Customer.Delete"]);
+		"db::adm.Customer.Delete"]);
 	
 	try {
 		var oRow = data.CustomerBlock[0];
 		
 		promiseImportEntities.then(function(entities) {
-			var CustomerBlock = entities["EDW_PLATFORM"."osr.edw.integration.ti.ltax::adm.Customer.Block"];
-			var CustomerDelete = entities["EDW_PLATFORM"."osr.edw.integration.ti.ltax::adm.Customer.Delete"];
+			var CustomerBlock = entities["db::adm.Customer.Block"];
+			var CustomerDelete = entities["db::adm.Customer.Delete"];
 			return Utils.getTxPromise([CustomerBlock,CustomerDelete]);
 		}).then(function(txObj){
 			return Promise.all([
