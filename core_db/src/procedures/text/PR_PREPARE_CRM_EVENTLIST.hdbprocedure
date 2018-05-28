@@ -32,8 +32,8 @@ BEGIN
 	-- Insert new Events
 	--------------------------------------------------------------
 	INSERT INTO	"db::adm.config.event.name" 
-			("EVENT_NAME", "CATEGORY_NAME", "DESCRIPTION", "IS_ENABLED", "TYPE", "CREATED.BY", "CREATED.DATE")
-			(SELECT "TA_TOKEN", :LV_EVENT_CATEGORY, 'GENERATED' "TA_TOKEN", 1 "IS_ENABLED", 3 "TYPE", SESSION_USER, CURRENT_UTCTIMESTAMP FROM :TMP_TOKENS_2);
+			("ID", "EVENT_NAME", "CATEGORY_NAME", "DESCRIPTION", "IS_ENABLED", "TYPE", "CREATED.BY", "CREATED.DATE")
+			(SELECT "sequences::AdminEventId".NEXTVAL, "TA_TOKEN", :LV_EVENT_CATEGORY, 'GENERATED' "TA_TOKEN", 1 "IS_ENABLED", 3 "TYPE", SESSION_USER, CURRENT_UTCTIMESTAMP FROM :TMP_TOKENS_2);
 
 ------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------

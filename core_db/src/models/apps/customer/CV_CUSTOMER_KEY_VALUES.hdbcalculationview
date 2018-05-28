@@ -4,220 +4,20 @@
 <localVariables/>
 <variableMappings/>
 <dataSources>
-  <DataSource id="db::app.ValueTypes">
-    <resourceUri>db::app.ValueTypes</resourceUri>
-  </DataSource>
-  <DataSource id="db::app.CustomerValues">
-    <resourceUri>db::app.CustomerValues</resourceUri>
-  </DataSource>
-  <DataSource id="functions::TF_EVENT_INFLUENCE" type="TABLE_FUNCTION">
-    <resourceUri>functions::TF_EVENT_INFLUENCE</resourceUri>
-  </DataSource>
-  <DataSource id="functions::TF_EVENT_DAYS_TO_REACT" type="TABLE_FUNCTION">
-    <resourceUri>functions::TF_EVENT_DAYS_TO_REACT</resourceUri>
-  </DataSource>
-  <DataSource id="functions::TF_CUSTOMER_LAST_EVENT" type="TABLE_FUNCTION">
-    <resourceUri>functions::TF_CUSTOMER_LAST_EVENT</resourceUri>
-  </DataSource>
   <DataSource id="db::ml.predict.CustomerRiskResults">
     <resourceUri>db::ml.predict.CustomerRiskResults</resourceUri>
   </DataSource>
   <DataSource id="db::app.Customer">
     <resourceUri>db::app.Customer</resourceUri>
   </DataSource>
+  <DataSource id="models.apps.customer::CV_CUSTOMER_INCOME_LOSS">
+    <resourceUri>models.apps.customer::CV_CUSTOMER_INCOME_LOSS</resourceUri>
+  </DataSource>
   <DataSource id="models.adm::CV_CONFIG">
     <resourceUri>models.adm::CV_CONFIG</resourceUri>
   </DataSource>
 </dataSources>
 <calculationViews>
-  <calculationView xsi:type="Calculation:ProjectionView" id="ValueTypes" filterExpressionLanguage="COLUMN_ENGINE">
-    <viewAttributes>
-      <viewAttribute id="VALUE_NAME">
-        <descriptions defaultDescription="Value Name"/>
-      </viewAttribute>
-      <viewAttribute id="VALUE_ID" aggregationType="sum">
-        <descriptions defaultDescription="Value ID"/>
-      </viewAttribute>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="db::app.ValueTypes">
-      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_ID" source="VALUE_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_NAME" source="VALUE_NAME"/>
-    </input>
-    <filter>(&quot;VALUE_NAME&quot;='OPERATING_INCOME_AMOUNT')</filter>
-  </calculationView>
-  <calculationView xsi:type="Calculation:ProjectionView" id="CustomerValues">
-    <viewAttributes>
-      <viewAttribute id="CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
-      <viewAttribute id="VALUE_ID" aggregationType="sum">
-        <descriptions defaultDescription="VALUE_ID"/>
-      </viewAttribute>
-      <viewAttribute id="VALUE" aggregationType="sum">
-        <descriptions defaultDescription="VALUE"/>
-      </viewAttribute>
-      <viewAttribute id="TIME_SEGMENT" aggregationType="sum">
-        <descriptions defaultDescription="TIME_SEGMENT"/>
-      </viewAttribute>
-      <viewAttribute id="END_DATE">
-        <descriptions defaultDescription="END_DATE"/>
-      </viewAttribute>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="db::app.CustomerValues">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE_ID" source="VALUE_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE" source="VALUE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="END_DATE" source="END_DATE"/>
-    </input>
-  </calculationView>
-  <calculationView xsi:type="Calculation:UnionView" id="Union_1">
-    <viewAttributes>
-      <viewAttribute id="EVENT_ID" aggregationType="sum">
-        <descriptions defaultDescription="EVENT_ID"/>
-      </viewAttribute>
-      <viewAttribute id="INFLUENCE" aggregationType="sum">
-        <descriptions defaultDescription="INFLUENCE"/>
-      </viewAttribute>
-      <viewAttribute id="DAYS_TO_REACT" aggregationType="sum">
-        <descriptions defaultDescription="DAYS_TO_REACT"/>
-      </viewAttribute>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input emptyUnionBehavior="NO_ROW" node="functions::TF_EVENT_INFLUENCE">
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
-      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DAYS_TO_REACT" null="true" value=""/>
-    </input>
-    <input emptyUnionBehavior="NO_ROW" node="functions::TF_EVENT_DAYS_TO_REACT">
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
-      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="INFLUENCE" null="true" value=""/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="DAYS_TO_REACT" source="DAYS_TO_REACT"/>
-    </input>
-  </calculationView>
-  <calculationView xsi:type="Calculation:JoinView" id="OperatingIncome" joinType="inner">
-    <viewAttributes>
-      <viewAttribute id="CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
-      <viewAttribute id="TIME_SEGMENT" aggregationType="sum">
-        <descriptions defaultDescription="TIME_SEGMENT"/>
-      </viewAttribute>
-      <viewAttribute id="END_DATE">
-        <descriptions defaultDescription="END_DATE"/>
-      </viewAttribute>
-      <viewAttribute id="VALUE" aggregationType="sum">
-        <descriptions defaultDescription="VALUE"/>
-      </viewAttribute>
-      <viewAttribute id="JOIN$VALUE_ID$VALUE_ID" hidden="true"/>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="ValueTypes">
-      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$VALUE_ID$VALUE_ID" source="VALUE_ID"/>
-    </input>
-    <input node="CustomerValues">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="END_DATE" source="END_DATE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE" source="VALUE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$VALUE_ID$VALUE_ID" source="VALUE_ID"/>
-    </input>
-    <joinAttribute name="JOIN$VALUE_ID$VALUE_ID"/>
-  </calculationView>
-  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
-    <viewAttributes>
-      <viewAttribute id="EVENT_ID">
-        <descriptions defaultDescription="EVENT_ID"/>
-      </viewAttribute>
-      <viewAttribute id="INFLUENCE" aggregationType="sum">
-        <descriptions defaultDescription="INFLUENCE"/>
-      </viewAttribute>
-      <viewAttribute id="DAYS_TO_REACT" aggregationType="sum">
-        <descriptions defaultDescription="DAYS_TO_REACT"/>
-      </viewAttribute>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="Union_1">
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="DAYS_TO_REACT" source="DAYS_TO_REACT"/>
-    </input>
-  </calculationView>
-  <calculationView xsi:type="Calculation:ProjectionView" id="LastEvent">
-    <viewAttributes>
-      <viewAttribute id="CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID"/>
-      </viewAttribute>
-      <viewAttribute id="EVENT_ID" aggregationType="sum">
-        <descriptions defaultDescription="EVENT_ID"/>
-      </viewAttribute>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="functions::TF_CUSTOMER_LAST_EVENT">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
-    </input>
-  </calculationView>
-  <calculationView xsi:type="Calculation:JoinView" id="DTR" joinType="leftOuter">
-    <viewAttributes>
-      <viewAttribute id="CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID"/>
-      </viewAttribute>
-      <viewAttribute id="EVENT_ID" aggregationType="sum">
-        <descriptions defaultDescription="EVENT_ID"/>
-      </viewAttribute>
-      <viewAttribute id="INFLUENCE" aggregationType="sum">
-        <descriptions defaultDescription="INFLUENCE"/>
-      </viewAttribute>
-      <viewAttribute id="DAYS_TO_REACT" aggregationType="sum">
-        <descriptions defaultDescription="DAYS_TO_REACT"/>
-      </viewAttribute>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="LastEvent">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
-    </input>
-    <input node="Aggregation_1">
-      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="DAYS_TO_REACT" source="DAYS_TO_REACT"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
-    </input>
-    <joinAttribute name="EVENT_ID"/>
-  </calculationView>
-  <calculationView xsi:type="Calculation:AggregationView" id="LastOperatingIncome">
-    <viewAttributes>
-      <viewAttribute id="CUST_ID">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
-      <viewAttribute id="TIME_SEGMENT" aggregationType="max">
-        <descriptions defaultDescription="TIME_SEGMENT"/>
-      </viewAttribute>
-      <viewAttribute id="END_DATE" aggregationType="max">
-        <descriptions defaultDescription="END_DATE"/>
-      </viewAttribute>
-      <viewAttribute id="VALUE" aggregationType="max">
-        <descriptions defaultDescription="VALUE"/>
-      </viewAttribute>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="OperatingIncome">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="TIME_SEGMENT" source="TIME_SEGMENT"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="END_DATE" source="END_DATE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE" source="VALUE"/>
-    </input>
-  </calculationView>
   <calculationView xsi:type="Calculation:ProjectionView" id="MLCustomerRisk">
     <viewAttributes>
       <viewAttribute id="CUST_ID" aggregationType="sum">
@@ -256,79 +56,95 @@
   </calculationView>
   <calculationView xsi:type="Calculation:UnionView" id="UKeyValues">
     <viewAttributes>
-      <viewAttribute id="CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
       <viewAttribute id="RISK_SCORE" aggregationType="sum">
         <descriptions defaultDescription="RISK_SCORE"/>
-      </viewAttribute>
-      <viewAttribute id="VALUE" aggregationType="sum">
-        <descriptions defaultDescription="VALUE"/>
       </viewAttribute>
       <viewAttribute id="EXT_ID">
         <descriptions defaultDescription="Identifiable External ID"/>
       </viewAttribute>
-      <viewAttribute id="DAYS_TO_REACT" aggregationType="sum">
-        <descriptions defaultDescription="DAYS_TO_REACT"/>
-      </viewAttribute>
       <viewAttribute id="INFLUENCE" aggregationType="sum">
         <descriptions defaultDescription="RISK_SCORE"/>
+      </viewAttribute>
+    
+      <viewAttribute id="VALUE" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_BIGINT"/>
       </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
     <input emptyUnionBehavior="NO_ROW" node="MLCustomerRisk">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID_BIGINT"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="RISK_SCORE" source="RISK_SCORE"/>
-      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="VALUE" null="true" value=""/>
       <mapping xsi:type="Calculation:ConstantAttributeMapping" target="EXT_ID" null="true" value=""/>
-      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DAYS_TO_REACT" null="true" value=""/>
       <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="RISK_SCORE"/>
-    </input>
-    <input emptyUnionBehavior="NO_ROW" node="LastOperatingIncome">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="RISK_SCORE" null="true" value=""/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE" source="VALUE"/>
-      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="EXT_ID" null="true" value=""/>
-      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DAYS_TO_REACT" null="true" value=""/>
-      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="INFLUENCE" null="true" value=""/>
+    
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="VALUE" null="true" value=""/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID_BIGINT"/>
     </input>
     <input emptyUnionBehavior="NO_ROW" node="Customer">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
       <mapping xsi:type="Calculation:ConstantAttributeMapping" target="RISK_SCORE" null="true" value=""/>
-      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="VALUE" null="true" value=""/>
       <mapping xsi:type="Calculation:AttributeMapping" target="EXT_ID" source="EXT_ID"/>
-      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DAYS_TO_REACT" null="true" value=""/>
       <mapping xsi:type="Calculation:ConstantAttributeMapping" target="INFLUENCE" null="true" value=""/>
-    </input>
-    <input emptyUnionBehavior="NO_ROW" node="DTR">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="RISK_SCORE" null="true" value=""/>
+    
       <mapping xsi:type="Calculation:ConstantAttributeMapping" target="VALUE" null="true" value=""/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+    </input>
+  
+    <input node="Projection_1" emptyUnionBehavior="NO_ROW">
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="RISK_SCORE" null="true" value=""/>
       <mapping xsi:type="Calculation:ConstantAttributeMapping" target="EXT_ID" null="true" value=""/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="DAYS_TO_REACT" source="DAYS_TO_REACT"/>
       <mapping xsi:type="Calculation:ConstantAttributeMapping" target="INFLUENCE" null="true" value=""/>
+    
+  
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALUE" source="INCOME_LOSS"/>
+  
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+  
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="CURRENCY_DESC">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="CURRENCY">
+        <descriptions defaultDescription="STR_VALUE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.apps.customer::CV_CUSTOMER_INCOME_LOSS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY_DESC" source="CURRENCY_DESC"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
     </input>
   </calculationView>
   <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_2">
     <viewAttributes>
-      <viewAttribute id="CUST_ID">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
-      <viewAttribute id="RISK_SCORE" aggregationType="sum">
+      <viewAttribute id="RISK_SCORE" aggregationType="max">
         <descriptions defaultDescription="RISK_SCORE"/>
       </viewAttribute>
-      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
-        <descriptions defaultDescription="VALUE"/>
-      </viewAttribute>
-      <viewAttribute id="EXT_ID" aggregationType="count">
+      <viewAttribute id="EXT_ID" aggregationType="max">
         <descriptions defaultDescription="Identifiable External ID"/>
       </viewAttribute>
-      <viewAttribute id="DAYS_TO_REACT" aggregationType="sum">
-        <descriptions defaultDescription="DAYS_TO_REACT"/>
-      </viewAttribute>
-      <viewAttribute id="INFLUENCE" aggregationType="sum">
+      <viewAttribute id="INFLUENCE" aggregationType="max">
         <descriptions defaultDescription="RISK_SCORE"/>
+      </viewAttribute>
+    
+      <viewAttribute id="INCOME_LOSS" aggregationType="max">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="CUST_ID_BIGINT"/>
       </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes>
@@ -338,12 +154,12 @@
     </calculatedViewAttributes>
     <restrictedViewAttributes/>
     <input node="UKeyValues">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="RISK_SCORE" source="RISK_SCORE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="VALUE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="EXT_ID" source="EXT_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="DAYS_TO_REACT" source="DAYS_TO_REACT"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
     </input>
   </calculationView>
   <calculationView xsi:type="Calculation:ProjectionView" id="SystemCurrency" filterExpressionLanguage="COLUMN_ENGINE">
@@ -373,23 +189,14 @@
   </calculationView>
   <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinType="inner">
     <viewAttributes>
-      <viewAttribute id="CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
       <viewAttribute id="EXT_ID" aggregationType="count">
         <descriptions defaultDescription="Identifiable External ID"/>
       </viewAttribute>
       <viewAttribute id="RISK_SCORE" aggregationType="sum">
         <descriptions defaultDescription="RISK_SCORE"/>
       </viewAttribute>
-      <viewAttribute id="DAYS_TO_REACT" aggregationType="sum">
-        <descriptions defaultDescription="DAYS_TO_REACT"/>
-      </viewAttribute>
       <viewAttribute id="INFLUENCE" aggregationType="sum">
         <descriptions defaultDescription="RISK_SCORE"/>
-      </viewAttribute>
-      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
-        <descriptions defaultDescription="VALUE"/>
       </viewAttribute>
       <viewAttribute id="CURRENCY">
         <descriptions defaultDescription="STR_VALUE"/>
@@ -397,16 +204,21 @@
       <viewAttribute id="CURRENCY_DESC">
         <descriptions defaultDescription="DESCRIPTION"/>
       </viewAttribute>
-      <viewAttribute id="JOIN$JOIN$IS_ENABLED" hidden="true"/>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_BIGINT"/>
+      </viewAttribute>
+      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$JOIN$IS_ENABLED"/>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
     <input node="Aggregation_2">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="EXT_ID" source="EXT_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="RISK_SCORE" source="RISK_SCORE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="DAYS_TO_REACT" source="DAYS_TO_REACT"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="INCOME_LOSS"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$JOIN$IS_ENABLED" source="JOIN"/>
     </input>
@@ -420,37 +232,36 @@
 </calculationViews>
 <logicalModel id="Join_1">
   <attributes>
-    <attribute id="CUST_ID" order="1" attributeHierarchyActive="false" displayAttribute="false">
-      <descriptions defaultDescription="CUST_ID_ID"/>
-      <keyMapping columnObjectName="Join_1" columnName="CUST_ID"/>
-    </attribute>
-    <attribute id="EXT_ID" order="2" attributeHierarchyActive="false" displayAttribute="false">
+    <attribute id="EXT_ID" order="1" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="Identifiable External ID"/>
       <keyMapping columnObjectName="Join_1" columnName="EXT_ID"/>
     </attribute>
-    <attribute id="RISK_SCORE" order="3" attributeHierarchyActive="false" displayAttribute="false">
+    <attribute id="RISK_SCORE" order="2" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="RISK_SCORE"/>
       <keyMapping columnObjectName="Join_1" columnName="RISK_SCORE"/>
     </attribute>
-    <attribute id="DAYS_TO_REACT" order="4" attributeHierarchyActive="false" displayAttribute="false">
-      <descriptions defaultDescription="DAYS_TO_REACT"/>
-      <keyMapping columnObjectName="Join_1" columnName="DAYS_TO_REACT"/>
-    </attribute>
-    <attribute id="INFLUENCE" order="5" attributeHierarchyActive="false" displayAttribute="false">
+    <attribute id="INFLUENCE" order="3" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="RISK_SCORE"/>
       <keyMapping columnObjectName="Join_1" columnName="INFLUENCE"/>
     </attribute>
-    <attribute id="INCOME_LOSS" order="6" attributeHierarchyActive="false" displayAttribute="false">
-      <descriptions defaultDescription="VALUE"/>
-      <keyMapping columnObjectName="Join_1" columnName="INCOME_LOSS"/>
-    </attribute>
-    <attribute id="CURRENCY" order="7" attributeHierarchyActive="false" displayAttribute="false">
+    <attribute id="CURRENCY" order="4" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="STR_VALUE"/>
       <keyMapping columnObjectName="Join_1" columnName="CURRENCY"/>
     </attribute>
-    <attribute id="CURRENCY_DESC" order="8" attributeHierarchyActive="false" displayAttribute="false">
+    <attribute id="CURRENCY_DESC" order="5" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="DESCRIPTION"/>
       <keyMapping columnObjectName="Join_1" columnName="CURRENCY_DESC"/>
+    </attribute>
+  
+    <attribute id="CUST_ID" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CUST_ID_BIGINT"/>
+  
+      <keyMapping columnObjectName="Join_1" columnName="CUST_ID"/>
+  
+    </attribute>
+    <attribute id="INCOME_LOSS" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="VALUE"/>
+      <keyMapping columnObjectName="Join_1" columnName="INCOME_LOSS"/>
     </attribute>
   </attributes>
   <calculatedAttributes/>
@@ -465,55 +276,6 @@
     
       <rectangleSize width="140"/>
     </shape>
-  
-    <shape expanded="true" modelObjectName="ValueTypes" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="525" y="951"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
-    <shape expanded="true" modelObjectName="CustomerValues" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="715" y="951"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
-    <shape expanded="true" modelObjectName="Union_1" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="282" y="951"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
-    <shape expanded="true" modelObjectName="OperatingIncome" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="548" y="811"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
-    <shape modelObjectName="ValueTypes" modelObjectType="JoinNodeInput" modelObjectNameSpace="OperatingIncome">
-      <upperLeftCorner x="20" y="30"/>
-      <rectangleSize width="250"/>
-    </shape>
-    <shape modelObjectName="CustomerValues" modelObjectType="JoinNodeInput" modelObjectNameSpace="OperatingIncome">
-      <upperLeftCorner x="320" y="30"/>
-      <rectangleSize width="250"/>
-    </shape>
-    <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="282" y="819"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
-    <shape expanded="true" modelObjectName="LastEvent" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="91" y="811"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
-    <shape expanded="true" modelObjectName="DTR" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="115" y="671"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
-    <shape modelObjectName="LastEvent" modelObjectType="JoinNodeInput" modelObjectNameSpace="DTR">
-      <upperLeftCorner x="20" y="30"/>
-      <rectangleSize width="250"/>
-    </shape>
-    <shape modelObjectName="Aggregation_1" modelObjectType="JoinNodeInput" modelObjectNameSpace="DTR">
-      <upperLeftCorner x="320" y="30"/>
-      <rectangleSize width="250"/>
-    </shape>
-    <shape expanded="true" modelObjectName="LastOperatingIncome" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="740" y="679"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
     <shape expanded="true" modelObjectName="MLCustomerRisk" modelObjectNameSpace="CalculationView">
       <upperLeftCorner x="550" y="671"/>
       <rectangleSize height="30" width="140"/>
@@ -526,6 +288,12 @@
       <upperLeftCorner x="536" y="481"/>
       <rectangleSize height="30" width="140"/>
     </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="738" y="671"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  
     <shape expanded="true" modelObjectName="Aggregation_2" modelObjectNameSpace="CalculationView">
       <upperLeftCorner x="624" y="356"/>
       <rectangleSize height="30" width="140"/>
@@ -539,11 +307,11 @@
       <upperLeftCorner x="578" y="217"/>
       <rectangleSize height="30" width="140"/>
     </shape>
-    <shape modelObjectName="Aggregation_2" modelObjectType="JoinNodeInput" modelObjectNameSpace="Join_1">
+    <shape modelObjectName="Aggregation_2" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
       <upperLeftCorner x="20" y="30"/>
       <rectangleSize width="250"/>
     </shape>
-    <shape modelObjectName="SystemCurrency" modelObjectType="JoinNodeInput" modelObjectNameSpace="Join_1">
+    <shape modelObjectName="SystemCurrency" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
       <upperLeftCorner x="320" y="30"/>
       <rectangleSize width="250"/>
     </shape>
