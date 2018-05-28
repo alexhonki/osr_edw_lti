@@ -1,5 +1,5 @@
 PROCEDURE "procedures.text::PR_CRM_EVENT_CREATE_MAIN" ( 
-out LT_FINAL_EVENT table (
+/*out LT_FINAL_EVENT table (
 		CUST_ID BIGINT,
 		DESCRIPTION VARCHAR(1000),
 		EVENT_NAME VARCHAR(200),
@@ -8,7 +8,8 @@ out LT_FINAL_EVENT table (
 		END_DATE TIMESTAMP,
 		INIT_TS INTEGER,
 		END_TS INTEGER
-))
+)*/
+)
    LANGUAGE SQLSCRIPT
    SQL SECURITY INVOKER
    --DEFAULT SCHEMA <default_schema_name>
@@ -38,21 +39,27 @@ BEGIN
    */
 	
 	DECLARE LT_OBJECT_ID TABLE (OBJECT_ID NVARCHAR(10));
-	/*DECLARE LT_EVENT TABLE (CUST_ID BIGINT,
+	DECLARE LT_EVENT TABLE (CUST_ID BIGINT,
 		DESCRIPTION VARCHAR(1000),
 		EVENT_NAME VARCHAR(200),
 		EVENT_GROUP VARCHAR(200),
 		INIT_DATE TIMESTAMP,
 		END_DATE TIMESTAMP,
 		INIT_TS INTEGER,
-		END_TS INTEGER);*/
-	DECLARE LV_EVENT_ID INT;
+		END_TS INTEGER);
+	/*DECLARE LV_EVENT_ID INT;
 	DECLARE EXIT HANDLER FOR sqlexception
+	LT_CONFIG_EVENT_NAME = SELECT * FROM "db::adm.config.event.name" where ;
+	FOR i IN 1 .. record_count(:LT_CONFIG_EVENT_NAME) DO
+		varb = :t.col_a[:i];
+		CALL mapper(:varb, out_tab);
+		ret_tab = SELECT * FROM :out_tab
+		UNION SELECT * FROM :ret_tab;
+	END FOR;*/
    --PROCEDURE CALL FOR PAYMENT
-   LT_OBJECT_ID = SELECT to_varchar(0) AS OBJECT_ID FROM "synonyms::dummy";
-	CALL "procedures.text::PR_RETURN_CRM_EVENT_DATA"('description like ''%pym%arr%'' or description like ''%refund%'' or description like ''%pay%'' or description like ''%pp%''' , 
-												'REFUND', 'PAYMENT',:LT_OBJECT_ID ,LT_EVENT ,LT_OBJECT_ID_NEW);
-	LT_EVENT_PAYMENT = SELECT * FROM :LT_EVENT;
+	LT_OBJECT_ID = SELECT to_varchar(0) AS OBJECT_ID FROM "synonyms::dummy";
+	CALL "procedures.text::PR_RETURN_CRM_EVENT_DATA"('CRM TEXT', 'CRM TEXT',:LT_OBJECT_ID ,:LT_EVENT, LT_EVENT ,LT_OBJECT_ID_NEW);
+	
 	/*:LT_EVENT.DELETE();
 	--:LT_EVENT.DELETE(1 .. RECORD_COUNT(:LT_EVENT));
 	--PROCEDURE CALL FOR FINAL DEMAND	
@@ -102,6 +109,5 @@ BEGIN
 	INSERT INTO "db::app.CustomerEvents"
 	("CUST_ID", "EVENT_GROUP", "EVENT_NAME", "INIT_DATE", "END_DATE", "DESCRIPTION", "INIT_TS", "END_TS")
 			(SELECT CUST_ID, EVENT_GROUP, EVENT_NAME, INIT_DATE, END_DATE, DESCRIPTION, INIT_TS, END_TS from :LT_FINAL_EVENT);
-	SELECT max(ID) into LV_EVENT_ID from "db::adm.config.event.name"  ;
-	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"( :LV_EVENT_ID + 1);
+	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"( );
 END

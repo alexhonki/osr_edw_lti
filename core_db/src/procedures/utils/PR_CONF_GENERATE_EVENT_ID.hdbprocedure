@@ -13,16 +13,18 @@ BEGIN
 	--------------------------------------------------------------
 	-- Get Event Name/Category In correct Case
 	--------------------------------------------------------------
-	T_EVENTS = 	SELECT a."EVENT_NAME", a."EVENT_GROUP" "CATEGORY_NAME", a."DESCRIPTION" 
+--	T_EVENTS = 	SELECT a."EVENT_NAME", a."EVENT_GROUP" "CATEGORY_NAME", a."DESCRIPTION" 
+	T_EVENTS = 	SELECT a."EVENT_NAME", a."EVENT_GROUP" "CATEGORY_NAME"
 					FROM "db::app.CustomerEvents" a
 					INNER JOIN :T_EVENT_NAMES b
 					ON UPPER(a."EVENT_NAME") = b."EVENT_NAME" AND UPPER(a."EVENT_GROUP") = b."CATEGORY_NAME"
 					WHERE a."EVENT_ID.ID" IS NULL
-					GROUP BY a."EVENT_NAME", a."EVENT_GROUP",a."DESCRIPTION";
+					--GROUP BY a."EVENT_NAME", a."EVENT_GROUP",a."DESCRIPTION";
+					GROUP BY a."EVENT_NAME", a."EVENT_GROUP";
 	--------------------------------------------------------------
 	-- Insert new Events
 	--------------------------------------------------------------
 	INSERT INTO	"db::adm.config.event.name" 
 			("EVENT_NAME", "CATEGORY_NAME", "DESCRIPTION", "IS_ENABLED", "TYPE", "CREATED.BY", "CREATED.DATE")
-			(SELECT "EVENT_NAME", "CATEGORY_NAME", "DESCRIPTION", 1 "IS_ENABLED", 3 "TYPE", SESSION_USER, CURRENT_UTCTIMESTAMP FROM :T_EVENTS);
+			(SELECT "EVENT_NAME", "CATEGORY_NAME", 'GENERATED', 1 "IS_ENABLED", 3 "TYPE", SESSION_USER, CURRENT_UTCTIMESTAMP FROM :T_EVENTS);
 END
