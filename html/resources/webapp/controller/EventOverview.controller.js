@@ -735,7 +735,7 @@ sap.ui.define([
                 var oModel = this.getView().getModel();
                 var aEventList = oModel.getProperty("/SelectedEvents") ? oModel.getProperty("/SelectedEvents") : oModel.getProperty("/DisplayedEvents");
                 var arrayOfData = [
-                    ["Event Group", "Event Name", "Impact", "Risk", "Days To React"]
+                    ["Event Group", "Event Name", "Impact", "Risk"]
                 ];
                 if (aEventList) {
                     aEventList.forEach(function (entry) {
@@ -743,8 +743,7 @@ sap.ui.define([
                             entry.EVENT_GROUP,
                             entry.EVENT_NAME,
                             entry.IMPACT,
-                            entry.INFLUENCE,
-                            entry.DAYS_TO_REACT
+                            entry.INFLUENCE
                         ]);
                     });
                     Utilities.saveCSV(arrayOfData, "Event List");

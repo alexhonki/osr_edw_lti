@@ -430,12 +430,12 @@ sap.ui.define([
                 selectedCustomers.forEach(function (row) {
                     var data = row.getBindingContext("CRI").getObject();
                     exportCustomers.push({
-                        CustomerId: data['CUST_ID'],
-                        OriginId: data['EXT_ID'],
-                        CustomerName: data['NAME'],
-                        OperatingIncome: data['INCOME_LOSS'],
-                        Churned: data['CHURNED_FLAG'] ? 'Yes' : 'No',
-                        Currency: data['CURRENCY']
+                        CustomerId: data.CUST_ID,
+                        OriginId: data.EXT_ID,
+                        CustomerName: data.NAME,
+                        OperatingIncome: data.INCOME_LOSS,
+                        Churned: data.CHURNED_FLAG ? "Yes" : "No",
+                        Currency: data.CURRENCY
                     });
                 });
                 this.getOwnerComponent().exportDialog.open(this.getView(), exportCustomers);
@@ -446,7 +446,7 @@ sap.ui.define([
                 var that = this;
 
                 table.setBusy(true);
-                this.getView().getModel('CRI').read(tableQuery, {
+                this.getView().getModel("CRI").read(tableQuery, {
                     success: function (oData) {
                         try {
                             table.setBusy(false);
@@ -454,12 +454,12 @@ sap.ui.define([
 
                             oData.results.forEach(function (data) {
                                 customersToExport.push({
-                                    CustomerId: data['CUST_ID'],
-                                    OriginId: data['EXT_ID'],
-                                    CustomerName: data['NAME'],
-                                    OperatingIncome: data['INCOME_LOSS_ROUND'],
-                                    Churned: data['CHURNED_FLAG'] ? 'Yes' : 'No',
-                                    Currency: data['CURRENCY']
+                                    CustomerId: data.CUST_ID,
+                                    OriginId: data.EXT_ID,
+                                    CustomerName: data.NAME,
+                                    OperatingIncome: data.INCOME_LOSS,
+                                    Churned: data.CHURNED_FLAG ? "Yes" : "No",
+                                    Currency: data.CURRENCY
                                 });
                             });
 

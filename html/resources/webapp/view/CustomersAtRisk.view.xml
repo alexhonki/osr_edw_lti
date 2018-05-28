@@ -131,7 +131,7 @@
                     <IconTabFilter id="idAllCustomers" text="{i18n>CustomersAtRisk.AllCustomersTab}">
                         <table:Table
                                 id="idCustomerListTable"
-                                selectionMode="Multi"
+                                selectionMode="None"
                                 rows="{CRI>/AtRiskCustomersParameters(IP_FILTER='')/Results}"
                                 rowHeight="34"
                                 noDataText="{i18n>CustomersAtRisk.CustomerList.NoData}"
