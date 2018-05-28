@@ -4,11 +4,12 @@ using db :: historyT;
 using db :: CustomerIdT;
 
 context adm {
-	entity seqIdLog{
-	key	LATEST_EXTRACTED_SEQUENCE : Integer default 0;
-		LAST_EXTRACTED_DATE       : UTCTimestamp null;
-	key	ENTITY_NAME				  : String(10);
-	};
+    entity seqIdLog {
+        key LATEST_EXTRACTED_SEQUENCE : Integer default 0;
+            LAST_EXTRACTED_DATE       : UTCTimestamp null;
+        key ENTITY_NAME               : String(10);
+    };
+
     // Configuration Objects
     context config {
         @Comment : 'Event configuration Table'
@@ -43,6 +44,7 @@ context adm {
                     PROC_INTERVAL             : String(10) null; /* HOURLY, DAILY, WEEKLY, MONTHLY, QUATERLY, YEARLY */
                     PROC_START_DATE           : UTCTimestamp null;
                     JOB_ID                    : Integer64 null;
+                    SOURCE                    : String(3) null;
                 //PARAMETERS      : association[*] to parameters on PARAMETERS.EVENT.ID = ID;
             }
             technical configuration {
@@ -77,11 +79,11 @@ context adm {
                 };
 
                 entity list {
-                    key COMBINED : association to name { ID };
-                    key EVENT_ID : Integer;
-                    	SUPPORT : BinaryFloat;
+                    key COMBINED   : association to name { ID };
+                    key EVENT_ID   : Integer;
+                        SUPPORT    : BinaryFloat;
                         CONFIDENCE : BinaryFloat;
-            		    LIFT	   : BinaryFloat;
+                        LIFT       : BinaryFloat;
                 };
             };
         };
@@ -153,31 +155,31 @@ context adm {
 
     @Comment : 'Customer Block/Delete Table'
     context Customer {
-         entity Block {
-             key ID             : Integer not null;
-                 CUST_ID        : CustomerIdT not null;
-                 BLOCKED_BY     : String(30);
-                 BLOCKED_DATE   : UTCTimestamp;
-                 UNBLOCKED_BY   : String(30);
-                 UNBLOCKED_DATE : UTCTimestamp;
-                 STATUS         : Integer default 0;
-         };
+        entity Block {
+            key ID             : Integer     not null;
+                CUST_ID        : CustomerIdT not null;
+                BLOCKED_BY     : String(30);
+                BLOCKED_DATE   : UTCTimestamp;
+                UNBLOCKED_BY   : String(30);
+                UNBLOCKED_DATE : UTCTimestamp;
+                STATUS         : Integer     default 0;
+        };
 
-         entity Delete {
-             key ID           : Integer not null;
-                 CUST_ID      : CustomerIdT not null;
-                 DELETED_BY   : String(30);
-                 DELETED_DATE : UTCTimestamp;
-                 STATUS       : Integer;
-                 COMMENTS     : String(1000);
-         };
+        entity Delete {
+            key ID           : Integer     not null;
+                CUST_ID      : CustomerIdT not null;
+                DELETED_BY   : String(30);
+                DELETED_DATE : UTCTimestamp;
+                STATUS       : Integer;
+                COMMENTS     : String(1000);
+        };
 
-         entity Status {  // to be removed
+        entity Status { // to be removed
             key ID          : Integer   not null;
             key LANG        : String(1) default 'E';
                 STATUS_CODE : String(10);
                 STATUS_TEXT : String(30);
-                DESCRIPTION : String(100); 
+                DESCRIPTION : String(100);
         };
     };
 
