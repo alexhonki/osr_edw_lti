@@ -24,24 +24,11 @@
 			},
 			"import_settings": {
 				"import_columns": [
-					"CATEGORY",
+					"CATEGORY_NAME",
 					"EVENT_NAME",
-					"EXPANDED_WORD",
-					"PRIORITY"
-				]
-			}
-		},
-		{
-			"target_table": "db::text.Mapping_AbbreviatedWords",
-			"source_data": {
-				"data_type": "CSV",
-				"file_name": "data.TextData::AbbreviatedWords.csv",
-				"has_header": true
-			},
-			"import_settings": {
-				"import_columns": [
-					"ABBREVIATED_WORD",
-					"EXPANDED_WORD"
+					"SEARCH_STRING",
+					"PRIORITY",
+					"EXCLUSION"
 				]
 			}
 		}
