@@ -32,8 +32,36 @@
 				"file_name": "data.AdminData::ConfigEventName.csv",
 				"has_header": true
 			},
+			"column_mappings": {
+				"ID": {
+					    "type" : "function",
+					    "name" : "range",
+					    "parameters" : {
+					      "increment_by" : "1",
+					      "start_with" : "1"
+					    }
+				    },
+				"EVENT_NAME": 1,         
+		        "CATEGORY_NAME": 2, 
+	            "TEMPLATE_ID": 3,  
+	            "DESCRIPTION": 4,     
+	            "IS_ENABLED": 5,
+	            "PRIORITY": 6,
+	            "ICON": 7,
+	            "TYPE": 8,  
+	            "CREATED.BY": 9,
+	            "CREATED.DATE": 10,
+	            "CHANGED.BY": 11,
+	            "CHANGED.DATE": 12,
+	            "PROC_SCHEMA": 13,     
+	            "PROC_NAME": 14, 
+	            "PROC_INTERVAL": 15,
+	            "PROC_START_DATE": 16,
+	            "JOB_ID": 17
+			},
 			"import_settings": {
 				"import_columns": [
+					"ID",
 		            "EVENT_NAME",         
 		            "CATEGORY_NAME",  
 	            	"TEMPLATE_ID",  
@@ -53,7 +81,6 @@
 	                "JOB_ID"
 				]
 			}
-		}
-		
+		}	
 	]
 }
