@@ -168,7 +168,7 @@ BEGIN
 					INSERT INTO #TBL_FINAL_COMB_EVENTS(		
 							SELECT 
 								CUST_ID,
-								CONCAT('COMB_EVENT:', replace (cur_row."PRERULE",'&',',')) AS EVENT_NAME,
+								CONCAT('Combined Event:', replace (cur_row."PRERULE",'&',',')) AS EVENT_NAME,
 								INIT_DATE,
 								0,
 								:LV_COMBD_EVT_NAME
