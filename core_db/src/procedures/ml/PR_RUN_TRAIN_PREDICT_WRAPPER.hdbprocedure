@@ -6,7 +6,7 @@ PROCEDURE "procedures.ml::PR_RUN_TRAIN_PREDICT_WRAPPER"
 		IN	PREVIOUS_WINDOWS    INTEGER DEFAULT null,	
 		IN  EXCLUDE_MONTHS      INTEGER DEFAULT null,
 		IN 	PREDICTION_WINDOW   INTEGER DEFAULT null,
-		IN  RUN_DAY 			DATE 	DEFAULT null
+		IN  RUN_DAY 			TIMESTAMP 	DEFAULT null
 	)
    LANGUAGE SQLSCRIPT
    SQL SECURITY INVOKER
@@ -59,15 +59,16 @@ BEGIN
 /*****************************************************************************
 						SET PREDICT START DATE
 ******************************************************************************/	
-		IF MONTH(CURRENT_UTCTIMESTAMP) < :LV_CUTOFF_MONTH THEN
-			LV_PREDICT_START_TS = (YEAR(CURRENT_UTCTIMESTAMP) - 1) * 100 + :LV_CUTOFF_MONTH;
-		ELSE
-			LV_PREDICT_START_TS = YEAR(CURRENT_UTCTIMESTAMP)*100 + :LV_CUTOFF_MONTH;
+		IF RUN_DAY IS NULL THEN
+			RUN_DAY := CURRENT_TIMESTAMP;
 		END IF;
 		
-		IF RUN_DAY IS NULL THEN
-			RUN_DAY := CURRENT_UTCDATE;
-
+		IF MONTH(:RUN_DAY) < :LV_CUTOFF_MONTH THEN
+			LV_PREDICT_START_TS = (YEAR(RUN_DAY) - 1) * 100 + :LV_CUTOFF_MONTH;
+		ELSE
+			LV_PREDICT_START_TS = YEAR(RUN_DAY)*100 + :LV_CUTOFF_MONTH;
+		END IF;
+		
 --	When Start_Ts is not specified, last training data must be x monthsbefore today (x is the prediction_window)
 
 			IF :CURRENT_START_TS IS NULL THEN
@@ -82,8 +83,17 @@ BEGIN
 				LV_TRAIN_END_TS = YEAR(:TRAIN_RUN_DAY) * 100 + MONTH(:TRAIN_RUN_DAY);
 			END IF;
 			
-		END IF;
+	
 		
+		CALL "procedures.ml::PR_ML_EXTRACT_PREDICTION_SET"(
+			REACTION_TYPE=>:REACTION_TYPE,
+			WINDOW_TS_SIZE=>:LV_WINDOW_TS_SIZE,
+			--PREVIOUS_WINDOWS=>0, --:LV_PREVIOUS_WINDOWS,
+			CURRENT_START_TS=>:LV_PREDICT_START_TS,
+			CURRENT_END_TS=>:LV_PREDICT_END_TS,
+		--  EXCLUDE_MONTHS=>:LV_EXCLUDE_MONTHS -- Not implmented yet
+			RUN_DAY=>:RUN_DAY
+		);
 			CALL "procedures.ml::PR_ML_EXTRACT_TRAINING_SET"(
 			REACTION_TYPE=>:REACTION_TYPE,
 			WINDOW_TS_SIZE=>:LV_WINDOW_TS_SIZE,
@@ -94,15 +104,7 @@ BEGIN
 			EXCLUDE_MONTHS=>:LV_EXCLUDE_MONTHS
 		); 
 		
-		CALL "procedures.ml::PR_ML_EXTRACT_PREDICTION_SET"(
-			REACTION_TYPE=>:REACTION_TYPE,
-			WINDOW_TS_SIZE=>:LV_WINDOW_TS_SIZE,
-			--PREVIOUS_WINDOWS=>0, --:LV_PREVIOUS_WINDOWS,
-			CURRENT_START_TS=>:LV_PREDICT_START_TS,
-			CURRENT_END_TS=>:LV_PREDICT_END_TS,
-		--  EXCLUDE_MONTHS=>:LV_EXCLUDE_MONTHS -- Not implmented yet
-			RUN_DAY=>RUN_DAY
-		);
+		
 		
 	
 		LT_TRAIN_DATA 	= SELECT * FROM "db::ml.train.data";
@@ -121,16 +123,12 @@ BEGIN
 		* PERFORM MACHINE LEARNING PREDICTION
 		*******************************************************************************/
 		-- RUN NN PREDICTION
-		CALL "procedures.ml::PR_RUN_PAL_PREDICTION"(0, :LT_PREDICT_DATA,
+		CALL "procedures.ml::PR_RUN_PAL_PREDICTION"(1, :LT_PREDICT_DATA,
 			:LT_NN_MODEL, :LT_RF_MODEL, ?, ?, ?);
 		
 		-- RUN RF PREDICTION
-		CALL "procedures.ml::PR_RUN_PAL_PREDICTION"(1, :LT_PREDICT_DATA,
+		CALL "procedures.ml::PR_RUN_PAL_PREDICTION"(0, :LT_PREDICT_DATA,
 			:LT_NN_MODEL, :LT_RF_MODEL, ?, ?, ?);
-			
-		-- Backup of ML Parameters
-		DELETE FROM "db::ml.bkup.MLParameters" WHERE "INIT_DATE" < (SELECT MAX("INIT_DATE") FROM "db::ml.bkup.MLParameters");
-		INSERT INTO "db::ml.bkup.MLParameters" (SELECT * , CURRENT_UTCTIMESTAMP FROM "db::ml.config.MLParameters");
 		
 		/******************************************************************************
 		* GENERATE FINAL RISK SCORES & BACKUP CURRENT MODELS AND RESULT
@@ -175,6 +173,11 @@ BEGIN
 		INSERT INTO "db::ml.bkup.rf_model"(
 			SELECT *, :REACTION_TYPE, CURRENT_UTCTIMESTAMP FROM :LT_RF_MODEL
 		); 
+		
+		/******************************************************************************
+		* EVALUATE MODEL : CALCULATE RECALL, PRECISION AND ACCURACY
+		*******************************************************************************/
+		CALL "procedures.ml::PR_ML_EVALUATE"();
 	
 	END;
 END

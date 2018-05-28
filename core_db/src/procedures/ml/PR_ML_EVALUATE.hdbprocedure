@@ -1,0 +1,164 @@
+PROCEDURE "procedures.ml::PR_ML_EVALUATE" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+	AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   -- Variables to get counts
+   DECLARE NN_RF_TPO INT;
+   DECLARE NN_RF_TNE INT;
+   DECLARE NN_RF_FPO INT;
+   DECLARE NN_RF_FNE INT;
+   
+   DECLARE RF_TPO INT;
+   DECLARE RF_TNE INT;
+   DECLARE RF_FPO INT;
+   DECLARE RF_FNE INT;
+   
+   DECLARE NN_TPO INT;
+   DECLARE NN_TNE INT;
+   DECLARE NN_FPO INT;
+   DECLARE NN_FNE INT;
+   
+   -- Variables to results metrices
+   DECLARE NN_RF_RE DOUBLE;
+   DECLARE NN_RF_PR DOUBLE;
+   DECLARE NN_RF_AC DOUBLE;
+   
+   DECLARE RF_RE DOUBLE;
+   DECLARE RF_PR DOUBLE;
+   DECLARE RF_AC DOUBLE;
+   
+   DECLARE NN_RE DOUBLE;
+   DECLARE NN_PR DOUBLE;
+   DECLARE NN_AC DOUBLE;
+   
+   -- Threshold on Score to devide Debtor
+   DECLARE TH_SCORE DOUBLE;
+   TH_SCORE := 0.5;
+   
+   -- Temporary table to store actual values and prediction of the model
+   CREATE LOCAL TEMPORARY TABLE #LT_TEMP_EVAL (
+		"CUST_ID" BIGINT,
+		"TRUE_VALUE" BIGINT, 
+		"NN_RF_PRED" BIGINT,
+		"RF_PRED" BIGINT,
+		"NN_PRED" BIGINT
+	);
+    
+   -- Storing the actuals and predictions in temporary table 
+   INSERT INTO #LT_TEMP_EVAL (
+		SELECT A."CUST_ID", B."REACTED",
+		CASE WHEN (A."RF_SCORE" + A."NN_SCORE")/2 > TH_SCORE THEN 1 ELSE 0 END,
+		CASE WHEN (A."RF_SCORE") > TH_SCORE THEN 1 ELSE 0 END,
+		CASE WHEN (A."NN_SCORE") > TH_SCORE THEN 1 ELSE 0 END
+		FROM "db::ml.predict.CustomerRiskResults" A
+		JOIN "db::ml.test.predict" B ON A."CUST_ID" = B."CUST_ID.CUST_ID"
+	);
+   
+   -- Counting different results
+   /* TRUE POSITIVE */
+	SELECT COUNT(*) INTO NN_RF_TPO
+	FROM #LT_TEMP_EVAL 
+	WHERE "TRUE_VALUE" = 1 AND "NN_RF_PRED" = 1;
+	
+	SELECT COUNT(*) INTO RF_TPO
+	FROM #LT_TEMP_EVAL 
+	WHERE "TRUE_VALUE" = 1 AND "RF_PRED" = 1;
+	
+	SELECT COUNT(*) INTO NN_TPO
+	FROM #LT_TEMP_EVAL 
+	WHERE "TRUE_VALUE" = 1 AND "NN_PRED" = 1;
+	
+	/* TRUE NEGATIVE */
+	SELECT COUNT(*) INTO NN_RF_TNE
+	FROM #LT_TEMP_EVAL 
+	WHERE "TRUE_VALUE" = 0 AND "NN_RF_PRED" = 0;
+	
+	SELECT COUNT(*) INTO RF_TNE
+	FROM #LT_TEMP_EVAL 
+	WHERE "TRUE_VALUE" = 0 AND "RF_PRED" = 0;
+	
+	SELECT COUNT(*) INTO NN_TNE
+	FROM #LT_TEMP_EVAL 
+	WHERE "TRUE_VALUE" = 0 AND "NN_PRED" = 0;
+	
+	/* FALSE POSITIVE */
+	SELECT COUNT(*) INTO NN_RF_FPO
+	FROM #LT_TEMP_EVAL 
+	WHERE "TRUE_VALUE" = 0 AND "NN_RF_PRED" = 1;
+	
+	SELECT COUNT(*) INTO RF_FPO
+	FROM #LT_TEMP_EVAL 
+	WHERE "TRUE_VALUE" = 0 AND "RF_PRED" = 1;
+
+	SELECT COUNT(*) INTO NN_FPO
+	FROM #LT_TEMP_EVAL 
+	WHERE "TRUE_VALUE" = 0 AND "NN_PRED" = 1;
+
+	/* FALSE NEGATIVE */
+	SELECT COUNT(*) INTO NN_RF_FNE
+	FROM #LT_TEMP_EVAL 
+	WHERE "TRUE_VALUE" = 1 AND "NN_RF_PRED" = 0;
+	
+	SELECT COUNT(*) INTO RF_FNE
+	FROM #LT_TEMP_EVAL 
+	WHERE "TRUE_VALUE" = 1 AND "RF_PRED" = 0;
+	
+	SELECT COUNT(*) INTO NN_FNE
+	FROM #LT_TEMP_EVAL 
+	WHERE "TRUE_VALUE" = 1 AND "NN_PRED" = 0;
+	
+	-- Calculaitng Results metrices
+	/* RECALL */
+	SELECT CASE WHEN (NN_RF_TPO + NN_RF_FNE)>0 THEN ((NN_RF_TPO / (NN_RF_TPO + NN_RF_FNE))*100) ELSE -1 END INTO NN_RF_RE
+	FROM "synonyms::dummy";
+	
+	SELECT CASE WHEN (RF_TPO + RF_FNE)>0 THEN ((RF_TPO / (RF_TPO + RF_FNE))*100) ELSE -1 END INTO RF_RE
+	FROM "synonyms::dummy";
+	
+	SELECT CASE WHEN (NN_TPO + NN_FNE)>0 THEN ((NN_TPO / (NN_TPO + NN_FNE))*100) ELSE -1 END INTO NN_RE
+	FROM "synonyms::dummy";
+	
+	/* PRECISION */
+	SELECT CASE WHEN (NN_RF_TPO + NN_RF_FPO) >0 THEN ((NN_RF_TPO / (NN_RF_TPO + NN_RF_FPO))*100) ELSE -1 END INTO NN_RF_PR
+	FROM "synonyms::dummy";
+	
+	SELECT CASE WHEN (RF_TPO + RF_FPO) >0 THEN ((RF_TPO / (RF_TPO + RF_FPO))*100) ELSE -1 END INTO RF_PR
+	FROM "synonyms::dummy";
+	
+	SELECT CASE WHEN (NN_TPO + NN_RF_FPO) >0 THEN ((NN_TPO / (NN_TPO + NN_FPO))*100) ELSE -1 END INTO NN_PR
+	FROM "synonyms::dummy";
+	
+	/* ACCURACY */
+	SELECT CASE WHEN (NN_RF_TPO + NN_RF_TNE + NN_RF_FPO + NN_RF_FNE)> 0 THEN (((NN_RF_TPO + NN_RF_TNE) / (NN_RF_TPO + NN_RF_TNE + NN_RF_FPO + NN_RF_FNE))*100) ELSE -1 END INTO NN_RF_AC
+	FROM "synonyms::dummy";
+	
+	SELECT CASE WHEN (RF_TPO + RF_TNE + RF_FPO + RF_FNE)> 0 THEN (((RF_TPO + RF_TNE) / (RF_TPO + RF_TNE + RF_FPO + RF_FNE))*100) ELSE -1 END INTO RF_AC
+	FROM "synonyms::dummy";
+	
+	SELECT CASE WHEN (NN_TPO + NN_TNE + NN_FPO + NN_FNE)> 0 THEN (((NN_TPO + NN_TNE) / (NN_TPO + NN_TNE + NN_FPO + NN_FNE))*100) ELSE -1 END INTO NN_AC
+	FROM "synonyms::dummy";
+	
+	-- Storing the results metrices obtained in table
+	TRUNCATE TABLE "db::ml.test.evaluation";
+	INSERT INTO "db::ml.test.evaluation" values('RECALL',NN_RF_RE, RF_RE, NN_RE);
+	INSERT INTO "db::ml.test.evaluation" values('PRECISION',NN_RF_PR, RF_PR, NN_PR);
+	INSERT INTO "db::ml.test.evaluation" values('ACCURACY',NN_RF_AC, RF_AC, NN_AC);
+	
+	INSERT INTO "db::ml.test.evaluation" values('TP',NN_RF_TPO, RF_TPO, NN_TPO);
+	INSERT INTO "db::ml.test.evaluation" values('FP',NN_RF_FPO, RF_TPO, NN_TPO);
+	INSERT INTO "db::ml.test.evaluation" values('TN',NN_RF_TNE, RF_TNE, NN_TNE);
+	INSERT INTO "db::ml.test.evaluation" values('FN',NN_RF_FNE, RF_FNE, NN_FNE);
+	
+	INSERT INTO "db::ml.test.evaluation" values('ACTUAL_DEBTORS',NN_RF_TPO + NN_RF_FNE, RF_TPO + RF_FNE, NN_TPO + NN_FNE);
+	INSERT INTO "db::ml.test.evaluation" values('ACTUAL_TAXPAYERS',NN_RF_TNE + NN_RF_FPO, RF_TNE + RF_FPO, NN_TNE + NN_FPO);
+	INSERT INTO "db::ml.test.evaluation" values('PREDICTED_DEBTORS',NN_RF_TPO + NN_RF_FPO, RF_TPO + RF_FPO, NN_TPO + NN_FPO);
+	INSERT INTO "db::ml.test.evaluation" values('PREDICTED_TAXPAYERS',NN_RF_TNE + NN_RF_FNE, RF_TNE + RF_FNE, NN_TNE + NN_FNE);
+	
+	DROP TABLE #LT_TEMP_EVAL;
+	
+END

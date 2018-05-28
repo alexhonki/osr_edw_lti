@@ -31,10 +31,10 @@ EXCLUDE_MONTHS		: Exlude months from training example +5 will exlude first 5 mon
 PROCEDURE "procedures.ml::PR_ML_EXTRACT_PREDICTION_SET" 
 	(
 		IN 	REACTION_TYPE VARCHAR(100) DEFAULT 'DEBTOR_INITIAL_ASSESSMENT',
-		IN  WINDOW_TS_SIZE 		INTEGER DEFAULT 12,     -- ML_WINDOW_TS_SIZE
+		IN  WINDOW_TS_SIZE 		INTEGER DEFAULT 1,     -- ML_WINDOW_TS_SIZE
 		IN  CURRENT_START_TS    INTEGER DEFAULT 201706, -- ML_CURRENT_START_TS 
 		IN  CURRENT_END_TS		INTEGER DEFAULT 201804, -- THE MONTH SCRIPT RUNS
-		IN	PREVIOUS_WINDOWS    INTEGER DEFAULT 1,		-- ML_PREVIOUS_WINDOWS
+		IN	PREVIOUS_WINDOWS    INTEGER DEFAULT 12,		-- ML_PREVIOUS_WINDOWS : aj- 6 changed to 12
 		IN  EXCLUDE_MONTHS      INTEGER DEFAULT 0,		-- Not implemented Yet
 		IN  RUN_DAY 			DATE 	DEFAULT null	
 	)
@@ -46,8 +46,9 @@ BEGIN
   --DECLARE no_param_value CONDITION FOR SQL_ERROR_CODE 10003;
 	DECLARE START_DATE 			DATE;
 	DECLARE END_DATE 			DATE;
+	DECLARE PRED_START 			DATE; --AJ
 	DECLARE START_DATE_WINDOWS  DATE;
-	DECLARE PREDICTION_WINDOW   INT := 5;
+	DECLARE PREDICTION_WINDOW   INT := 6;
 	DECLARE STR_TS_INPUT        VARCHAR(500) := 'INTERVAL 12 MONTH';
 	
 	--DECLARE RUN_DAY DATE;
@@ -64,14 +65,18 @@ BEGIN
 		WHERE "BUCKET_ID" = 'DATA_RETENTION_PERIOD'
 		  AND "REACTION_TYPE" = 'NA';			
 	END;
-	
+
+
 	-- Calculate start date window
+	/*
 	IF :WINDOW_TS_SIZE = 0 OR :PREVIOUS_WINDOWS = 0 THEN
 		START_DATE_WINDOWS := TO_DATE(:CURRENT_START_TS);
 	ELSE 
 		START_DATE_WINDOWS := ADD_MONTHS ( TO_DATE(:CURRENT_START_TS), :WINDOW_TS_SIZE * :PREVIOUS_WINDOWS * -1 );
-	END IF;
-
+		
+	END IF; 
+	*/
+	START_DATE_WINDOWS := TO_DATE(:CURRENT_START_TS); -- CBAJ
 	-----------------------------------
 	-- GET CURRENT DATA DATE
 	-----------------------------------
@@ -80,19 +85,26 @@ BEGIN
 			FROM "functions::TF_CONF_GET_PREDICTION_DATES" ( )
 			WHERE IS_ENABLED = 1;
 	END IF;
-
+	
+	--PRED_START = TO_DATE(YEAR(:RUN_DAY)*100 + MONTH(:RUN_DAY) + 1);
+	PRED_START = :RUN_DAY;
+	
 	-----------------------------------
 	-- Get active customers for period
 	-----------------------------------
 	LT_ACTIVE_CUSTOMERS = 
 		SELECT "CUST_ID"
-		FROM "models.apps.customer::CV_ACTIVE_CUSTOMER"
-		WHERE :RUN_DAY BETWEEN INIT_DATE AND END_DATE;
-	--	AND "CUST_ID" NOT IN 
-	--		(SELECT CUST_ID FROM "db::app.Customer" -- Customers are not in 'BLOCKED' OR DELETED state
-	--		WHERE STATUS != 0);	
-
-
+		FROM "db::app.Customer"
+		WHERE :RUN_DAY BETWEEN INIT_DATE AND END_DATE
+		AND "CUST_ID" NOT IN 
+			(SELECT CUST_ID FROM "db::app.Customer" -- Customers are not in 'BLOCKED' OR DELETED state
+			WHERE STATUS != 0)
+		-- aj : to discard customers which were already reacted
+		AND "CUST_ID" NOT IN
+			( SELECT "CUST_ID" 
+			FROM "db::app.CustomerReactions"
+			WHERE "INIT_DATE" >= :START_DATE_WINDOWS AND "INIT_DATE" < :PRED_START );
+	
 	-----------------------------------
 	-- EXTRACT NON-REACTED CUSTOMERS
 	-----------------------------------
@@ -100,6 +112,32 @@ BEGIN
 		SELECT A.CUST_ID AS CUST_ID, 0 AS REACTED, NULL AS REACTION_DATE
 		FROM :LT_ACTIVE_CUSTOMERS A;
 
+/**************************
+		Vinita
+******************************/
+	
+	LT_TEST = SELECT  CUST_ID , 
+	CASE WHEN CUST_ID IN( SELECT  B."CUST_ID" AS CUST_ID
+	FROM :LT_ACTIVE_CUSTOMERS A
+	JOIN "db::app.CustomerReactions" B
+	ON A.CUST_ID = B."CUST_ID" 
+	--WHERE B.INIT_DATE >= :START_DATE_WINDOWS AND B.INIT_DATE <= :RUN_DAY )  THEN 1 ELSE 0 END AS REACTED
+	WHERE B.INIT_DATE >= :PRED_START AND B.INIT_DATE < ADD_MONTHS(:PRED_START, :PREDICTION_WINDOW) )  THEN 1 ELSE 0 END AS REACTED
+	FROM :LT_ACTIVE_CUSTOMERS ;
+	
+	LT_TEST1 = SELECT * FROM :LT_TEST WHERE REACTED = 1;
+	LT_TEST0 = SELECT * FROM :LT_TEST WHERE REACTED = 0;
+	
+	TRUNCATE TABLE "db::ml.test.predict";
+		INSERT INTO "db::ml.test.predict"
+			(SELECT
+				"CUST_ID",
+				"REACTED"
+			FROM :LT_TEST);
+	
+/**************************
+		Vinita
+******************************/
 	-----------------------------------
 	-- EXTRACT EVENTS FOR NON-REACTED CUSTOMERS
 	-----------------------------------
