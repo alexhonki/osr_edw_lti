@@ -53,15 +53,15 @@ BEGIN
 		------------------------------------------------------------------------------------------------------------
 		LV_PAST_COMB_EVENTS = SELECT "EVENT_ID.ID" "EVENT_ID"
 			FROM "db::app.CustomerEvents"
-			WHERE EVENT_GROUP = 'COMBINED_EVENT'
+			WHERE EVENT_GROUP = 'Combined Event'
 			AND INIT_TS BETWEEN :I_FROM AND :I_TO;
 		
 		DELETE FROM "db::app.CustomerEvents"
-		WHERE EVENT_GROUP = 'COMBINED_EVENT'
+		WHERE EVENT_GROUP = 'Combined Event'
 		AND INIT_TS BETWEEN :I_FROM AND :I_TO;
 		
 		DELETE FROM "db::adm.config.event.name" 
-		WHERE CATEGORY_NAME = 'COMBINED_EVENT' 
+		WHERE CATEGORY_NAME = 'Combined Event' 
 		AND ID IN 
 			(SELECT EVENT_ID FROM :LV_PAST_COMB_EVENTS);	
 		
@@ -210,7 +210,7 @@ BEGIN
 				SELECT 
 					CUST_ID "CUST_ID", 
 					NULL AS "EVENT_ID.ID",
-					'COMBINED_EVENT' AS EVENT_GROUP,
+					'Combined Event' AS EVENT_GROUP,
 					EVENT_NAME,  
 					INIT_DATE,
 					NULL AS END_DATE,

@@ -21,10 +21,14 @@ BEGIN
 					WHERE a."EVENT_ID.ID" IS NULL
 					--GROUP BY a."EVENT_NAME", a."EVENT_GROUP",a."DESCRIPTION";
 					GROUP BY a."EVENT_NAME", a."EVENT_GROUP";
+	T_EVENTS_DESC = SELECT a."EVENT_NAME", a."CATEGORY_NAME", b."DESCRIPTION" 
+					from :T_EVENTS AS a
+					INNER JOIN "db::app.CustomerEvents" AS b on 
+					UPPER(a."EVENT_NAME") = B."EVENT_NAME";
 	--------------------------------------------------------------
 	-- Insert new Events
 	--------------------------------------------------------------
 	INSERT INTO	"db::adm.config.event.name" 
 			("ID", "EVENT_NAME", "CATEGORY_NAME", "DESCRIPTION", "IS_ENABLED", "TYPE", "CREATED.BY", "CREATED.DATE", "SOURCE")
-			(SELECT "sequences::AdminEventId".NEXTVAL, "EVENT_NAME", "CATEGORY_NAME", 'GENERATED', 1 "IS_ENABLED", 3 "TYPE", SESSION_USER, CURRENT_UTCTIMESTAMP, :I_EVENT_TYPE  FROM :T_EVENTS);
+			(SELECT "sequences::AdminEventId".NEXTVAL, "EVENT_NAME", "CATEGORY_NAME", "DESCRIPTION", 1 "IS_ENABLED", 3 "TYPE", SESSION_USER, CURRENT_UTCTIMESTAMP, :I_EVENT_TYPE  FROM :T_EVENTS_DESC);
 END
