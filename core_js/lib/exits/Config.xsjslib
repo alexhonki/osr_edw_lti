@@ -261,7 +261,7 @@ function updatePredictionDate(param) {
 			 */
 			if (oConfigBucketCurrent) {
 				oConfigBucketCurrent.STR_VALUE = oRow.STR_VALUE;
-				oConfigBucketCurrent.DESCRIPTION = validValue(oRow.DESCRIPTION, oConfigBucketCurrent.DESCRIPTION);
+				oConfigBucketCurrent.DESCRIPTION = validValue(oDefaultConfigBucketCurrent.DESCRIPTION, oConfigBucketCurrent.DESCRIPTION);
 				oConfigBucketCurrent.IS_ENABLED = validValue(oRow.IS_ENABLED, oConfigBucketCurrent.IS_ENABLED);
 				oConfigBucketCurrent.CHANGED_ON = new Date();
 				oConfigBucketCurrent.CHANGED_BY = $.session.getUsername();
