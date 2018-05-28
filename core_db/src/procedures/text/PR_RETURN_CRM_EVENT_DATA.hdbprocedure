@@ -37,19 +37,33 @@ BEGIN
    /*************************************
        Write your procedure logic 
    *************************************/
+   DECLARE CURSOR C_CRM_FILTER_CONFIG FOR
+		SELECT SEARCH_STRING, EXCLUSION FROM "db::text.CRM_Event_Mapping" WHERE EVENT_NAME = :IV_EVENT_NAME;
    DECLARE LV_FILTER_QUERY STRING;
+   DECLARE IDX INTEGER;
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	
+	LV_FILTER_QUERY = '';
+	IDX = 1;
 /*	CONCAT(CONCAT(:IV_EVENT_NAME, 'CRM'), 
 					(CASE when DIRECTION = '1' then 'OUTBOUND'
 						 WHEN DIRECTION = '0' THEN 'INBOUND'
 					END)) as DESCRIPTION,*/
-	if :IV_EVENT_GROUP = ''
-		THEN 
-			LV_FILTER_QUERY = '';
-	ELSE
-		LV_FILTER_QUERY = '';
-	END IF;
+	FOR CURR_ROW AS C_CRM_FILTER_CONFIG DO 
+		IF :IDX = 1 THEN 
+			LV_FILTER_QUERY = CONCAT(CONCAT('description like ''%', CURR_ROW.SEARCH_STRING), '%''');
+		ELSE 
+			LV_FILTER_QUERY = CONCAT(CONCAT(CONCAT(CONCAT(LV_FILTER_QUERY, 'OR '), 'description like ''%'), CURR_ROW.SEARCH_STRING), '%''');
+		END IF;
+		
+		if curr_row.exclusion != 0
+			then 
+				LV_FILTER_QUERY = CONCAT(CONCAT(CONCAT(CONCAT(LV_FILTER_QUERY, 'OR '), 'description not like ''%'), CURR_ROW.SEARCH_STRING), '%''');
+				--LV_FILTER_QUERY = LV_FILTER_QUERY + 'description not like ''%' + CURR_ROW.exclusion + '%''';
+		end if;
+		IDX = IDX + 1;
+	END FOR;
    	LT_TEMP = SELECT CUST_ID,
 					OBJECT_ID,
 					DESCRIPTION,
