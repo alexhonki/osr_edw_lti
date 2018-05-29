@@ -232,5 +232,13 @@ BEGIN
 	    SET INT_PARAMETER = :I_TO
 	    WHERE PARAMETER_NAME = 'FPG_COMB_EVT_PARAM_LAST_RUN';
 	    
+	--Update config event icon for combined event
+	UPDATE "db::adm.config.event.name"
+		SET "ICON" = 'program-triangles-2',
+		"PRIORITY" = 1
+		WHERE "CATEGORY_NAME" = 'Combined Event';
+		
 	END IF;
+	
+
 END
