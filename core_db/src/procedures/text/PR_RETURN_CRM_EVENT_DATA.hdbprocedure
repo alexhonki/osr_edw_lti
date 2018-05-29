@@ -46,10 +46,6 @@ BEGIN
 	
 	LV_FILTER_QUERY = '';
 	IDX = 1;
-/*	CONCAT(CONCAT(:IV_EVENT_NAME, 'CRM'), 
-					(CASE when DIRECTION = '1' then 'OUTBOUND'
-						 WHEN DIRECTION = '0' THEN 'INBOUND'
-					END)) as DESCRIPTION,*/
 	FOR CURR_ROW AS C_CRM_FILTER_CONFIG DO 
 		IF :IDX = 1 THEN 
 			LV_FILTER_QUERY = CONCAT(CONCAT('description like ''%', CURR_ROW.SEARCH_STRING), '%''');
@@ -60,7 +56,6 @@ BEGIN
 		if curr_row.exclusion != 0
 			then 
 				LV_FILTER_QUERY = CONCAT(CONCAT(CONCAT(CONCAT(LV_FILTER_QUERY, 'OR '), 'description not like ''%'), CURR_ROW.SEARCH_STRING), '%''');
-				--LV_FILTER_QUERY = LV_FILTER_QUERY + 'description not like ''%' + CURR_ROW.exclusion + '%''';
 		end if;
 		IDX = IDX + 1;
 	END FOR;
