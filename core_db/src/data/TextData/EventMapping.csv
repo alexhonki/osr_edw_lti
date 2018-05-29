@@ -1,8 +1,8 @@
 CATEGORY_NAME,EVENT_NAME,SEARCH_STRING,PRIORITY,EXCLUSION
 CRM_CAT,GARNISHEE,garn,1,0
-CRM_CAT,EPO,%epo%,1,0
-CRM_CAT,Dunning Int block,%dunning%interest%block%,1,0
-CRM_CAT,Dunning removal,%dunning%block%removed%,1,0
-CRM_CAT,Reassessment,%reassessment%dunning%,1,0
-CRM_CAT,Reassessment,%dunning%reassessment%,1,0
-CRM_CAT,Dunning,%dunning%,1,0
+CRM_CAT,EPO,epo,1,0
+CRM_CAT,Dunning Int block,dunning%interest%block,1,0
+CRM_CAT,Dunning removal,dunning%block%removed,1,0
+CRM_CAT,Reassessment,reassessment%dunning,1,0
+CRM_CAT,Reassessment,dunning%reassessment,1,0
+CRM_CAT,Dunning,dunning,1,0
