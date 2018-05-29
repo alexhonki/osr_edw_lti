@@ -1,15 +1,4 @@
-PROCEDURE "procedures.text::PR_CRM_EVENT_CREATE_MAIN" ( 
-/*out LT_FINAL_EVENT table (
-		CUST_ID BIGINT,
-		DESCRIPTION VARCHAR(1000),
-		EVENT_NAME VARCHAR(200),
-		EVENT_GROUP VARCHAR(200),
-		INIT_DATE TIMESTAMP,
-		END_DATE TIMESTAMP,
-		INIT_TS INTEGER,
-		END_TS INTEGER
-)*/
-)
+PROCEDURE "procedures.text::PR_CRM_EVENT_CREATE_MAIN" ( )
    LANGUAGE SQLSCRIPT
    SQL SECURITY INVOKER
    --DEFAULT SCHEMA <default_schema_name>
@@ -19,25 +8,9 @@ BEGIN
    /*************************************
        Write your procedure logic 
    *************************************/
-   /*
-   IN IV_QUERY NVARCHAR(5000),
-	IN IV_EVENT_NAME STRING,
-	IN IV_EVENT_GROUP STRING,
-	IN IT_EXCL_ID TABLE (
-		OBJECT_ID NVARCHAR(10)
-		),
-	IN IT_EVENT_IN TABLE(
-		CUST_ID BIGINT,
-		DESCRIPTION VARCHAR(1000),
-		EVENT_NAME VARCHAR(200),
-		EVENT_GROUP VARCHAR(200),
-		INIT_DATE TIMESTAMP,
-		END_DATE TIMESTAMP,
-		INIT_TS INTEGER,
-		END_TS INTEGER
-		)
-   */
-	
+
+	DECLARE CURSOR c_crm FOR
+		SELECT EVENT_NAME, CATEGORY_NAME FROM "db::text.CRM_Event_Mapping" ORDER BY PRIORITY ASC;
 	DECLARE LT_OBJECT_ID TABLE (OBJECT_ID NVARCHAR(10));
 	DECLARE LT_EVENT TABLE (CUST_ID BIGINT,
 		DESCRIPTION VARCHAR(1000),
@@ -47,67 +20,15 @@ BEGIN
 		END_DATE TIMESTAMP,
 		INIT_TS INTEGER,
 		END_TS INTEGER);
-	/*DECLARE LV_EVENT_ID INT;
-	DECLARE EXIT HANDLER FOR sqlexception
-	LT_CONFIG_EVENT_NAME = SELECT * FROM "db::adm.config.event.name" where ;
-	FOR i IN 1 .. record_count(:LT_CONFIG_EVENT_NAME) DO
-		varb = :t.col_a[:i];
-		CALL mapper(:varb, out_tab);
-		ret_tab = SELECT * FROM :out_tab
-		UNION SELECT * FROM :ret_tab;
-	END FOR;*/
-   --PROCEDURE CALL FOR PAYMENT
-	LT_OBJECT_ID = SELECT to_varchar(0) AS OBJECT_ID FROM "synonyms::dummy";
-	CALL "procedures.text::PR_RETURN_CRM_EVENT_DATA"('CRM TEXT', 'CRM TEXT',:LT_OBJECT_ID ,:LT_EVENT, LT_EVENT ,LT_OBJECT_ID_NEW);
-	
-	/*:LT_EVENT.DELETE();
-	--:LT_EVENT.DELETE(1 .. RECORD_COUNT(:LT_EVENT));
-	--PROCEDURE CALL FOR FINAL DEMAND	
-	CALL "procedures.text::PR_RETURN_CRM_EVENT_DATA"('description like ''%pym%arr%'' or description like ''%final%dem%'' or description like ''%demand%''' , 
-												'FINAL DEMAND', 'DEBT MANAGEMENT',:LT_OBJECT_ID ,:LT_EVENT , :LT_OBJECT_ID);
-	LT_FINAL_DEMAND_EVENT = SELECT * FROM :LT_EVENT;
-	:LT_EVENT.DELETE();
-	--PROCEDURE CALL FOR PAYMENT EXTENSION
-	CALL "procedures.text::PR_RETURN_CRM_EVENT_DATA"('description like ''%pym%arr%'' or description like ''%pay%ext%'' or description like ''%pay%plan%''' , 
-												'PAYMENT ARRANGEMENT', 'DEBT MANAGEMENT',:LT_OBJECT_ID ,:LT_EVENT , :LT_OBJECT_ID);
-	LT_PAYMENT_ARRANGEMENT_EVENT = SELECT * FROM :LT_EVENT;
-	:LT_EVENT.DELETE();
-	
-	CALL "procedures.text::PR_RETURN_CRM_EVENT_DATA"('description like ''%garn%''' , 
-												'GARNISHEE', 'CLEARANCE APPLICATION',:LT_OBJECT_ID ,:LT_EVENT , :LT_OBJECT_ID);
-	LT_GARNISHEE_EVENT = SELECT * FROM :LT_EVENT;
-	:LT_EVENT.DELETE();
-	
-	CALL "procedures.text::PR_RETURN_CRM_EVENT_DATA"('description like ''%legal%letter%''' , 
-												'LEGAL LETTER', 'DEBT MANAGEMENT',:LT_OBJECT_ID ,:LT_EVENT , :LT_OBJECT_ID);
-	LT_LEGAL_LETTER_EVENT = SELECT * FROM :LT_EVENT;
-	:LT_EVENT.DELETE();
-	
-	CALL "procedures.text::PR_RETURN_CRM_EVENT_DATA"('description like ''%mort%letter%''' , 
-												'MORTGAGE LETTER', 'DEBT MANAGEMENT',:LT_OBJECT_ID ,:LT_EVENT , :LT_OBJECT_ID);
-	LT_MORT_LETTER_EVENT = SELECT * FROM :LT_EVENT;
-	:LT_EVENT.DELETE();
-	CALL "procedures.text::PR_RETURN_CRM_EVENT_DATA"('description like ''%waive%'' or description like ''%remit%''' , 
-												'WAIVE INTEREST', 'DEBT MANAGEMENT',:LT_OBJECT_ID ,:LT_EVENT , :LT_OBJECT_ID);
-	LT_WAIVE_INTEREST_EVENT = SELECT * FROM :LT_EVENT;
-	:LT_EVENT.DELETE();
-	
-	CALL "procedures.text::PR_RETURN_CRM_EVENT_DATA"('description like ''%charge%'' or description like ''%register%''' , 
-												'CHARGE', 'DEBT MANAGEMENT',:LT_OBJECT_ID ,:LT_EVENT , :LT_OBJECT_ID);
-	LT_CHARGE_EVENT = SELECT * FROM :LT_EVENT;
-	:LT_EVENT.DELETE();
-	
-	CALL "procedures.text::PR_RETURN_CRM_EVENT_DATA"('description like ''%reset%''' , 
-												'RESET PAYMENT', 'DEBT MANAGEMENT',:LT_OBJECT_ID ,:LT_EVENT , :LT_OBJECT_ID);
-	LT_RESET_EVENT = SELECT * FROM :LT_EVENT;
-	:LT_EVENT.DELETE();*/
-	
+
+	FOR curr_row AS c_crm DO
+		CALL "procedures.text::PR_RETURN_CRM_EVENT_DATA"(curr_row.EVENT_NAME, curr_row.CATEGORY_NAME,:LT_OBJECT_ID ,:LT_EVENT, LT_EVENT ,LT_OBJECT_ID);
+	END FOR;
 	LT_FINAL_EVENT = SELECT * FROM :LT_EVENT ;
-				--	UNION SELECT * FROM :LT_CHARGE_EVENT 
-				--	UNION SELECT * FROM :LT_MORT_LETTER_EVENT;
+				
 	
 	INSERT INTO "db::app.CustomerEvents"
 	("CUST_ID", "EVENT_GROUP", "EVENT_NAME", "INIT_DATE", "END_DATE", "DESCRIPTION", "INIT_TS", "END_TS")
 			(SELECT CUST_ID, EVENT_GROUP, EVENT_NAME, INIT_DATE, END_DATE, DESCRIPTION, INIT_TS, END_TS from :LT_FINAL_EVENT);
-	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"( );
+	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_TYPE=>'CRM' );
 END

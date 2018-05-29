@@ -19,17 +19,13 @@ context text {
         key STOPWORD      : String(100);
     };
 
-    /*@@layout{"layoutInfo":{"x":-359,"y":-183.5}}*/
-    entity Mapping_AbbreviatedWords {
-        key ABBREVIATED_WORD : String(20);
-            EXPANDED_WORD    : String(100);
-    };
 
-    /*@@layout{"layoutInfo":{"x":-135,"y":-203.5}}*/
+    /*@@layout{"layoutInfo":{"x":-115,"y":-287.5}}*/
     entity CRM_Event_Mapping {
-        key CATEGORY      : String(20);
+        key CATEGORY_NAME : String(20);
         key EVENT_NAME    : String(20);
+        key SEARCH_STRING : String(50);
         key PRIORITY      : Integer;
-            EXPANDED_WORD : String(10);
+            EXCLUSION     : Integer;
     };
 };

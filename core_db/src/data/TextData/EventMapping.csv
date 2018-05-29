@@ -1,4 +1,9 @@
-CATEGORY,EVENT_NAME,PRIORITY,EXPANDED_WORD
-CRM_Assess,Refund,2,payment
-CRM_Assess,Refund,1,mosn
-UNUSED,EXTRA,1, 
+CATEGORY_NAME,EVENT_NAME,SEARCH_STRING,PRIORITY,EXCLUSION
+Debt Management,EPO,epo,1,0
+Debt Management,Dunning Int block,dunning%interest%block,1,0
+Debt Management,Dunning removal,dunning%block%removed,1,0
+Debt Management,Reassessment,reassessment%dunning,1,0
+Debt Management,Reassessment,dunning%reassessment,1,0
+Debt Management,Reissue,reissue%dunning,1,0
+Debt Management,Dunning,dunning,1,0
+CRM Text,CRM Generic Event,%,1000,0

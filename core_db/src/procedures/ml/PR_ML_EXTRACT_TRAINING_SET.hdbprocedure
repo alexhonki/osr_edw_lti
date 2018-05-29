@@ -178,7 +178,6 @@ BEGIN
 								WHERE INIT_DATE >= ADD_DAYS(cur_row.GENERATED_PERIOD_END, -1) 
 								AND INIT_DATE <= ADD_MONTHS(cur_row.GENERATED_PERIOD_END, :PREDICTION_WINDOW)
 								AND REACTION_TYPE = :REACTION_TYPE;
-			
 			LT_INTERVAL_EVENTS = 
 				SELECT 
 				    A."RECORD_ID",
@@ -199,7 +198,7 @@ BEGIN
 				  and A.INIT_TS < cur_row.END_TS
 				AND B.END_TS > cur_row.END_TS;
 			
-			LT_INTERVAL_CUSTOMERS = 
+		LT_INTERVAL_CUSTOMERS = 
 				SELECT
 					"CUST_ID" "CUST_ID",
 					CASE WHEN REACTION_TYPE IS NOT NULL THEN 1 ELSE 0 END AS REACTED,
@@ -216,7 +215,6 @@ BEGIN
 						(SELECT CUST_ID FROM "models.apps.customer::CV_ACTIVE_CUSTOMER" -- Customers are not in 'BLOCKED' OR DELETED state
 						)
 				);
-			
 			
 				CALL "procedures.ml::PR_ML_GENERIC_FEATURE"(1, :REACTION_TYPE,
 					cur_row.GENERATED_PERIOD_END, :LT_INTERVAL_CUSTOMERS, :LT_INTERVAL_EVENTS);
@@ -254,6 +252,7 @@ BEGIN
 	SELECT TO_DOUBLE(SUBSTRING(:UNBALANCED_PARAM, 0, LOCATE(:UNBALANCED_PARAM, ':')-1))/100 * TOTAL_RECORDS INTO DESIRED_CHURNED FROM "synonyms::dummy";
 	
 	-- find out how many more churned records to add in order to get the desired ratio 
+	
 	NEED_TO_ADD = :DESIRED_CHURNED - :TOTAL_CHURNED_CUST;
 	
 	IF :NEED_TO_ADD > 0

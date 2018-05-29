@@ -45,23 +45,8 @@
             "name": "StandardUserTemplate",
             "description": "Role for Standard User",
             "scope-references": [
-                "$XSAPPNAME.TrendAnalysis",
-                "$XSAPPNAME.EventOverview",
-                "$XSAPPNAME.CustomersAtRisk",
                 "$XSAPPNAME.CustomerSearch",
                 "$XSAPPNAME.CustomerDetails"
-            ]
-        },
-        {
-            "name": "SuperUserTemplate",
-            "description": "Role for Super User",
-            "scope-references": [
-                "$XSAPPNAME.TrendAnalysis",
-                "$XSAPPNAME.EventOverview",
-                "$XSAPPNAME.CustomersAtRisk",
-                "$XSAPPNAME.CustomerSearch",
-                "$XSAPPNAME.CustomerDetails",
-                "$XSAPPNAME.Settings"
             ]
         },
         {
@@ -73,7 +58,6 @@
                 "$XSAPPNAME.CustomersAtRisk",
                 "$XSAPPNAME.CustomerSearch",
                 "$XSAPPNAME.CustomerDetails",
-                "$XSAPPNAME.Settings",
                 "$XSAPPNAME.Admin"
             ]
         },
@@ -85,10 +69,7 @@
                 "$XSAPPNAME.EventOverview",
                 "$XSAPPNAME.CustomersAtRisk",
                 "$XSAPPNAME.CustomerSearch",
-                "$XSAPPNAME.CustomerDetails",
-                "$XSAPPNAME.Settings",
-                "$XSAPPNAME.Admin",
-                "$XSAPPNAME.SuperAdmin"
+                "$XSAPPNAME.CustomerDetails"
             ]
         }
     ]
