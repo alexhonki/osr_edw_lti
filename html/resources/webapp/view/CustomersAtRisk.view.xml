@@ -26,7 +26,7 @@
                 <VBox id="idOperatingIncomeLossFilter" visible="{=${viewModel>/VisualFilters/INCOME_LOSS/items}.length > 1 ? true : false}" class="sapUiResponsiveContentPadding" width="45%">
                     <Label text="{i18n>CustomersAtRisk.VisualFilterByOperatingIncome}" class="sapUiSmallMarginBottom"/>
                     <cri:control.VisualFilterHBar id="idOperatingIncomeLossVisualFilter" height="100px" select="onSelectVisualFilter" deselect="onDeselectVisualFilter" items="{viewModel>/VisualFilters/INCOME_LOSS/items}" entityName="Customers" selectedItem="{viewModel>/VisualFilters/INCOME_LOSS/selectedItem}">
-                        <cri:control.VisualFilterItem label="{viewModel>BUCKET}" value="{viewModel>CUSTOMER_COUNT}" data="{viewModel>}"/>
+                        <cri:control.VisualFilterItem label="{viewModel>BUCKET}" color="{path:'viewModel>BUCKET_SEQ', formatter:'.bucketColorFormatter'}" value="{viewModel>CUSTOMER_COUNT}" data="{viewModel>}"/>
                     </cri:control.VisualFilterHBar>
                 </VBox>
                <!-- <VBox id="idDaysToReactFilter" visible="{=${viewModel>/VisualFilters/DAYS_TO_REACT/items}.length > 1 ? true : false}" class="sapUiResponsiveContentPadding" width="33%">
