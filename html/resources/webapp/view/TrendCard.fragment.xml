@@ -25,10 +25,10 @@
                         <FormattedText class="value" htmlText='&lt;span class="{/header/kpi/style}"&gt;{/header/kpi/formattedValue}&lt;/span&gt;'/>
                         <Text class="unit sapUiTinyMarginBegin" text='{/header/kpi/unit}' visible="{=${/header/kpi/unit} === null ? false : true}"/>
                     </HBox>
-                    <VBox class="comparison" alignItems="End" justifyContent="Center" visible="{=${/header/comparison/value} === undefined ? false : true}">
+                    <!--<VBox class="comparison" alignItems="End" justifyContent="Center" visible="{=${/header/comparison/value} === undefined ? false : true}">
                         <Text class="label" text='{/header/comparison/label}'/>
                         <Text class="value" text="{path:'/header/comparison/value', formatter:'.formatDeltaValue'}"/>
-                    </VBox>
+                    </VBox>-->
                 </HBox>
             </VBox>
 

@@ -587,7 +587,17 @@ sap.ui.define([
                 var kpiIndex = oDataSet.length - 1;
                 var comparisonIndex = kpiIndex - 1;
 
-                var kpiData = oDataSet[kpiIndex];
+	                var kpiData = oDataSet[kpiIndex];
+	                //Set kpi to accumulated value of oCardConfig.kpi.valuePath
+	                kpiData[oCardConfig.kpi.valuePath] = oDataSet.reduce(function(acc, val){ 
+	                		return parseFloat(acc[oCardConfig.kpi.valuePath] !== undefined && 
+	                				acc[oCardConfig.kpi.valuePath] !== null ? acc[oCardConfig.kpi.valuePath] : Number.isFinite(acc) ? acc : 0) + 
+	                				parseFloat(val[oCardConfig.kpi.valuePath]) ;
+	                });
+	                //mean debtor rate
+	                if(oCardConfig.kpi.valuePath === "RATE"){
+	                	kpiData[oCardConfig.kpi.valuePath] = kpiData[oCardConfig.kpi.valuePath]/oDataSet.length ;
+	                }
 
                 if (oCardConfig.kpi.ascending) {
                     kpiIndex = 0;
@@ -605,7 +615,8 @@ sap.ui.define([
                             subtitleValue = oDisplayFormat.format(dateSubtitle);
                         }
                     }
-
+                    //Clear subtitleValue since accumulated values
+					subtitleValue = "";
                     var subtitle = (oCardConfig.subtitle.prefix || '') + subtitleValue + (oCardConfig.subtitle.suffix || '') + (isFiltered ? " - Filtered" : "");
                     oCardData.subtitle = subtitle;
                 }

@@ -213,16 +213,16 @@ sap.ui.define([
                         if (Array.isArray(reactions.results)) {
                             reactions.results.forEach(function (d) {
                                 mapped.push({
-                                    StartDate: d['INIT_DATE'],
-                                    EndDate: d['END_DATE'],
-                                    ReactionType: d['DESCRIPTION']
+                                    StartDate: d.INIT_DATE,
+                                    EndDate: d.END_DATE,
+                                    ReactionType: d.DESCRIPTION
                                 });
                             });
                         } else {
                             mapped.push({
-                                StartDate: d['INIT_DATE'],
-                                EndDate: d['END_DATE'],
-                                ReactionType: reactions['DESCRIPTION']
+                                StartDate: oData.INIT_DATE,
+                                EndDate: oData.END_DATE,
+                                ReactionType: reactions.DESCRIPTION
                             });
                         }
 
