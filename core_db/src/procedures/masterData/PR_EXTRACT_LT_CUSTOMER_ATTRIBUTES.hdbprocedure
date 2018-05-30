@@ -1,4 +1,5 @@
-PROCEDURE "procedures.masterData::PR_EXTRACT_LT_CUSTOMER_ATTRIBUTES" ( )
+PROCEDURE "procedures.masterData::PR_EXTRACT_LT_CUSTOMER_ATTRIBUTES" (
+IN IV_MODE INTEGER DEFAULT 0)
    LANGUAGE SQLSCRIPT
    SQL SECURITY INVOKER
    --DEFAULT SCHEMA <default_schema_name>
@@ -9,8 +10,26 @@ BEGIN
    /*************************************
        Write your procedure logic 
    *************************************/
+   DECLARE LV_LAST_MAX_SEQ_ID INTEGER;
+   DECLARE LV_NEW_MAX_SEQ_ID INTEGER;
+   DECLARE LV_ENTITY_NAME CONSTANT NVARCHAR(500) :='CUSTOMER ATTRIBUTE';
+   DECLARE LV_EVENT NVARCHAR(500);
+   DECLARE LV_CUST_COUNT INTEGER;
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	--DELTA LOAD
+	LV_EVENT = '';
+	CALL "procedures.utils::PR_DELETE_ALL_MASTERDATA"(:IV_MODE, :LV_ENTITY_NAME);
+	SELECT OUT_MAX_SEQ_ID into LV_LAST_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_MASTERDATA"(:LV_ENTITY_NAME);
+	IF LV_LAST_MAX_SEQ_ID = 0 THEN
+	LT_CUST_EDITED = SELECT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV";
+	ELSE
+	LT_CUST_EDITED = SELECT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
+							"db::app.Customer" on EXT_ID = ZZ_PARTNER WHERE 
+						"Z_RUN_SEQ_ID">:LV_LAST_MAX_SEQ_ID;
+	LT_CUST_ID_EDITED = select to_int(ZZ_PARTNER) as "CUST_ID" from :LT_CUST_EDITED;
+	CALL "procedures.utils::PR_DELETE_MASTERDATA_FOR_CUST"(:LV_ENTITY_NAME, :LT_CUST_ID_EDITED,:LV_EVENT);
+	END IF;
    LT_RESV_CUSTOMERS =   SELECT TO_BIGINT("ZZ_PARTNER") AS CUST_ID, 
 						  ZZ_PARTNER AS EXT_ID,
 						  TAXYRSTARTDT,
@@ -34,7 +53,7 @@ BEGIN
 							  FROM  "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" AS A 
 							  INNER JOIN "db::app.Customer" AS B ON B.EXT_ID = A.ZZ_PARTNER
 							  INNER JOIN "osr.edw.staging.md.rms.proxy.synonym::CV_BUT000" AS C ON A.ZZ_PARTNER = C.PARTNER
-							  WHERE  A.TAXAMOUNT > 0
+							  WHERE  A.TAXAMOUNT > 0 AND A."ZZ_PARTNER" IN (SELECT ZZ_PARTNER FROM :LT_CUST_EDITED)
 							 -- GROUP BY A.ZZ_PARTNER,C."BIRTHDT" 
 							  ) ;
 							  
@@ -278,6 +297,11 @@ BEGIN
 		   INIT_TS,
 		   END_TS 
 		   FROM :LT_CUST_ATTRIBUTES;
-						
+	select max(Z_RUN_SEQ_ID) INTO LV_NEW_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV";
+	
+	CALL "procedures.utils::PR_UPDATE_SEQ_ID_FOR_MASTERDATA"(
+		IV_SEQ_ID=> :LV_NEW_MAX_SEQ_ID,
+		IV_ENTITY_NAME=>:LV_ENTITY_NAME
+	);					
 						  
 END

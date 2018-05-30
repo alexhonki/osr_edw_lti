@@ -26,6 +26,21 @@
 			}
 		},
 		{
+			"target_table": "db::adm.seqIdLog",
+			"source_data": {
+				"data_type": "CSV",
+				"file_name": "data.AdminData::MasterSeqInitial.csv",
+				"has_header": true
+			},
+			"import_settings": {
+				"import_columns": [
+					"LATEST_EXTRACTED_SEQUENCE",    
+		            "LAST_EXTRACTED_DATE",         
+	                "ENTITY_NAME"
+				]
+			}
+		},
+		{
 			"target_table": "db::adm.config.event.name",
 			"source_data": {
 				"data_type": "CSV",

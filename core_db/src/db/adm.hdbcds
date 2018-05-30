@@ -7,7 +7,7 @@ context adm {
     entity seqIdLog {
         key LATEST_EXTRACTED_SEQUENCE : Integer default 0;
             LAST_EXTRACTED_DATE       : UTCTimestamp null;
-        key ENTITY_NAME               : String(10);
+        key ENTITY_NAME               : String(20);
     };
 
     // Configuration Objects

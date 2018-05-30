@@ -1,5 +1,6 @@
 PROCEDURE "procedures.masterData::PR_EXTRACT_LT_CUSTOMERS" ( 
 	--OUT COUNT_CUST INT 
+	IN IV_MODE INTEGER DEFAULT 0
 	)
    LANGUAGE SQLSCRIPT
    SQL SECURITY INVOKER
@@ -11,8 +12,28 @@ BEGIN
        Write your procedure logic 
        The procedure should be run every year to update the end date
    *************************************/
+   DECLARE LV_LAST_MAX_SEQ_ID INTEGER;
+   DECLARE LV_NEW_MAX_SEQ_ID INTEGER;
+   DECLARE LV_ENTITY_NAME CONSTANT NVARCHAR(500) :='CUSTOMER';
+   DECLARE LV_EVENT NVARCHAR(500);
+   DECLARE LV_CUST_COUNT INTEGER;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	--Delta Load
+	LV_EVENT = '';
+	CALL "procedures.utils::PR_DELETE_ALL_MASTERDATA"(:IV_MODE, :LV_ENTITY_NAME);
+	SELECT OUT_MAX_SEQ_ID into LV_LAST_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_MASTERDATA"(:LV_ENTITY_NAME);
+	IF LV_LAST_MAX_SEQ_ID = 0 THEN
+	LT_CUST_EDITED = SELECT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV";
+	ELSE
+	LT_CUST_EDITED = SELECT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
+							"db::app.Customer" on EXT_ID = ZZ_PARTNER WHERE 
+						"Z_RUN_SEQ_ID">:LV_LAST_MAX_SEQ_ID;
+	LT_CUST_ID_EDITED = select to_int(ZZ_PARTNER) as "CUST_ID" from :LT_CUST_EDITED;
+	CALL "procedures.utils::PR_DELETE_MASTERDATA_FOR_CUST"(:LV_ENTITY_NAME, :LT_CUST_ID_EDITED,:LV_EVENT);
+	END IF;
+
+	--
    	LT_RESV_CUSTOMERS = SELECT TO_BIGINT("ZZ_PARTNER") AS CUST_ID, ZZ_PARTNER AS EXT_ID, 0 AS "STATUS", 0 AS "IS_SENSITIVE", INIT_DATE, END_DATE, "CREATED.DATE", 
 								"CREATED.DATE" AS "CHANGED.DATE", CURRENT_USER AS "CREATED.USER", CURRENT_USER AS "CHANGED.USER", 
 								((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
@@ -21,7 +42,7 @@ BEGIN
 									MIN(TO_DATE("TAXYRSTARTDT")) AS "INIT_DATE", MAX(TO_DATE("TAXYRENDDT")) AS "END_DATE", 
 									max(to_timestamp(concat(concat(to_varchar(to_date(CHDATE)),' '),to_varchar(to_time(CHTIME))))) AS "CREATED.DATE"
 							      FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" AS A 
-							      WHERE  A.TAXAMOUNT > 0
+							      WHERE  A.TAXAMOUNT > 0 AND ZZ_PARTNER IN (SELECT ZZ_PARTNER FROM :LT_CUST_EDITED)
 								  GROUP BY A.ZZ_PARTNER);
 								  
 	UPSERT "db::app.Customer" (
@@ -50,5 +71,11 @@ BEGIN
 		INNER JOIN "osr.edw.staging.md.rms.proxy.synonym::CV_BUT000" AS B ON A.EXT_ID = B.PARTNER;
 	
 	 COUNT_CUST = SELECT COUNT(*) FROM :LT_RESV_CUSTOMERS;
+	select max(Z_RUN_SEQ_ID) INTO LV_NEW_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV";
+	
+	CALL "procedures.utils::PR_UPDATE_SEQ_ID_FOR_MASTERDATA"(
+		IV_SEQ_ID=> :LV_NEW_MAX_SEQ_ID,
+		IV_ENTITY_NAME=>:LV_ENTITY_NAME
+	);
 	 --SELECT COUNT_CUST from "synonyms::dummy";
 END

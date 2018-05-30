@@ -1,0 +1,15 @@
+PROCEDURE "procedures.utils::PR_UPDATE_SEQ_ID_FOR_MASTERDATA" (
+	IN IV_SEQ_ID INTEGER,
+	IN IV_ENTITY_NAME NVARCHAR(500)
+)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   UPDATE "db::adm.seqIdLog" SET LATEST_EXTRACTED_SEQUENCE = :IV_SEQ_ID where ENTITY_NAME = :IV_ENTITY_NAME;
+END

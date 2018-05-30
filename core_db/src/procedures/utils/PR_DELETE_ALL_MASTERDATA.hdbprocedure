@@ -1,0 +1,40 @@
+PROCEDURE "procedures.utils::PR_DELETE_ALL_MASTERDATA" (
+	IN IV_MODE INTEGER,
+	IN IV_ENTITY_NAME NVARCHAR(500)
+	)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+  -- READS SQL DATA
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+  DECLARE LV_CUST_ENTITY_NAME CONSTANT STRING := 'CUSTOMER';
+  DECLARE LV_CUST_ATTR_ENTITY_NAME CONSTANT STRING := 'CUSTOMER ATTRIBUTE';
+  DECLARE LV_CUST_VALUE_ENTITY_NAME CONSTANT STRING := 'CUSTOMER VALUE';
+  DECLARE LV_CRM_EVENT CONSTANT STRING := 'CRM';
+   IF IV_MODE = 0 
+		THEN
+			CALL "procedures.utils::PR_UPDATE_SEQ_ID_FOR_MASTERDATA"(
+				IV_SEQ_ID=>0,
+				IV_ENTITY_NAME=>:IV_ENTITY_NAME
+			);
+		IF IV_ENTITY_NAME = :LV_CUST_ENTITY_NAME
+			THEN
+				TRUNCATE TABLE "db::app.Customer";
+		ELSEIF IV_ENTITY_NAME = :LV_CUST_ATTR_ENTITY_NAME
+			THEN
+				TRUNCATE TABLE "db::app.CustomerAttributes";
+		ELSEIF IV_ENTITY_NAME = :LV_CUST_VALUE_ENTITY_NAME
+			THEN
+				TRUNCATE TABLE "db::app.CustomerValues";
+		--ELSE IF IV_ENTITY_NAME = :LV_CRM_EVENT
+		ELSE
+			LT_CRM_EVENTS = select ID AS "EVENT_ID" FROM "db::adm.config.event.name" where SOURCE = 'CRM';
+			DELETE FROM "db::app.CustomerEvents" where ("EVENT_ID.ID") in (select EVENT_ID from :LT_CRM_EVENTS);
+		END IF;
+	END IF;
+	
+END
