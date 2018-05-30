@@ -1,0 +1,26 @@
+PROCEDURE "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT" (
+	IN IV_MODE INTEGER,
+	IN IV_EVENT_NAME STRING
+	)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+  -- READS SQL DATA
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   DECLARE IV_EVENT_ID integer;
+   IF IV_MODE = 0 
+		THEN
+		select EVENT_ID INTO IV_EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:IV_EVENT_NAME);
+		DELETE FROM "db::app.CustomerEvents" where "EVENT_ID.ID" = :IV_EVENT_ID;
+		
+		
+		CALL "procedures.utils::PR_UPDATE_SEQ_ID_FOR_EVENTS"(
+			SEQ_ID=>0,
+			EVENT_ID=>:IV_EVENT_ID
+		);
+	END IF;
+END
