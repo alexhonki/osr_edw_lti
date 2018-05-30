@@ -1,0 +1,179 @@
+PROCEDURE "procedures.events::PR_EVENTS_WRAPPER" 
+( 	IN IV_MODE INTEGER DEFAULT 0 )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+    AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+	
+	TRUNCATE TABLE "db::app.CustomerEvents";
+    --ERP Events
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+		CALL "procedures.events.erp::PR_EXTRACT_LAND_EVALUATION_EVENT"();
+	END;
+
+/*	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+		CALL "procedures.events.erp::PR_EXTRACT_ASSESSMENT_EVENT"();
+	END;
+	
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+		CALL "procedures.events.erp::PR_EXTRACT_REASSESSMENT_EVENT"();
+	END;
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_REASSESSMENT_VALUE_EVENT"(IV_MODE=>:IV_MODE);
+	END;
+	
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_CHANGE_OF_DETAILS_EVENT"(IV_MODE=>:IV_MODE);
+	END;
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_CONCESSION_EVENT"(IV_MODE=>:IV_MODE);
+	END;
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_DEBT_MANAGEMENT_EVENT"(IV_MODE=>:IV_MODE);
+	END;
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_DUNNING_EVENT"(IV_MODE=>:IV_MODE);
+	END;
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_FINANCIAL_CONSIDERATION_EVENT"();
+	END;
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_ASSESSMENT_TAXED_EVENT"(IV_MODE=>:IV_MODE);
+	END;	
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_REISSUE_EVENT"();
+	END;	
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_LAND_EVENT"();
+	END;
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_LAND_OWNERSHIP_EVENT"();
+	END;
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_AB_DOC_PAYMENT_EVENT"(IV_MODE=>:IV_MODE);
+	END;
+	
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_PAYMENT_FULLFILLMENT_EVENT"();
+	END;
+	
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.erp::PR_EXTRACT_PAYMENT_PLAN_CREATED_EVENT"();
+	END;
+
+
+	-- Predefined
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.predefined::PR_EXTRACT_DUNNING_RUN_EVENT"();
+	END;
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.predefined::PR_EXTRACT_LAND_PARCELS_EVENT"();
+	END;
+	
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.predefined::PR_EXTRACT_LAND_VALUATION_EVENT"();
+	END;
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.predefined::PR_EXTRACT_LAND_VALUE_EVENT"();
+	END;
+	
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.predefined::PR_EXTRACT_LATE_PAYMENT_INTEREST_EVENT"();
+	END;
+	
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.predefined::PR_EXTRACT_MISSED_INSTALMENT_EVENT"();
+	END;
+	
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.predefined::PR_EXTRACT_PROMISED_PAYMENT_EVENT"();
+	END;
+	
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.predefined::PR_EXTRACT_TAX_AMOUNT_EVENT"();
+	END;
+*/	
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.predefined::PR_EXTRACT_TOTAL_LAND_VALUE_EVENT"();
+	END;
+
+	-- CRM
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.text::PR_CRM_EVENT_CREATE_MAIN"();
+	END;
+
+	BEGIN
+	DECLARE EXIT HANDLER FOR sqlexception 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.events.predefined::PR_EXTRACT_TOTAL_LAND_VALUE_EVENT"();
+	END;
+
+END

@@ -732,18 +732,24 @@ context ml {
             LIFT       : BinaryFloat;
         };
     };
-    
+
     context test {
-    	entity predict{
-    		"CUST_ID"       : association[1] to app.Customer { CUST_ID };
-    		"REACTED"		: Integer;
-    	};
-    	
-    	entity evaluation {
-    		"METRIC"	: hana.VARCHAR(20);
-    		"NN_RF"		: BinaryFloat;
-    		"RF"		: BinaryFloat;
-    		"NN"		: BinaryFloat;
-    	};
+        entity predict {
+            "CUST_ID" : association[1] to app.Customer { CUST_ID };
+            "REACTED" : Integer;
+        };
+
+        entity evaluation {
+            "METRIC" : hana.VARCHAR(20);
+            "NN_RF"  : BinaryFloat;
+            "RF"     : BinaryFloat;
+            "NN"     : BinaryFloat;
+        };
+    };
+
+    context deployed {
+        entity model {
+            DEPLOY_DATE : UTCTimestamp;
+        };
     };
 };

@@ -1,2 +1,2 @@
 SEQUENCE "sequences::AdminEventId" 
-RESET BY SELECT IFNULL(MAX("EVENT_ID.ID"), 1) + 1 FROM "db::app.CustomerEvents"
+RESET BY SELECT IFNULL(MAX("ID"), 1) + 1 FROM "db::adm.config.event.name"
