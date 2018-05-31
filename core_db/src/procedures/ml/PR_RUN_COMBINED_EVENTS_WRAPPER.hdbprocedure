@@ -51,19 +51,34 @@ BEGIN
 		------------------------------------------------------------------------------------------------------------
 		-- DELETE ALL COMBINED EVENTS IN CUST EVENTS TABLE WITHIN THE PERIOD
 		------------------------------------------------------------------------------------------------------------
-		LV_PAST_COMB_EVENTS = SELECT "EVENT_ID.ID" "EVENT_ID"
+		/*LV_PAST_COMB_EVENTS = SELECT "EVENT_ID.ID" "EVENT_ID"
 			FROM "db::app.CustomerEvents"
 			WHERE EVENT_GROUP = 'Combined Event'
-			AND INIT_TS BETWEEN :I_FROM AND :I_TO;
+			AND INIT_TS BETWEEN :I_FROM AND :I_TO;*/
+			
+		LV_PAST_COMB_EVENTS = SELECT RECORD_ID, "EVENT_ID.ID" "EVENT_ID"	-- combined events within range
+								FROM "db::app.CustomerEvents"
+								WHERE EVENT_GROUP = 'Combined Event'
+								AND INIT_TS BETWEEN :I_FROM AND :I_TO
+							 UNION
+							SELECT RECORD_ID, ce."EVENT_ID.ID" "EVENT_ID"								-- reacted events within range
+								FROM "db::app.CustomerEvents" ce
+								INNER JOIN "db::ml.combined.rawEvents" re
+								ON ce."INIT_DATE" = re."INIT_DATE"
+								WHERE ce.EVENT_GROUP = 'Combined Event'
+								AND year(re.REACTION_DATE)*100+month(re.REACTION_DATE)  BETWEEN :I_FROM AND :I_TO;
 		
 		DELETE FROM "db::app.CustomerEvents"
-		WHERE EVENT_GROUP = 'Combined Event'
-		AND INIT_TS BETWEEN :I_FROM AND :I_TO;
+		WHERE RECORD_ID IN 
+				(SELECT RECORD_ID FROM :LV_PAST_COMB_EVENTS);
+				
+		DELETE FROM "db::ml.combined.rawEvents"
+		WHERE year(REACTION_DATE)*100+month(REACTION_DATE)  BETWEEN :I_FROM AND :I_TO;
 		
-		DELETE FROM "db::adm.config.event.name" 
+		/*DELETE FROM "db::adm.config.event.name" 
 		WHERE CATEGORY_NAME = 'Combined Event' 
 		AND ID IN 
-			(SELECT EVENT_ID FROM :LV_PAST_COMB_EVENTS);	
+			(SELECT EVENT_ID FROM :LV_PAST_COMB_EVENTS);*/	
 		
 		/***********************************************************************************************************
 		 * Side note that we need to revise the usage of nested procedure calls to reduce dependancies
@@ -233,7 +248,7 @@ BEGIN
 	    WHERE PARAMETER_NAME = 'FPG_COMB_EVT_PARAM_LAST_RUN';
 	    
 	--Update config event icon for combined event
-	UPDATE "db::adm.config.event.name"
+		UPDATE "db::adm.config.event.name"
 		SET "ICON" = 'program-triangles-2',
 		"PRIORITY" = 1
 		WHERE "CATEGORY_NAME" = 'Combined Event';

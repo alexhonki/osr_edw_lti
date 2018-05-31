@@ -14,17 +14,11 @@ BEGIN
 	-- Get Event Name/Category In correct Case
 	--------------------------------------------------------------
 	T_EVENTS = 	SELECT a."EVENT_NAME", a."EVENT_GROUP" "CATEGORY_NAME", FIRST_VALUE (a."DESCRIPTION"  order by a."EVENT_NAME") AS "DESCRIPTION"
---	T_EVENTS = 	SELECT a."EVENT_NAME", a."EVENT_GROUP" "CATEGORY_NAME"
 					FROM "db::app.CustomerEvents" a
 					INNER JOIN :T_EVENT_NAMES b
 					ON UPPER(a."EVENT_NAME") = b."EVENT_NAME" AND UPPER(a."EVENT_GROUP") = b."CATEGORY_NAME"
 					WHERE a."EVENT_ID.ID" IS NULL
-					--GROUP BY a."EVENT_NAME", a."EVENT_GROUP",a."DESCRIPTION";
 					GROUP BY a."EVENT_NAME", a."EVENT_GROUP";
-	/*T_EVENTS_DESC = SELECT a."EVENT_NAME", a."CATEGORY_NAME", b."DESCRIPTION" 
-					from :T_EVENTS AS a
-					INNER JOIN "db::app.CustomerEvents" AS b on 
-					UPPER(a."EVENT_NAME") = B."EVENT_NAME";*/
 	--------------------------------------------------------------
 	-- Insert new Events
 	--------------------------------------------------------------
