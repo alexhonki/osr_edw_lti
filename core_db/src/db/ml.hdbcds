@@ -60,6 +60,7 @@ context ml {
             "DEBT_MANAGEMENT_EVENTS_WITHIN_WINDOW"     : BinaryFloat;
             "DEBT_MANAGEMENT_EVENTS_ALL_YEARS"         : BinaryFloat;
             "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
+            "TOTAL_COMBINED_EVENTS" 				   : BinaryFloat;
             "REACTED"                                  : Integer;
         }
         technical configuration {
@@ -191,6 +192,7 @@ context ml {
             "DEBT_MANAGEMENT_EVENTS_WITHIN_WINDOW"     : BinaryFloat;
             "DEBT_MANAGEMENT_EVENTS_ALL_YEARS"         : BinaryFloat;
             "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
+             "TOTAL_COMBINED_EVENTS" 				   : BinaryFloat;
         }
         technical configuration {
             column store;
@@ -299,6 +301,7 @@ context ml {
             "DEBT_MANAGEMENT_EVENTS_WITHIN_WINDOW"     : BinaryFloat;
             "DEBT_MANAGEMENT_EVENTS_ALL_YEARS"         : BinaryFloat;
             "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
+             "TOTAL_COMBINED_EVENTS" 				   : BinaryFloat;
             "REACTED"                                  : Integer;
             "REACTION_TYPE"                            : hana.VARCHAR(100);
             "INIT_DATE"                                : UTCTimestamp;
@@ -363,6 +366,7 @@ context ml {
             "DEBT_MANAGEMENT_EVENTS_WITHIN_WINDOW"     : BinaryFloat;
             "DEBT_MANAGEMENT_EVENTS_ALL_YEARS"         : BinaryFloat;
             "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
+            "TOTAL_COMBINED_EVENTS" 				   : BinaryFloat;
             "REACTED"                                  : Integer;
             "REACTION_TYPE"                            : hana.VARCHAR(100);
             "INIT_DATE"                                : UTCTimestamp;
@@ -555,6 +559,7 @@ context ml {
                 "DEBT_MANAGEMENT_EVENTS_WITHIN_WINDOW"     : BinaryFloat;
                 "DEBT_MANAGEMENT_EVENTS_ALL_YEARS"         : BinaryFloat;
                 "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
+                "TOTAL_COMBINED_EVENTS" 				   : BinaryFloat;
                 "REACTED"                                  : Integer;
             };
             table type nn_model {
@@ -641,6 +646,7 @@ context ml {
                 "DEBT_MANAGEMENT_EVENTS_WITHIN_WINDOW"     : BinaryFloat;
                 "DEBT_MANAGEMENT_EVENTS_ALL_YEARS"         : BinaryFloat;
                 "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
+                "TOTAL_COMBINED_EVENTS" 				   : BinaryFloat;
             };
             table type nn_result {
                 "ID"      : Integer;
