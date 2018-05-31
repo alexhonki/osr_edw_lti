@@ -32,6 +32,10 @@
       <viewAttribute id="POSTING_DATE">
         <descriptions defaultDescription="POSTING_DATE"/>
       </viewAttribute>
+    
+      <viewAttribute id="Z_RUN_SEQ_ID">
+        <descriptions defaultDescription="Z_RUN_SEQ_ID"/>
+      </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
@@ -42,6 +46,8 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="PARTNER" source="PARTNER"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="DIRECTION" source="DIRECTION"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="POSTING_DATE" source="POSTING_DATE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="Z_RUN_SEQ_ID" source="Z_RUN_SEQ_ID"/>
     </input>
   </calculationView>
   <calculationView xsi:type="Calculation:ProjectionView" id="Customers">
@@ -83,6 +89,10 @@
       <viewAttribute id="CUST_ID" aggregationType="sum">
         <descriptions defaultDescription="Customer ID"/>
       </viewAttribute>
+    
+      <viewAttribute id="Z_RUN_SEQ_ID" aggregationType="sum">
+        <descriptions defaultDescription="Z_RUN_SEQ_ID"/>
+      </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
@@ -93,6 +103,8 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="PARTNER" source="PARTNER"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="DIRECTION" source="DIRECTION"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="POSTING_DATE" source="POSTING_DATE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="Z_RUN_SEQ_ID" source="Z_RUN_SEQ_ID"/>
     </input>
     <input node="Customers">
       <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
@@ -130,6 +142,11 @@
     <attribute id="CUST_ID" order="7" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="Customer ID"/>
       <keyMapping columnObjectName="Join_1" columnName="CUST_ID"/>
+    </attribute>
+  
+    <attribute id="Z_RUN_SEQ_ID" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Z_RUN_SEQ_ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="Z_RUN_SEQ_ID"/>
     </attribute>
   </attributes>
   <calculatedAttributes/>
