@@ -6,7 +6,9 @@
     <descriptions defaultDescription="IP_FILTER"/>
     <variableProperties datatype="NVARCHAR" length="5000" mandatory="false">
       <valueDomain type="empty"/>
-      <selection multiLine="false" type="Single"/>
+      <selection multiLine="true" type="Single"/>
+      <defaultRange lowValue="PPR_POSTCODE:4000"/>
+      <defaultRange lowValue="PPR_POSTCODE:4001"/>
     </variableProperties>
   </variable>
   <variable id="IP_FROM" parameter="true">
@@ -199,11 +201,11 @@
       <upperLeftCorner x="114" y="350"/>
       <rectangleSize height="30" width="140"/>
     </shape>
-    <shape modelObjectName="Projection_1" modelObjectType="JoinNodeInput" modelObjectNameSpace="Join_1">
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
       <upperLeftCorner x="20" y="30"/>
       <rectangleSize width="250"/>
     </shape>
-    <shape modelObjectName="Impact" modelObjectType="JoinNodeInput" modelObjectNameSpace="Join_1">
+    <shape modelObjectName="Impact" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
       <upperLeftCorner x="320" y="30"/>
       <rectangleSize width="250"/>
     </shape>

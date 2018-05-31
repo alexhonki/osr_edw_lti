@@ -56,10 +56,14 @@ BEGIN
 								  AND "INIT_TS" <= TO_INT(:IM_TO) AND "INIT_TS" >= TO_INT(:IM_FROM)
 								GROUP BY "INIT_TS"
 						UNION 		
-						select "INIT_TS" "TIME_SEGMENT", 0 "TOTAL_REACT_CUSTOMERS", COUNT("CUST_ID") "TOTAL_NEW_CUSTOMERS" 
+						select "INIT_TS" "TIME_SEGMENT", 0 "TOTAL_REACT_CUSTOMERS", COUNT("CUST_ID") "TOTAL_NEW_CUSTOMERS"
+							from "db::app.CustomerEvents" 
+							where "EVENT_ID.ID" IN (1,2,3,4,5,6,7,8,9) and "INIT_TS" <= TO_INT(:IM_TO) AND "INIT_TS" >= TO_INT(:IM_FROM)
+							GROUP BY "INIT_TS"
+						/*select "INIT_TS" "TIME_SEGMENT", 0 "TOTAL_REACT_CUSTOMERS", COUNT("CUST_ID") "TOTAL_NEW_CUSTOMERS" 
 							from "db::app.Customer"  
 							WHERE "INIT_TS" <= TO_INT(:IM_TO) AND "INIT_TS" >= TO_INT(:IM_FROM)
-							GROUP BY "INIT_TS"
+							GROUP BY "INIT_TS"*/
 						) 
 							GROUP BY "TIME_SEGMENT" 
 							 
@@ -99,10 +103,14 @@ BEGIN
 							  AND "INIT_TS" <= TO_INT(:IM_TO) AND "INIT_TS" >= TO_INT(:IM_FROM)
 							GROUP BY "INIT_TS"
 					UNION 		
-					select "INIT_TS" "TIME_SEGMENT", 0 "TOTAL_REACT_CUSTOMERS", COUNT("CUST_ID") "TOTAL_NEW_CUSTOMERS" 
-						from "db::app.Customer"  
-						WHERE "INIT_TS" <= TO_INT(:IM_TO) AND "INIT_TS" >= TO_INT(:IM_FROM)
-						GROUP BY "INIT_TS"
+					select "INIT_TS" "TIME_SEGMENT", 0 "TOTAL_REACT_CUSTOMERS", COUNT("CUST_ID") "TOTAL_NEW_CUSTOMERS"
+							from "db::app.CustomerEvents" 
+							where "EVENT_ID.ID" IN (1,2,3,4,5,6,7,8,9) and "INIT_TS" <= TO_INT(:IM_TO) AND "INIT_TS" >= TO_INT(:IM_FROM)
+							GROUP BY "INIT_TS"
+						/*select "INIT_TS" "TIME_SEGMENT", 0 "TOTAL_REACT_CUSTOMERS", COUNT("CUST_ID") "TOTAL_NEW_CUSTOMERS" 
+							from "db::app.Customer"  
+							WHERE "INIT_TS" <= TO_INT(:IM_TO) AND "INIT_TS" >= TO_INT(:IM_FROM)
+							GROUP BY "INIT_TS"*/
 						) 
 						GROUP BY "TIME_SEGMENT" 
 						order by "TIME_SEGMENT" );

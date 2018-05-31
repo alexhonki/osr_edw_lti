@@ -111,7 +111,7 @@
       <viewAttribute id="EVENT_GROUP">
         <descriptions defaultDescription="Event Group"/>
       </viewAttribute>
-      <viewAttribute id="JOIN$CUST_ID$CUST_ID" hidden="true"/>
+      <viewAttribute hidden="true" id="JOIN$CUST_ID$CUST_ID"/>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>

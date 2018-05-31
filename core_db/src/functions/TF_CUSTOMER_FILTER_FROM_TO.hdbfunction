@@ -62,8 +62,8 @@ BEGIN
 	  	  			AND	    A.END_TIME_SEGMENT >= :LV_FROM
 	  	  			) 
 	  	  			
-	  	  			GROUP BY CUST_ID
-	  	  			HAVING COUNT(distinct attr_key) >= :LV_MATCH;
+	  	  			GROUP BY CUST_ID;
+	  	  		--	HAVING COUNT(distinct attr_key) >= :LV_MATCH; --COMMENTED becuase multiple values now supported for filter
 	 	   	
 	END IF;
 	  
