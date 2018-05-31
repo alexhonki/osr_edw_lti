@@ -72,9 +72,6 @@ BEGIN
 		WHERE RECORD_ID IN 
 				(SELECT RECORD_ID FROM :LV_PAST_COMB_EVENTS);
 				
-		DELETE FROM "db::ml.combined.rawEvents"
-		WHERE year(REACTION_DATE)*100+month(REACTION_DATE)  BETWEEN :I_FROM AND :I_TO;
-		
 		/*DELETE FROM "db::adm.config.event.name" 
 		WHERE CATEGORY_NAME = 'Combined Event' 
 		AND ID IN 
@@ -235,7 +232,9 @@ BEGIN
 					NULL AS END_TS
 				FROM #TBL_FINAL_COMB_EVENTS);	
 				
-
+		DELETE FROM "db::ml.combined.rawEvents"
+		WHERE year(REACTION_DATE)*100+month(REACTION_DATE)  BETWEEN :I_FROM AND :I_TO;
+		
 			-- Drop the temporary table
 		DROP TABLE #TBL_FINAL_COMB_EVENTS;
 --------------------------TBC----------------------------------------------------	    
