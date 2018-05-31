@@ -30,7 +30,7 @@ BEGIN
 			LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" DFKKPPD
 			ON DFKKPP.PPKEY=DFKKPPD.PPKEY
 			LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" DFKKPPP 
-			ON DFKKPP.PPKEY=DFKKPP.PPKEY
+			ON DFKKPP.PPKEY=DFKKPPP.PPKEY
 		WHERE DFKKPPP.OPBEL IN (SELECT OPBEL FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE BLART='AB' and KOFIZ='LT')
 		GROUP BY DFKKPP.GPART,DFKKPP.PPKEY,PPCAT having PPCAT != 'Z7'
 		) as main
@@ -55,7 +55,7 @@ BEGIN
 			LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" DFKKPPD
 			ON DFKKPP.PPKEY=DFKKPPD.PPKEY
 			LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" DFKKPPP 
-			ON DFKKPP.PPKEY=DFKKPP.PPKEY
+			ON DFKKPP.PPKEY=DFKKPPP.PPKEY
 		WHERE DFKKPPP.OPBEL IN (SELECT OPBEL FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE BLART='AB' and KOFIZ='LT')
 		GROUP BY DFKKPP.GPART,DFKKPP.PPKEY,PPCAT having PPCAT = 'Z7'
 		) as main
