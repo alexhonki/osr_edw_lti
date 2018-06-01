@@ -27,6 +27,10 @@
                         <DatePicker dateValue="{/SelectedFixedDate}"/>
                     </HBox>
                 </HBox>
+                	<HBox alignItems="Center" class="sapUiResponsiveMargin">
+                        <Text text="{i18n>GeneralSettings.TrainingDateInputLabelForOption}" class="sapUiSmallMarginEnd"/>
+                        <DatePicker dateValue="{/TrainFixedDate}"/>
+                	</HBox>
             </Panel>
         </content>
         <footer>

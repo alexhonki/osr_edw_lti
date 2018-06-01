@@ -53,9 +53,9 @@ sap.ui.define([
                 high: "rgb(220,13,14)"
             },
             Color: {
-                Error: "rgb(231,140,7)",
-                Neutral: "rgb(94,105,110)",
-                Critical: "rgb(187,0,0)"
+            	Neutral: "rgb(39,163,221)",
+                Error: "rgb(248,172,31)",
+                Critical: "rgb(220,13,14)"
             },
             VisualFilterStorageKey: "CustomersAtRiskVisualFilters",
             /**

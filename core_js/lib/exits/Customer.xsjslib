@@ -1,7 +1,6 @@
 $.import("exits", "Utils");
 var Utils = $.exits.Utils;
 var conn  = $.db.getConnection();
-var XSDS = $.require("@sap/cds").xsjs(conn);  // “cds” refers to node-cds
 var STATUS = {
 		UNBLOCK	: 0,
 		BLOCK	: 1,

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.adm::CV_TRAINING_DATE" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_TRAINING_DATE"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="models.adm::CV_CONFIG">
+    <resourceUri>models.adm::CV_CONFIG</resourceUri>
+  </DataSource>
+  <DataSource id="functions::TF_CONF_GET_TRAINING_DATES" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_CONF_GET_TRAINING_DATES</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Config" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="STR_VALUE">
+        <descriptions defaultDescription="STR_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_VALUE">
+        <descriptions defaultDescription="FROM_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="GROUP">
+        <descriptions defaultDescription="GROUP"/>
+      </viewAttribute>
+      <viewAttribute id="REACTION_TYPE">
+        <descriptions defaultDescription="REACTION_TYPE"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_ON">
+        <descriptions defaultDescription="Date Time"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.adm::CV_CONFIG">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STR_VALUE" source="STR_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="GROUP" source="GROUP"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_ON" source="CHANGED_ON"/>
+    </input>
+    <filter>(&quot;BUCKET_ID&quot;='TRAINING_DATE')and(&quot;REACTION_TYPE&quot;='NA')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="CN_N" joinType="referential">
+    <viewAttributes>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="STR_VALUE">
+        <descriptions defaultDescription="STR_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED" aggregationType="sum">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_VALUE">
+        <descriptions defaultDescription="FROM_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="GROUP">
+        <descriptions defaultDescription="GROUP"/>
+      </viewAttribute>
+      <viewAttribute id="CHANGED_ON">
+        <descriptions defaultDescription="Date Time"/>
+      </viewAttribute>
+    
+      <viewAttribute id="TO_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="TO_TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="TO_DATE" aggregationType="min">
+        <descriptions defaultDescription="TO_DATE"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Config">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STR_VALUE" source="STR_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_VALUE" source="FROM_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="GROUP" source="GROUP"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_ON" source="CHANGED_ON"/>
+    </input>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_TIME_SEGMENT" source="TO_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_DATE" source="TO_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+    </input>
+    <joinAttribute name="BUCKET_ID"/>
+    <joinAttribute name="SEQ"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="TO_TIME_SEGMENT" aggregationType="sum">
+        <descriptions defaultDescription="TO_TIME_SEGMENT"/>
+      </viewAttribute>
+      <viewAttribute id="TO_DATE" aggregationType="min">
+        <descriptions defaultDescription="TO_DATE"/>
+      </viewAttribute>
+    
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
+      </viewAttribute>
+      <viewAttribute id="SEQ" aggregationType="sum">
+        <descriptions defaultDescription="SEQ"/>
+      </viewAttribute>
+      <viewAttribute id="IS_ENABLED" aggregationType="sum">
+        <descriptions defaultDescription="IS_ENABLED"/>
+      </viewAttribute></viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="functions::TF_CONF_GET_TRAINING_DATES">
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="SEQ" source="SEQ"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_TIME_SEGMENT" source="TO_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_DATE" source="TO_DATE"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="BUCKET_ID" hidden="true" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="BUCKET_ID"/>
+      <keyMapping columnObjectName="Join_1" columnName="BUCKET_ID"/>
+    </attribute>
+    <attribute id="SEQ" key="true" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="SEQ"/>
+      <keyMapping columnObjectName="Join_1" columnName="SEQ"/>
+    </attribute>
+    <attribute id="STR_VALUE" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STR_VALUE"/>
+      <keyMapping columnObjectName="Join_1" columnName="STR_VALUE"/>
+    </attribute>
+    <attribute id="DESCRIPTION" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DESCRIPTION"/>
+      <keyMapping columnObjectName="Join_1" columnName="DESCRIPTION"/>
+    </attribute>
+    <attribute id="IS_ENABLED" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="IS_ENABLED"/>
+      <keyMapping columnObjectName="Join_1" columnName="IS_ENABLED"/>
+    </attribute>
+    <attribute id="GROUP" hidden="true" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="GROUP"/>
+      <keyMapping columnObjectName="Join_1" columnName="GROUP"/>
+    </attribute>
+    <attribute id="CHANGED_ON" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Date Time"/>
+      <keyMapping columnObjectName="Join_1" columnName="CHANGED_ON"/>
+    </attribute>
+  
+    <attribute id="TO_TIME_SEGMENT" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TO_TIME_SEGMENT"/>
+  
+      <keyMapping columnObjectName="Join_1" columnName="TO_TIME_SEGMENT"/>
+  
+    </attribute>
+    <attribute id="TO_DATE" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TO_DATE"/>
+      <keyMapping columnObjectName="Join_1" columnName="TO_DATE"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Config" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="37" y="339"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="107" y="208"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Config" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="220" y="339"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

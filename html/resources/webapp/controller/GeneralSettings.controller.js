@@ -37,9 +37,10 @@ sap.ui.define([
                 var model = this.getView().getModel("CRI");
 
                 var predictionDateLoaded = false;
+                var trainingDateLoaded = false;
                 var dataRetentionLoaded = false;
                 var onLoaded = function () {
-                    if (predictionDateLoaded && dataRetentionLoaded) {
+                    if (predictionDateLoaded && dataRetentionLoaded && trainingDateLoaded) {
                         properties.attachPropertyChange(this.updateSettings.bind(this));
                     }
                 }.bind(this);
@@ -91,10 +92,34 @@ sap.ui.define([
                         ErrorService.raiseGenericError(oError);
                     }
                 });
+                oBusyDialog.open();
+                model.read("/ConfigTrainingDate", {
+                    success: function (oData) {
+                        try {
+                            trainingDateLoaded = true;
+                            oData.results.forEach(function (dateSetting) {
+                                if (dateSetting["IS_ENABLED"] == 1) {
+                                    var defaultKey = dateSetting["SEQ"] + "";
+                                    var defaultTrainDate = new Date(dateSetting["TO_DATE"]);
+                                    properties.setProperty("/TrainFixedDate", defaultTrainDate);
+                                    properties.setProperty("/TrainFixedDateKey", defaultKey);
+                                    onLoaded();
+                                }
+                            });
+                        } catch (oError) {
+                            ErrorService.raiseGenericError(oError);
+                        }
+                        oBusyDialog.close();
+                    },
+                    error: function (oError) {
+                        ErrorService.raiseGenericError(oError);
+                        oBusyDialog.close();
+                    }
+                });
             },
             updateSettings: function (event) {
                 var path = event.getParameter("path");
-                if (path == "/SelectedPredictionDate" || path == "/SelectedFixedDate" || path == "/PreservationMonths") {
+                if (path == "/SelectedPredictionDate" || path == "/SelectedFixedDate" || path == "/PreservationMonths" || path =="/TrainFixedDate") {
                     this.enableSaveButton(true);
                 }
             },
@@ -121,7 +146,12 @@ sap.ui.define([
                     var date  = properties.getProperty("/SelectedFixedDate");
                     update["STR_VALUE"] = date.getTime() + "";
                 }
-
+				
+				var trainKey = properties.getProperty("/TrainFixedDateKey");
+				var updateTrainDate = {
+					IS_ENABLED: "1",
+					STR_VALUE: properties.getProperty("/TrainFixedDate").getTime() + ""
+				};
                 var dateSaved = false;
                 var daysSaved = false;
                 var error = false;
@@ -141,6 +171,24 @@ sap.ui.define([
                 this.getView().byId("idGeneralSettingsPage").setBusy(true);
 
                 model.update("/ConfigPredictionDate(" + dateKey + ")", update, {
+                    eTag: "*",
+                    success: function () {
+                        try {
+                            dateSaved = true;
+                            onFinished();
+                        } catch (oError) {
+                            ErrorService.raiseGenericError(oError);
+                        }
+                    },
+                    error: function (oError) {
+                        ErrorService.raiseGenericError(oError);
+                        dateSaved = true;
+                        error = true;
+                        onFinished();
+                    }
+                });
+                
+                 model.update("/ConfigTrainingDate(" + trainKey + ")", updateTrainDate, {
                     eTag: "*",
                     success: function () {
                         try {

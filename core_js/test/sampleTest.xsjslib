@@ -115,38 +115,6 @@ describe("Exits test suite", function() {
 		expect(utils.recordSetToJSON).toHaveBeenCalled();
 	});
 	
-	it("update Filter Dates", function() {
-		$.import("exits", "Config");
-		$.import("exits", "Utils");
-		var config = $.exits.Config;
-		var utils = $.exits.Utils;
-		var param = {
-			connection: {
-				prepareStatement: function(a){
-					return {
-						close: function(){},
-						executeQuery: function(){
-							return "";
-						}
-					};
-				}                            
-			}
-		};
-		var oRow = {
-			DESCRIPTION: 1,
-			IS_ENABLED: 1,
-			CHANGED_ON: 1,
-			CHANGED_BY: 1
-		};
-		var oData = {
-			ConfigBucket: [oRow]
-		};
-		spyOn(utils, "recordSetToJSON").and.returnValue(oData);
-		config.updateFilterDates(param);       
-		expect(utils.recordSetToJSON).toHaveBeenCalled();
-	});
-	
-	
 	it("update Prediction Date", function() {
 		$.import("exits", "Config");
 		$.import("exits", "Utils");
@@ -205,6 +173,7 @@ describe("Exits test suite", function() {
 			ConfigBucket: [oRow]
 		};
 		spyOn(utils, "recordSetToJSON").and.returnValue(oData);
+		spyOn(utils, "getTxFindPromise").and.returnValue(Promise.resolve([]));
 		config.updateConfig(param);       
 		expect(utils.recordSetToJSON).toHaveBeenCalled();
 	});
@@ -244,10 +213,23 @@ describe("Exits test suite", function() {
 		$.import("exits", "Utils");
 		
 		var utils = $.exits.Utils;
-		var importPromise = utils.getImportEntitiesPromise([{},{}]);
+		var importPromise = utils.getImportEntitiesPromise(["db::app.AttributeTypes"]);
 		expect(importPromise).toEqual(jasmine.any(Promise));
 		//
 		importPromise.then((result) => {
+				done();
+		});
+		
+	});
+
+		it("Should be async: getTxPromise", function(done) {
+		$.import("exits", "Utils");
+		
+		var utils = $.exits.Utils;
+		var txPromise = utils.getTxPromise([]);
+		expect(txPromise).toEqual(jasmine.any(Promise));
+		//
+		txPromise.then((result) => {
 				done();
 		});
 		
@@ -256,15 +238,26 @@ describe("Exits test suite", function() {
 		it("Should be async: getTxFindPromise", function(done) {
 		$.import("exits", "Utils");
 		var utils = $.exits.Utils;
+		const aPromise = Promise.resolve([]);
 		var oTx = {
-			$find: function(){}
+			$find : function({},{},{}){
+				return aPromise;
+			}
 		};
-		var findPromise = utils.getTxFindPromise({},{},oTx);
-	//	expect(utils.getTxFindPromise).toEqual(jasmine.any(Promise));
-		findPromise.then((result) => {
+	
+		utils.getTxFindPromise({},{},oTx);
+		aPromise.then((result) => {
+				expect(result.length).toEqual(0);
 				done();
 		});
 		
+	});
+	
+	it("Escape Special Characters", function() {
+		$.import("exits", "Utils");
+		var utils = $.exits.Utils;
+		expect(utils.escapeSpecialChars("\tabs")).toEqual("\\tabs");
+		expect(utils.escapeSpecialChars(null)).toEqual("");	
 	});
 
 });

@@ -1,8 +1,11 @@
 $.import("exits", "Utils");
 var Utils = $.exits.Utils;
 var conn = $.db.getConnection();
-var XSDS = $.require("@sap/cds").xsjs(conn); // “cds” refers to node-cds
 
+/**
+ * Method to update AttributeTypes entity
+ * @param param
+ */
 function updateAttributeTypes(param) {
 	$.trace.debug("Update Attribute Types exit called");
 	let before = param.beforeTableName;
@@ -44,6 +47,11 @@ function updateAttributeTypes(param) {
 	}
 };
 
+/**
+ * Method to set Config Attribute entity
+ * @param oConfig
+ * @param oRow
+ */
 function setConfigAttributes(oConfig, oRow) {
 	oConfig.ATTRIBUTE_ID = oRow.ATTRIBUTE_ID;
 	oConfig.IS_FILTER = oRow.IS_FILTER;
@@ -52,137 +60,11 @@ function setConfigAttributes(oConfig, oRow) {
 	return oConfig;
 }
 
-function updateFilterDates(param) {
-	$.trace.debug("Update FilterDates exit called");
-	let before = param.beforeTableName;
-	let after = param.afterTableName;
-	let pStmt = param.connection.prepareStatement('select * from "' + after + '"');
-
-	// Get Input Data from OData Create
-	var data = Utils.recordSetToJSON(pStmt.executeQuery(), 'ConfigBucket');
-
-	// GET entity	
-	var promiseImportEntities = Utils.getImportEntitiesPromise(["db::adm.config.bucketCustom", "db::adm.config.bucket"]);
-
-	try {
-		var oRow = data.ConfigBucket[0];
-		promiseImportEntities.then(function(entities) {
-			var ConfigBucket = entities["db::adm.config.bucketCustom"];
-			var DefaultConfigBucket = entities["db::adm.config.bucket"];
-			return Utils.getTxPromise([ConfigBucket, DefaultConfigBucket]);
-		}).then(function(txObj) {
-			return Promise.all([
-				Utils.getTxFindPromise(txObj.entities[0], {
-					BUCKET_ID: 'FILTER_DATES',
-					IS_ENABLED: 1
-				}, txObj.tx), //ConfigBucket
-				Utils.getTxFindPromise(txObj.entities[1], {
-					BUCKET_ID: 'FILTER_DATES',
-					IS_ENABLED: 1
-				}, txObj.tx), //DefaultConfigBucket
-				Utils.getTxFindPromise(txObj.entities[0], {
-					BUCKET_ID: 'FILTER_DATES',
-					SEQ: oRow.SEQ
-				}, txObj.tx), //ConfigBucket 
-				Utils.getTxFindPromise(txObj.entities[1], {
-					BUCKET_ID: 'FILTER_DATES',
-					SEQ: oRow.SEQ
-				}, txObj.tx)
-			]); //DefaultConfigBucket                       
-		}).then(function(aValues) {
-			var oConfigBucket, oDefaultConfigBucket, oConfigBucketCurrent, oDefaultConfigBucketCurrent, tx;
-			oConfigBucket = aValues[0].entities[0];
-			oDefaultConfigBucket = aValues[1].entities[0];
-			oConfigBucketCurrent = aValues[2].entities[0];
-			oDefaultConfigBucketCurrent = aValues[3].entities[0];
-			tx = aValues[0].tx;
-			var newConfigBucket, newConfigBucketCurrent;
-			var oHistory = {
-				CHANGED_ON: new Date(),
-				CHANGED_BY: $.session.getUsername()
-			};
-			/*
-			 * Toggle Active Use Case (Reaction Type)
-			 * Step 1: Change IS_ENABLED to 0 (disable)
-			 * Step 2: Save
-			 */
-			if (oConfigBucket) {
-				oConfigBucket.IS_ENABLED = 0;
-				oConfigBucket.isChanged = true;
-			} else {
-
-				newConfigBucket = {
-					$entity: aValues[0].entityType,
-					BUCKET_ID: 'FILTER_DATES',
-					SEQ: oDefaultConfigBucket.SEQ,
-					STR_VALUE: oDefaultConfigBucket.STR_VALUE,
-					DESCRIPTION: oDefaultConfigBucket.DESCRIPTION,
-					IS_ENABLED: 0,
-					CHANGED_ON: new Date(),
-					CHANGED_BY: $.session.getUsername(),
-					REACTION_TYPE: 'NA'
-				};
-				newConfigBucket.isChanged = true;
-
-			}
-			/*
-			 * Get Current Use Case that is being edited
-			 *  Set Values
-			 */
-			if (oConfigBucketCurrent) {
-				oConfigBucketCurrent.STR_VALUE = oRow.STR_VALUE;
-				oConfigBucketCurrent.DESCRIPTION = validValue(oRow.DESCRIPTION, oConfigBucketCurrent.DESCRIPTION);
-				oConfigBucketCurrent.IS_ENABLED = validValue(oRow.IS_ENABLED, oConfigBucketCurrent.IS_ENABLED);
-				oConfigBucketCurrent.CHANGED_ON = new Date();
-				oConfigBucketCurrent.CHANGED_BY = $.session.getUsername();
-				oConfigBucketCurrent.isChanged = true;
-			} else {
-				$.trace.debug('Create new entity: Filter');
-
-				newConfigBucketCurrent = {
-					$entity: aValues[0].entityType,
-					BUCKET_ID: 'FILTER_DATES',
-					SEQ: oRow.SEQ,
-					STR_VALUE: oRow.STR_VALUE,
-					DESCRIPTION: oRow.DESCRIPTION,
-					IS_ENABLED: validValue(oRow.IS_ENABLED, oDefaultConfigBucketCurrent.IS_ENABLED),
-					CHANGED_ON: new Date(),
-					CHANGED_BY: $.session.getUsername(),
-					REACTION_TYPE: 'NA'
-				};
-				newConfigBucketCurrent.isChanged = true;
-
-			}
-			$.trace.debug('Saving FilterDate');
-			var aSavingEntities = [];
-			if (oConfigBucket && oConfigBucket.isChanged) {
-				aSavingEntities.push(oConfigBucket);
-			}
-			if (oConfigBucketCurrent && oConfigBucketCurrent.isChanged) {
-				aSavingEntities.push(oConfigBucketCurrent);
-			}
-			if(newConfigBucket && newConfigBucket.isChanged) {
-				aSavingEntities.push(newConfigBucket);
-			}
-			if (newConfigBucketCurrent && newConfigBucketCurrent.isChanged) {
-				aSavingEntities.push(newConfigBucketCurrent);
-			}
-			return Utils.getTxSaveAllPromise(aSavingEntities, tx);
-		}).then(function(tx) {
-			//save successful, close tx
-			$.trace.debug('Saved');
-			tx.$close();
-		}).catch((error) => {
-			//throw critical, log warnings
-			throw "Execution Error: " + (error.message || error);
-		});
-	} catch (e) {
-		throw "Execution Error: " + (e.message || e);
-	} finally {
-		pStmt.close();
-	}
-};
-
+/**
+ * Exit for updating Prediction Date
+ * @param param
+ */
+ 
 function updatePredictionDate(param) {
 	$.trace.debug("Update PredictFilterDate exit called");
 	let before = param.beforeTableName;
@@ -313,6 +195,10 @@ function updatePredictionDate(param) {
 	}
 };
 
+/**
+ * Exit for updating Config 
+ * @param param
+ */
 function updateConfig(param) {
 	$.trace.debug("Update Config exit called");
 	let before = param.beforeTableName;
@@ -407,7 +293,7 @@ function updateConfig(param) {
 };
 
 /**
- * Exit for Update Event
+ * Exit for Updating Reaction type
  * @param param
  */
 function updateConfigReactionType(param) {
@@ -591,6 +477,10 @@ function updateEventManagement(param) {
 	}
 };
 
+/**
+ * Method to Update Event entity
+ * @param param
+ */
 function updateEvent(oEvent, oRow) {
 	oEvent.DESCRIPTION = oRow.DESCRIPTION;
 	oEvent.IS_ENABLED = oRow.IS_ENABLED;
@@ -599,6 +489,146 @@ function updateEvent(oEvent, oRow) {
 	return oEvent;
 }
 
+/**
+ * Method to return valid value among its argumentts
+ * @param oValue1
+ * @param oValue2
+ */
 function validValue(oValue1, oValue2) {
 	return (oValue1 != undefined) ? oValue1 : oValue2;
 }
+
+/**
+ * Exit for updating Training Date
+ * @param param
+ */
+ 
+function updateTrainingDate(param) {
+	$.trace.debug("Update Training Date exit called");
+	let before = param.beforeTableName;
+	let after = param.afterTableName;
+	let pStmt = param.connection.prepareStatement('select * from "' + after + '"');
+
+	// Get Input Data from OData Create
+	var data = Utils.recordSetToJSON(pStmt.executeQuery(), 'ConfigBucket');
+	// GET entity	
+	var promiseImportEntities = Utils.getImportEntitiesPromise(["db::adm.config.bucketCustom", "db::adm.config.bucket"]);
+
+	try {
+		var oRow = data.ConfigBucket[0];
+		promiseImportEntities.then(function(entities) {
+			var ConfigBucket = entities["db::adm.config.bucketCustom"];
+			var DefaultConfigBucket = entities["db::adm.config.bucket"];
+			return Utils.getTxPromise([ConfigBucket, DefaultConfigBucket]);
+		}).then(function(txObj) {
+			return Promise.all([
+				Utils.getTxFindPromise(txObj.entities[0], {
+					BUCKET_ID: 'TRAINING_DATE',
+					IS_ENABLED: 1
+				}, txObj.tx), //ConfigBucket
+				Utils.getTxFindPromise(txObj.entities[1], {
+					BUCKET_ID: 'TRAINING_DATE',
+					IS_ENABLED: 1
+				}, txObj.tx), //DefaultConfigBucket
+				Utils.getTxFindPromise(txObj.entities[0], {
+					BUCKET_ID: 'TRAINING_DATE',
+					SEQ: oRow.SEQ
+				}, txObj.tx), //ConfigBucket 
+				Utils.getTxFindPromise(txObj.entities[1], {
+					BUCKET_ID: 'TRAINING_DATE',
+					SEQ: oRow.SEQ
+				}, txObj.tx)
+			]); //DefaultConfigBucket                       
+		}).then(function(aValues) {
+			var oConfigBucket, oDefaultConfigBucket, oConfigBucketCurrent, oDefaultConfigBucketCurrent, tx;
+			oConfigBucket = aValues[0].entities[0];
+			oDefaultConfigBucket = aValues[1].entities[0];
+			oConfigBucketCurrent = aValues[2].entities[0];
+			oDefaultConfigBucketCurrent = aValues[3].entities[0];
+			tx = aValues[0].tx;
+			var newConfigBucket, newConfigBucketCurrent;
+			var oHistory = {
+				CHANGED_ON: new Date(),
+				CHANGED_BY: $.session.getUsername()
+			};
+			/*
+			 * Toggle Active Use Case (Reaction Type)
+			 * Step 1: Change IS_ENABLED to 0 (disable)
+			 * Step 2: Save
+			 */
+			if (oConfigBucket) {
+				oConfigBucket.IS_ENABLED = 0;
+				oConfigBucket.isChanged = true;
+			} else {
+
+				newConfigBucket = {
+					$entity: aValues[0].entityType,
+					BUCKET_ID: 'TRAINING_DATE',
+					SEQ: oDefaultConfigBucket.SEQ,
+					STR_VALUE: oRow.STR_VALUE,
+					DESCRIPTION: oRow.DESCRIPTION,
+					IS_ENABLED: 1,
+					CHANGED_ON: new Date(),
+					CHANGED_BY: $.session.getUsername(),
+					REACTION_TYPE: 'NA'
+				};
+				newConfigBucket.isChanged = true;
+
+			}
+			/*
+			 * Get Current Use Case that is being edited
+			 *  Set Values
+			 */
+			if (oConfigBucketCurrent) {
+				oConfigBucketCurrent.STR_VALUE = oRow.STR_VALUE;
+				oConfigBucketCurrent.DESCRIPTION = validValue(oDefaultConfigBucketCurrent.DESCRIPTION, oConfigBucketCurrent.DESCRIPTION);
+				oConfigBucketCurrent.IS_ENABLED = validValue(oRow.IS_ENABLED, oConfigBucketCurrent.IS_ENABLED);
+				oConfigBucketCurrent.CHANGED_ON = new Date();
+				oConfigBucketCurrent.CHANGED_BY = $.session.getUsername();
+				oConfigBucketCurrent.isChanged = true;
+			} else {
+				$.trace.debug('Create new entity: Training date');
+
+				newConfigBucketCurrent = {
+					$entity: aValues[0].entityType,
+					BUCKET_ID: 'TRAINING_DATE',
+					SEQ: oRow.SEQ,
+					STR_VALUE: oRow.STR_VALUE,
+					DESCRIPTION: oRow.DESCRIPTION,
+					IS_ENABLED: validValue(oRow.IS_ENABLED, oDefaultConfigBucketCurrent.IS_ENABLED),
+					CHANGED_ON: new Date(),
+					CHANGED_BY: $.session.getUsername(),
+					REACTION_TYPE: 'NA'
+				};
+				newConfigBucketCurrent.isChanged = true;
+
+			}
+			$.trace.debug('Saving Training Date');
+			var aSavingEntities = [];
+			if (oConfigBucket && oConfigBucket.isChanged) {
+				aSavingEntities.push(oConfigBucket);
+			}
+			if (oConfigBucketCurrent && oConfigBucketCurrent.isChanged) {
+				aSavingEntities.push(oConfigBucketCurrent);
+			}
+			if(newConfigBucket && newConfigBucket.isChanged) {
+				aSavingEntities.push(newConfigBucket);
+			}
+			if (newConfigBucketCurrent && newConfigBucketCurrent.isChanged) {
+				aSavingEntities.push(newConfigBucketCurrent);
+			}
+			return Utils.getTxSaveAllPromise(aSavingEntities, tx);
+		}).then(function(tx) {
+			//save successful, close tx
+			$.trace.debug('Saved');
+			tx.$close();
+		}).catch((error) => {
+			//throw critical, log warnings
+			throw "Execution Error: " + (error.message || error);
+		});
+	} catch (e) {
+		throw "Execution Error: " + (e.message || e);
+	} finally {
+		pStmt.close();
+	}
+};

@@ -174,6 +174,12 @@ service namespace "com.odata.v2.sap.cr" {
 		concurrencytoken  ("CHANGED_ON")
 		update using "exits:Config.xsjslib::updatePredictionDate";
 	
+	// Training Date
+	"models.adm::CV_TRAINING_DATE" as "ConfigTrainingDate"
+		keys ("SEQ")
+		concurrencytoken  ("CHANGED_ON")
+		update using "exits:Config.xsjslib::updateTrainingDate";
+	
 	// Configuration Screen
 	"models.adm::CV_BUCKET_CONFIG" as "Config"
 		key ("BUCKET_ID", "SEQ") 

@@ -127,8 +127,13 @@ function getImportEntitiesPromise(aEntities){
 		//do async, resolve on success and reject on error
 		// GET entities
 			XSDS.cdsAsync.$importEntities(aImportEntites, function(error, entities) {
-					resolve(entities);
-					reject(error);
+					if(error){
+						reject(error);
+					} else {
+						resolve(entities);	
+					}
+					
+				
 			});
 	});
 }
@@ -147,8 +152,11 @@ function getImportEntitiesWithTablePromise(aEntities, sEntityName, sTable, oResu
 		//do async, resolve on success and reject on error
 		// GET entities
 			XSDS.cdsAsync.$importEntities(aImportEntites, function(error, aEntities) {
-					resolve({entities:aEntities, result: oResult, tx:oTx});
-					reject(error);
+					if(error){
+						reject(error);
+					} else {
+						resolve({entities:aEntities, result: oResult, tx:oTx});
+					}
 			});
 	});
 }
@@ -157,24 +165,33 @@ function getImportEntitiesWithTablePromise(aEntities, sEntityName, sTable, oResu
 function getTxFindPromise(oEntity,oParams,tx){
 	return new Promise((resolve, reject) => {
 		tx.$find(oEntity,oParams,function(error, aEntities) {
-			resolve({tx:tx, entities:aEntities, entityType:oEntity});
-			reject(error);
+			if(error){
+				reject(error);
+			} else {
+				resolve({tx:tx, entities:aEntities, entityType:oEntity});
+			}
 		});
 	});
 }
 function getTxDeletePromise(aEntities,oParams,tx){
 	return new Promise((resolve, reject) => {
 		tx.$discardAll(aEntities,function(error) {
-			resolve(tx);
-			reject(error);
+			if(error){
+				reject(error);
+			} else {
+				resolve(tx);
+			}
 		});
 	});
 }
 function getTxPromise(aEntities){
 	return new Promise((resolve,reject) => {
 		XSDS.cdsAsync.$getTransaction(function(err, tx) {
-			resolve({tx:tx, entities:aEntities});
-			reject(err);
+			if(err){
+				reject(err);
+			} else {
+				resolve({tx:tx, entities:aEntities});
+			}
 		});	
 	});
 }
@@ -182,8 +199,11 @@ function getTxPromise(aEntities){
 function getTxSavePromise(oEntity, tx){
 	return new Promise((resolve, reject) => {
 		tx.$save(oEntity, function(error){
-			resolve(tx);
-			reject(error);
+			if(error){
+				reject(error);
+			} else {
+				resolve(tx);
+			}
 		});
 	});
 }
@@ -191,8 +211,11 @@ function getTxSavePromise(oEntity, tx){
 function getTxSaveAllPromise(aEntities, tx){
 	return new Promise((resolve, reject) => {
 		tx.$saveAll(aEntities, function(error){
-			resolve(tx);
-			reject(error);
+			if(error){
+				reject(error);
+			} else {
+				resolve(tx);
+			}
 		});
 	});
 }
@@ -200,8 +223,11 @@ function getTxSaveAllPromise(aEntities, tx){
 function getTxGetPromise(oEntity,oParams,tx){
 	return new Promise((resolve, reject) => {
 		tx.$get(oEntity,oParams,function(error, oEntityFound) {
-			resolve({tx:tx, entity:oEntityFound, entityType:oEntity});
-			reject(error);
+			if(error){
+				reject(error);
+			} else {
+				resolve({tx:tx, entity:oEntityFound, entityType:oEntity});
+			}
 		});
 	});
 }

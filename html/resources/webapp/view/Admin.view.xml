@@ -15,7 +15,7 @@
                             <StandardListItem data:target="userAccessMonitor" title="{i18n>UserAccessMonitor.Title}" type="Active" icon="sap-icon://sys-monitor" press="onNavigate"/>
                             <StandardListItem data:target="attributeConfig" title="{i18n>SuperAttributeConfig.Title}" type="Active" icon="sap-icon://filter" press="onNavigate"/>
                             <StandardListItem data:target="generalSettings" title="{i18n>GeneralSettings.Title}" type="Active" icon="sap-icon://settings" press="onNavigate"/>
-                            <StandardListItem data:target="predefinedEventSettings" title="{i18n>PredefinedEventSettings.Title}" type="Active" icon="sap-icon://overview-chart" press="onNavigate"/>
+                            <!--<StandardListItem data:target="predefinedEventSettings" title="{i18n>PredefinedEventSettings.Title}" type="Active" icon="sap-icon://overview-chart" press="onNavigate"/>-->
                         </items>
                     </List>
                 </content>
