@@ -51,11 +51,6 @@ BEGIN
 		------------------------------------------------------------------------------------------------------------
 		-- DELETE ALL COMBINED EVENTS IN CUST EVENTS TABLE WITHIN THE PERIOD
 		------------------------------------------------------------------------------------------------------------
-		/*LV_PAST_COMB_EVENTS = SELECT "EVENT_ID.ID" "EVENT_ID"
-			FROM "db::app.CustomerEvents"
-			WHERE EVENT_GROUP = 'Combined Event'
-			AND INIT_TS BETWEEN :I_FROM AND :I_TO;*/
-			
 		LV_PAST_COMB_EVENTS = SELECT RECORD_ID, "EVENT_ID.ID" "EVENT_ID"	-- combined events within range
 								FROM "db::app.CustomerEvents"
 								WHERE EVENT_GROUP = 'Combined Event'
@@ -71,11 +66,6 @@ BEGIN
 		DELETE FROM "db::app.CustomerEvents"
 		WHERE RECORD_ID IN 
 				(SELECT RECORD_ID FROM :LV_PAST_COMB_EVENTS);
-				
-		/*DELETE FROM "db::adm.config.event.name" 
-		WHERE CATEGORY_NAME = 'Combined Event' 
-		AND ID IN 
-			(SELECT EVENT_ID FROM :LV_PAST_COMB_EVENTS);*/	
 		
 		/***********************************************************************************************************
 		 * Side note that we need to revise the usage of nested procedure calls to reduce dependancies
@@ -167,16 +157,7 @@ BEGIN
 							FROM :LT_LIST A INNER JOIN "db::ml.combined.rawEvents" B
 							ON A.EVENT_ID = B.EVENT_ID
 							WHERE B.GROUP_NO IS NULL;
-				/*	FOR LV_INDEX_1 IN 1..CARDINALITY(:LA_EVENT_ID) DO
-						IF :LV_INDEX_1 = 1 THEN
-							LT_TEMP1 = SELECT * FROM  #TBL_FINAL_COMB_EVENTS WHERE EVENT_NAME LIKE CONCAT('%',CONCAT(:LA_EVENT_ID[:LV_INDEX_1],'%'));
-						ELSE
-							 LT_TEMP1 = SELECT * FROM :LT_TEMP1 WHERE EVENT_NAME LIKE CONCAT('%',CONCAT(:LA_EVENT_ID[:LV_INDEX_1],'%'));
-						END IF;
-						LV_INDEX_1 := :LV_INDEX_1 + 1;
-					END FOR;
-					SELECT COUNT(*) INTO LV_COUNT_ENTRY FROM :LT_TEMP1;*/
-				--	IF :LV_COUNT_ENTRY = 0 THEN 
+
 					INSERT INTO #TBL_FINAL_COMB_EVENTS(		
 							SELECT 
 								CUST_ID,
@@ -196,7 +177,6 @@ BEGIN
 							)
 							WHERE NO_OF_EVENTS >= LV_COUNT
 					);  
-					--END IF;
 					-- Reset Arrays    	
 					LA_COMBINED_ID := ARRAY();
 					LA_EVENT_ID := ARRAY (); 
@@ -231,9 +211,6 @@ BEGIN
 					YEAR(INIT_DATE) * 100 + MONTH(INIT_DATE) AS INIT_TS,
 					NULL AS END_TS
 				FROM #TBL_FINAL_COMB_EVENTS);	
-				
-		DELETE FROM "db::ml.combined.rawEvents"
-		WHERE year(REACTION_DATE)*100+month(REACTION_DATE)  BETWEEN :I_FROM AND :I_TO;
 		
 			-- Drop the temporary table
 		DROP TABLE #TBL_FINAL_COMB_EVENTS;

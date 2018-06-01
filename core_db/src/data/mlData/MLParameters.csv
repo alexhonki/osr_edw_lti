@@ -26,7 +26,7 @@ FPG_COMB_EVT2_RHS_RESTRICT,RHS,1,,,00
 FPG_COMB_EVT2_LHS_IS_COMPLEMENTARY_RHS,LHS_IS_COMPLEMENTARY_RHS,1,1,,
 FPG_COMB_EVT_PARAM_INFLUENCE_FACTOR,Factor rate for increasing the influence of reacted customer events,1,2,,
 FPG_COMB_EVT_PARAM_WINDOW_PERIOD,The period of window for generating features,1,12,,
-FPG_COMB_EVT_PARAM_LAST_RUN,Last run date of the combined events procedure,1,201106,,
+FPG_COMB_EVT_PARAM_LAST_RUN,Last run date of the combined events procedure,1,201107,,
 ML_FORECAST_WINDOW_PARAM,Test Data1,1,10,0,
 ML_PREVIOUS_WINDOWS,Previous windows to include,1,36,0,
 ML_WINDOW_TS_SIZE,Size of windows in months,1,1,0,
