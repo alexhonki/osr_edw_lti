@@ -1,4 +1,6 @@
-PROCEDURE "procedures.events.erp::PR_EXTRACT_ASSESSMENT_EVENT" ( )
+PROCEDURE "procedures.events.erp::PR_EXTRACT_ASSESSMENT_EVENT" ( 
+	IN IV_MODE INTEGER DEFAULT 0
+)
    LANGUAGE SQLSCRIPT
    SQL SECURITY INVOKER
    --DEFAULT SCHEMA <default_schema_name>
@@ -33,12 +35,16 @@ BEGIN
    DECLARE LV_ASSESS_IND_9 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $1,00,000 - $1M';
    DECLARE LV_ASSESS_IND_10 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount over $1M';
 
-
+--	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_AB_PYMNT_1);
     DECLARE LV_AB_EVENT_ICON CONSTANT NVARCHAR(500) := 'document-text';
-
+	DECLARE LV_MAX_NEW_SEQ_ID INTEGER;
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
- 
+	
+	
+	CALL "procedures.events.erp.assessment::PR_DELETE_ALL_ASSESSMENT_EVENT_DATA"(:IV_MODE);
+	CALL "procedures.events.erp.assessment::PR_DELETE_ASSESSMENT_EVENT_DATA"(LT_CUST_ID);
+	
    INSERT INTO "db::app.CustomerEvents" 
     /*============================================
 	  For Organization
@@ -142,9 +148,9 @@ BEGIN
 
   	-- Generate Event IDs for newly created Events
 	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();	
-   
+	select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEW_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP";
    	UPDATE "db::adm.config.event.name" 
-		SET "ICON" = LV_AB_EVENT_ICON, "PRIORITY" = 1
+		SET "ICON" = LV_AB_EVENT_ICON, "PRIORITY" = 1, "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEW_SEQ_ID
 		WHERE ( UPPER("EVENT_NAME") = UPPER(LV_ASSESS_ORG_1)
 		OR UPPER("EVENT_NAME") = UPPER(LV_ASSESS_ORG_2)
 		OR UPPER("EVENT_NAME") = UPPER(LV_ASSESS_ORG_3)

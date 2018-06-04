@@ -1,4 +1,16 @@
 {
+	"osr.edw.staging.td.rms.proxy.synonym::CV_DFKKRAPT": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_DFKKRAPT",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
+	"osr.edw.staging.td.rms.proxy.synonym::CV_LTCRES": {
+    "target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_LTCRES",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }
+  },
   "osr.edw.integration.ti.ltax.synonym::CV_LT_CRM_INTERACTION": {
     "target": {
       "object": "osr.edw.integration.ti.ltax::CV_LT_CRM_INTERACTION",

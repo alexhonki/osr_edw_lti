@@ -1,4 +1,6 @@
-PROCEDURE "procedures.events.erp::PR_EXTRACT_EPO_PP_WITHDRAWN_EVENT" ( )
+PROCEDURE "procedures.events.erp::PR_EXTRACT_EPO_PP_WITHDRAWN_EVENT" ( 
+	IN IV_MODE INTEGER DEFAULT 0
+)
    LANGUAGE SQLSCRIPT
    SQL SECURITY INVOKER
    --DEFAULT SCHEMA <default_schema_name>
@@ -14,6 +16,35 @@ BEGIN
 	DECLARE LV_EVENT_GRP NVARCHAR(500) := 'Assessment';
 	DECLARE LV_ICON NVARCHAR(500) := 'lead';
 	
+	DECLARE LV_PP_WITH_MAX_SEQ_ID INTEGER;
+	DECLARE LV_EPO_WITH_MAX_SEQ_ID INTEGER;
+	DECLARE LV_MAX_NEW_SEQ_ID INTEGER;
+	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_EPO_WITHDRAWN);
+	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_PP_WITHDRAWN);
+	
+	SELECT OUT_MAX_SEQ_ID into LV_PP_WITH_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_EPO_WITHDRAWN);
+	SELECT OUT_MAX_SEQ_ID into LV_EPO_WITH_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_PP_WITHDRAWN);
+	
+	LT_CUST_EDITED_EPO = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+							"db::app.Customer" on EXT_ID = GPART WHERE 
+						"Z_RUN_SEQ_ID">:LV_PP_WITH_MAX_SEQ_ID;
+	LT_CUST_ID_EDITED_EPO = select to_int(GPART) as "CUST_ID" from :LT_CUST_EDITED_EPO;
+	
+	LT_CUST_EDITED_PP = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+							"db::app.Customer" on EXT_ID = GPART WHERE 
+						"Z_RUN_SEQ_ID">:LV_EPO_WITH_MAX_SEQ_ID;
+	LT_CUST_ID_EDITED_PP = select to_int(GPART) as "CUST_ID" from :LT_CUST_EDITED_PP;
+	
+	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+		IV_EVENT_NAME=>:LV_EPO_WITHDRAWN,
+		IT_CUST=>:LT_CUST_ID_EDITED_EPO
+   );
+   CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+		IV_EVENT_NAME=>:LV_PP_WITHDRAWN,
+		IT_CUST=>:LT_CUST_ID_EDITED_PP
+   );
+   LT_CUST_ID = SELECT GPART FROM :LT_CUST_EDITED_EPO UNION SELECT GPART FROM :LT_CUST_EDITED_PP;
+   
 		INSERT INTO "db::app.CustomerEvents"
 		select 
 		SAP.CUST_ID as CUST_ID,
@@ -31,7 +62,7 @@ BEGIN
 		from(
 			SELECT a.GPART,b.AEDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a
 			INNER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP_HIS" b ON a.PPKEY=b.PPKEY
-			WHERE COMMT='Promise to Pay Withdrawn' AND PPCAT='Z7'
+			WHERE COMMT='Promise to Pay Withdrawn' AND PPCAT='Z7' AND GPART IN (SELECT GPART FROM :LT_CUST_ID)
 			) a
 		INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART;
 
@@ -55,15 +86,15 @@ BEGIN
 		from(
 			SELECT a.GPART,b.AEDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a
 			INNER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP_HIS" b ON a.PPKEY=b.PPKEY
-			WHERE COMMT='Promise to Pay Withdrawn'  AND PPCAT!='Z7'
+			WHERE COMMT='Promise to Pay Withdrawn'  AND PPCAT!='Z7' AND GPART IN (SELECT GPART FROM :LT_CUST_ID)
 			) a
 		INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART;
 
    		   	-- Generate Event IDs for newly created Events
 	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();	
-   
+	select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEW_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP";
    	UPDATE "db::adm.config.event.name" 
-		SET "ICON" = LV_ICON, "PRIORITY" = 3
+		SET "ICON" = LV_ICON, "PRIORITY" = 3, "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEW_SEQ_ID
 		WHERE ( UPPER("EVENT_NAME") = UPPER(LV_EPO_WITHDRAWN)
 		OR UPPER("EVENT_NAME") = UPPER(LV_PP_WITHDRAWN) )
 		AND UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GRP);
