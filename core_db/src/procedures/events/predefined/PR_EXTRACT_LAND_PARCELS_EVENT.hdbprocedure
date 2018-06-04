@@ -9,9 +9,11 @@ BEGIN
        Write your procedure logic 
    *************************************/
 
-	 DECLARE LV_LAND_PARCEL_1 NVARCHAR(500) := 'Decrease in Number of Parcels Owned by 10 or more';
-	 DECLARE LV_LAND_PARCEL_2 NVARCHAR(500) := 'Increase in Number of Parcels Owned by 2 or more';
-	 DECLARE LV_LAND_PARCEL_3 NVARCHAR(500) := 'Increase in Number of Parcels Owned by 8 or more';
+	DECLARE LV_LAND_PARCEL_1 NVARCHAR(500) := 'Decrease in Number of Parcels Owned by 10 or more';
+	DECLARE LV_LAND_PARCEL_2 NVARCHAR(500) := 'Increase in Number of Parcels Owned by 2 or more';
+	DECLARE LV_LAND_PARCEL_3 NVARCHAR(500) := 'Increase in Number of Parcels Owned by 8 or more';
+	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Land Related';
+	
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
 	 LT_TEMP = SELECT 
@@ -32,11 +34,10 @@ BEGIN
  
  /*Decrease in Number of Parcels Owned by 10 or more*/
    INSERT INTO "db::app.CustomerEvents"  
- 
 	 SELECT
 		CUST_ID,
-		(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_PARCEL_1)) as EVENT_ID,
-		(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_PARCEL_1)) as EVENT_GROUP, 
+		NULL,
+		:LV_EVENT_GROUP as EVENT_GROUP, 
 		:LV_LAND_PARCEL_1 EVENT_NAME,
 		INIT_DATE, 
 		END_DATE, 
@@ -49,14 +50,12 @@ BEGIN
 	AND CUST_ID IS NOT NULL
 	ORDER BY INIT_DATE;
 	
-	
 	/*Increase in Number of Parcels Owned by 2 or more*/
    INSERT INTO "db::app.CustomerEvents"  
- 
 	 SELECT
 		CUST_ID,
-		(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_PARCEL_2)) as EVENT_ID,
-		(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_PARCEL_2)) as EVENT_GROUP, 
+		NULL,
+		:LV_EVENT_GROUP EVENT_GROUP, 
 		:LV_LAND_PARCEL_2 EVENT_NAME,
 		INIT_DATE, 
 		END_DATE, 
@@ -72,11 +71,10 @@ BEGIN
 
 	/*Increase in Number of Parcels Owned by 8 or more*/
    INSERT INTO "db::app.CustomerEvents"  
- 
 	 SELECT
 		CUST_ID,
-		(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_PARCEL_3)) as EVENT_ID,
-		(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_LAND_PARCEL_3)) as EVENT_GROUP, 
+		NULL,
+		:LV_EVENT_GROUP EVENT_GROUP, 
 		:LV_LAND_PARCEL_3 EVENT_NAME,
 		INIT_DATE, 
 		END_DATE, 
@@ -89,5 +87,11 @@ BEGIN
 	AND CUST_ID IS NOT NULL
 	ORDER BY INIT_DATE;
 
+	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();
+	
+	/*UPDATE "db::adm.config.event.name" 
+	SET "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEWSEQ_ID_CL_F, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
+	WHERE UPPER("EVENT_NAME") = UPPER(LV_AB_PYMNT_1)
+	AND UPPER("CATEGORY_NAME") = UPPER(LV_AB_EVENT_GRP);*/
    
 END
