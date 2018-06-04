@@ -15,6 +15,7 @@ BEGIN
 	-- VARIABLES
 	-------------------------------------------------------------------------------
 	DECLARE LV_MATCH  INTEGER := 0;
+	DECLARE LV_POSTCODE_MATCH  INTEGER := 0;
 	DECLARE LV_FROM	  INTEGER := TO_INT(:IM_FROM);
 	DECLARE LV_TO	  INTEGER := TO_INT(:IM_TO);
  	
@@ -44,6 +45,15 @@ BEGIN
 	 		
 			SELECT OCCURRENCES_REGEXPR('(,)' IN :IM_FILTER) + 1 as "MATCH"  INTO LV_MATCH FROM "synonyms::dummy";
 		END;
+		BEGIN
+	 		DECLARE EXIT HANDLER FOR SQL_ERROR_CODE 1299 LV_POSTCODE_MATCH := 0;
+	 		
+			SELECT OCCURRENCES_REGEXPR('(POSTCODE)' IN :IM_FILTER) as "MATCH"  INTO LV_POSTCODE_MATCH FROM "synonyms::dummy";
+		END;
+		
+		IF LV_POSTCODE_MATCH > 0 THEN
+			LV_MATCH := :LV_MATCH - :LV_POSTCODE_MATCH + 1;
+		END IF;
 		
 		LT_FILTER = SELECT b.attribute_id, c.attr_value, c.attr_key 
 					FROM "db::app.AttributeTypes" b   
@@ -62,8 +72,9 @@ BEGIN
 	  	  			AND	    A.END_TIME_SEGMENT >= :LV_FROM
 	  	  			) 
 	  	  			
-	  	  			GROUP BY CUST_ID;
-	  	  		--	HAVING COUNT(distinct attr_key) >= :LV_MATCH; --COMMENTED becuase multiple values now supported for filter
+	  	  			GROUP BY CUST_ID
+	  	  			HAVING COUNT(distinct attr_key) >= :LV_MATCH; 
+	  	  			
 	 	   	
 	END IF;
 	  

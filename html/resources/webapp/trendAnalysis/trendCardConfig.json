@@ -41,7 +41,7 @@
                 "categoryLabel":"Year",
                 "categoryPathDateFormat":"yyyyMM",
                 "categoryPathDisplayFormat":"MMM yyyy",
-                "valueLabel": "New",
+                "valueLabel": "Assessment",
                 "valuePath":"TOTAL_NEW_CUSTOMERS",
                 "value2Label": "Debtor",
                 "value2Path":"TOTAL_REACT_CUSTOMERS",

@@ -7,8 +7,6 @@
     <variableProperties datatype="NVARCHAR" length="5000" mandatory="false">
       <valueDomain type="empty"/>
       <selection multiLine="true" type="Single"/>
-      <defaultRange lowValue="PPR_POSTCODE:4000"/>
-      <defaultRange lowValue="PPR_POSTCODE:4001"/>
     </variableProperties>
   </variable>
   <variable id="IP_FROM" parameter="true">

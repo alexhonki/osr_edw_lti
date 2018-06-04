@@ -16,7 +16,6 @@
             <cri:control.FilterBar
                     id="idFilterBar"
                     showDateRange='true'
-                    searchFilterKey="EVENT_NAME"
                     filterChange="onFilterChanged"
                     clearFilters="onClearFilters"
             />

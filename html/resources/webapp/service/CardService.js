@@ -586,13 +586,14 @@ sap.ui.define([
 
                 var kpiIndex = oDataSet.length - 1;
                 var comparisonIndex = kpiIndex - 1;
-
-	                var kpiData = oDataSet[kpiIndex];
+                var oDataSetCopy = jQuery.extend(true,{},oDataSet);
+	
+	                var kpiData = oDataSetCopy[kpiIndex];
 	                //Set kpi to accumulated value of oCardConfig.kpi.valuePath
 	                kpiData[oCardConfig.kpi.valuePath] = oDataSet.reduce(function(acc, val){ 
 	                		return parseFloat(acc[oCardConfig.kpi.valuePath] !== undefined && 
 	                				acc[oCardConfig.kpi.valuePath] !== null ? acc[oCardConfig.kpi.valuePath] : Number.isFinite(acc) ? acc : 0) + 
-	                				parseFloat(val[oCardConfig.kpi.valuePath]) ;
+	                				parseFloat(val[oCardConfig.kpi.valuePath] !== null ? val[oCardConfig.kpi.valuePath] : 0) ;
 	                });
 	                //mean debtor rate
 	                if(oCardConfig.kpi.valuePath === "RATE"){
@@ -602,7 +603,7 @@ sap.ui.define([
                 if (oCardConfig.kpi.ascending) {
                     kpiIndex = 0;
                     comparisonIndex = 1;
-                    kpiData = oDataSet[kpiIndex];
+                    kpiData = oDataSetCopy[kpiIndex];
                 }
 
                 if (oCardConfig.subtitle && oCardConfig.subtitle.path) {
