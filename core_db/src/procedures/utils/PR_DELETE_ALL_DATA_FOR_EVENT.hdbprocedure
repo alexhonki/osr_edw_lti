@@ -8,10 +8,13 @@ PROCEDURE "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT" (
   -- READS SQL DATA
    AS
 BEGIN
+   DECLARE IV_EVENT_ID integer;
+	DECLARE EXIT HANDLER FOR SQL_ERROR_CODE 1299
+	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
    /*************************************
        Write your procedure logic 
    *************************************/
-   DECLARE IV_EVENT_ID integer;
+
    IF IV_MODE = 0 
 		THEN
 		select EVENT_ID INTO IV_EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:IV_EVENT_NAME);
@@ -23,4 +26,5 @@ BEGIN
 			EVENT_ID=>:IV_EVENT_ID
 		);
 	END IF;
+
 END
