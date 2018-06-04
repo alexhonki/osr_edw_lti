@@ -13,6 +13,8 @@ BEGIN
    /*************************************
        Write your procedure logic 
    *************************************/
+   DECLARE EXIT HANDLER FOR SQL_ERROR_CODE 1299
+   SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
    delete from "db::app.CustomerEvents" where (CUST_ID, "EVENT_ID.ID") in (select CUST_ID, "EVENT_ID.ID" from "db::app.CustomerEvents" 
 																										where CUST_ID in (select CUST_ID from :IT_CUST) 
 																										and "EVENT_ID.ID" in (SELECT "EVENT_ID" FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:IV_EVENT_NAME)));
