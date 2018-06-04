@@ -23,13 +23,17 @@ BEGIN
     	
     	Different Values of Financial Status would result in different Organization Events
    *************************************/
+   DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Financial Consideration';
+   DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'customer-and-contacts';
    	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
    	INSERT INTO "db::app.CustomerEvents"
 	select
 	c.CUST_ID as CUST_ID,
-	b.ID as EVENT_ID,
-	b.CATEGORY_NAME as EVENT_GROUP,
+	--b.ID as EVENT_ID,
+	--b.CATEGORY_NAME as EVENT_GROUP,
+	NULL as  EVENT_ID,
+	:LV_EVENT_GROUP as EVENT_GROUP,
 	INITCAP(ZZTFLDPVC3OA) as EVENT_NAME,
 	CAST(ZZTFLD2WCKOA as date) as INIT_DATE,
 	CAST(ZZTFLD2ACBOA as date) as END_DATE,
@@ -39,6 +43,12 @@ BEGIN
 	LEFT(ZZTFLD2ACBOA,6)  as END_TS
 	from "osr.edw.staging.md.rms.proxy.synonym::CV_ZBUT0000HJCXO9" a
 	INNER JOIN "db::app.Customer" c on c.EXT_ID = a.PARTNER  
-	INNER JOIN "db::adm.config.event.name" b on a.ZZTFLDPVC3OA = UPPER(b.EVENT_NAME)
+--	INNER JOIN "db::adm.config.event.name" b on a.ZZTFLDPVC3OA = UPPER(b.EVENT_NAME)
 	WHERE ZZTFLDPVC3OA!='' AND ZZTFLD2WCKOA!=00000000 AND ZZTFLD2WCKOA>=20100101 ;
+	
+    CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();
+	
+	UPDATE "db::adm.config.event.name" 
+	SET "ICON" = LV_EVENT_ICON, "PRIORITY" = 13
+	WHERE  UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GROUP);
 END
