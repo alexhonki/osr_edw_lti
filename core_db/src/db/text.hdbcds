@@ -22,9 +22,9 @@ context text {
 
     /*@@layout{"layoutInfo":{"x":-115,"y":-287.5}}*/
     entity CRM_Event_Mapping {
-        key CATEGORY_NAME : String(20);
-        key EVENT_NAME    : String(20);
-        key SEARCH_STRING : String(50);
+        key CATEGORY_NAME : String(200);
+        key EVENT_NAME    : String(200);
+        key SEARCH_STRING : String(100);
         key PRIORITY      : Integer;
             EXCLUSION     : Integer;
     };
