@@ -162,7 +162,7 @@
                                         <Text text="{CRI>INFLUENCE}%"/>
                                     </table:template>
                                 </table:Column>
-                                <table:Column width="9rem" hAlign="End" sortProperty="INCOME_LOSS">
+                                <table:Column width="11rem" hAlign="End" sortProperty="INCOME_LOSS">
                                     <Label text="{i18n>CustomersAtRisk.CustomerListColumnOperatingIncomeLoss}"/>
                                     <table:template>
                                         <ObjectNumber textAlign="Right"
