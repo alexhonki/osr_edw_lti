@@ -1,70 +1,70 @@
 CATEGORY_NAME,EVENT_NAME,SEARCH_STRING,PRIORITY,EXCLUSION
 Account Enquiry,Account Enquiry,pay%enquiry,1,0
-Account Enquiry,Account Enquiry,extra%payment,2,0
-Account Enquiry,Account Enquiry,extra%pymnt,3,0
-Account Enquiry,Account Enquiry,pay%arrear,4,0
-Account Enquiry,Account Enquiry,query%pay,5,0
-Account Enquiry,Account Enquiry,enquiry%instal%plan,6,0
-Complaint,Complaint,complaint,7,0
-EPO,EPO,epo,8,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%mortgagee,9,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%coa,10,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,s62,11,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%cba,12,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%bank,13,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%westp,14,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%nab,15,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%anz,16,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%sec%62,17,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%suncorp,18,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%m'ee,19,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,m'ee%final%demand,20,0
-Payment arrangement,Payment arrangement,final%demand%p2p,21,0
-Payment arrangement,Payment arrangement,withdraw%p2p,22,0
-Payment arrangement,Payment arrangement,TA2,23,0
-Payment arrangement,Payment arrangement,installment,24,0
-Payment arrangement,Payment arrangement,payment%arrange,25,0
-Payment arrangement,Payment arrangement,payment%plan,26,0
-Reassessment,Reassessment,reassessment%dunning,27,0
-Reassessment,Reassessment,dunning%reassess,28,0
-Reassessment,Reassessment,valuation%dunning%block,29,0
-Reissue,Reissue,reissue%dunning,30,0
-Financial Consideration,Financial Consideration,flood,31,0
-Financial Consideration,Financial Consideration,cyclone,32,0
-Land Related,Land Related,change%land%val,33,0
-Debt Management,Debt Management,dunning%interest%block,34,0
-Debt Management,Debt Management,dunning%block%removed,35,0
-Debt Management,Debt Management,dunning%revers,36,0
-Debt Management,Debt Management,dunning%block,37,0
-Debt Management,Debt Management,reset%dunning%steps,38,0
-Debt Management,Debt Management,exemption%LT12%dunning%block,39,0
-Debt Management,Debt Management,charge%release,40,0
-Debt Management,Garnishee,garn,41,0
-Debt Management,Debt Management,reduce%GN,42,0
-Debt Management,Debt Management,G/N,43,0
-Dunning,Dunning,dun%letter,44,0
-Dunning,Dunning,dun%COA,45,0
-Dunning,Dunning,final%demand,46,0
-Exemption,Exemption,lt12,47,0
-Payment Extension,Payment Extension,defer%interest%block,48,0
-Payment Extension,Payment Extension,dunning%hold,49,0
-Payment Extension,Payment Extension,payment%extension,50,0
-Payment Extension,Payment Extension,extension%pay,51,0
-Payment Extension,Payment Extension,ext%pay,52,0
-Payment Extension,Payment Extension,pay%ext,53,0
-Payment Extension,Payment Extension,py%ext,54,0
-Payment,Payment,payment%decline,55,0
-Reassessment,Reassessment,reassessment%dunning,56,0
-Reassessment,Reassessment,dunning%reassessment,57,0
-Dunning,Dunning,legal%letter,58,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,mortgag,59,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,sec%62,60,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,requisition,61,0
-Financial Consideration,Financial Consideration,relief,62,0
-Reassessment,Reassessment,reassessment,63,0
-Reissue,Reissue,reissue,64,0
-Dunning,Dunning,dunn,65,0
-Payment arrangement,Payment arrangement,pay%plan,66,0
-Payment arrangement,Payment arrangement,arrang,67,0
-General Enquiry,General Enquiry,general,68,0
+Account Enquiry,Account Enquiry,extra%payment,1,0
+Account Enquiry,Account Enquiry,extra%pymnt,1,0
+Account Enquiry,Account Enquiry,pay%arrear,1,0
+Account Enquiry,Account Enquiry,query%pay,1,0
+Account Enquiry,Account Enquiry,enquiry%instal%plan,1,0
+Complaint,Complaint,complaint,2,0
+EPO,EPO,epo,3,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%mortgagee,4,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%coa,4,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,s62,4,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%cba,4,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%bank,4,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%westp,4,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%nab,4,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%anz,4,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%sec%62,4,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%suncorp,4,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%m'ee,4,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,m'ee%final%demand,4,0
+Payment arrangement,Payment arrangement,final%demand%p2p,5,0
+Payment arrangement,Payment arrangement,withdraw%p2p,5,0
+Payment arrangement,Payment arrangement,TA2,5,0
+Payment arrangement,Payment arrangement,installment,5,0
+Payment arrangement,Payment arrangement,payment%arrange,5,0
+Payment arrangement,Payment arrangement,payment%plan,5,0
+Reassessment,Reassessment,reassessment%dunning,6,0
+Reassessment,Reassessment,dunning%reassess,6,0
+Reassessment,Reassessment,valuation%dunning%block,6,0
+Reissue,Reissue,reissue%dunning,7,0
+Financial Consideration,Financial Consideration,flood,8,0
+Financial Consideration,Financial Consideration,cyclone,8,0
+Land Related,Land Related,change%land%val,9,0
+Debt Management,Debt Management,dunning%interest%block,10,0
+Debt Management,Debt Management,dunning%block%removed,10,0
+Debt Management,Debt Management,dunning%revers,10,0
+Debt Management,Debt Management,dunning%block,10,0
+Debt Management,Debt Management,reset%dunning%steps,10,0
+Debt Management,Debt Management,exemption%LT12%dunning%block,10,0
+Debt Management,Debt Management,charge%release,10,0
+Debt Management,Garnishee,garn,10,0
+Debt Management,Debt Management,reduce%GN,10,0
+Debt Management,Debt Management,G/N,10,0
+Dunning,Dunning,dun%letter,11,0
+Dunning,Dunning,dun%COA,11,0
+Dunning,Dunning,final%demand,11,0
+Exemption,Exemption,lt12,12,0
+Payment Extension,Payment Extension,defer%interest%block,13,0
+Payment Extension,Payment Extension,dunning%hold,13,0
+Payment Extension,Payment Extension,payment%extension,13,0
+Payment Extension,Payment Extension,extension%pay,13,0
+Payment Extension,Payment Extension,ext%pay,13,0
+Payment Extension,Payment Extension,pay%ext,13,0
+Payment Extension,Payment Extension,py%ext,13,0
+Payment,Payment,payment%decline,14,0
+Reassessment,Reassessment,reassessment%dunning,15,0
+Reassessment,Reassessment,dunning%reassessment,15,0
+Dunning,Dunning,legal%letter,16,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,mortgag,17,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,sec%62,17,0
+Mortgagee S62 Letter,Mortgagee S62 Letter,requisition,17,0
+Financial Consideration,Financial Consideration,relief,18,0
+Reassessment,Reassessment,reassessment,19,0
+Reissue,Reissue,reissue,20,0
+Dunning,Dunning,dunn,21,0
+Payment arrangement,Payment arrangement,pay%plan,22,0
+Payment arrangement,Payment arrangement,arrang,22,0
+General Enquiry,General Enquiry,general,23,0
 CRM Unmapped,CRM Generic Event, ,1001,0
