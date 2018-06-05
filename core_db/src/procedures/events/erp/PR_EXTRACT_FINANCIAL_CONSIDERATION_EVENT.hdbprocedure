@@ -1,4 +1,6 @@
-PROCEDURE "procedures.events.erp::PR_EXTRACT_FINANCIAL_CONSIDERATION_EVENT" ( )
+PROCEDURE "procedures.events.erp::PR_EXTRACT_FINANCIAL_CONSIDERATION_EVENT" (
+	IV_MODE INTEGER DEFAULT 0
+)
    LANGUAGE SQLSCRIPT
    SQL SECURITY INVOKER
    --DEFAULT SCHEMA <default_schema_name>
@@ -25,8 +27,26 @@ BEGIN
    *************************************/
    DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Financial Consideration';
    DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'customer-and-contacts';
+   DECLARE LV_EVENT_MAX_ID INTEGER;
+   DECLARE LV_EVENT_NEW_MAX_ID INTEGER;
    	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	IF IV_MODE = 0 THEN 
+		DELETE FROM "db::app.CustomerEvents" where EVENT_GROUP = :LV_EVENT_GROUP;
+		UPDATE "db::adm.config.event.name" SET LATEST_EXTRACTED_SEQUENCE = 0 where CATEGORY_NAME = :LV_EVENT_GROUP;
+	END IF;
+	SELECT MAX(LATEST_EXTRACTED_SEQUENCE) into LV_EVENT_MAX_ID from "db::adm.config.event.name" where CATEGORY_NAME = :LV_EVENT_GROUP;
+	IF :LV_EVENT_MAX_ID IS NULL THEN 
+		SELECT 0 INTO LV_EVENT_MAX_ID FROM "synonyms::dummy";
+	END IF;
+	LT_CUST_EDITED = SELECT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_ZBUT0000HJCXO9" inner join
+							"db::app.Customer" on EXT_ID = PARTNER WHERE 
+						"Z_RUN_SEQ_ID">:LV_EVENT_MAX_ID;
+	LT_CUST_ID_EDITED = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED;
+	
+	delete from "db::app.CustomerEvents" where (CUST_ID, "EVENT_GROUP") in (select CUST_ID, "EVENT_GROUP" from "db::app.CustomerEvents" 
+																										where CUST_ID in (select CUST_ID from :LT_CUST_ID_EDITED) 
+																										and "EVENT_GROUP" = :LV_EVENT_GROUP);
    	INSERT INTO "db::app.CustomerEvents"
 	select
 	c.CUST_ID as CUST_ID,
@@ -44,11 +64,11 @@ BEGIN
 	from "osr.edw.staging.md.rms.proxy.synonym::CV_ZBUT0000HJCXO9" a
 	INNER JOIN "db::app.Customer" c on c.EXT_ID = a.PARTNER  
 --	INNER JOIN "db::adm.config.event.name" b on a.ZZTFLDPVC3OA = UPPER(b.EVENT_NAME)
-	WHERE ZZTFLDPVC3OA!='' AND ZZTFLD2WCKOA!=00000000 AND ZZTFLD2WCKOA>=20100101 ;
+	WHERE ZZTFLDPVC3OA!='' AND ZZTFLD2WCKOA!=00000000 AND ZZTFLD2WCKOA>=20100101 AND PARTNER IN (SELECT PARTNER FROM :LT_CUST_EDITED);
 	
     CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();
-	
+	select max(Z_RUN_SEQ_ID) INTO LV_EVENT_NEW_MAX_ID FROM "osr.edw.staging.md.rms.proxy.synonym::CV_ZBUT0000HJCXO9";
 	UPDATE "db::adm.config.event.name" 
-	SET "ICON" = LV_EVENT_ICON, "PRIORITY" = 13
+	SET "ICON" = LV_EVENT_ICON, "PRIORITY" = 13, "LATEST_EXTRACTED_SEQUENCE" = LV_EVENT_NEW_MAX_ID
 	WHERE  UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GROUP);
 END

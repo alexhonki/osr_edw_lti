@@ -60,6 +60,9 @@ BEGIN
 																				EVENT_NAME = :LV_ASSESS_IND_8 OR
 																				EVENT_NAME = :LV_ASSESS_IND_9 OR
 																				EVENT_NAME = :LV_ASSESS_IND_10);
+	IF :LV_MAX_SEQ_ID IS NULL THEN 
+		SELECT 0 INTO LV_MAX_SEQ_ID FROM "synonyms::dummy";
+	END IF;
 	LT_CUST_EDITED_ASSESSMENT = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
 							"db::app.Customer" on EXT_ID = GPART WHERE 
 						"Z_RUN_SEQ_ID">:LV_MAX_SEQ_ID;
