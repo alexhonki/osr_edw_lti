@@ -53,7 +53,7 @@ Payment Extension,Payment Extension,extension%pay,13,0
 Payment Extension,Payment Extension,ext%pay,13,0
 Payment Extension,Payment Extension,pay%ext,13,0
 Payment Extension,Payment Extension,py%ext,13,0
-Payment,Payment,payment%decline,14,0
+Payment,Decline,payment%decline,14,0
 Reassessment,Reassessment,reassessment%dunning,15,0
 Reassessment,Reassessment,dunning%reassessment,15,0
 Dunning,Dunning,legal%letter,16,0
@@ -66,5 +66,40 @@ Reissue,Reissue,reissue,20,0
 Dunning,Dunning,dunn,21,0
 Payment arrangement,Payment arrangement,pay%plan,22,0
 Payment arrangement,Payment arrangement,arrang,22,0
+Payment arrangement,Payment arrangement,p2p,22,0
 General Enquiry,General Enquiry,general,23,0
+General Enquiry,General Enquiry,inquiry,23,0
+General Enquiry,General Enquiry,query,23,0
+Payment Extension,Payment Extension,ext,24,0
+Dunning,Dunning,COA,26,0
+Dunning,Dunning,dem,26,0
+Reassessment,Reassessment,reass,27,0
+Exemption,Exemption,exemption,28,0
+Exemption,Exemption,lt,28,0
+Exemption,Exemption,ppr ,28,0
+Debt Management,Debt Management,block,29,0
+Change of details,Change of details,change,30,0
+Change of details,Change of details,addr,30,0
+Land Tax Assessment,Dispute,dispute,33,0
+Land Tax Assessment,Ownership,owner,34,0
+Land Tax Assessment,Assessment,assess,35,0
+Land Tax Assessment,Enquiry,enquir,38,0
+Land Tax Assessment,Enquiry,compliance,38,0
+Payment,Refund,refund,40,0
+Payment,Credit,credit,41,0
+Payment,Payment,bank,44,0
+Payment,Payment,chequ,44,0
+Payment,Payment,chq,44,0
+Payment,Payment,remit,44,0
+Payment,Payment,money,44,0
+Payment,Payment,pay,44,0
+Land Related,Land Related,land,46,0
+Complaint,Complaint,objection,48,0
+Complaint,Complaint,dispute,48,0
+Account Enquiry,Account Enquiry,balance,51,0
+Account Enquiry,Account Enquiry,account,51,0
+General Enquiry,General Enquiry,client,61,0
+General Enquiry,General Enquiry,search,61,0
+General Enquiry,General Enquiry,request,61,0
+General Enquiry,General Enquiry,clarif,61,0
 CRM Unmapped,CRM Generic Event, ,1001,0
