@@ -1,0 +1,17 @@
+{
+	"description": "Generate Combined Events",
+	"action": "procedures.ml::PR_RUN_COMBINED_EVENTS_WRAPPER",
+	"schedules": [{
+		"description": "Train and apply Combined Events every * * * * 21 10 0", 
+		"xscron": "2016 * * * 21 10 0",
+		"parameter": {
+			"IV_MODE": 0
+		} 
+	}, {
+		"description": "Apply Combined Events every * * * * 21 10 0", 
+		"xscron": "2016 * * * 21 10 0",
+		"parameter": {
+			"IV_MODE": 1
+		} 
+	}]
+}
