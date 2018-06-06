@@ -30,19 +30,7 @@
       </derivationRule>
       <defaultRange/>
     </variableProperties>
-  </variable>
-
-  <variable id="IP_REACTION_TYPE" parameter="true">
-    <descriptions defaultDescription="Reaction Type"/>
-    <variableProperties mandatory="false">
-      <valueDomain type="empty"/>
-      <selection multiLine="false" type="Single"/>
-      <derivationRule inputEnabled="true">
-        <resourceUri>procedures.utils::PR_CONF_GET_REACTION_TYPE</resourceUri>
-      </derivationRule>
-    </variableProperties>
-  </variable>
-</localVariables>
+  </variable></localVariables>
 <variableMappings>
   <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.event::CV_EVENT_IMPACT_FILTER">
     <targetVariable name="IP_FILTER" resourceUri="models.apps.event::CV_EVENT_IMPACT_FILTER"/>
@@ -55,10 +43,6 @@
   <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.event::CV_EVENT_IMPACT_FILTER">
     <targetVariable name="IP_TO" resourceUri="models.apps.event::CV_EVENT_IMPACT_FILTER"/>
     <localVariable>IP_TO</localVariable>
-  </mapping>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_FILTER">
-    <targetVariable name="IM_REACTION_TYPE" resourceUri="functions::TF_EVENT_INFLUENCE_FILTER"/>
-    <localVariable>IP_REACTION_TYPE</localVariable>
   </mapping>
   <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_FILTER">
     <targetVariable name="IM_TO" resourceUri="functions::TF_EVENT_INFLUENCE_FILTER"/>
