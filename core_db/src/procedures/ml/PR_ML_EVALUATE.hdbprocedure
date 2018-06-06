@@ -150,7 +150,7 @@ BEGIN
 	INSERT INTO "db::ml.test.evaluation" values('ACCURACY',NN_RF_AC, RF_AC, NN_AC);
 	
 	INSERT INTO "db::ml.test.evaluation" values('TP',NN_RF_TPO, RF_TPO, NN_TPO);
-	INSERT INTO "db::ml.test.evaluation" values('FP',NN_RF_FPO, RF_TPO, NN_TPO);
+	INSERT INTO "db::ml.test.evaluation" values('FP',NN_RF_FPO, RF_FPO, NN_FPO);
 	INSERT INTO "db::ml.test.evaluation" values('TN',NN_RF_TNE, RF_TNE, NN_TNE);
 	INSERT INTO "db::ml.test.evaluation" values('FN',NN_RF_FNE, RF_FNE, NN_FNE);
 	

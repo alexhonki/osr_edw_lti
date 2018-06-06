@@ -91,7 +91,7 @@ BEGIN
 					"INIT_DATE",
 					null "END_DATE", 	-- Not used
 					null "EVENT_VALUE", -- Not Used
-					null "DESCRIPTION", -- Not Used
+					"DESCRIPTION", -- Not Used : null removed and being used - aj
 					"INIT_TS",
 					null "END_TS"  		-- Not Used
 		FROM "db::app.CustomerEvents" A
