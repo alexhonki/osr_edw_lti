@@ -1,0 +1,83 @@
+FUNCTION "functions::TF_EVENT_INFLUENCE_FILTER" (
+		IN IM_FILTER 	NVARCHAR(5000) default '',	-- Filter
+		IN IM_FROM 		VARCHAR(6), 				-- From Time Segment YYYYMM
+		IN IM_TO VARCHAR(6), -- YYYYMM
+		IN IM_REACTION_TYPE VARCHAR(200) DEFAULT ''
+	) 
+	RETURNS TABLE (
+		"EVENT_ID"			INTEGER,
+		"EVENT_IMPACT" 		INTEGER,
+		"TOTAL_CUSTOMERS" 	INTEGER,
+		"INFLUENCE" 		INTEGER
+	)
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+DECLARE LV_TO_TS		 		VARCHAR(6);
+DECLARE LV_FROM_TS		 		VARCHAR(6);
+	-- Default Reaction Type
+	DECLARE LV_REACTION_TYPE 	VARCHAR(200);
+	-- Impact Threshold Variable
+	DECLARE LV_IMPACT_THRESHOLD INT := 1;
+	-- Influence Threshold
+--	DECLARE LV_INFLUENCE_THRESHOLD INT;
+	
+	-- Get the Reaction type configured ---> needs to be extended in future to support multiple
+	IF :IM_REACTION_TYPE IS NULL OR LENGTH(:IM_REACTION_TYPE) = 0 THEN
+		CALL "procedures.utils::PR_CONF_GET_REACTION_TYPE"(:LV_REACTION_TYPE);
+	ELSE
+		LV_REACTION_TYPE := :IM_REACTION_TYPE;
+	END IF;
+	
+	-- Set Default To Time Segment
+	IF :IM_TO IS NULL OR length(:IM_TO) = 0 THEN
+		-- CALL "SAP_CRI"."sap.cri.db.procedures::PR_LAST_EVENT_TIME_SEGMENT"(:LV_TO_TS);
+		CALL "procedures.utils::PR_CONF_GET_PREDICTION_TIME_SEGMENT"(:LV_TO_TS);
+	ELSE
+		LV_TO_TS := :IM_TO;
+	END IF;	
+	
+	LV_FROM_TS := :IM_FROM;
+	
+	
+	------------------------------------------------
+	-- Set Impact Threshold
+	------------------------------------------------
+	SELECT TOP 1 TO_INT(COALESCE("FROM_VALUE","TO_VALUE","FROM_DEFAULT")) 
+	 	INTO LV_IMPACT_THRESHOLD
+	 	FROM "models.adm::CV_CONFIG"
+	 	WHERE "BUCKET_ID" 		= 'IMPACT_THRESHOLD'
+	 	  AND "REACTION_TYPE" 	= :LV_REACTION_TYPE
+	 	;
+	------------------------------------------------
+	-- Get Valid Customers
+	------------------------------------------------
+	LT_CUSTOMERS = SELECT "CUST_ID" 
+					FROM "db::app.Customer" 
+					WHERE "STATUS" = 0
+				      AND "INIT_TS" <= TO_INT(:LV_TO_TS);
+	------------------------------------------------
+	-- Influence and event impact
+	------------------------------------------------
+	return SELECT
+				X."EVENT_ID", 
+				event_impact, 
+				"TOTAL_CUSTOMERS", 
+				to_int(round(event_impact/"TOTAL_CUSTOMERS"*100,0)) INFLUENCE
+			FROM ( SELECT * FROM "functions::TF_EVENT_IMPACT_FILTER"(:IM_FILTER/*IM_FILTER <NVARCHAR(5000)>*/,
+                                                       :LV_FROM_TS/*IM_FROM <VARCHAR(6)>*/,
+                                                       :LV_TO_TS/*IM_TO <VARCHAR(6)>*/,
+                                                       :LV_REACTION_TYPE /*IM_REACTION_TYPE <VARCHAR(200)>*/)) X
+			 		/* Join on table function 100 ms slower - need to run tests */ 
+--			 FROM "SAP_CRI"."sap.cri.db.functions::TF_EVENT_IMPACT"(:IM_TO,:LV_REACTION_TYPE) X
+		   inner join 
+		   ( SELECT
+		   		b."EVENT_ID.ID" as "EVENT_ID",  
+		   		count(distinct b."CUST_ID" ) "TOTAL_CUSTOMERS"
+		   	FROM :LT_CUSTOMERS a	
+			INNER JOIN "db::app.CustomerEvents" b ON a."CUST_ID" = b."CUST_ID"
+			INNER JOIN "db::adm.config.event.name" c on b."EVENT_ID.ID" = c."ID"
+			 where 	b.init_ts BETWEEN TO_INT(:LV_FROM_TS) AND TO_INT(:LV_TO_TS)
+			 AND	c."IS_ENABLED" = 1 
+			 group by b."EVENT_ID.ID") Z on X.EVENT_ID = Z.EVENT_ID ;
+END;
