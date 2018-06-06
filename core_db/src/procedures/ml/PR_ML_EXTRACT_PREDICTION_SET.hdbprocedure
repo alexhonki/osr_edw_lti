@@ -98,13 +98,14 @@ BEGIN
 		WHERE :RUN_DAY BETWEEN INIT_DATE AND END_DATE
 		AND "CUST_ID" NOT IN 
 			(SELECT CUST_ID FROM "db::app.Customer" -- Customers are not in 'BLOCKED' OR DELETED state
-			WHERE STATUS != 0)
+			WHERE STATUS != 0);
 		-- aj : to discard customers which were already reacted
+		/*
 		AND "CUST_ID" NOT IN
 			( SELECT "CUST_ID" 
 			FROM "db::app.CustomerReactions"
 			WHERE "INIT_DATE" >= :START_DATE_WINDOWS AND "INIT_DATE" < :PRED_START );
-	
+		*/
 	-----------------------------------
 	-- EXTRACT NON-REACTED CUSTOMERS
 	-----------------------------------
