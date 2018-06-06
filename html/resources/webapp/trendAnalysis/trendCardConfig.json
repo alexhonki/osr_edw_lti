@@ -43,7 +43,7 @@
                 "categoryPathDisplayFormat":"MMM yyyy",
                 "valueLabel": "Assessment",
                 "valuePath":"TOTAL_NEW_CUSTOMERS",
-                "value2Label": "Debtor",
+                "value2Label": "Defaulted",
                 "value2Path":"TOTAL_REACT_CUSTOMERS",
                 "vizProperties": {
                     "plotArea": {
