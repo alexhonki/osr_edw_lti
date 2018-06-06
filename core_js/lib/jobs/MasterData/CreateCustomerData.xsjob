@@ -2,8 +2,16 @@
 	"description": "Create Customer Data",
 	"action": "procedures.masterData::PR_EXTRACT_LT_CUSTOMERS",
 	"schedules": [{
-		"description": "Perform my task every * * * * 22 10 0", 
+		"description": "Initial Task * * * * 22 10 0", 
 		"xscron": "2016 * * * 22 10 0",
-		"parameter": {} 
+		"parameter": {
+			"IV_MODE": 0
+		} 
+	}, {
+		"description": "Delta Load Task * * * * 22 10 0", 
+		"xscron": "2016 * * * 22 10 0",
+		"parameter": {
+			"IV_MODE": 1
+		} 
 	}]
 }
