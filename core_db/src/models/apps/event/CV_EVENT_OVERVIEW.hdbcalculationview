@@ -31,6 +31,17 @@
       <defaultRange/>
     </variableProperties>
   </variable>
+
+  <variable id="IP_REACTION_TYPE" parameter="true">
+    <descriptions defaultDescription="Reaction Type"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_CONF_GET_REACTION_TYPE</resourceUri>
+      </derivationRule>
+    </variableProperties>
+  </variable>
 </localVariables>
 <variableMappings>
   <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.event::CV_EVENT_IMPACT_FILTER">
@@ -45,17 +56,33 @@
     <targetVariable name="IP_TO" resourceUri="models.apps.event::CV_EVENT_IMPACT_FILTER"/>
     <localVariable>IP_TO</localVariable>
   </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_FILTER">
+    <targetVariable name="IM_REACTION_TYPE" resourceUri="functions::TF_EVENT_INFLUENCE_FILTER"/>
+    <localVariable>IP_REACTION_TYPE</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_FILTER">
+    <targetVariable name="IM_TO" resourceUri="functions::TF_EVENT_INFLUENCE_FILTER"/>
+    <localVariable>IP_TO</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_FILTER">
+    <targetVariable name="IM_FROM" resourceUri="functions::TF_EVENT_INFLUENCE_FILTER"/>
+    <localVariable>IP_FROM</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_FILTER">
+    <targetVariable name="IM_FILTER" resourceUri="functions::TF_EVENT_INFLUENCE_FILTER"/>
+    <localVariable>IP_FILTER</localVariable>
+  </mapping>
   <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_DAYS_TO_REACT">
     <targetVariable name="IM_TO" resourceUri="functions::TF_EVENT_DAYS_TO_REACT"/>
     <localVariable>IP_TO</localVariable>
   </mapping>
 </variableMappings>
 <dataSources>
-  <DataSource id="functions::TF_EVENT_INFLUENCE" type="TABLE_FUNCTION">
-    <resourceUri>functions::TF_EVENT_INFLUENCE</resourceUri>
-  </DataSource>
   <DataSource id="models.apps.event::CV_EVENT_IMPACT_FILTER">
     <resourceUri>models.apps.event::CV_EVENT_IMPACT_FILTER</resourceUri>
+  </DataSource>
+  <DataSource id="functions::TF_EVENT_INFLUENCE_FILTER" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_EVENT_INFLUENCE_FILTER</resourceUri>
   </DataSource>
   <DataSource id="functions::TF_EVENT_DAYS_TO_REACT" type="TABLE_FUNCTION">
     <resourceUri>functions::TF_EVENT_DAYS_TO_REACT</resourceUri>
@@ -65,22 +92,6 @@
   </DataSource>
 </dataSources>
 <calculationViews>
-  <calculationView xsi:type="Calculation:ProjectionView" id="P_INFLUENCE">
-    <viewAttributes>
-      <viewAttribute id="EVENT_ID">
-        <descriptions defaultDescription="EVENT_ID"/>
-      </viewAttribute>
-      <viewAttribute id="INFLUENCE">
-        <descriptions defaultDescription="Influence"/>
-      </viewAttribute>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="functions::TF_EVENT_INFLUENCE">
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
-    </input>
-  </calculationView>
   <calculationView xsi:type="Calculation:ProjectionView" id="P_FILTER" filterExpressionLanguage="COLUMN_ENGINE">
     <viewAttributes>
       <viewAttribute id="EVENT_ID">
@@ -98,7 +109,7 @@
     </input>
     <filter>(&quot;IMPACT&quot;&gt;0)</filter>
   </calculationView>
-  <calculationView xsi:type="Calculation:JoinView" id="J_INFLUENCE_FILTER" cardinality="CN_N" joinType="inner">
+  <calculationView xsi:type="Calculation:JoinView" id="J_INFLUENCE_FILTER" cardinality="CN_N" joinType="referential">
     <viewAttributes>
       <viewAttribute id="EVENT_ID" aggregationType="sum">
         <descriptions defaultDescription="EVENT_ID"/>
@@ -106,8 +117,11 @@
       <viewAttribute id="IMPACT" aggregationType="sum">
         <descriptions defaultDescription="Event Impact"/>
       </viewAttribute>
+      <viewAttribute id="TOTAL_CUSTOMERS" aggregationType="sum">
+        <descriptions defaultDescription="TOTAL_CUSTOMERS"/>
+      </viewAttribute>
       <viewAttribute id="INFLUENCE" aggregationType="sum">
-        <descriptions defaultDescription="Influence"/>
+        <descriptions defaultDescription="INFLUENCE"/>
       </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
@@ -116,11 +130,32 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="IMPACT" source="IMPACT"/>
     </input>
-    <input node="P_INFLUENCE">
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_CUSTOMERS" source="TOTAL_CUSTOMERS"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
     </input>
     <joinAttribute name="EVENT_ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="TOTAL_CUSTOMERS" aggregationType="sum">
+        <descriptions defaultDescription="TOTAL_CUSTOMERS"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE" aggregationType="sum">
+        <descriptions defaultDescription="INFLUENCE"/>
+      </viewAttribute>
+    
+      <viewAttribute id="EVENT_ID" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_ID"/>
+      </viewAttribute></viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="functions::TF_EVENT_INFLUENCE_FILTER">
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_CUSTOMERS" source="TOTAL_CUSTOMERS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+    </input>
   </calculationView>
   <calculationView xsi:type="Calculation:ProjectionView" id="P_DTR">
     <viewAttributes>
@@ -146,11 +181,15 @@
       <viewAttribute id="IMPACT" aggregationType="sum">
         <descriptions defaultDescription="Event Impact"/>
       </viewAttribute>
-      <viewAttribute id="INFLUENCE" aggregationType="sum">
-        <descriptions defaultDescription="Influence"/>
-      </viewAttribute>
       <viewAttribute id="DAYS_TO_REACT" aggregationType="sum">
         <descriptions defaultDescription="DAYS_TO_REACT"/>
+      </viewAttribute>
+    
+      <viewAttribute id="TOTAL_CUSTOMERS" aggregationType="sum">
+        <descriptions defaultDescription="TOTAL_CUSTOMERS"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE" aggregationType="sum">
+        <descriptions defaultDescription="INFLUENCE"/>
       </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
@@ -158,6 +197,7 @@
     <input node="J_INFLUENCE_FILTER">
       <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="IMPACT" source="IMPACT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_CUSTOMERS" source="TOTAL_CUSTOMERS"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
     </input>
     <input node="P_DTR">
@@ -203,9 +243,6 @@
       <viewAttribute id="IMPACT" aggregationType="sum">
         <descriptions defaultDescription="Event Impact"/>
       </viewAttribute>
-      <viewAttribute id="INFLUENCE" aggregationType="sum">
-        <descriptions defaultDescription="Influence"/>
-      </viewAttribute>
       <viewAttribute id="DAYS_TO_REACT" aggregationType="sum">
         <descriptions defaultDescription="DAYS_TO_REACT"/>
       </viewAttribute>
@@ -218,14 +255,23 @@
       <viewAttribute id="DESCRIPTION">
         <descriptions defaultDescription="DESCRIPTION"/>
       </viewAttribute>
+    
+      <viewAttribute id="TOTAL_CUSTOMERS" aggregationType="sum">
+        <descriptions defaultDescription="TOTAL_CUSTOMERS"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE" aggregationType="sum">
+        <descriptions defaultDescription="INFLUENCE"/>
+      </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
     <input node="Join_1">
       <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="IMPACT" source="IMPACT"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="DAYS_TO_REACT" source="DAYS_TO_REACT"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_CUSTOMERS" source="TOTAL_CUSTOMERS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
     </input>
     <input node="P_EVENT_TEXT">
       <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
@@ -242,15 +288,15 @@
       <descriptions defaultDescription="Event ID"/>
       <keyMapping columnObjectName="Join_2" columnName="EVENT_ID"/>
     </attribute>
-    <attribute id="EVENT_NAME" order="5" attributeHierarchyActive="false" displayAttribute="false">
+    <attribute id="EVENT_NAME" order="4" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="Event Name"/>
       <keyMapping columnObjectName="Join_2" columnName="EVENT_NAME"/>
     </attribute>
-    <attribute id="EVENT_GROUP" order="6" attributeHierarchyActive="false" displayAttribute="false">
+    <attribute id="EVENT_GROUP" order="5" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="Event Category/Group"/>
       <keyMapping columnObjectName="Join_2" columnName="EVENT_GROUP"/>
     </attribute>
-    <attribute id="DESCRIPTION" order="7" attributeHierarchyActive="false" displayAttribute="false">
+    <attribute id="DESCRIPTION" order="6" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="Event Description"/>
       <keyMapping columnObjectName="Join_2" columnName="DESCRIPTION"/>
     </attribute>
@@ -261,13 +307,18 @@
       <descriptions defaultDescription="Impact"/>
       <measureMapping columnObjectName="Join_2" columnName="IMPACT"/>
     </measure>
-    <measure id="INFLUENCE" order="3" aggregationType="sum" measureType="simple">
-      <descriptions defaultDescription="Influence %"/>
-      <measureMapping columnObjectName="Join_2" columnName="INFLUENCE"/>
-    </measure>
-    <measure id="DAYS_TO_REACT" order="4" aggregationType="sum" measureType="simple">
+    <measure id="DAYS_TO_REACT" order="3" aggregationType="sum" measureType="simple">
       <descriptions defaultDescription="Days To React"/>
       <measureMapping columnObjectName="Join_2" columnName="DAYS_TO_REACT"/>
+    </measure>
+  
+    <measure id="INFLUENCE" order="7" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="INFLUENCE"/>
+      <measureMapping columnObjectName="Join_2" columnName="INFLUENCE"/>
+    </measure>
+    <measure id="TOTAL_CUSTOMERS" order="8" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="TOTAL_CUSTOMERS"/>
+      <measureMapping columnObjectName="Join_2" columnName="TOTAL_CUSTOMERS"/>
     </measure>
   </baseMeasures>
   <calculatedMeasures/>
@@ -281,11 +332,6 @@
     
       <rectangleSize width="140"/>
     </shape>
-  
-    <shape expanded="true" modelObjectName="P_INFLUENCE" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="281" y="636"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
     <shape expanded="true" modelObjectName="P_FILTER" modelObjectNameSpace="CalculationView">
       <upperLeftCorner x="92" y="636"/>
       <rectangleSize height="30" width="140"/>
@@ -294,14 +340,20 @@
       <upperLeftCorner x="115" y="496"/>
       <rectangleSize height="30" width="138"/>
     </shape>
-    <shape modelObjectName="P_FILTER" modelObjectType="JoinNodeInput" modelObjectNameSpace="J_INFLUENCE_FILTER">
+    <shape modelObjectName="P_FILTER" modelObjectNameSpace="J_INFLUENCE_FILTER" modelObjectType="JoinNodeInput">
       <upperLeftCorner x="20" y="30"/>
       <rectangleSize width="250"/>
     </shape>
-    <shape modelObjectName="P_INFLUENCE" modelObjectType="JoinNodeInput" modelObjectNameSpace="J_INFLUENCE_FILTER">
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="J_INFLUENCE_FILTER" modelObjectType="JoinNodeInput">
       <upperLeftCorner x="320" y="30"/>
       <rectangleSize width="250"/>
     </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="268" y="645"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  
     <shape expanded="true" modelObjectName="P_DTR" modelObjectNameSpace="CalculationView">
       <upperLeftCorner x="354" y="496"/>
       <rectangleSize height="30" width="140"/>
@@ -333,7 +385,6 @@
     <shape modelObjectName="P_EVENT_TEXT" modelObjectNameSpace="Join_2" modelObjectType="JoinNodeInput">
       <upperLeftCorner x="320" y="30"/>
       <rectangleSize width="250"/>
-    </shape>
-  </shapes>
+    </shape></shapes>
 </layout>
 </Calculation:scenario>
