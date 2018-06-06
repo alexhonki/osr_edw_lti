@@ -47,7 +47,7 @@
                     <commons:content>
                         <commons:ChartContainerContent id="idTopEventsChartContent" icon = "sap-icon://list" title="Top Events">
                             <commons:content>
-                                <HBox id="idTopEventsContainer" justifyContent="SpaceBetween" height="475px">
+                                <HBox id="idTopEventsContainer" justifyContent="SpaceBetween" height="100%">
                                     <FlexBox width="45%">
                                         <List id="topRiskEventList" mode="SingleSelectMaster" itemPress="onTopEventSelection" headerText="{i18n>EventOverview.TopEventsByRisk}" width="100%" items="{/Events}">
                                             <CustomListItem type="Active" id="topRiskEventItemTemplate">
@@ -56,6 +56,10 @@
                                                     <HBox alignItems="Center" class="sapUiTinyMarginBottom">
                                                         <VBox width="1px">
                                                             <HBox>
+                                                                <Label text="{i18n>EventOverview.TopEventItemTotalTaxpayerLabel}:" class="sapUiTinyMarginEnd"/>
+                                                                <Label text="{TOTAL_CUSTOMERS}"/>
+                                                            </HBox>
+                                                            <HBox>
                                                                 <Label text="{i18n>EventOverview.TopEventItemImpactLabel}:" class="sapUiTinyMarginEnd"/>
                                                                 <Label id="idImpactLabel" text="{IMPACT}"/>
                                                             </HBox>
@@ -63,6 +67,7 @@
                                                                 <Label text="{i18n>EventOverview.TopEventItemEventGroupLabel}:" class="sapUiTinyMarginEnd"/>
                                                                 <Label text="{EVENT_GROUP}"/>
                                                             </HBox>
+                                                            
                                                             <layoutData>
                                                                 <FlexItemData growFactor="1"/>
                                                             </layoutData>
@@ -87,6 +92,10 @@
                                                     <HBox alignItems="Center" class="sapUiTinyMarginBottom">
                                                         <VBox width="1px">
                                                             <HBox>
+                                                                <Label text="{i18n>EventOverview.TopEventItemTotalTaxpayerLabel}:" class="sapUiTinyMarginEnd"/>
+                                                                <Label text="{TOTAL_CUSTOMERS}"/>
+                                                            </HBox>
+                                                            <HBox>
                                                                 <Label text="{i18n>EventOverview.TopEventItemRiskLabel}:" class="sapUiTinyMarginEnd"/>
                                                                 <Label text="{INFLUENCE}%"/>
                                                             </HBox>
@@ -94,6 +103,7 @@
                                                                 <Label text="{i18n>EventOverview.TopEventItemEventGroupLabel}:" class="sapUiTinyMarginEnd"/>
                                                                 <Label text="{EVENT_GROUP}"/>
                                                             </HBox>
+                                                            
                                                             <layoutData>
                                                                 <FlexItemData growFactor="1"/>
                                                             </layoutData>
@@ -196,7 +206,7 @@
                         </Toolbar>
                     </table:toolbar>
                     <table:columns>
-                        <table:Column  width="10rem" >
+                        <table:Column  width="10rem" sortProperty="EXT_ID" >
                             <Label text="{i18n>EventOverview.CustomerListColumnId}"/>
                             <table:template>
                                 <Text text="{CRI>EXT_ID}"/>
@@ -214,12 +224,6 @@
                                 <Text text="{CRI>EVENT_YEAR}"/>
                             </table:template>
                         </table:Column>
-                        <table:Column width="6rem" sortProperty="CHURNED_FLAG" hAlign="End">
-                            <Label text="{i18n>EventOverview.CustomerListColumnReacted}"/>
-                            <table:template>
-                                <Text text="{= (${CRI>CHURNED_FLAG} === 1) ? 'Yes' : 'No' }"/>
-                            </table:template>
-                        </table:Column>
                         <table:Column width="12rem" sortProperty="INCOME_LOSS_ROUND" hAlign="End">
                             <Label text="{i18n>EventOverview.CustomerListColumnOperatingIncomeLoss}"/>
                             <table:template>
@@ -232,6 +236,13 @@
                                               unit="{CRI>/CURRENCY}" />
                             </table:template>
                         </table:Column>
+                        <table:Column width="6rem" sortProperty="CHURNED_FLAG" hAlign="End">
+                            <Label text="{i18n>EventOverview.CustomerListColumnReacted}"/>
+                            <table:template>
+                                <Text text="{= (${CRI>CHURNED_FLAG} === 1) ? 'Yes' : 'No' }"/>
+                            </table:template>
+                        </table:Column>
+                        
                          <table:Column width="10rem" sortProperty="INIT_DATE" hAlign="End">
                             <Label text="{i18n>EventOverview.CustomerListColumnReactedDate}"/>
                             <table:template>

@@ -90,7 +90,7 @@ BEGIN
 	SELECT TO_DATE INTO LV_INDEX FROM "functions::TF_CONF_COMBINED_EVENTS_TRAINING_DATE"();
 	
 	LV_TO = YEAR(:LV_INDEX)*100 + MONTH(:LV_INDEX);
-	LV_FROM = YEAR(ADD_MONTHS(:LV_INDEX, -60))*100 + MONTH(ADD_MONTHS(:LV_INDEX, -60));				
+	LV_FROM = YEAR(ADD_MONTHS(:LV_INDEX, -60))*100 + MONTH(ADD_MONTHS(:LV_INDEX, -60)) + 1;				
 	--------------------------------------------------------------------------------------------------------
 	-- Signature Values
 	--------------------------------------------------------------------------------------------------------
