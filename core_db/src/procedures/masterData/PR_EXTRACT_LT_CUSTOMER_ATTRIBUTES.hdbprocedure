@@ -30,6 +30,8 @@ BEGIN
 	LT_CUST_ID_EDITED = select to_int(ZZ_PARTNER) as "CUST_ID" from :LT_CUST_EDITED;
 	CALL "procedures.utils::PR_DELETE_MASTERDATA_FOR_CUST"(:LV_ENTITY_NAME, :LT_CUST_ID_EDITED,:LV_EVENT);
 	END IF;
+	
+	
    LT_RESV_CUSTOMERS =   SELECT TO_BIGINT("ZZ_PARTNER") AS CUST_ID, 
 						  ZZ_PARTNER AS EXT_ID,
 						  TAXYRSTARTDT,
@@ -39,7 +41,8 @@ BEGIN
 						  INDIVORG,
 						  TOTBPRELVNTVAL,
 						  BIRTHDT,
-						  PARCELCNT
+						  PARCELCNT,
+						  TAXAMOUNT
 						  FROM
 							(SELECT A."ZZ_PARTNER",
 							 -- MIN(TO_DATE(A."TAXYRSTARTDT")) AS "INIT_DATE",
@@ -49,7 +52,8 @@ BEGIN
 							  TO_DATE(C."BIRTHDT") AS "BIRTHDT",
 							  A."INDIVORG" AS "INDIVORG",
 							  A."TOTBPRELVNTVAL" AS "TOTBPRELVNTVAL",
-							  A."PARCELCNT" AS "PARCELCNT"
+							  A."PARCELCNT" AS "PARCELCNT", 
+							  A."TAXAMOUNT" AS "TAXAMOUNT"
 							  FROM  "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" AS A 
 							  INNER JOIN "db::app.Customer" AS B ON B.EXT_ID = A.ZZ_PARTNER
 							  INNER JOIN "osr.edw.staging.md.rms.proxy.synonym::CV_BUT000" AS C ON A.ZZ_PARTNER = C.PARTNER
@@ -65,13 +69,28 @@ BEGIN
 						  BIRTHDT
 						  FROM :LT_RESV_CUSTOMERS
 						  GROUP BY CUST_ID,BIRTHDT;
+	
+	--OUTSTANDING AMOUNT					  
+	LT_OA_TEMP = select CUST_ID, 
+					MIN(TO_DATE(init_date)) AS "INIT_DATE",
+					MAX(TO_DATE(end_date)) AS "END_DATE",
+					sum(value) as "VALUE"
+					from "db::app.CustomerValues" -- where cust_id = '1280402' 
+					group by cust_id;
 						  
-	LT_BP_VALUE_TEMP = SELECT CUST_ID, 
+	/*LT_BP_VALUE_TEMP = SELECT CUST_ID, 
 						  MIN(TO_DATE(TAXYRSTARTDT)) AS "INIT_DATE",
 						  MAX(TO_DATE(TAXYRENDDT)) AS "END_DATE",
 						  TOTBPRELVNTVAL
 						  FROM :LT_RESV_CUSTOMERS
-						  GROUP BY CUST_ID,TOTBPRELVNTVAL;
+						  GROUP BY CUST_ID,TOTBPRELVNTVAL;*/
+	
+	LT_BP_TAX_TEMP = SELECT CUST_ID, 
+						  MIN(TO_DATE(TAXYRSTARTDT)) AS "INIT_DATE",
+						  MAX(TO_DATE(TAXYRENDDT)) AS "END_DATE",
+						  TAXAMOUNT
+						  FROM :LT_RESV_CUSTOMERS
+						  GROUP BY CUST_ID,TAXAMOUNT;					  
     
     --Age Group Attribute
     --End Date from Customer table or it should be Current Time Stamp??
@@ -107,8 +126,21 @@ BEGIN
     						'TAXPAYER_TYPE' AS "ATTRIBUTE_NAME"
     						FROM :LT_RESV_CUSTOMERS;
     						
+    --Outstanding Amount
+	LT_OUT_AMT     =	SELECT 
+							CUST_ID,INIT_DATE,END_DATE,
+    						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
+    						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
+    						CASE WHEN ("VALUE"<=100 ) THEN 'Under $100' 
+						    WHEN ("VALUE">100 and "VALUE"<=1000 ) THEN '$100 TO $1000'
+						    WHEN ("VALUE">1000 and "VALUE"<=10000 ) THEN '$1000 TO $10000'
+						    WHEN ("VALUE">10000 ) THEN 'Over $10000'
+						    END AS "ATTRIBUTE_VALUE",
+    						'OUTSTANDING_REVENUE' AS "ATTRIBUTE_NAME"
+    						FROM :LT_OA_TEMP;
+    						
     --BP Value
-    LT_BP_VALUE         = SELECT
+   /* LT_BP_VALUE         = SELECT
     						CUST_ID,INIT_DATE,END_DATE,
     						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
     						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
@@ -120,7 +152,27 @@ BEGIN
     						 WHEN (TOTBPRELVNTVAL>=15000000 ) THEN '15M+'
     						 END  AS "ATTRIBUTE_VALUE",
     						'CUSTOMER_SEGMENT' AS "ATTRIBUTE_NAME" 
-    						FROM :LT_BP_VALUE_TEMP;
+    						FROM :LT_BP_VALUE_TEMP; */
+    						
+    --Customer Segments based on the tax amounts
+    LT_BP_TAX = 			SELECT
+    						CUST_ID,INIT_DATE,END_DATE,
+    						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
+    						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
+    						CASE 
+								WHEN TAXAMOUNT<=500 THEN 'Under $500'
+								WHEN TAXAMOUNT>500 AND TAXAMOUNT<=1000 THEN '$500 to $1000'
+								WHEN TAXAMOUNT>1000 AND TAXAMOUNT<=2500 THEN '$1000 to $2500'
+								WHEN TAXAMOUNT>2500 AND TAXAMOUNT<=5000 THEN '$2500 to $5000'
+								WHEN TAXAMOUNT>5000 AND TAXAMOUNT<=10000 THEN '$5000 to $10000'
+								WHEN TAXAMOUNT>10000 AND TAXAMOUNT<=25000 THEN '$10000 to $25000'
+								WHEN TAXAMOUNT>25000 AND TAXAMOUNT<=50000 THEN '$25000 to $50000'
+								WHEN TAXAMOUNT>50000 AND TAXAMOUNT<=100000 THEN '$50000 to $100000'
+								WHEN TAXAMOUNT>100000 AND TAXAMOUNT<=1000000 THEN '$100000 to $1M'
+								WHEN TAXAMOUNT>1000000 THEN 'Over $1M'
+							END as "ATTRIBUTE_VALUE",
+							'CUSTOMER_SEGMENT' AS "ATTRIBUTE_NAME" 
+    						FROM :LT_BP_TAX_TEMP; 
     						
     -- Parcel Count
     LT_PARCEL_COUNT    = SELECT 
@@ -232,7 +284,8 @@ BEGIN
 						  END_DATE,
 						  INIT_TS,
 						  END_TS
-						  FROM :LT_BP_VALUE AS A
+						  --FROM :LT_BP_VALUE AS A
+						  FROM :LT_BP_TAX AS A
 						  INNER JOIN "db::app.AttributeTypes" AS B
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
 						  
@@ -246,6 +299,19 @@ BEGIN
 						  INIT_TS,
 						  END_TS
 						  FROM :LT_PARCEL_COUNT AS A
+						  INNER JOIN "db::app.AttributeTypes" AS B
+						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
+						  
+						   UNION
+						  
+						  ( SELECT CUST_ID,
+						  B.ATTRIBUTE_ID AS "ATTRIBUTE_ID",
+						  ATTRIBUTE_VALUE,
+						  INIT_DATE,
+						  END_DATE,
+						  INIT_TS,
+						  END_TS
+						  FROM :LT_OUT_AMT AS A
 						  INNER JOIN "db::app.AttributeTypes" AS B
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
 						  
