@@ -4,6 +4,14 @@
 	"schedules": [{
 		"description": "Perform my task every * * * * 21 10 0", 
 		"xscron": "2016 * * * 21 10 0",
-		"parameter": {} 
+		"parameter": {
+			"IV_MODE": 0
+		} 
+	}, {
+		"description": "Delta load task every * * * * 21 10 0", 
+		"xscron": "2016 * * * 21 10 0",
+		"parameter": {
+			"IV_MODE": 1
+		} 
 	}]
 }

@@ -1,6 +1,6 @@
 {
-	"description": "Extract Assessment Event Data",
-	"action": "procedures.events.erp::PR_EXTRACT_ASSESSMENT_EVENT",
+	"description": "Extract EPO PP withdrawn Event Data",
+	"action": "procedures.events.erp::PR_EXTRACT_EPO_PP_WITHDRAWN_EVENT",
 	"schedules": [{
 		"description": "Perform my task every * * * * 21 10 0", 
 		"xscron": "2016 * * * 21 10 0",

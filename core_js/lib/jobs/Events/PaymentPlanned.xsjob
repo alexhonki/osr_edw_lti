@@ -1,6 +1,6 @@
 {
-	"description": "Extract Assessment Event Data",
-	"action": "procedures.events.erp::PR_EXTRACT_ASSESSMENT_EVENT",
+	"description": "Extract Payment Plan Created Event Data",
+	"action": "procedures.events.erp::PR_EXTRACT_PAYMENT_PLAN_CREATED_EVENT",
 	"schedules": [{
 		"description": "Perform my task every * * * * 21 10 0", 
 		"xscron": "2016 * * * 21 10 0",
