@@ -74,17 +74,20 @@ Payment Extension,Payment Extension,ext,24,0
 Dunning,Dunning,COA,26,0
 Dunning,Dunning,dem,26,0
 Reassessment,Reassessment,reass,27,0
-Exemption,Exemption,exemption,28,0
+Exemption,Exemption,exempt,28,0
 Exemption,Exemption,lt,28,0
 Exemption,Exemption,ppr ,28,0
 Debt Management,Debt Management,block,29,0
 Change of details,Change of details,change,30,0
 Change of details,Change of details,addr,30,0
+Change of details,Change of details,return%sender,30,0
 Land Tax Assessment,Dispute,dispute,33,0
 Land Tax Assessment,Ownership,owner,34,0
 Land Tax Assessment,Assessment,assess,35,0
 Land Tax Assessment,Enquiry,enquir,38,0
+Land Tax Assessment,Enquiry,outstand,38,0
 Land Tax Assessment,Enquiry,compliance,38,0
+Land Tax Assessment,Enquiry,noia,38,0
 Payment,Refund,refund,40,0
 Payment,Credit,credit,41,0
 Payment,Payment,bank,44,0
@@ -102,4 +105,15 @@ General Enquiry,General Enquiry,client,61,0
 General Enquiry,General Enquiry,search,61,0
 General Enquiry,General Enquiry,request,61,0
 General Enquiry,General Enquiry,clarif,61,0
+General Enquiry,General Enquiry,collect,61,0
+General Enquiry,General Enquiry,project,61,0
+General Enquiry,General Enquiry,file,61,0
+General Enquiry,General Enquiry,letter,61,0
+General Enquiry,General Enquiry,debit,61,0
+General Enquiry,General Enquiry,credit,61,0
+General Enquiry,General Enquiry,waive,61,0
+General Enquiry,General Enquiry,certificate,61,0
+General Enquiry,General Enquiry,charge,61,0
+General Enquiry,General Enquiry,liability,61,0
+General Enquiry,General Enquiry,insolvency,61,0
 CRM Unmapped,CRM Generic Event, ,1001,0
