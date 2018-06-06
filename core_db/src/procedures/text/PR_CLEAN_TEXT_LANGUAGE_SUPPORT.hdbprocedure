@@ -28,8 +28,8 @@ BEGIN
 				3. Remove stopwords -- define stopwords in StopWords table for the given language 
 	**********************************************************/
 	 -- Use REGEX to replace non-letters and punctuations /* Lower the text */
-	TBL_SOURCE_TEXT = SELECT "ID", lower( REPLACE_REGEXPR('[[:punct:][:space:]]|[[:digit:][:space:]]' IN DESCRIPTION WITH ' ' OCCURRENCE ALL)) DESCRIPTION 
-						FROM "db::sys.QueryComplaint" where DESCRIPTION <> '';
+	TBL_SOURCE_TEXT = SELECT "OBJECT_ID" AS ID, lower( REPLACE_REGEXPR('[[:punct:][:space:]]|[[:digit:][:space:]]' IN DESCRIPTION WITH ' ' OCCURRENCE ALL)) DESCRIPTION 
+						FROM "models.crm::CV_CRM_INTERACTION" where DESCRIPTION <> '';
 	-- Read Stop words table
 	BEGIN
 		DECLARE EXIT HANDLER FOR sqlexception SIGNAL no_stop_words SET MESSAGE_TEXT = 'No stop words found for language code: ' || lower(:I_LANGUAGE_CODE);

@@ -29,13 +29,13 @@ BEGIN
 	LT_COMPLAINTS = SELECT 
 						--a."ID" 				"CUST_ID", 		-- Internal Customer ID
 						a."CUST_ID" 		"CUST_ID",		-- External Customer ID
-						b."TRANS_DATE"		"INIT_DATE",	-- Query/Complaint Transaction Date as start of event
-						b."PROCESSED_DATE"	"END_DATE",
-						YEAR(b."TRANS_DATE")*100 + MONTH(b."TRANS_DATE") 			"INIT_TS",
-						YEAR(b."PROCESSED_DATE")*100 + MONTH(b."PROCESSED_DATE") 	"END_TS",
+						b."POSTING_DATE"		"INIT_DATE",	-- Query/Complaint Transaction Date as start of event
+						b."POSTING_DATE"	"END_DATE",
+						YEAR(b."POSTING_DATE")*100 + MONTH(b."POSTING_DATE") 	"INIT_TS",
+						YEAR(b."POSTING_DATE")*100 + MONTH(b."POSTING_DATE") 	"END_TS",
 						b."DESCRIPTION"
 					FROM "db::app.Customer" a
-					INNER JOIN "db::sys.QueryComplaint" b on a."CUST_ID" = b.CUST_ID;
+					INNER JOIN "models.crm::CV_CRM_INTERACTION" b on a."CUST_ID" = b.CUST_ID;
 		
 	INSERT INTO "db::app.CustomerEvents" 
 	(

@@ -1,0 +1,15 @@
+PROCEDURE "procedures.ml::PR_RUN_APPLY_COMBINED_EVENTS"
+	(
+		OUT RESULT_TABLE "db::ml.combined.result" 
+	)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   AS
+BEGIN
+-- Custom Exception
+
+		DECLARE EXIT HANDLER FOR SQL_ERROR_CODE 1299 
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";	
+		RESULT_TABLE =	select distinct(replace("COMBINED.ID",',','&')) AS PRERULE, '00' AS POSTRULE, SUPPORT, CONFIDENCE, LIFT from "db::adm.config.event.combined.list";
+END

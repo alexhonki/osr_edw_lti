@@ -849,9 +849,4 @@ context ml {
         };
     };
 
-    context deployed {
-        entity model {
-            DEPLOY_DATE : UTCTimestamp;
-        };
-    };
 };
