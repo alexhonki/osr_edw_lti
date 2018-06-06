@@ -1,9 +1,0 @@
-{
-	"description": "Predefined Event Runner",
-	"action": "procedures.events.generic::PR_DECREASED_EVENTS_TIME",
-	"schedules": [{
-		"description": "Perform my task every * * * -1.sun 9 0 0", 
-		"xscron": "2016 * * -1.sun 9 0 0",
-		"parameter": {} 
-	}]
-}
