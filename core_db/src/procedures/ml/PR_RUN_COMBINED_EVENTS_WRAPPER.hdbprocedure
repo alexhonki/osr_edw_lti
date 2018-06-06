@@ -1,7 +1,7 @@
 PROCEDURE "procedures.ml::PR_RUN_COMBINED_EVENTS_WRAPPER" 
 	(
-		IN I_TO				INT,
-		IN I_REACTION_TYPE	VARCHAR(200),
+		IN I_TO				INT DEFAULT null,
+		IN I_REACTION_TYPE	VARCHAR(200) DEFAULT 'DEBTOR_INITIAL_ASSESSMENT' ,
 		IN I_MODE			INT DEFAULT 0 /*0 = TRAIN AND APPLY MODE, 1 = APPLY */
 	)
    LANGUAGE SQLSCRIPT
@@ -38,6 +38,9 @@ BEGIN
 		SELECT TOP 1 INT_PARAMETER INTO I_WINDOW_PERIOD FROM "db::ml.config.MLParameters" WHERE "PARAMETER_NAME" = 'FPG_COMB_EVT_PARAM_WINDOW_PERIOD';
 	END;
 	
+	IF :I_TO is NULL THEN 
+		I_TO = year(CURRENT_UTCTIMESTAMP)*100 + month(CURRENT_UTCTIMESTAMP);
+	END IF;
 	-------------------------------------------------------------------------------------------------------
 	-- Call Another Procedure to Run FP-Growth
 	-------------------------------------------------------------------------------------------------------
