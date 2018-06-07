@@ -122,7 +122,9 @@ BEGIN
 							CUST_ID,INIT_DATE,END_DATE,
     						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
     						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
-    						to_varchar(INDIVORG) AS "ATTRIBUTE_VALUE",
+    						CASE WHEN (to_varchar(INDIVORG) = 'IND') THEN 'Individual'
+    						WHEN (to_varchar(INDIVORG) = 'ORG') THEN 'Organization'
+    						END AS "ATTRIBUTE_VALUE",
     						'TAXPAYER_TYPE' AS "ATTRIBUTE_NAME"
     						FROM :LT_RESV_CUSTOMERS;
     						
