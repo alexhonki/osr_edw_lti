@@ -28,6 +28,9 @@ context adm {
                     IS_ENABLED                : Integer default 0;
                     PRIORITY                  : Integer;
                     ICON                      : String(200);
+                    
+                    // UI 
+                    UI_ENABLED                : Integer default 1;
 
                     // Event extraction fields
                     LATEST_EXTRACTED_SEQUENCE : Integer default 0;

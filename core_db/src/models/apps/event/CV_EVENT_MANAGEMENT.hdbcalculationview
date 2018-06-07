@@ -44,6 +44,10 @@
       <viewAttribute id="CHANGED.DATE" aggregationType="min">
         <descriptions defaultDescription="CHANGED.DATE"/>
       </viewAttribute>
+    
+      <viewAttribute id="UI_ENABLED" aggregationType="sum">
+        <descriptions defaultDescription="UI_ENABLED"/>
+      </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
@@ -59,6 +63,8 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="CREATED_ON" source="CREATED.DATE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED_BY" source="CHANGED.BY"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="CHANGED.DATE" source="CHANGED.DATE"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="UI_ENABLED" source="UI_ENABLED"/>
     </input>
   </calculationView>
 </calculationViews>
@@ -107,6 +113,11 @@
     <attribute id="TEMPLATE_ID" order="11" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="Template ID"/>
       <keyMapping columnObjectName="P_EVENT_NAME" columnName="TEMPLATE_ID"/>
+    </attribute>
+  
+    <attribute id="UI_ENABLED" order="12" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="UI_ENABLED"/>
+      <keyMapping columnObjectName="P_EVENT_NAME" columnName="UI_ENABLED"/>
     </attribute>
   </attributes>
   <calculatedAttributes/>
