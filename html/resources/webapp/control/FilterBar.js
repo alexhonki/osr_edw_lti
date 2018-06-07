@@ -8,7 +8,8 @@ sap.ui.define([
     "sap/m/SearchField",
     "sap/m/ComboBox",
     "sap/m/DatePicker",
-    "sap/m/MessageBox"
+    "sap/m/MessageBox",
+    "sap/m/MultiComboBox"
     ],
     /**
      * Filter Bar
@@ -22,10 +23,11 @@ sap.ui.define([
      * @param {sap.m.ComboBox} ComboBox ComboBox
      * @param {sap.m.DatePicker} DatePicker DatePicker
      * @param {sap.m.MessageBox} MessageBox MessageBox
+     * @param {sap.m.MultiComboBox} MultiComboBox MultiComboBox
      * @returns {*} Filter Bar
      */
     function (BaseControl, FilterService, JSONModel, Item, FilterBar, FilterItem, SearchField, ComboBox, DatePicker,
-    MessageBox) {
+    MessageBox,MultiComboBox) {
         'use strict';
         return BaseControl.extend("sap.fiori.cri.control.FilterBar", {
             metadata: {
@@ -104,6 +106,9 @@ sap.ui.define([
                             default:
                                 control.clearSelection();
                                 control.setValue("");
+                                if(control.getMetadata().getElementName().toLowerCase().indexOf("multicombobox") > -1){
+                                	control.rerender();
+                                }
                                 break;
                         }
                     });
@@ -172,7 +177,7 @@ sap.ui.define([
                         oData.results.forEach(function (oItem) {
                             var sKey = oItem.FIELD_NAME;
 
-                            if (sKey == sFromDateKey || sKey == sToDateKey || sKey == "") {
+                            if (sKey === sFromDateKey || sKey === sToDateKey || sKey === "") {
                                 return;
                             }
 
@@ -181,7 +186,7 @@ sap.ui.define([
                                 groupName: oItem.FIELD_GROUP,
                                 name: sKey,
                                 label: FilterService.labelForKey(sKey, oLabelModel) || oItem.DESCRIPTION,
-                                type: FilterService.FILTER_TYPE.dropDown,
+                                type: sKey === "PPR_POSTCODE" ? FilterService.FILTER_TYPE.multiComboBox : FilterService.FILTER_TYPE.dropDown,
                                 value: filters[sKey]
                             };
                             filterItems.push(oFilterItems[sKey]);
@@ -213,7 +218,8 @@ sap.ui.define([
                 var oControl;
                 var sType = mSettings.type;
                 var sValue = mSettings.value;
-
+                var oModel = new JSONModel({ ValueHelpData:[] });
+	
                 switch (sType) {
                     case FilterService.FILTER_TYPE.search:
                         oControl = new SearchField();
@@ -242,7 +248,6 @@ sap.ui.define([
                     case FilterService.FILTER_TYPE.dropDown:
 
                         oControl = new ComboBox();
-                        var oModel = new JSONModel({ ValueHelpData:[] });
                         oControl.setModel(oModel);
 						sFilterKey = encodeURI(sFilterKey);
                         this.getModel("CRI").read("/VL_VALUE_HELPParameters(IP_FIELD_NAME='" + sFilterKey + "')/Results",{
@@ -267,7 +272,44 @@ sap.ui.define([
                         }.bind(this));
 
                         break;
-                    default:
+                    case FilterService.FILTER_TYPE.multiComboBox:
+                    	oControl = new MultiComboBox();
+                    	oControl.setModel(oModel);
+                    	sFilterKey = encodeURI(sFilterKey);
+                        this.getModel("CRI").read("/VL_VALUE_HELPParameters(IP_FIELD_NAME='" + sFilterKey + "')/Results",{
+                            success:function (oResponse) {
+                                var oData = oResponse.results;
+                                oControl.getModel().setSizeLimit(oData.length);
+                                oControl.getModel().setProperty("/ValueHelpData", oData);
+                               
+                            }
+                        });
+
+                        oControl.bindAggregation("items", {
+                            path: "/ValueHelpData",
+                            template: new Item({
+					                    text:"{FIELD_VALUE}",
+					                    key:"{FIELD_VALUE}"
+            			}),
+                            sorter: { path: "FIELD_VALUE" }
+                        });
+                        
+                        oControl.attachSelectionFinish(function (oEvent){
+                        	oEvent.getSource().rerender();// render the tokens
+                        	var aSelectedItems = oEvent.getParameter("selectedItems");
+                        	var sSelectedKeys = "";
+                        	if(aSelectedItems.length > 0){
+                        		aSelectedItems.map(function(item){
+									sSelectedKeys = sSelectedKeys.length > 0 ? sSelectedKeys + "," + sFilterKey + ":" + item.getProperty("key") 
+																				: item.getProperty("key");
+                        		});
+                        	}
+                        	this.onFilterChanged(sFilterKey,sSelectedKeys,oControl);
+                        
+                        }.bind(this));
+                        
+                    	break;
+                    default: 
                         break;
                 }
 

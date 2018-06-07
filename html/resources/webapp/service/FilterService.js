@@ -7,7 +7,8 @@ sap.ui.define([
         FILTER_TYPE: {
             date:"date",
             dropDown:"dropDown",
-            search:"search"
+            search:"search",
+            multiComboBox: "multiComboBox"
         },
         _defaultConfig: {
             format: {
