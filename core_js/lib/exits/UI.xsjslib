@@ -2,7 +2,10 @@ $.import("exits", "Utils");
 var Utils = $.exits.Utils;
 var conn = $.db.getConnection();
 
-var XSDS = $.require("@sap/cds").xsjs(conn);  // “cds” refers to node-cds
+/**
+ * Method to create Label Definition entity
+ * @param param created entity parameters
+ */
 function createLabelDefinitions(param) {
 	   $.trace.debug("Update Label Definitions exit called");
 	   let before = param.beforeTableName;
@@ -52,6 +55,10 @@ function createLabelDefinitions(param) {
 	   
 };
 
+/**
+ * Method to update Label Definition entity
+ * @param param Updated entity parameters
+ */
 function updateLabelDefinitions(param) {
 	   $.trace.debug("Update Label Definitions exit called");
 	   let before = param.beforeTableName;
@@ -119,7 +126,11 @@ function updateLabelDefinitions(param) {
 		}
 };
 
-
+/**
+ * Method to return valid value among its argumentts
+ * @param oValue1
+ * @param oValue2
+ */
 
 function validValue(oValue1, oValue2) {
 	return (oValue1 != undefined) ? oValue1 : oValue2;

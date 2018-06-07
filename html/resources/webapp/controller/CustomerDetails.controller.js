@@ -65,7 +65,7 @@ sap.ui.define([
         },
         _initChart: function () {
             var oChart = this.byId("idPulseChart");
-
+			oChart.setProperty("yAxisLabel", this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("CustomerPulse.Event.Risk"));
             var oContainer = this.byId("idCustomerDetailsPage");
             sap.ui.core.ResizeHandler.register(oContainer, function(){
                 oChart.refresh();

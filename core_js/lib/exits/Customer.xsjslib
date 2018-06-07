@@ -9,8 +9,8 @@ var STATUS = {
 		DERROR	: 4
 };
 /**
- * Exit for Update Event
- * @param param
+ * Exit for Updating Customer
+ * @param param Customer object
  */ 
 function updateCustomer(param) {
 	$.trace.debug('Update Customer exit called'); 

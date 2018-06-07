@@ -4,7 +4,7 @@ var conn = $.db.getConnection();
 
 /**
  * Method to update AttributeTypes entity
- * @param param
+ * @param param Updated entity parameters
  */
 function updateAttributeTypes(param) {
 	$.trace.debug("Update Attribute Types exit called");
@@ -62,7 +62,7 @@ function setConfigAttributes(oConfig, oRow) {
 
 /**
  * Exit for updating Prediction Date
- * @param param
+ * @param param Updated entity parameters
  */
  
 function updatePredictionDate(param) {
@@ -197,7 +197,7 @@ function updatePredictionDate(param) {
 
 /**
  * Exit for updating Config 
- * @param param
+ * @param param Updated entity parameters
  */
 function updateConfig(param) {
 	$.trace.debug("Update Config exit called");
@@ -294,7 +294,7 @@ function updateConfig(param) {
 
 /**
  * Exit for Updating Reaction type
- * @param param
+ * @param param Updated entity parameters
  */
 function updateConfigReactionType(param) {
 	$.trace.debug("Update Config Reaction Type (Use Case) exit called");
@@ -434,7 +434,7 @@ function updateConfigReactionType(param) {
 
 /**
  * Exit for Update Event
- * @param param
+ * @param param Updated entity parameters
  */
 function updateEventManagement(param) {
 	$.trace.debug("Update EventManagement exit called");
@@ -479,7 +479,8 @@ function updateEventManagement(param) {
 
 /**
  * Method to Update Event entity
- * @param param
+ * @param oEvent Event
+ * @param oRow current row
  */
 function updateEvent(oEvent, oRow) {
 	oEvent.DESCRIPTION = oRow.DESCRIPTION;
@@ -500,7 +501,7 @@ function validValue(oValue1, oValue2) {
 
 /**
  * Exit for updating Training Date
- * @param param
+ * @param param Updated entity parameters
  */
  
 function updateTrainingDate(param) {

@@ -116,6 +116,10 @@ function getNextKey(sSequence) {
 	}
 }
 
+/**
+ * Method to import entities
+ * @param aEntities Entites to be imported
+ */
 function getImportEntitiesPromise(aEntities){
 	var aImportEntites = [];
 	for(var i = 0; aEntities.length > i; i++){
@@ -138,6 +142,14 @@ function getImportEntitiesPromise(aEntities){
 	});
 }
 
+/**
+ * Method to import entities with table name
+ * @param aEntities Entites to be imported
+ * @param sEntityName Entity Name
+ * @param sTable Table name
+ * @param oResult 
+ * @param oTx transaction object
+ */
 function getImportEntitiesWithTablePromise(aEntities, sEntityName, sTable, oResult, oTx){
 	var aImportEntites = [];
 	for(var i = 0; aEntities.length > i; i++){
@@ -161,7 +173,12 @@ function getImportEntitiesWithTablePromise(aEntities, sEntityName, sTable, oResu
 	});
 }
 
-
+/**
+ * Method to find an entity with given parameters
+ * @param oEntity Entity to find
+ * @param oParams Parameters
+ * @param oTx transaction object
+ */
 function getTxFindPromise(oEntity,oParams,tx){
 	return new Promise((resolve, reject) => {
 		tx.$find(oEntity,oParams,function(error, aEntities) {
@@ -173,6 +190,13 @@ function getTxFindPromise(oEntity,oParams,tx){
 		});
 	});
 }
+
+/**
+ * Method to delete an entity with given parameters
+ * @param oEntity Entity to find
+ * @param oParams Parameters
+ * @param oTx transaction object
+ */
 function getTxDeletePromise(aEntities,oParams,tx){
 	return new Promise((resolve, reject) => {
 		tx.$discardAll(aEntities,function(error) {
@@ -184,6 +208,11 @@ function getTxDeletePromise(aEntities,oParams,tx){
 		});
 	});
 }
+
+/**
+ * Method to start transaction
+ * @param aEntities entities
+ */
 function getTxPromise(aEntities){
 	return new Promise((resolve,reject) => {
 		XSDS.cdsAsync.$getTransaction(function(err, tx) {
@@ -196,6 +225,11 @@ function getTxPromise(aEntities){
 	});
 }
 
+/**
+ * Method to save an entity
+ * @param oEntity Entity to save
+ * @param oTx transaction object
+ */
 function getTxSavePromise(oEntity, tx){
 	return new Promise((resolve, reject) => {
 		tx.$save(oEntity, function(error){
@@ -208,6 +242,11 @@ function getTxSavePromise(oEntity, tx){
 	});
 }
 
+/**
+ * Method to save all entities
+ * @param aEntities Entities to save
+ * @param oTx transaction object
+ */
 function getTxSaveAllPromise(aEntities, tx){
 	return new Promise((resolve, reject) => {
 		tx.$saveAll(aEntities, function(error){
@@ -220,6 +259,12 @@ function getTxSaveAllPromise(aEntities, tx){
 	});
 }
 
+/**
+ * Method to get an entity
+ * @param oEntity Entity to get
+ * @param oParams parameters
+ * @param oTx transaction object
+ */
 function getTxGetPromise(oEntity,oParams,tx){
 	return new Promise((resolve, reject) => {
 		tx.$get(oEntity,oParams,function(error, oEntityFound) {
