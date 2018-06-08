@@ -106,15 +106,17 @@ BEGIN
 		) a
 	INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART;
 
-   	-- Generate Event IDs for newly created Events
-	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();
+   	-- Generate event ID
+    CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	
+    
 	SELECT MAX(Z_RUN_SEQ_ID) INTO LV_NEW_MAX_SEQ_ID FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP";
-		UPDATE "db::adm.config.event.name" 
+	
+	UPDATE "db::adm.config.event.name" 
 		SET "ICON" = NULL, "PRIORITY" = 1, "LATEST_EXTRACTED_SEQUENCE" = LV_NEW_MAX_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
 		WHERE UPPER("EVENT_NAME") = UPPER(LV_PYMNT_FULF_1)
 		AND UPPER("CATEGORY_NAME") = UPPER(LV_PYMNT_FULF_1_GRP);
 		
-		UPDATE "db::adm.config.event.name" 
+	UPDATE "db::adm.config.event.name" 
 		SET "ICON" = NULL, "PRIORITY" = 1, "LATEST_EXTRACTED_SEQUENCE" = LV_NEW_MAX_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
 		WHERE UPPER("EVENT_NAME") = UPPER(LV_PYMNT_FULF_2)
 		AND UPPER("CATEGORY_NAME") = UPPER(LV_PYMNT_FULF_2_GRP);

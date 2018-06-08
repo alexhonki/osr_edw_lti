@@ -72,8 +72,11 @@ BEGIN
 		GROUP BY CUST_ID, 
 			VALIDFROM; 
 	
-	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();
+	-- Generate event ID
+    CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	
+	
    	select max(Z_RUN_SEQ_ID) INTO LV_NEW_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV";
+	
 	UPDATE "db::adm.config.event.name" 
 		SET "ICON" = LV_LAND_EVAL_ICN, "PRIORITY" = 1, "LATEST_EXTRACTED_SEQUENCE" = LV_NEW_MAX_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
 		WHERE UPPER("EVENT_NAME") = UPPER(LV_LAND_EVAL)

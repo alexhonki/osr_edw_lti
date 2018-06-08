@@ -1,5 +1,7 @@
-PROCEDURE "procedures.utils::PR_UTIL_POPULATE_EVENT_ID" (IN I_GENERATE_ID INT DEFAULT 1,
-	IN I_EVENT_TYPE VARCHAR(3) DEFAULT 'ERP')
+PROCEDURE "procedures.utils::PR_UTIL_POPULATE_EVENT_ID" (
+	IN I_GENERATE_ID INT DEFAULT 1,
+	IN I_EVENT_SOURCE VARCHAR(10) DEFAULT 'ERP',
+	IN I_TYPE INT DEFAULT 3)
    LANGUAGE SQLSCRIPT
    SQL SECURITY INVOKER
    --DEFAULT SCHEMA <default_schema_name>
@@ -9,7 +11,7 @@ BEGIN
 	-- Generate IDs
 	----------------------------------------------------------
 	IF I_GENERATE_ID = 1 THEN
-		CALL "procedures.utils::PR_CONF_GENERATE_EVENT_ID" (:I_EVENT_TYPE );
+		CALL "procedures.utils::PR_CONF_GENERATE_EVENT_ID" (:I_EVENT_SOURCE, :I_TYPE );
 	END IF;
 	----------------------------------------------------------
 	-- Popuplate Empty Event IDs

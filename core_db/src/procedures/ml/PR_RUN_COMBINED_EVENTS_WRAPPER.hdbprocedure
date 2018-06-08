@@ -223,8 +223,9 @@ BEGIN
 			-- Drop the temporary table
 		DROP TABLE #TBL_FINAL_COMB_EVENTS;
 --------------------------TBC----------------------------------------------------	    
-	    -- Populate event id in cust events and event config tables
-	    CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();
+
+	   -- Generate event ID
+	    CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'COMBINED', I_TYPE => 4);	
 ----------------------------------------------------------------------------------	    
 	    -- Update last run date of the combined events procedure
 	    UPDATE "db::ml.config.MLParameters"

@@ -57,15 +57,15 @@ BEGIN
 			from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" AS a
 			INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART
 			WHERE HVORG='4050' and TVORG='0525'AND KOFIZ='LT' and BETRH>0 AND AUGRD NOT IN ('04','14','05','99') AND GPART IN (select GPART from :LT_CUST_EDITED);
-select max(Z_RUN_SEQ_ID) INTO LV_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP";
-/*SELECT EVENT_ID INTO LV_MAX_EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_CHRG_REG_DUNN);
-  CALL "procedures.utils::PR_UPDATE_SEQ_ID_FOR_EVENTS"(
-	SEQ_ID=> :LV_MAX_SEQ_ID,
-	EVENT_ID=>:LV_MAX_EVENT_ID
-   );*/
-   
-   		   	-- Generate Event IDs for newly created Events
-	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();	
+	select max(Z_RUN_SEQ_ID) INTO LV_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP";
+	/*SELECT EVENT_ID INTO LV_MAX_EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_CHRG_REG_DUNN);
+	  CALL "procedures.utils::PR_UPDATE_SEQ_ID_FOR_EVENTS"(
+		SEQ_ID=> :LV_MAX_SEQ_ID,
+		EVENT_ID=>:LV_MAX_EVENT_ID
+	   );*/
+
+	-- Generate Event IDs for newly created Events
+	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	
    
    	UPDATE "db::adm.config.event.name" 
 		SET "ICON" = LV_ICON, "PRIORITY" = 11,"LATEST_EXTRACTED_SEQUENCE" = LV_MAX_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP

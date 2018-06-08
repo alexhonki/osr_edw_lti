@@ -129,7 +129,7 @@ BEGIN
    	
    	call "procedures.events.erp.concession::PR_UPDATE_CONCESSION_DATA"();
    	
-   		-- Generate Event IDs for newly created Events
-	--CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();	
+   	-- Generate Event IDs for newly created Events
+	--CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);
    	
 END
