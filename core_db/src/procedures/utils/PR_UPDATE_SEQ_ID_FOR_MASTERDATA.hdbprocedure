@@ -11,5 +11,6 @@ BEGIN
    /*************************************
        Write your procedure logic 
    *************************************/
-   UPDATE "db::adm.seqIdLog" SET LATEST_EXTRACTED_SEQUENCE = :IV_SEQ_ID where ENTITY_NAME = :IV_ENTITY_NAME;
+   UPDATE "db::adm.seqIdLog" SET LATEST_EXTRACTED_SEQUENCE = :IV_SEQ_ID, LAST_EXTRACTED_DATE = CURRENT_UTCTIMESTAMP
+   where ENTITY_NAME = :IV_ENTITY_NAME;
 END
