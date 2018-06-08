@@ -7,18 +7,18 @@ Account Enquiry,Account Enquiry,query%pay,1,0
 Account Enquiry,Account Enquiry,enquiry%instal%plan,1,0
 Complaint,Complaint,complaint,2,0
 EPO,EPO,epo,3,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%mortgagee,4,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%coa,4,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,s62,4,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%cba,4,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%bank,4,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%westp,4,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%nab,4,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%anz,4,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%sec%62,4,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%suncorp,4,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,final%demand%ee,4,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,ee%final%demand,4,0
+Mortgagee,Mortgagee S62 Letter,final%demand%mortgagee,4,0
+Mortgagee,Mortgagee S62 Letter,final%demand%coa,4,0
+Mortgagee,Mortgagee S62 Letter,s62,4,0
+Mortgagee,Mortgagee S62 Letter,final%demand%cba,4,0
+Mortgagee,Mortgagee S62 Letter,final%demand%bank,4,0
+Mortgagee,Mortgagee S62 Letter,final%demand%westp,4,0
+Mortgagee,Mortgagee S62 Letter,final%demand%nab,4,0
+Mortgagee,Mortgagee S62 Letter,final%demand%anz,4,0
+Mortgagee,Mortgagee S62 Letter,final%demand%sec%62,4,0
+Mortgagee,Mortgagee S62 Letter,final%demand%suncorp,4,0
+Mortgagee,Mortgagee S62 Letter,final%demand%ee,4,0
+Mortgagee,Mortgagee S62 Letter,ee%final%demand,4,0
 Payment arrangement,Payment arrangement,final%demand%p2p,5,0
 Payment arrangement,Payment arrangement,withdraw%p2p,5,0
 Payment arrangement,Payment arrangement,TA2,5,0
@@ -57,9 +57,9 @@ Payment,Decline,payment%decline,14,0
 Reassessment,Reassessment,reassessment%dunning,15,0
 Reassessment,Reassessment,dunning%reassessment,15,0
 Dunning,Dunning,legal%letter,16,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,mortgag,17,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,sec%62,17,0
-Mortgagee S62 Letter,Mortgagee S62 Letter,requisition,17,0
+Mortgagee,Mortgagee S62 Letter,mortgag,17,0
+Mortgagee,Mortgagee S62 Letter,sec%62,17,0
+Mortgagee,Mortgagee S62 Letter,requisition,17,0
 Financial Consideration,Financial Consideration,relief,18,0
 Reassessment,Reassessment,reassessment,19,0
 Reissue,Reissue,reissue,20,0
