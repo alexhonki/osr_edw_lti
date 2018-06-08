@@ -71,9 +71,6 @@ resources:
       path: ./xs-security.json
   - name: OSR_LTI-JobScheduler
     type: com.sap.xs.job-scheduler
-  - name: cr_event_api
-    properties:
-      url: 'https://vlosrhd4db.osr.qld.gov.au:51219/http/odata/services.xsodata'
 copyright: SAP
 description: Tax Insights service
 provider: SAP
