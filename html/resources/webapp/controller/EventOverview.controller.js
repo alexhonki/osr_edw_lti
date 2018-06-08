@@ -774,7 +774,7 @@ sap.ui.define([
             	if(!sEventName){
             		return sTitle;
             	} else{
-            		return sTitle + sSubTitle + sEventName;
+            		return sTitle + sSubTitle + ": " + sEventName;
             	}
             },
             /**
