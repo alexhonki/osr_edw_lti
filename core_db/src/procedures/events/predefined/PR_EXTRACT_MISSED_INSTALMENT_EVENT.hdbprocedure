@@ -1,4 +1,5 @@
-PROCEDURE "procedures.events.predefined::PR_EXTRACT_MISSED_INSTALMENT_EVENT" ( )
+PROCEDURE "procedures.events.predefined::PR_EXTRACT_MISSED_INSTALMENT_EVENT"
+( 	IN IV_MODE INTEGER DEFAULT 0 )
    LANGUAGE SQLSCRIPT
    SQL SECURITY INVOKER
    --DEFAULT SCHEMA <default_schema_name>
@@ -16,9 +17,107 @@ BEGIN
 	DECLARE LV_MI_4 NVARCHAR(500) := '>9 times missing instalment payment';
 	DECLARE LV_MI_5 NVARCHAR(500) := '>12 times missing instalment payment';
 	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Non-Payment';
-	
+
+	DECLARE LV_MAX_LASTSEQ_ID INTEGER;
+	DECLARE LV_MAX_LASTSEQ_ID_1 INTEGER;
+	DECLARE LV_MAX_LASTSEQ_ID_2 INTEGER;
+	DECLARE LV_MAX_LASTSEQ_ID_3 INTEGER;
+	DECLARE LV_MAX_LASTSEQ_ID_4 INTEGER;
+	DECLARE LV_MAX_LASTSEQ_ID_5 INTEGER;
+	DECLARE LV_MAX_NEWSEQ_ID INTEGER;
+	DECLARE LV_MAX_NEWSEQ_ID_1 INTEGER;
+	DECLARE LV_MAX_NEWSEQ_ID_2 INTEGER;
+	DECLARE LV_MAX_NEWSEQ_ID_3 INTEGER;
+	DECLARE LV_MAX_NEWSEQ_ID_4 INTEGER;
+	DECLARE LV_MAX_NEWSEQ_ID_5 INTEGER;
+
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_MI);
+	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_MI_1);
+	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_MI_2);
+	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_MI_3);
+	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_MI_4);
+	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_MI_5);
+	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_MI);
+	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_1 from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_MI_1);
+	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_2 from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_MI_2);
+	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_3 from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_MI_3);
+	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_4 from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_MI_4);
+	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_5 from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_MI_5);
+	
+	IF :LV_MAX_LASTSEQ_ID is null then
+	LV_MAX_LASTSEQ_ID = 0;
+	END IF;
+	IF :LV_MAX_LASTSEQ_ID_1 is null then
+	LV_MAX_LASTSEQ_ID_1 = 0;
+	END IF;
+	IF :LV_MAX_LASTSEQ_ID_2 is null then
+	LV_MAX_LASTSEQ_ID_2 = 0;
+	END IF;
+	IF :LV_MAX_LASTSEQ_ID_3 is null then
+	LV_MAX_LASTSEQ_ID_3 = 0;
+	END IF;
+	IF :LV_MAX_LASTSEQ_ID_4 is null then
+	LV_MAX_LASTSEQ_ID_4 = 0;
+	END IF;
+	IF :LV_MAX_LASTSEQ_ID_5 is null then
+	LV_MAX_LASTSEQ_ID_5 = 0;
+	END IF;
+	
+	LT_CUST        = SELECT PRGPA FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+						 "db::app.Customer" on EXT_ID = PRGPA WHERE 
+						  "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID;
+	LT_CUST_EDITED = select to_int(PRGPA) as "CUST_ID" from :LT_CUST ;
+	
+	LT_CUST_1        = SELECT PRGPA FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+						 "db::app.Customer" on EXT_ID = PRGPA WHERE 
+						  "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_1;
+	LT_CUST_EDITED_1 = select to_int(PRGPA) as "CUST_ID" from :LT_CUST_1 ;
+	
+	LT_CUST_2        = SELECT PRGPA FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+						 "db::app.Customer" on EXT_ID = PRGPA WHERE 
+						  "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_2;
+	LT_CUST_EDITED_2 = select to_int(PRGPA) as "CUST_ID" from :LT_CUST_2 ;
+	
+	LT_CUST_3        = SELECT PRGPA FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+						 "db::app.Customer" on EXT_ID = PRGPA WHERE 
+						  "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_3;
+	LT_CUST_EDITED_3 = select to_int(PRGPA) as "CUST_ID" from :LT_CUST_3 ;
+	
+	LT_CUST_4        = SELECT PRGPA FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+						 "db::app.Customer" on EXT_ID = PRGPA WHERE 
+						  "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_4;
+	LT_CUST_EDITED_4 = select to_int(PRGPA) as "CUST_ID" from :LT_CUST_4 ;	
+	
+	LT_CUST_5        = SELECT PRGPA FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+						 "db::app.Customer" on EXT_ID = PRGPA WHERE 
+						  "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_5;
+	LT_CUST_EDITED_5 = select to_int(PRGPA) as "CUST_ID" from :LT_CUST_5 ;
+	
+	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+	IV_EVENT_NAME=>:LV_MI,
+	IT_CUST=>:LT_CUST_EDITED);
+	
+	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+	IV_EVENT_NAME=>:LV_MI_1,
+	IT_CUST=>:LT_CUST_EDITED_1);
+	
+	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+	IV_EVENT_NAME=>:LV_MI_2,
+	IT_CUST=>:LT_CUST_EDITED_2);
+	
+	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+	IV_EVENT_NAME=>:LV_MI_3,
+	IT_CUST=>:LT_CUST_EDITED_3);
+	
+		CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+	IV_EVENT_NAME=>:LV_MI_4,
+	IT_CUST=>:LT_CUST_EDITED_4);
+	
+		CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+	IV_EVENT_NAME=>:LV_MI_5,
+	IT_CUST=>:LT_CUST_EDITED_5);
    /*************************************
   	[TABLE] - DFKKPP - Promises to Pay Header Table
 	[FIEDLS SELECTED] - Get the details of all PPKEY for a PRGPA that satisfies the [CONDITION]
@@ -38,6 +137,12 @@ BEGIN
 					FROM(
 					    SELECT PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
 					    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
+					    WHERE PRGPA IN (SELECT PRGPA FROM :LT_CUST
+					    				UNION SELECT PRGPA FROM :LT_CUST_1
+					    				UNION SELECT PRGPA FROM :LT_CUST_2
+					    				UNION SELECT PRGPA FROM :LT_CUST_3
+					    				UNION SELECT PRGPA FROM :LT_CUST_4
+					    				UNION SELECT PRGPA FROM :LT_CUST_5)
 					    GROUP BY PRGPA, SUBSTRING(ERDAT, 0,4)
 					) A
 					JOIN(
@@ -101,6 +206,12 @@ BEGIN
 	                FROM(
 	                    SELECT PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
 	                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
+	                    WHERE PRGPA IN (SELECT PRGPA FROM :LT_CUST
+					    				UNION SELECT PRGPA FROM :LT_CUST_1
+					    				UNION SELECT PRGPA FROM :LT_CUST_2
+					    				UNION SELECT PRGPA FROM :LT_CUST_3
+					    				UNION SELECT PRGPA FROM :LT_CUST_4
+					    				UNION SELECT PRGPA FROM :LT_CUST_5)
 	                    GROUP BY PRGPA, SUBSTRING(ERDAT, 0,4)
 	                ) A
 	                JOIN(
@@ -254,11 +365,43 @@ BEGIN
 				WHERE A.INIT_DATE < 20170000			
 		);	
 		
+	    select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP";
+	    select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID_1 from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP";
+	    select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID_2 from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP";
+	    select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID_3 from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP";
+	    select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID_4 from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP";
+	    select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID_5 from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP";
+	    
 	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"();
 	
-	/*UPDATE "db::adm.config.event.name" 
-	SET "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEWSEQ_ID_CL_F, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
-	WHERE UPPER("EVENT_NAME") = UPPER(LV_AB_PYMNT_1)
-	AND UPPER("CATEGORY_NAME") = UPPER(LV_AB_EVENT_GRP);*/
+	UPDATE "db::adm.config.event.name" 
+	SET "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEWSEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
+	WHERE UPPER("EVENT_NAME") = UPPER(LV_MI)
+	AND UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GROUP);	
+	
+		UPDATE "db::adm.config.event.name" 
+	SET "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEWSEQ_ID_1, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
+	WHERE UPPER("EVENT_NAME") = UPPER(LV_MI_1)
+	AND UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GROUP);	
+	
+		UPDATE "db::adm.config.event.name" 
+	SET "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEWSEQ_ID_2, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
+	WHERE UPPER("EVENT_NAME") = UPPER(LV_MI_2)
+	AND UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GROUP);	
+	
+		UPDATE "db::adm.config.event.name" 
+	SET "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEWSEQ_ID_3, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
+	WHERE UPPER("EVENT_NAME") = UPPER(LV_MI_3)
+	AND UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GROUP);	
+	
+		UPDATE "db::adm.config.event.name" 
+	SET "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEWSEQ_ID_4, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
+	WHERE UPPER("EVENT_NAME") = UPPER(LV_MI_4)
+	AND UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GROUP);	
+	
+		UPDATE "db::adm.config.event.name" 
+	SET "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEWSEQ_ID_5, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
+	WHERE UPPER("EVENT_NAME") = UPPER(LV_MI_5)
+	AND UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GROUP);	
 		
 END

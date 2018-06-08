@@ -149,16 +149,18 @@ BEGIN
 		"PROMISED_PAYMENT_LATE" INT,
 		"BANKRUPT" INT,
 		"INSTALMENT_OR_EPO_CREATED" INT,
-		"DUMMY_1" INT,
-		"DUMMY_2" INT,
-		"DUMMY_3" INT,
+		"FIRST_TIME_TAXPAYER" INT,
+		"AB_DOC_CLEARED" INT,
+		"ASSESSMENT" INT,
+		"DEBTOR_LAST_6_MONTHS" INT,
+		"DEBTOR_IN_PAST" INT,
 		"REACTED" INT
 	);
 	
 	INSERT INTO #FEATURES_TABLE (
 		SELECT CUST_ID, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, REACTED
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, REACTED
 		FROM :CUSTOMERS_TABLE
 	);
 	
@@ -290,8 +292,6 @@ BEGIN
 	
 	
 	-- 6. TOTAL # EVENTS HIGH INF
-	-- aj - free 1
-	-- feature : Missed instalment payment
 	TMP6 =
 	SELECT CUST_ID, COUNT(*) AS TOTAL_EVENTS_HIGH_INFLUENCE
 	FROM :EVENT_INFLUENCE
@@ -342,8 +342,6 @@ BEGIN
 	
 	
 	-- 9. TOTAL # EVENTS HIGH INF PAST MONTH
-	-- aj free 2
-	-- feature : 1-3 times missing instalment payment
 	TMP9 =
 	SELECT
 		A.CUST_ID,
@@ -367,7 +365,6 @@ BEGIN
 	FROM :TMP9 a;
 	
 	-- 10. TOTAL # EVENTS HIGH INF PAST 3 MONTH
-	-- aj free 3
 	TMP10 =
 	SELECT
 		A.CUST_ID,
@@ -391,8 +388,6 @@ BEGIN
 	FROM :TMP10 a;
 	
 	-- 11. TOTAL # EVENTS HIGH INF PAST 6 MONTH
-	-- aj free 4
-	-- feature : >3 times missing instalment payment
 	TMP11 =
 	SELECT
 		C.CUST_ID,
@@ -416,7 +411,6 @@ BEGIN
 	FROM :TMP11 a;
 	
 	-- 12. TOTAL # EVENTS HIGH INF PAST 1 YEAR
-	-- aj free 5
 	TMP12 =
 	SELECT
 		A.CUST_ID,
@@ -454,8 +448,6 @@ BEGIN
 
 		
 	-- 13. TOTAL # EVENTS HIGH IMPACT
-	-- aj free 6
-	-- feature : Installment plan or EPO created
 	TMP13 =	
 	SELECT CUST_ID, COUNT(*) AS TOTAL_EVENTS_HIGH_IMPACT
 	FROM :EVENT_IMPACT
@@ -505,8 +497,6 @@ BEGIN
 	ON A.EVENT_ID = B."EVENT_ID.ID";
 	
 	-- 16. TOTAL # EVENTS WITH 30 DAYS TO REACT
-	-- aj free 7
-	-- feature : >9 times missing instalment payment
 	TMP16 =
 	SELECT CUST_ID, COUNT(*) NUMBER_EVENT
 	FROM :EVENT_DTR
@@ -714,7 +704,6 @@ BEGIN
 
 	IF :INACTIVE_ID <> 0 THEN
 		-- 27. The total number of 'Inactive' events
-		-- aj free 8
 		TMP27 =
 		SELECT
 			"CUST_ID" "CUST_ID", COUNT(*) AS INACTIVE_EVENTS
@@ -738,7 +727,7 @@ BEGIN
 			WHERE a."CUST_ID" = b.CUST_ID AND a."EVENT_ID.ID" = :INACTIVE_ID;
 	
 		-- 28. The total number of 'Inactive' events in the past 30 days
-		-- aj free 9
+
 		TMP28 =
 		SELECT
 			CUST_ID, COUNT(*) AS INACTIVE_EVENTS_30DAYS
@@ -751,7 +740,7 @@ BEGIN
 		FROM :TMP28 a;
 		
 		-- 29. The total number of 'Inactive' events in the past 90 days
-		-- aj free 10
+
 		TMP29 =
 		SELECT
 			CUST_ID, COUNT(*) AS INACTIVE_EVENTS_90DAYS
@@ -764,7 +753,7 @@ BEGIN
 		FROM :TMP29 a;
 		
 		-- 30. The total number of 'Inactive' events in the past 180 days
-		-- aj free 11
+
 		TMP30 =
 		SELECT
 			CUST_ID, COUNT(*) AS INACTIVE_EVENTS_180DAYS
@@ -803,21 +792,15 @@ BEGIN
 	/* NEGATIVE SURVEY BASED FEATURES */
 
 	-- 31. The number of 'Negative Survey' events
-	-- aj free 12
-	-- DEBTOR IN LAT 6 MONTHS
- 	TMP31 =
- 	SELECT 
- 		"CUST_ID" "CUST_ID", 1 AS NEGATIVE_SURVEY
- 	FROM :CUSTOMERS_TABLE
- 	WHERE "REACTION_DATE" BETWEEN ADD_MONTHS(:END_DATE, -6) AND :END_DATE;
-	/*
+	
+	TMP31 = 
 	SELECT
 		"CUST_ID" "CUST_ID", COUNT(*) AS NEGATIVE_SURVEY
 	FROM
 		:EVENTS_TABLE
 	WHERE LOWER(EVENT_NAME) LIKE '%negative survey%'
 	GROUP BY "CUST_ID";
-	*/
+	
 
 	INSERT INTO #FEATURES_TABLE (CUST_ID, NEGATIVE_SURVEY)
 	SELECT CUST_ID, a.NEGATIVE_SURVEY
@@ -834,14 +817,13 @@ BEGIN
 			WHERE a."CUST_ID" = b.CUST_ID AND LOWER(a.EVENT_NAME) LIKE '%negative survey%'; 
 			
 	-- 32. The number of 'Negative Survey' events in the past 30 days
-	-- aj free 13
+
 	TMP32 =
-	SELECT 
- 		A."CUST_ID" "CUST_ID", 1 AS NEGATIVE_SURVEY_30DAYS
- 	FROM "db::app.CustomerReactions" A
-	INNER JOIN
-		:CUSTOMERS_TABLE B
- 	ON A."CUST_ID" = B."CUST_ID";
+	SELECT
+		CUST_ID, COUNT(*) AS NEGATIVE_SURVEY_30DAYS 
+	FROM :NEGATIVE_SURVEY_EVENTS
+	WHERE INIT_DATE BETWEEN ADD_DAYS(DATE_TO_USE, -30) AND DATE_TO_USE 
+	GROUP BY CUST_ID;
 
 
 	INSERT INTO #FEATURES_TABLE (CUST_ID, NEGATIVE_SURVEY_30DAYS)
@@ -850,7 +832,7 @@ BEGIN
 	
 	
 	-- 33. The number of 'Negative Survey' events in the past 90 days
-	-- aj free 14
+
 	TMP33 =
 	SELECT
 		CUST_ID, COUNT(*) AS NEGATIVE_SURVEY_90DAYS 
@@ -864,7 +846,6 @@ BEGIN
 	
 	
 	-- 34. The number of 'Negative Survey' events in the past 180 days
-	-- aj free 15
 	TMP34 =
 	SELECT
 		CUST_ID, COUNT(*) AS NEGATIVE_SURVEY_180DAYS 
@@ -891,7 +872,7 @@ BEGIN
 		WHERE a."CUST_ID" = b.CUST_ID AND LOWER(a.EVENT_GROUP) LIKE 'queries & complaints';
 	
 	-- 35. The total number of Query & Complaints Events
-	-- aj free 16
+
 	TMP35 =
 	SELECT
 		CUST_ID, COUNT(*) AS TOTAL_QUERY_COMPLAINTS
@@ -903,8 +884,7 @@ BEGIN
 	FROM :TMP35 a;
 	
 	-- 36. The total number of Query & Complaints Events in the past 30 days
-	-- aj free 17
-	-- feature : first time taxpayer
+
 	TMP36 =
 	SELECT CUST_ID, COUNT(*) AS TOTAL_QUERY_COMPLAINTS_30DAYS
 	FROM :QUERY_COMPLAINT_EVENTS
@@ -916,7 +896,7 @@ BEGIN
 	FROM :TMP36 a;
 	
 	-- 37. The total number of Query & Complaints Events in the past 90 days
-	-- aj free 18
+
 	TMP37 =
 	SELECT
 		CUST_ID, COUNT(*) AS TOTAL_QUERY_COMPLAINTS_90DAYS
@@ -929,8 +909,7 @@ BEGIN
 	FROM :TMP37 a;
 	
 	-- 38. The total number of Query & Complaints Events in the past 180 days
-	-- aj free 19
-	-- feature : Receive new land evaluation
+
 	TMP38 =
 	SELECT
 		CUST_ID, COUNT(*) AS TOTAL_QUERY_COMPLAINTS_180DAYS
@@ -982,7 +961,7 @@ BEGIN
 		FROM :TMP40 a;
 		
 	-- 41. EVENT_NAME: 'Outbound FINAL DEMAND ALL YEARS'
-	-- aj free 21
+	
 	    TMP41 =
 		SELECT
 			B.CUST_ID "CUST_ID", COUNT(*) AS "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"
@@ -1003,7 +982,7 @@ BEGIN
 		FROM :TMP41 a;
 		
 	-- 42. EVENT_NAME: 'Payment Extension'
-	-- aj free 22
+
 	    TMP42 =
 		SELECT
 			"CUST_ID" "CUST_ID", COUNT(*) AS "PAYMENT_EXTENSION_ENQ"
@@ -1022,7 +1001,7 @@ BEGIN
 		FROM :TMP42 a;
 		
 	-- 43. EVENT_NAME: 'Outbound Garnishee Notice WITHIN WINDOW'
-	-- aj free 23
+
 	    TMP43 =
 		SELECT
 			"CUST_ID" "CUST_ID", COUNT(*) AS "OUT_GARNISHEE_NOTICE_WITHIN_WINDOW"
@@ -1037,8 +1016,8 @@ BEGIN
 		FROM :TMP43 a;
 	
 	-- 44. EVENT_NAME: 'Outbound Garnishee ALL YEARS'
-	-- aj free 24
-	--  feature 
+
+
 	    TMP44 =
 		SELECT
 			B.CUST_ID, COUNT(*) AS "OUT_GARNISHEE_NOTICE_ALL_YEARS"
@@ -1087,7 +1066,7 @@ BEGIN
 		FROM :TMP46 a;
 		
 	-- 47. EVENT_NAME: 'pay plan or payment plan WITHIN WINDOW'
-	-- aj free 25
+
 	    TMP47 =
 		SELECT
 			"CUST_ID" "CUST_ID", COUNT(*) AS "PAYMENT_PLAN_WITHIN_WINDOW"
@@ -1106,7 +1085,7 @@ BEGIN
 		FROM :TMP47 a;
 	
 	-- 48. EVENT_NAME: 'pay plan or payment plan ALL YEARS'
-	-- aj free 26
+
 	    TMP48 =
 		SELECT
 			B.CUST_ID, COUNT(*) AS "PAYMENT_PLAN_ALL_YEARS"
@@ -1129,7 +1108,7 @@ BEGIN
 		FROM :TMP48 a;
 		
 	-- 49. EVENT_NAME: 'mortgagee letter WITHIN WINDOW'
-	-- aj free 27
+
 	    TMP49 =
 		SELECT
 			"CUST_ID" "CUST_ID", COUNT(*) AS "MORTGAGEE_LETTER_WITHIN_WINDOW"
@@ -1232,7 +1211,7 @@ BEGIN
 		SELECT a.CUST_ID, a.MISSED_INSTALMENT_PAYMENT
 		FROM :TMP55 a;
 
-		-- aj free 2
+
 		-- 56 : 1-3 times missing instalment payment
 		TMP56 =
 		SELECT "CUST_ID" "CUST_ID", 1 AS "MISSING_INSTALMENT_1_3"               
@@ -1246,7 +1225,6 @@ BEGIN
 
 
 
-		-- aj free 3
 		-- 57 : 12 times missing instalment payment
 		TMP57 =
 		SELECT "CUST_ID" "CUST_ID", 1 AS "MISSING_INSTALMENT_12"               
@@ -1258,7 +1236,6 @@ BEGIN
 		SELECT a.CUST_ID, a.MISSING_INSTALMENT_12
 		FROM :TMP57 a;
 
-		-- aj free 4
 		-- 58 : >3 times missing instalment payment
 		TMP58 =
 		SELECT "CUST_ID" "CUST_ID", 1 AS "MISSING_INSTALMENT_GT_3"               
@@ -1270,7 +1247,7 @@ BEGIN
 		SELECT a.CUST_ID, a.MISSING_INSTALMENT_GT_3
 		FROM :TMP58 a;
 
-		-- aj free 5
+
 		-- 59: >6 times missing instalment payment
 		TMP59 =
 		SELECT "CUST_ID" "CUST_ID", 1 AS "MISSING_INSTALMENT_GT_6"               
@@ -1282,7 +1259,7 @@ BEGIN
 		SELECT a.CUST_ID, a.MISSING_INSTALMENT_GT_6
 		FROM :TMP59 a;
 
-		-- aj free 7
+
 		-- 60 : >9 times missing instalment payment
 		TMP60 =
 		SELECT "CUST_ID" "CUST_ID", 1 AS "MISSING_INSTALMENT_GT_9"               
@@ -1294,7 +1271,6 @@ BEGIN
 		SELECT a.CUST_ID, a.MISSING_INSTALMENT_GT_9
 		FROM :TMP60 a;
 
-		-- aj free 19
 		-- 61 : Receive new land evaluation
 		TMP61 =
 		SELECT
@@ -1307,7 +1283,7 @@ BEGIN
 		SELECT a.CUST_ID, a.RECIEVE_NEW_LAND_EVALUATION
 		FROM :TMP61 a;
 
-		-- aj free 12
+
 		-- 62 : Increase in Land Valuation by 30%
 			TMP62 =
 		SELECT
@@ -1320,7 +1296,7 @@ BEGIN
 		SELECT a.CUST_ID, a.INCREASE_LAND_VALUE_30_PER
 		FROM :TMP62 a;
 
-		-- aj free 13
+
 		-- 63 : Increase in Tax Amount by 50% or more
 		TMP63 =
 		SELECT
@@ -1333,7 +1309,7 @@ BEGIN
 		SELECT a.CUST_ID, a.INCRESE_TAX_50_PER_PLUS
 		FROM :TMP63 a;
 
-		-- aj free 14
+
 		-- 64 : Increase in Total Land Value by 50%
 		TMP64 =
 		SELECT
@@ -1346,7 +1322,7 @@ BEGIN
 		SELECT a.CUST_ID, a.INCREASE_LAND_VALUE_50_PER
 		FROM :TMP64 a;
 
-		-- aj free 15
+
 		-- 65 : Promise to Pay Payment was Late
 		TMP65 =
 		SELECT
@@ -1359,7 +1335,7 @@ BEGIN
 		SELECT a.CUST_ID, a.PROMISED_PAYMENT_LATE
 		FROM :TMP65 a;
 
-		-- aj free 16
+
 		-- 66 : BANKRUPT
 		TMP66 =
 		SELECT
@@ -1372,7 +1348,6 @@ BEGIN
 		SELECT a.CUST_ID, a.BANKRUPT
 		FROM :TMP66 a;
 
-		-- aj free 6
 		-- 67 : Installment plan or EPO created
 		TMP67 =	
 		SELECT
@@ -1386,10 +1361,10 @@ BEGIN
 		FROM :TMP67 a;
 
 
-		-- 68 : Dummy 1
+
 		-- First time taxpayer
 		TMP68 =	
-		SELECT "CUST_ID", CASE WHEN "ATTRIBUTE_VALUE" = 'Yes' then 1 else 0 end as "DUMMY_1"
+		SELECT "CUST_ID", CASE WHEN "ATTRIBUTE_VALUE" = 'Yes' then 1 else 0 end as "FIRST_TIME_TAXPAYER"
 		FROM "db::app.CustomerAttributes"
 		where "ATTRIBUTE_ID" = 3
 		and :END_DATE BETWEEN "INIT_DATE" AND "END_DATE"
@@ -1398,33 +1373,57 @@ BEGIN
 		FROM 	:CUSTOMERS_TABLE
 		);
 
-		INSERT INTO #FEATURES_TABLE (CUST_ID, DUMMY_1)
-		SELECT a.CUST_ID, a.DUMMY_1
+		INSERT INTO #FEATURES_TABLE (CUST_ID, FIRST_TIME_TAXPAYER)
+		SELECT a.CUST_ID, a.FIRST_TIME_TAXPAYER
 		FROM :TMP68 a;
 
-		-- Dummy 2
+
 		-- AB document cleared fully
 		TMP69 =
-		SELECT "CUST_ID" "CUST_ID", count(*) AS "DUMMY_2"               
+		SELECT "CUST_ID" "CUST_ID", count(*) AS "AB_DOC_CLEARED"               
 		FROM :EVENTS_TABLE
 		WHERE EVENT_NAME = 'AB Document Cleared Fully'
 		GROUP BY "CUST_ID";
 		
-		INSERT INTO #FEATURES_TABLE (CUST_ID, DUMMY_2)
-		SELECT CUST_ID, a.DUMMY_2
+		INSERT INTO #FEATURES_TABLE (CUST_ID, AB_DOC_CLEARED)
+		SELECT CUST_ID, a.AB_DOC_CLEARED
 		FROM :TMP69 a;
 
-		-- Dummy 3
+
 		-- Assessment
 		TMP70 =
-		SELECT "CUST_ID" "CUST_ID", count(*) AS "DUMMY_3"               
+		SELECT "CUST_ID" "CUST_ID", count(*) AS "ASSESSMENT"               
 		FROM :EVENTS_TABLE
 		WHERE EVENT_GROUP = 'Assessment'
 		GROUP BY "CUST_ID";
 		
-		INSERT INTO #FEATURES_TABLE (CUST_ID, DUMMY_3)
-		SELECT CUST_ID, a.DUMMY_3
+		INSERT INTO #FEATURES_TABLE (CUST_ID, ASSESSMENT)
+		SELECT CUST_ID, a.ASSESSMENT
 		FROM :TMP70 a;
+		
+		-- DEBTOR IN LAT 6 MONTHS
+	 	TMP71 =
+	 	SELECT 
+	 		"CUST_ID" "CUST_ID", 1 AS DEBTOR_LAST_6_MONTHS
+	 	FROM :CUSTOMERS_TABLE
+	 	WHERE "REACTION_DATE" BETWEEN ADD_MONTHS(:END_DATE, -6) AND :END_DATE;
+	 	
+	 	INSERT INTO #FEATURES_TABLE (CUST_ID, DEBTOR_LAST_6_MONTHS)
+		SELECT CUST_ID, a.DEBTOR_LAST_6_MONTHS
+		FROM :TMP71 a;
+		
+		-- DEBTOR IN PAST
+	 	TMP72 =
+			SELECT 
+ 			A."CUST_ID" "CUST_ID", 1 AS DEBTOR_IN_PAST
+ 			FROM "db::app.CustomerReactions" A
+			INNER JOIN
+			:CUSTOMERS_TABLE B
+			ON A."CUST_ID" = B."CUST_ID";
+			
+		INSERT INTO #FEATURES_TABLE (CUST_ID, DEBTOR_IN_PAST)
+		SELECT CUST_ID, a.DEBTOR_IN_PAST
+		FROM :TMP72 a;
 				
 /***********************************************************************************************
 * STORING FEATURES INTO THE TRAIN/PREDICTION DATASET TABLE
@@ -1503,9 +1502,11 @@ BEGIN
 			COALESCE(SUM("PROMISED_PAYMENT_LATE"),0) AS "PROMISED_PAYMENT_LATE",
 			COALESCE(SUM("BANKRUPT"),0) AS "BANKRUPT",
 			COALESCE(SUM("INSTALMENT_OR_EPO_CREATED"),0) AS "INSTALMENT_OR_EPO_CREATED",		
-			COALESCE(SUM("DUMMY_1"),0) AS "DUMMY_1",
-			COALESCE(SUM("DUMMY_2"),0) AS "DUMMY_2",
-			COALESCE(SUM("DUMMY_3"),0) AS "DUMMY_3",
+			COALESCE(SUM("FIRST_TIME_TAXPAYER"),0) AS "FIRST_TIME_TAXPAYER",
+			COALESCE(SUM("AB_DOC_CLEARED"),0) AS "AB_DOC_CLEARED",
+			COALESCE(SUM("ASSESSMENT"),0) AS "ASSESSMENT",
+			COALESCE(SUM("DEBTOR_LAST_6_MONTHS"),0) AS "DEBTOR_LAST_6_MONTHS",
+			COALESCE(SUM("DEBTOR_IN_PAST"),0) AS "DEBTOR_IN_PAST",
             MAX("REACTED") AS "REACTED"
 		FROM #FEATURES_TABLE
 		GROUP BY "CUST_ID");
@@ -1593,9 +1594,11 @@ BEGIN
 				 "PROMISED_PAYMENT_LATE", 
 				 "BANKRUPT", 
 				 "INSTALMENT_OR_EPO_CREATED", 
-				 "DUMMY_1", 
-				 "DUMMY_2", 
-				 "DUMMY_3", 
+				 "FIRST_TIME_TAXPAYER", 
+				 "AB_DOC_CLEARED", 
+				 "ASSESSMENT", 
+				 "DEBTOR_LAST_6_MONTHS",
+				 "DEBTOR_IN_PAST",
 				 "REACTED"
 			FROM #LT_FINAL_FEATURES;
 				
@@ -1672,9 +1675,11 @@ BEGIN
 				 "PROMISED_PAYMENT_LATE", 
 				 "BANKRUPT", 
 				 "INSTALMENT_OR_EPO_CREATED", 
-				 "DUMMY_1", 
-				 "DUMMY_2", 
-				 "DUMMY_3" 
+				 "FIRST_TIME_TAXPAYER", 
+				 "AB_DOC_CLEARED", 
+				 "ASSESSMENT" ,
+				 "DEBTOR_LAST_6_MONTHS",
+				 "DEBTOR_IN_PAST"
 			FROM #LT_FINAL_FEATURES;
 		
 		-- REMOVING OLD DATA FROM THE BACKUP TRAIN TABLE

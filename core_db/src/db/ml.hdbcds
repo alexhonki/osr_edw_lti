@@ -74,9 +74,11 @@ context ml {
             "PROMISED_PAYMENT_LATE"                    : BinaryFloat;
             "BANKRUPT"                                 : BinaryFloat;
             "INSTALMENT_OR_EPO_CREATED"                : BinaryFloat;
-            "dummy_1"                                  : BinaryFloat;
-            "dummy_2"                                  : BinaryFloat;
-            "dummy_3"                                  : BinaryFloat;
+            "FIRST_TIME_TAXPAYER"                      : BinaryFloat;
+            "AB_DOC_CLEARED"                           : BinaryFloat;
+            "ASSESSMENT"                               : BinaryFloat;
+            "DEBTOR_LAST_6_MONTHS"                     : BinaryFloat;
+            "DEBTOR_IN_PAST"                           : BinaryFloat;
             "REACTED"                                  : Integer;
         }
         technical configuration {
@@ -222,9 +224,11 @@ context ml {
             "PROMISED_PAYMENT_LATE"                    : BinaryFloat;
             "BANKRUPT"                                 : BinaryFloat;
             "INSTALMENT_OR_EPO_CREATED"                : BinaryFloat;
-            "dummy_1"                                  : BinaryFloat;
-            "dummy_2"                                  : BinaryFloat;
-            "dummy_3"                                  : BinaryFloat;
+            "FIRST_TIME_TAXPAYER"                      : BinaryFloat;
+            "AB_DOC_CLEARED"                           : BinaryFloat;
+            "ASSESSMENT"                               : BinaryFloat;
+            "DEBTOR_LAST_6_MONTHS"                     : BinaryFloat;
+            "DEBTOR_IN_PAST"                           : BinaryFloat;
         }
         technical configuration {
             column store;
@@ -347,9 +351,11 @@ context ml {
             "PROMISED_PAYMENT_LATE"                    : BinaryFloat;
             "BANKRUPT"                                 : BinaryFloat;
             "INSTALMENT_OR_EPO_CREATED"                : BinaryFloat;
-            "dummy_1"                                  : BinaryFloat;
-            "dummy_2"                                  : BinaryFloat;
-            "dummy_3"                                  : BinaryFloat;
+            "FIRST_TIME_TAXPAYER"                      : BinaryFloat;
+            "AB_DOC_CLEARED"                           : BinaryFloat;
+            "ASSESSMENT"                               : BinaryFloat;
+            "DEBTOR_LAST_6_MONTHS"                     : BinaryFloat;
+            "DEBTOR_IN_PAST"                           : BinaryFloat;
             "REACTED"                                  : Integer;
             "REACTION_TYPE"                            : hana.VARCHAR(100);
             "INIT_DATE"                                : UTCTimestamp;
@@ -428,9 +434,11 @@ context ml {
             "PROMISED_PAYMENT_LATE"                    : BinaryFloat;
             "BANKRUPT"                                 : BinaryFloat;
             "INSTALMENT_OR_EPO_CREATED"                : BinaryFloat;
-            "dummy_1"                                  : BinaryFloat;
-            "dummy_2"                                  : BinaryFloat;
-            "dummy_3"                                  : BinaryFloat;
+            "FIRST_TIME_TAXPAYER"                      : BinaryFloat;
+            "AB_DOC_CLEARED"                           : BinaryFloat;
+            "ASSESSMENT"                               : BinaryFloat;
+            "DEBTOR_LAST_6_MONTHS"                     : BinaryFloat;
+            "DEBTOR_IN_PAST"                           : BinaryFloat;
             "REACTED"                                  : Integer;
             "REACTION_TYPE"                            : hana.VARCHAR(100);
             "INIT_DATE"                                : UTCTimestamp;
@@ -637,9 +645,11 @@ context ml {
                 "PROMISED_PAYMENT_LATE"                    : BinaryFloat;
                 "BANKRUPT"                                 : BinaryFloat;
                 "INSTALMENT_OR_EPO_CREATED"                : BinaryFloat;
-                "dummy_1"                                  : BinaryFloat;
-                "dummy_2"                                  : BinaryFloat;
-                "dummy_3"                                  : BinaryFloat;
+                "FIRST_TIME_TAXPAYER"                      : BinaryFloat;
+                "AB_DOC_CLEARED"                           : BinaryFloat;
+                "ASSESSMENT"                               : BinaryFloat;
+                "DEBTOR_LAST_6_MONTHS"                     : BinaryFloat;
+                "DEBTOR_IN_PAST"                           : BinaryFloat;
                 "REACTED"                                  : Integer;
             };
             table type nn_model {
@@ -740,9 +750,11 @@ context ml {
                 "PROMISED_PAYMENT_LATE"                    : BinaryFloat;
                 "BANKRUPT"                                 : BinaryFloat;
                 "INSTALMENT_OR_EPO_CREATED"                : BinaryFloat;
-                "dummy_1"                                  : BinaryFloat;
-                "dummy_2"                                  : BinaryFloat;
-                "dummy_3"                                  : BinaryFloat;
+                "FIRST_TIME_TAXPAYER"                      : BinaryFloat;
+                "AB_DOC_CLEARED"                           : BinaryFloat;
+                "ASSESSMENT"                               : BinaryFloat;
+                "DEBTOR_LAST_6_MONTHS"                     : BinaryFloat;
+                "DEBTOR_IN_PAST"                           : BinaryFloat;
             };
             table type nn_result {
                 "ID"      : Integer;
@@ -848,5 +860,4 @@ context ml {
             "NN"     : BinaryFloat;
         };
     };
-
 };
