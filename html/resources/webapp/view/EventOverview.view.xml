@@ -200,9 +200,11 @@
                         noData="{i18n>CustomerList.NoData}">
                     <table:toolbar>
                         <Toolbar class="sapUiTinyMarginTop">
-                            <Title text="{i18n>EventOverview.CustomerListTitle}{= (${viewModel>/SelectedEventName}) ? ' : \'' + ${viewModel>/SelectedEventName} + '\'' : ''}"/>
+                            <!--<Title text="{i18n>EventOverview.CustomerListTitle}{= (${viewModel>/SelectedEventName}) ? ' : \'' + ${viewModel>/SelectedEventName} + '\'' : ''}"/>-->
+                            <Title text="{parts: [{path: 'i18n>EventOverview.CustomerListTitle'}{path: 'i18n>EventOverview.CustomerListSubTitle'}{path: 'viewModel>/SelectedEventName', 
+                            formatter: '.formatCustomerTableTitle'}"/>
                             <ToolbarSpacer/>
-                            <Button id="idExportCustomers" text="Export" press="exportCustomerList"/>
+                            <Button id="idExportCustomers" text="Export CSV" press="exportCustomerList"/>
                         </Toolbar>
                     </table:toolbar>
                     <table:columns>

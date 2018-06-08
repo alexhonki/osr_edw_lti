@@ -764,6 +764,20 @@ sap.ui.define([
                 }
             },
             /**
+             * Formatter for table title
+             * @param {string} - sTitle - Customer Title
+             * @param {string} - sSubTitle - String to be added incase event selected
+             * @param {string} - sEventName - Event name to be added
+             * @returns {string} - Table Title - Final output table title
+             */
+            formatCustomerTableTitle: function(sTitle, sSubTitle, sEventName){
+            	if(!sEventName){
+            		return sTitle;
+            	} else{
+            		return sTitle + sSubTitle + sEventName;
+            	}
+            },
+            /**
              * Exports the event list
              */
             exportEventList: function() {
