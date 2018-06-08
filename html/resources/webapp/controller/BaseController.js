@@ -32,6 +32,16 @@ sap.ui.define([
                 this.getView().setModel(labelModel, "Labels");
                 if (fnCallback) { fnCallback(labelModel); }
             }.bind(this));
-        }
+        },
+        
+        /**
+		 * Convenience method for getting the view model by name.
+		 * @public
+		 * @param {string} [sName] the model name
+		 * @returns {sap.ui.model.Model} the model instance
+		 */
+		getModel: function (sName) {
+			return this.getView().getModel(sName);
+		}
     });
 });

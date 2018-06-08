@@ -16,7 +16,7 @@ sap.ui.define([
                 dateDisplay: "MMM yyyy"
             },
             filters: {
-                toDate:"201612",
+                toDate:"",
                 monthsToShow: 6
             },
             filterKeys: {
@@ -60,7 +60,7 @@ sap.ui.define([
 
             var sFromDate = filters.fromDate;
             var sToDate = filters.toDate;
-
+		
             if (!sFromDate) {
                 var iMonthsToShow = filters.monthsToShow;
                 if (!iMonthsToShow && iMonthsToShow != 0) {
@@ -244,6 +244,15 @@ sap.ui.define([
             return $.map(this.getFilterData(), function (value, key) {
                 return value ? (this.labelForKey(key, oLabelModel) || key) : null;
             }.bind(this));
+        },
+        
+        setDefaultToDate: function (sToDate) {
+        	var oConfig = this.getFilterConfig();
+        	oConfig.filters.toDate = sToDate;
+        	oConfig.filters.fromDate = "";
+			var oFilter = this.buildDefaultFilters();
+        	this.setFilterData(oFilter);
+        	               
         }
     };
 });

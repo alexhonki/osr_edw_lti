@@ -10,7 +10,8 @@ sap.ui.define([
         "sap/ui/model/Sorter",
         "sap/ui/core/format/NumberFormat",
         "sap/ui/core/format/DateFormat",
-        "sap/ui/Device"
+        "sap/ui/Device",
+    	"sap/fiori/cri/service/ErrorService"
     ],
     /**
      * Event Overview Controller
@@ -29,7 +30,7 @@ sap.ui.define([
      * @returns {sap.fiori.cri.controller.BaseController} BaseController Controller
      */
     function (BaseController, formatter, Utilities, VisualFilterPlotItem, FilterService, JSONModel,
-    Filter, FilterOperator, Sorter, NumberFormat, DateFormat, Device) {
+    Filter, FilterOperator, Sorter, NumberFormat, DateFormat, Device,ErrorService) {
         "use strict";
 
         return BaseController.extend("sap.fiori.cri.controller.EventOverview", {
@@ -63,18 +64,19 @@ sap.ui.define([
 
                 var oJSONModel = new JSONModel();
                 this.getView().setModel(oJSONModel, "viewModel");
+                 
             },
             /**
              * Handler for before rendering the control
              */
             onBeforeRendering: function () {
-
+				
             },
             /**
              * Handler for after rendering the control
              */
             onAfterRendering: function () {
-                // Only show export options on desktop
+            	// Only show export options on desktop
                 this.byId("idExportCustomers").setVisible(Device.system.desktop);
                 this.byId("idExportEvents").setVisible(Device.system.desktop);
 
@@ -83,57 +85,90 @@ sap.ui.define([
                 oEventOverviewPage.setBusy(true);
 
                 FilterService.setFilterValue("EventGroup", this.AllCategoriesKey, this.EventSelectionStorageKey);
+            	var sToDate;
+            	var oFilters ;//= this.getODataFilters();
+                var filterString ;//= FilterService.getEncodedFilterString() || "";
+				var model = this.getView().getModel("CRI");
+				 var that = this;
+                var oModel = this.getView().getModel();
+                var sDateRangeFilters;// = this.getDateRangeFilterString();
+	            //set default filter toDate from admin prediction settings
+				model.read("/ConfigPredictionDate", {
+	                    success: function (oData) {
+	                        try {
+	                            oData.results.forEach(function (dateSetting) {
+	                                if (dateSetting.IS_ENABLED === 1) {
+	                                    
+	                                     sToDate = dateSetting.TO_TIME_SEGMENT.toString() ;
+	                                     FilterService.setDefaultToDate(sToDate); 
+	                                     oFilters = that.getODataFilters();
+	                                     sDateRangeFilters = that.getDateRangeFilterString();
+	                                     filterString = FilterService.getEncodedFilterString() || "";
+					                     model.read("/EventOverviewParameters(" + sDateRangeFilters + ",IP_FILTER='" + filterString + "')/Results", {
+						                    filters:oFilters,
+						                    success: function (oData) {
+						                        oModel.setSizeLimit(oData.results.length);
+						                        oModel.setProperty("/Events", oData.results);
+						                        oModel.setProperty("/DisplayedEvents", oData.results);
+						                        that.updateEventCategories();
+						                        that.getView().getModel("viewModel").setProperty("/EventGroup", that.AllCategoriesKey);
+						
+						                        oEventOverviewPage.setBusy(false);
+						                    }, error: function () {}
+						                });
+						                 // OData call to obtain FilterBar resources
+						                model.read("/UseCaseConfig", {
+						                    filters: [new Filter("IS_ENABLED",FilterOperator.EQ, 1)],
+						                    urlParameters: {
+						                        $expand:"Config"
+						                    },
+						                    success: function (oData) {
+						                        var useCases = oData.results;
+						                        if (useCases.length == 0) {
+						                            return;
+						                        }
+						                        var configItems = useCases[0].Config.results;
+						                        var impactThresholds = {};
+						                        var riskThresholds = {};
+						                        that.getVisualFilterData(configItems);
+						                        configItems.forEach(function (oItem) {
+						                            if (oItem.BUCKET_ID == "IMPACT") {
+						                                impactThresholds[oItem.SEQ] = oItem.FROM_VALUE;
+						                            } else if (oItem.BUCKET_ID == "INFLUENCE") {
+						                                riskThresholds[oItem.SEQ] = oItem.FROM_VALUE;
+						                            }
+						                        });
+						                        var bubbleChart = that.byId('idVisualFilterBubbleChart');
+						
+						                        var xAxisThresholds = [impactThresholds["1"], impactThresholds["2"], impactThresholds["3"]];
+						                        var yAxisThresholds = [riskThresholds["1"], riskThresholds["2"], riskThresholds["3"]];
+						
+						                        bubbleChart.setProperty("xAxisThresholds", xAxisThresholds);
+						                        bubbleChart.setProperty("yAxisThresholds", yAxisThresholds);
+						                        bubbleChart.redraw();
+						                    }
+						                });
+	                                }
+	                            });
+	                        } catch (oError) {
+	                            ErrorService.raiseGenericError(oError);
+	                        }
+	                    },
+	                    error: function (oError) {
+	                        ErrorService.raiseGenericError(oError);
+	                    }
+	            });
+                
 
                 // Initial call to obtain data and insert into /Events and /DisplayedEvents
-                var oFilters = this.getODataFilters();
-                var filterString = FilterService.getEncodedFilterString() || "";
-                var that = this;
-                var oModel = this.getView().getModel();
-                var sDateRangeFilters = this.getDateRangeFilterString();
-                this.getView().getModel("CRI").read("/EventOverviewParameters(" + sDateRangeFilters + ",IP_FILTER='" + filterString + "')/Results", {
-                    filters:oFilters,
-                    success: function (oData) {
-                        oModel.setSizeLimit(oData.results.length);
-                        oModel.setProperty("/Events", oData.results);
-                        oModel.setProperty("/DisplayedEvents", oData.results);
-                        that.updateEventCategories();
-                        that.getView().getModel("viewModel").setProperty("/EventGroup", that.AllCategoriesKey);
-
-                        oEventOverviewPage.setBusy(false);
-                    }, error: function () {}
-                });
-                // OData call to obtain FilterBar resources
-                this.getView().getModel("CRI").read("/UseCaseConfig", {
-                    filters: [new Filter("IS_ENABLED",FilterOperator.EQ, 1)],
-                    urlParameters: {
-                        $expand:"Config"
-                    },
-                    success: function (oData) {
-                        var useCases = oData.results;
-                        if (useCases.length == 0) {
-                            return;
-                        }
-                        var configItems = useCases[0].Config.results;
-                        var impactThresholds = {};
-                        var riskThresholds = {};
-                        that.getVisualFilterData(configItems);
-                        configItems.forEach(function (oItem) {
-                            if (oItem.BUCKET_ID == "IMPACT") {
-                                impactThresholds[oItem.SEQ] = oItem.FROM_VALUE;
-                            } else if (oItem.BUCKET_ID == "INFLUENCE") {
-                                riskThresholds[oItem.SEQ] = oItem.FROM_VALUE;
-                            }
-                        });
-                        var bubbleChart = that.byId('idVisualFilterBubbleChart');
-
-                        var xAxisThresholds = [impactThresholds["1"], impactThresholds["2"], impactThresholds["3"]];
-                        var yAxisThresholds = [riskThresholds["1"], riskThresholds["2"], riskThresholds["3"]];
-
-                        bubbleChart.setProperty("xAxisThresholds", xAxisThresholds);
-                        bubbleChart.setProperty("yAxisThresholds", yAxisThresholds);
-                        bubbleChart.redraw();
-                    }
-                });
+               // var oFilters = this.getODataFilters();
+                //var filterString = FilterService.getEncodedFilterString() || "";
+               
+                //var model = this.getView().getModel("CRI");
+                
+               
+                
+               
                 this.initBubbleChart();
                 this.updateEventsList();
                 this.updateTopEvents();

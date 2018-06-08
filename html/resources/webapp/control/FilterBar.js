@@ -9,7 +9,8 @@ sap.ui.define([
     "sap/m/ComboBox",
     "sap/m/DatePicker",
     "sap/m/MessageBox",
-    "sap/m/MultiComboBox"
+    "sap/m/MultiComboBox",
+    "sap/fiori/cri/service/ErrorService"
     ],
     /**
      * Filter Bar
@@ -27,7 +28,7 @@ sap.ui.define([
      * @returns {*} Filter Bar
      */
     function (BaseControl, FilterService, JSONModel, Item, FilterBar, FilterItem, SearchField, ComboBox, DatePicker,
-    MessageBox,MultiComboBox) {
+    MessageBox,MultiComboBox,ErrorService) {
         'use strict';
         return BaseControl.extend("sap.fiori.cri.control.FilterBar", {
             metadata: {
@@ -59,13 +60,35 @@ sap.ui.define([
                 this.setModel(filterModel, "filterModel");
             },
             onAfterRendering: function () {
-                if (this.getModel("filterModel").getProperty("/FiltersLoaded")) {
-                    return;
-                }
-
-                this.loadLabels("FilterBar", "en-US", function () {
-                    this.setupFilters();
-                }.bind(this));
+            	//setup default to date based on admin prediction settings
+        		var sToDate;
+        		var that = this;
+            	this.getModel("CRI").read("/ConfigPredictionDate", {
+            		 success: function (oData) {
+	                        try {
+	                            oData.results.forEach(function (dateSetting) {
+	                                if (dateSetting.IS_ENABLED === 1) {
+	                                    
+	                                     sToDate = dateSetting.TO_TIME_SEGMENT.toString() ;
+	                                     FilterService.setDefaultToDate(sToDate); 
+	                                     if (that.getModel("filterModel").getProperty("/FiltersLoaded")) {
+							                    return;
+							                }
+							
+							                that.loadLabels("FilterBar", "en-US", function () {
+							                    that.setupFilters();
+							                });
+	                                }
+	                            });
+	                        } catch (oError) {
+	                            ErrorService.raiseGenericError(oError);
+	                        }
+	                    },
+	                    error: function (oError) {
+	                        ErrorService.raiseGenericError(oError);
+	                    }
+            	});
+                
             },
             createContent: function () {
                 var oFilterBar = new FilterBar({
