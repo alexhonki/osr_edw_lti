@@ -63,7 +63,7 @@ BEGIN
 							FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" 
 							inner join "db::app.Customer" on EXT_ID = PARTNER 
 							WHERE "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_TSA AND ADR_KIND in ('LTX_ADD', 'LTX_AD2', 'XXDEFAULT');
-	LT_CUST_ID_EDITED_TSA = select to_int(PARTNER) as "CUST_ID" AS TO_YEAR from :LT_CUST_EDITED_TSA;
+	LT_CUST_ID_EDITED_TSA = select to_int(PARTNER) as "CUST_ID"   from :LT_CUST_EDITED_TSA;
 	
 	LT_CUST_EDITED_TRA = SELECT PARTNER, 
 								CASE WHEN VALID_FROM LIKE '%0000%' THEN TO_TIMESTAMP(CAST('20100701' AS DATE))
@@ -72,7 +72,7 @@ BEGIN
 							FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" 
 							inner join "db::app.Customer" on EXT_ID = PARTNER 
 							WHERE "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_TRA AND ADR_KIND in ('LTX_ADD', 'LTX_AD2', 'XXDEFAULT');
-	LT_CUST_ID_EDITED_TRA = select to_int(PARTNER) as "CUST_ID" AS TO_YEAR from :LT_CUST_EDITED_TRA;
+	LT_CUST_ID_EDITED_TRA = select to_int(PARTNER) as "CUST_ID"   from :LT_CUST_EDITED_TRA;
 	
 	LT_CUST_EDITED_SA = SELECT PARTNER,
 							   CASE WHEN VALID_FROM LIKE '%0000%' THEN TO_TIMESTAMP(CAST('20100701' AS DATE))
@@ -81,7 +81,7 @@ BEGIN
 							FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS"
 							inner join "db::app.Customer" on EXT_ID = PARTNER 
 							WHERE "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_SA AND ADR_KIND in ('LTX_ADD', 'LTX_AD2', 'XXDEFAULT');
-	LT_CUST_ID_EDITED_SA = select to_int(PARTNER) as "CUST_ID" AS TO_YEAR from :LT_CUST_EDITED_SA;
+	LT_CUST_ID_EDITED_SA = select to_int(PARTNER) as "CUST_ID"  from :LT_CUST_EDITED_SA;
 	
 	--Delete the events from Customer Events table
 	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
