@@ -1,0 +1,18 @@
+{
+	"description": "Extract Total land Value Event Data",
+	"action": "procedures.events.predefined::PR_EXTRACT_TOTAL_LAND_VALUE_EVENT",
+	
+	"schedules": [{
+		"description": "Total land Value Event with schedule frequency: Initial Load", 
+		"xscron": "2016 * * * 21 10 0",
+		"parameter": {
+			"IV_MODE": 0
+		} 
+	}, {
+		"description": "Total land Value Event with schedule frequency: Delta Load every * * * * 21 10 0", 
+		"xscron": "2016 * * * 21 10 0",
+		"parameter": {
+			"IV_MODE": 1
+		} 
+	}]
+}

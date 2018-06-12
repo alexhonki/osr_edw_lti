@@ -1,0 +1,18 @@
+{
+	"description": "Extract Late Payment Interest Event Data",
+	"action": "procedures.events.predefined::PR_EXTRACT_LATE_PAYMENT_INTEREST_EVENT",
+	
+	"schedules": [{
+		"description": "Late Payment Interest Event with schedule frequency: Initial Load", 
+		"xscron": "2016 * * * 21 10 0",
+		"parameter": {
+			"IV_MODE": 0
+		} 
+	}, {
+		"description": "Late Payment Interest Event with schedule frequency: Delta Load every * * * * 21 10 0", 
+		"xscron": "2016 * * * 21 10 0",
+		"parameter": {
+			"IV_MODE": 1
+		} 
+	}]
+}
