@@ -101,8 +101,10 @@ BEGIN
 												AND (AUGRD IN ('01', '08', '15', ''))) A8 
 									left join	(SELECT AUGBL, MAX(FAEDN) AS PAYMENT_DATE 
 													FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" A6 
-													WHERE AUGBL IN (SELECT AUGBL from  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" 
-																		WHERE AUGBL != '' AND GPART IN (SELECT GPART FROM :LT_CUST_ID))
+													WHERE AUGBL IN (SELECT AUGBL
+																	from  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" as DF
+																	INNER JOIN :LT_CUST_ID AS DELT ON DF.GPART = DELT.GPART
+																		WHERE AUGBL != '')
 													AND A6.HVORG = '5000' GROUP BY AUGBL ) B8 
 									ON A8.AUGBL = B8.AUGBL  )
 						);

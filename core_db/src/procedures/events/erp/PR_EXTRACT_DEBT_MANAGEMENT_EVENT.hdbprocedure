@@ -75,6 +75,7 @@ FROM (
 			) AS INIT_TS, 
 			NULL AS END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_FKKMAKO" AS a
+		INNER JOIN :LT_CUST_ID AS b ON a.GPART = b.GPART
 			INNER JOIN "db::app.Customer" AS SAP
 			ON SAP.EXT_ID = a.GPART
 		WHERE STRAT = '02'
@@ -103,6 +104,7 @@ FROM (
 			) AS INIT_TS, 
 			NULL AS END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_FKKMAKO" AS a
+		INNER JOIN :LT_CUST_ID AS b ON a.GPART = b.GPART
 			INNER JOIN "db::app.Customer" AS SAP
 			ON SAP.EXT_ID = a.GPART
 		WHERE STRAT = '02'
@@ -131,6 +133,7 @@ FROM (
 			) AS INIT_TS, 
 			NULL AS END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_FKKMAKO" AS a
+		INNER JOIN :LT_CUST_ID AS b ON a.GPART = b.GPART
 			INNER JOIN "db::app.Customer" AS SAP
 			ON SAP.EXT_ID = a.GPART
 		WHERE STRAT = '02'
@@ -159,6 +162,7 @@ FROM (
 			) AS INIT_TS, 
 			NULL AS END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_FKKMAKO" AS a
+		INNER JOIN :LT_CUST_ID AS b ON a.GPART = b.GPART
 			INNER JOIN "db::app.Customer" AS SAP
 			ON SAP.EXT_ID = a.GPART
 		WHERE STRAT = '02'
@@ -167,7 +171,7 @@ FROM (
 
 		UNION ALL
 
-		SELECT GPART AS CUST_ID, 
+		SELECT a.GPART AS CUST_ID, 
 			--(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_DEBT_SRCH_UPD_24)) as EVENT_ID,
 			--(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_DEBT_SRCH_UPD_24)) as EVENT_GROUP,
 			NULL as  EVENT_ID,
@@ -187,6 +191,7 @@ FROM (
 			) AS INIT_TS, 
 			NULL AS END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_FKKMAKO" AS a
+		INNER JOIN :LT_CUST_ID AS b ON a.GPART = b.GPART
 			INNER JOIN "db::app.Customer" AS SAP
 			ON SAP.EXT_ID = a.GPART
 		WHERE STRAT = '02'
@@ -215,6 +220,7 @@ FROM (
 			) AS INIT_TS, 
 			NULL AS END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_FKKMAKO" AS a
+		INNER JOIN :LT_CUST_ID AS b ON a.GPART = b.GPART
 			INNER JOIN "db::app.Customer" AS SAP
 			ON SAP.EXT_ID = a.GPART
 		WHERE STRAT = '02'
@@ -243,6 +249,7 @@ FROM (
 			) AS INIT_TS, 
 			NULL AS END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_FKKMAKO" AS a
+		INNER JOIN :LT_CUST_ID AS b ON a.GPART = b.GPART
 			INNER JOIN "db::app.Customer" AS SAP
 			ON SAP.EXT_ID = a.GPART
 		WHERE STRAT = '02'
@@ -271,6 +278,7 @@ FROM (
 			) AS INIT_TS, 
 			NULL AS END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_FKKMAKO" AS a
+		INNER JOIN :LT_CUST_ID AS b ON a.GPART = b.GPART
 			INNER JOIN "db::app.Customer" AS SAP
 			ON SAP.EXT_ID = a.GPART
 		WHERE STRAT = '02'
@@ -299,6 +307,7 @@ FROM (
 			) AS INIT_TS, 
 			NULL AS END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_FKKMAKO" AS a
+		INNER JOIN :LT_CUST_ID AS b ON a.GPART = b.GPART
 			INNER JOIN "db::app.Customer" AS SAP
 			ON SAP.EXT_ID = a.GPART
 		WHERE STRAT = '02'
@@ -327,6 +336,7 @@ FROM (
 			) AS INIT_TS, 
 			NULL AS END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_FKKMAKO" AS a
+		INNER JOIN :LT_CUST_ID AS b ON a.GPART = b.GPART
 			INNER JOIN "db::app.Customer" AS SAP
 			ON SAP.EXT_ID = a.GPART
 		WHERE STRAT = '02'

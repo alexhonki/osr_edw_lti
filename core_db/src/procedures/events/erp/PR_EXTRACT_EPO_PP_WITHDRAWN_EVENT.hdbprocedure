@@ -66,8 +66,9 @@ BEGIN
 		NULL  as END_TS
 		from(
 			SELECT a.GPART,b.AEDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a
+			INNER JOIN :LT_CUST_ID as delt ON a.GPART = delt.GPART
 			INNER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP_HIS" b ON a.PPKEY=b.PPKEY
-			WHERE COMMT='Promise to Pay Withdrawn' AND PPCAT='Z7' AND GPART IN (SELECT GPART FROM :LT_CUST_ID)
+			WHERE COMMT='Promise to Pay Withdrawn' AND PPCAT='Z7' 
 			) a
 		INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART;
 

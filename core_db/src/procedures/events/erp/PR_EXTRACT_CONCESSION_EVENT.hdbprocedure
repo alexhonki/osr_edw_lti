@@ -11,20 +11,19 @@ BEGIN
          Removed Concession - If it's not an invalid Exemption but Current Date > ValidTo of the Exemption/Deduction Received
          Invalid Concession - If it's an invalid Exemption(INVALID_EXMD = 'X')
    *************************************/
-   DECLARE LV_REC_CON_HOME NVARCHAR(500) := 'Received Concession For Home' ;
-   DECLARE LV_REC_CON_PROD NVARCHAR(500) := 'Received Concession For Primary Production';
-   DECLARE LV_REC_CON_OTH NVARCHAR(500)  := 'Received Concession For Other Concession';
-   DECLARE LV_REC_CON_SUBD NVARCHAR(500) := 'Received Concession For Subdivider Discount';
-   DECLARE LV_REM_CON_HOME NVARCHAR(500) := 'Removed Concession For Home';
-   DECLARE LV_REM_CON_PROD NVARCHAR(500) := 'Removed Concession For Primary Production';
-   DECLARE LV_REM_CON_OTH NVARCHAR(500)  := 'Removed Concession For Other Concession';
-   DECLARE LV_REM_CON_SUBD NVARCHAR(500) := 'Removed Concession For Subdivider Discount';
+	DECLARE LV_REC_CON_HOME NVARCHAR(500) := 'Received Concession For Home' ;
+	DECLARE LV_REC_CON_PROD NVARCHAR(500) := 'Received Concession For Primary Production';
+	DECLARE LV_REC_CON_OTH NVARCHAR(500)  := 'Received Concession For Other Concession';
+	DECLARE LV_REC_CON_SUBD NVARCHAR(500) := 'Received Concession For Subdivider Discount';
+	DECLARE LV_REM_CON_HOME NVARCHAR(500) := 'Removed Concession For Home';
+	DECLARE LV_REM_CON_PROD NVARCHAR(500) := 'Removed Concession For Primary Production';
+	DECLARE LV_REM_CON_OTH NVARCHAR(500)  := 'Removed Concession For Other Concession';
+	DECLARE LV_REM_CON_SUBD NVARCHAR(500) := 'Removed Concession For Subdivider Discount';
+	
+	DECLARE LV_CATEGORY NVARCHAR(100) := 'Concession';
    
-   
-   DECLARE LV_CATEGORY NVARCHAR(100) := 'Concession';
-   
-   DECLARE EXIT HANDLER FOR SQLEXCEPTION
-	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
 	
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_REC_CON_HOME);
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_REC_CON_PROD);
@@ -62,12 +61,10 @@ BEGIN
 			LEFT(VALIDFROM,6)  as INIT_TS,
 			NULL  as END_TS
 		from "osr.edw.staging.md.rms.proxy.synonym::CV_LTCNEXMD" as A
+		inner join :LT_CUST_ID as delt on A.BPARTNER = delt.BPARTNER and CAST(A.VALIDFROM as date) = init_date
 		INNER JOIN  "db::app.Customer" as SAP on SAP.EXT_ID=A.BPARTNER
 		where INVALID_EXMD=''  AND 	SAP.INIT_DATE <= CAST(VALIDFROM as date) 
-		AND (BPARTNER IN (SELECT BPARTNER FROM :LT_CUST_ID) AND CAST(VALIDFROM as date) in (select init_date from :LT_CUST_ID))
-
 	UNION ALL
-		
 		/*Removed Concession*/
 		select 
 			SAP.CUST_ID as CUST_ID,
@@ -87,10 +84,9 @@ BEGIN
 			LEFT(VALIDTO,6)   as INIT_TS,
 			NULL  as END_TS
 		from "osr.edw.staging.md.rms.proxy.synonym::CV_LTCNEXMD" as A
+		inner join :LT_CUST_ID_REM as delt on A.BPARTNER = delt.BPARTNER and CAST(A.VALIDTO as date) = init_date
 		INNER JOIN  "db::app.Customer" as SAP on SAP.EXT_ID=A.BPARTNER
 		where CAST(VALIDTO AS DATE)<cast(NOW() as date) and  INVALID_EXMD='' AND 	SAP.INIT_DATE <= CAST(VALIDFROM as date) 
-				AND (BPARTNER IN (SELECT BPARTNER FROM :LT_CUST_ID) AND CAST(VALIDTO as date) in (select init_date from :LT_CUST_ID_REM))
-		
 		UNION ALL
 		/*SubDivider Concession - Received*/
 		select 
@@ -104,10 +100,10 @@ BEGIN
 			:LV_REC_CON_SUBD as DESCRIPTION,
 			LEFT(TAXYRSTARTDT,6)   as INIT_TS,
 			NULL  as END_TS 
-	      FROM :LT_TEMP_RESV as A INNER JOIN
-          "db::app.Customer" as SAP on SAP.EXT_ID=A.ZZ_PARTNER 
-          WHERE CONCESSCODE = '*' AND (CONCESSCODE_LAG IS NULL OR CONCESSCODE_LAG != '*') AND 
-          (ZZ_PARTNER IN (SELECT ZZ_PARTNER FROM :LT_CUST_ID_SUBD) AND CAST(TAXYRSTARTDT as date) in (select init_date from :LT_CUST_ID_SUBD))
+	      FROM :LT_TEMP_RESV as A
+	      inner join :LT_CUST_ID_SUBD as delt on A.ZZ_PARTNER = delt.ZZ_PARTNER and CAST(TAXYRSTARTDT as date) = init_date
+	      INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=A.ZZ_PARTNER 
+          WHERE CONCESSCODE = '*' AND (CONCESSCODE_LAG IS NULL OR CONCESSCODE_LAG != '*')  
 			UNION ALL
 		/*SubDivider Concession - Removed*/
 		select 
@@ -121,11 +117,10 @@ BEGIN
 			:LV_REM_CON_SUBD as DESCRIPTION,
 			LEFT(TAXYRSTARTDT,6)   as INIT_TS,
 			NULL  as END_TS 
-	      FROM :LT_TEMP_RESV as A INNER JOIN
-          "db::app.Customer" as SAP on SAP.EXT_ID=A.ZZ_PARTNER 
-          WHERE (CONCESSCODE = '' OR CONCESSCODE != '*') AND CONCESSCODE_LAG ='*' AND 
-          (ZZ_PARTNER IN (SELECT ZZ_PARTNER FROM :LT_CUST_ID_SUBD) AND CAST(TAXYRSTARTDT as date) in (select init_date from :LT_CUST_ID_SUBD))
-);
+	      FROM :LT_TEMP_RESV as A
+	      inner join :LT_CUST_ID_SUBD as delt on A.ZZ_PARTNER = delt.ZZ_PARTNER and CAST(A.TAXYRSTARTDT as date) = init_date
+	      INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=A.ZZ_PARTNER 
+          WHERE (CONCESSCODE = '' OR CONCESSCODE != '*') AND CONCESSCODE_LAG ='*');
    	
    	call "procedures.events.erp.concession::PR_UPDATE_CONCESSION_DATA"();
    	

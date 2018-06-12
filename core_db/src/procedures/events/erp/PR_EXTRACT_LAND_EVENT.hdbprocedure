@@ -62,7 +62,7 @@ BEGIN
 		IV_EVENT_NAME=>:LV_LAND_LOST,
 		IT_CUST=>:LT_CUST_ID_EDITED_LAND_LOST
    );
-   LT_CUST_ID = SELECT PARTNER FROM :LT_CUST_EDITED_LAND_ACQ UNION SELECT PARTNER FROM :LT_CUST_EDITED_LAND_LOST;
+   LT_CUST_ID = SELECT PARTNER as CUST_ID FROM :LT_CUST_EDITED_LAND_ACQ UNION SELECT PARTNER as CUST_ID FROM :LT_CUST_EDITED_LAND_LOST;
 	/*
 	LEAD - Will get the Next Value in the list as Partitioned by PARTNER , INTRENO and order By VALIDFROM
 	LAG - Will get previous value in the list as Partitioned by PARTNER , INTRENO and Order by VALIDFROM
@@ -71,7 +71,9 @@ BEGIN
    	SELECT *
    	, DAYS_BETWEEN(VALIDTO,LEAD(VALIDFROM) OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)) as DAYDIFF_LEAD
    	, DAYS_BETWEEN(LAG(VALIDTO)  OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC) , VALIDFROM) as DAYDIFF_LAG
-   	FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" WHERE ROLE='TR0800' AND PARTNER IN (SELECT PARTNER FROM :LT_CUST_ID);
+   	FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" AS a
+   	INNER JOIN :LT_CUST_ID as delt ON a.PARTNER = delt.CUST_ID
+   	WHERE ROLE='TR0800';
 
 	/*Acquired Land*/
 	/*=========================================================================================================================

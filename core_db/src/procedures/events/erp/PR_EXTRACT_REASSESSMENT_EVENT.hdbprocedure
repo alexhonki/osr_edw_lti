@@ -112,19 +112,19 @@ BEGIN
 			LEFT(BUDAT,6)  as INIT_TS,
 			NULL  as END_TS
 		FROM (
-					SELECT GPART, 
+					SELECT a.GPART as GPART, 
 					BUDAT, 
 					TO_INT(PERSL - 1) AS YEAR, 
 					SUM(BETRH) AS TAXAMOUNT
-				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP"
+				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" as a
+				INNER JOIN :LT_CUST_ID as delt ON a.GPART = delt.GPART
 				WHERE HVORG = '4000'
 					AND TVORG in ('0150', '0190')
 					AND KOFIZ = 'LT'
 					AND BETRH > 0
 					AND (AUGRD IN ('01', '08', '15', ''))
 					AND PERSL > '2010'
-					AND GPART IN (SELECT GPART FROM :LT_CUST_ID)
-				GROUP BY GPART, 
+				GROUP BY a.GPART, 
 					BUDAT, 
 					PERSL, 
 					FBNUM
@@ -178,19 +178,19 @@ BEGIN
 			LEFT(BUDAT,6)  as INIT_TS,
 			NULL  as END_TS
 		FROM (
-					SELECT GPART, 
+					SELECT a.GPART as GPART, 
 					BUDAT, 
 					TO_INT(PERSL - 1) AS YEAR, 
 					SUM(BETRH) AS TAXAMOUNT
-				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP"
+				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" as a
+				INNER JOIN :LT_CUST_ID as delt ON a.GPART = delt.GPART
 				WHERE HVORG = '4000'
 					AND TVORG in ('0150', '0190')
 					AND KOFIZ = 'LT'
 					AND BETRH > 0
 					AND (AUGRD IN ('01', '08', '15', ''))
 					AND PERSL > '2010'
-					AND GPART IN (SELECT GPART FROM :LT_CUST_ID)
-				GROUP BY GPART, 
+				GROUP BY a.GPART, 
 					BUDAT, 
 					PERSL, 
 					FBNUM

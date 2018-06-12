@@ -57,6 +57,7 @@ BEGIN
 				SELECT a.ZZ_PARTNER, 
 					c.VALIDFROM
 				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" AS a
+					INNER JOIN :LT_CUST_EDITED as delt ON a.ZZ_PARTNER = delt.ZZ_PARTNER
 					LEFT OUTER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNA" AS b
 					ON a.NANO = b.NANO
 					INNER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNAVAL" AS c
@@ -65,7 +66,7 @@ BEGIN
 								YEAR(c.VALIDFROM), 
 								'0701'
 							)
-				WHERE NASTMNTTYPE != 'ANV' AND ZZ_PARTNER IN (SELECT ZZ_PARTNER FROM :LT_CUST_EDITED)
+				WHERE NASTMNTTYPE != 'ANV'
 			) AS a
 			INNER JOIN "db::app.Customer" AS SAP
 			ON SAP.EXT_ID = a.ZZ_PARTNER

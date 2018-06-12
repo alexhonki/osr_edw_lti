@@ -55,8 +55,9 @@ BEGIN
 			LEFT(BUDAT,6) as INIT_TS,
 			NULL as END_TS 
 			from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" AS a
+			INNER JOIN :LT_CUST_EDITED as b on a.GPART = b.GPART
 			INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART
-			WHERE HVORG='4050' and TVORG='0525'AND KOFIZ='LT' and BETRH>0 AND AUGRD NOT IN ('04','14','05','99') AND GPART IN (select GPART from :LT_CUST_EDITED);
+			WHERE HVORG='4050' and TVORG='0525'AND KOFIZ='LT' and BETRH>0 AND AUGRD NOT IN ('04','14','05','99');
 	select max(Z_RUN_SEQ_ID) INTO LV_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP";
 	/*SELECT EVENT_ID INTO LV_MAX_EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_CHRG_REG_DUNN);
 	  CALL "procedures.utils::PR_UPDATE_SEQ_ID_FOR_EVENTS"(
