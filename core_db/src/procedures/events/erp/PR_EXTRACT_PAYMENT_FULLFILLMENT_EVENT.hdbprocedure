@@ -65,14 +65,16 @@ BEGIN
 		LEFT(DUEDATE,6)  as INIT_TS,
 		NULL  as END_TS
 	from(
-		SELECT DISTINCT GPART,DUEDATE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a 
+		SELECT DISTINCT a.GPART,DUEDATE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a 
 		LEFT JOIN (SELECT PPKEY,MAX(PRDAT) as DueDate FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" GROUP BY PPKEY) b 
 		ON  a.PPKEY=b.PPKEY
+		INNER JOIN :LT_CUST_ID DELT 
+		ON a.GPART = DELT.GPART
 		WHERE a.PPKEY IN (
 		SELECT PPKEY FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP"
 		WHERE OPBEL IN (
 		SELECT OPBEL FROM"osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE KOFIZ='LT' 
-		)) AND PPSTA = '1' AND PPCAT='Z7' AND GPART IN (SELECT GPART FROM :LT_CUST_ID)
+		)) AND PPSTA = '1' AND PPCAT='Z7' 
 		) a
 	INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART
 	WHERE a.GPART >= '0001000335' and a.GPART <= '0001076855'
@@ -95,14 +97,16 @@ BEGIN
 		LEFT(DUEDATE,6)  as INIT_TS,
 		NULL  as END_TS
 	from(
-		SELECT DISTINCT GPART,DUEDATE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a 
+		SELECT DISTINCT a.GPART,DUEDATE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a 
 		LEFT JOIN (SELECT PPKEY,MAX(PRDAT) as DueDate FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" GROUP BY PPKEY) b 
 		ON  a.PPKEY=b.PPKEY
+		INNER JOIN :LT_CUST_ID DELT 
+		ON a.GPART = DELT.GPART
 		WHERE a.PPKEY IN (
 		SELECT PPKEY FROM"osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP"
 		WHERE OPBEL IN (
 		SELECT OPBEL FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE KOFIZ='LT'
-		)) AND PPSTA='1'  AND PPCAT!='Z7' AND GPART IN (SELECT GPART FROM :LT_CUST_ID)
+		)) AND PPSTA='1'  AND PPCAT!='Z7'
 		) a
 	INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART;
 
