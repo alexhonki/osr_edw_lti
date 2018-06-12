@@ -23,7 +23,8 @@ BEGIN
    	DECLARE LV_MAX_SEQ_ID INTEGER;
    	DECLARE LV_NEW_MAX_SEQ_ID INTEGER;
    	DECLARE EXIT HANDLER FOR SQLEXCEPTION
-	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+		
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_REISSUE);
 	SELECT OUT_MAX_SEQ_ID into LV_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_REISSUE);
 	IF  :LV_MAX_SEQ_ID IS NULL THEN 
@@ -34,29 +35,31 @@ BEGIN
 																		LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" b on b.FBNUM=a.ASSESS_FBNUM
 																		INNER JOIN "db::app.Customer" c on c.EXT_ID = b.GPART
 																		WHERE a.REISSUE_DATE>0 AND a.Z_RUN_SEQ_ID > LV_MAX_SEQ_ID;
+																		
 	LT_CUST_ID_EDITED_REISSUE = select CUST_ID from :LT_CUST_EDITED_REISSUE;
 	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 		IV_EVENT_NAME=>:LV_REISSUE,
 		IT_CUST=>:LT_CUST_EDITED_REISSUE
 	);
    	INSERT INTO "db::app.CustomerEvents"
-	select
-	CUST_ID as CUST_ID,
-	NULL as EVENT_ID,
-	:LV_REISSUE_GROUP as EVENT_GROUP,
-	:LV_REISSUE as EVENT_NAME,
-	CAST(REISSUE_DATE as date) as INIT_DATE,
-	NULL as END_DATE,
-	1 as EVENT_VALUE,
-	:LV_REISSUE as DESCRIPTION,
-	LEFT(REISSUE_DATE,6)  as INIT_TS,
-	NULL as END_TS
-	from (
-	SELECT DISTINCT c.CUST_ID, a.REISSUE_DATE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTAXASFB" a 
-	LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" b on b.FBNUM=a.ASSESS_FBNUM
-	INNER JOIN "db::app.Customer" c on c.EXT_ID = b.GPART
-	WHERE a.REISSUE_DATE>0 AND c.CUST_ID IN (SELECT CUST_ID FROM :LT_CUST_EDITED_REISSUE)
-	);
+		select
+			CUST_ID as CUST_ID,
+			NULL as EVENT_ID,
+			:LV_REISSUE_GROUP as EVENT_GROUP,
+			:LV_REISSUE as EVENT_NAME,
+			CAST(REISSUE_DATE as date) as INIT_DATE,
+			NULL as END_DATE,
+			1 as EVENT_VALUE,
+			:LV_REISSUE as DESCRIPTION,
+			LEFT(REISSUE_DATE,6)  as INIT_TS,
+			NULL as END_TS
+		from (
+			SELECT DISTINCT c.CUST_ID, a.REISSUE_DATE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTAXASFB" a 
+			LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" b on b.FBNUM=a.ASSESS_FBNUM
+			INNER JOIN "db::app.Customer" c on c.EXT_ID = b.GPART
+			INNER JOIN :LT_CUST_EDITED_REISSUE delt on b.GPART = delt.CUST_ID
+			WHERE a.REISSUE_DATE>0
+		);
 
 	-- Generate event ID
     CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	

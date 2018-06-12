@@ -96,7 +96,9 @@ BEGIN
 													ON B4.ASSESS_FBNUM = DEBTOR_DATA.FBNUM
 														INNER JOIN 
 												 "db::app.Customer" TAXPAYER ON TAXPAYER.EXT_ID = DEBTOR_DATA.GPART
-												 WHERE  KOFIZ='LT' AND HVORG = '4000'  AND TVORG = '0150' AND DEBTOR_DATA.GPART IN (SELECT GPART FROM :LT_CUST_ID)) AS A8--AND TAXPAYER.CUST_ID = 1275802  
+														INNER JOIN
+												:LT_CUST_ID as delt on DEBTOR_DATA.GPART = delt.GPART
+												 WHERE  KOFIZ='LT' AND HVORG = '4000'  AND TVORG = '0150' ) AS A8--AND TAXPAYER.CUST_ID = 1275802  
 													LEFT JOIN
 										(SELECT AUGBL, MAX(FAEDN) AS PAYMENT_DATE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" A6 
 										   WHERE AUGBL IN (SELECT AUGBL from  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE AUGBL != '')

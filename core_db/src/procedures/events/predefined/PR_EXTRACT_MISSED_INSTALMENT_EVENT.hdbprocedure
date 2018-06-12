@@ -95,6 +95,13 @@ BEGIN
 						  "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_5;
 	LT_CUST_EDITED_5 = select to_int(PRGPA) as "CUST_ID" from :LT_CUST_5 ;
 	
+	LT_CUST_ID = SELECT PRGPA FROM :LT_CUST
+				UNION SELECT PRGPA FROM :LT_CUST_1
+				UNION SELECT PRGPA FROM :LT_CUST_2
+				UNION SELECT PRGPA FROM :LT_CUST_3
+				UNION SELECT PRGPA FROM :LT_CUST_4
+				UNION SELECT PRGPA FROM :LT_CUST_5;
+	
 	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 	IV_EVENT_NAME=>:LV_MI,
 	IT_CUST=>:LT_CUST_EDITED);
@@ -135,15 +142,10 @@ BEGIN
    
    LT_PROMPAY = 	SELECT A.PRGPA, A.MAX_DATE, A.YEAR_, B.PPKEY, B.PRAMT
 					FROM(
-					    SELECT PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
-					    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
-					    WHERE PRGPA IN (SELECT PRGPA FROM :LT_CUST
-					    				UNION SELECT PRGPA FROM :LT_CUST_1
-					    				UNION SELECT PRGPA FROM :LT_CUST_2
-					    				UNION SELECT PRGPA FROM :LT_CUST_3
-					    				UNION SELECT PRGPA FROM :LT_CUST_4
-					    				UNION SELECT PRGPA FROM :LT_CUST_5)
-					    GROUP BY PRGPA, SUBSTRING(ERDAT, 0,4)
+					    SELECT X.PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
+					    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" X
+					    INNER JOIN :LT_CUST_ID as delt ON X.PRGPA = delt.PRGPA
+					    GROUP BY X.PRGPA, SUBSTRING(ERDAT, 0,4)
 					) A
 					JOIN(
 					    SELECT PRGPA, ERDAT, PPKEY, PRAMT
@@ -204,15 +206,10 @@ BEGIN
 				FROM (
 					SELECT A.PRGPA, A.MAX_DATE, A.YEAR_, B.PPKEY
 	                FROM(
-	                    SELECT PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
-	                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
-	                    WHERE PRGPA IN (SELECT PRGPA FROM :LT_CUST
-					    				UNION SELECT PRGPA FROM :LT_CUST_1
-					    				UNION SELECT PRGPA FROM :LT_CUST_2
-					    				UNION SELECT PRGPA FROM :LT_CUST_3
-					    				UNION SELECT PRGPA FROM :LT_CUST_4
-					    				UNION SELECT PRGPA FROM :LT_CUST_5)
-	                    GROUP BY PRGPA, SUBSTRING(ERDAT, 0,4)
+	                    SELECT X.PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
+	                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" X
+	                    INNER JOIN :LT_CUST_ID as delt ON X.PRGPA = delt.PRGPA
+	                    GROUP BY X.PRGPA, SUBSTRING(ERDAT, 0,4)
 	                ) A
 	                JOIN(
 	                    SELECT PRGPA, ERDAT, PPKEY

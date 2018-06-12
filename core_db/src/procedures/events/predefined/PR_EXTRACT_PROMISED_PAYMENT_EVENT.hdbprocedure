@@ -26,7 +26,7 @@ BEGIN
 	DECLARE LV_MAX_NEWSEQ_ID_3 INTEGER;
 	
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
-	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_PP);
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_PP_1);
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_PP_2);
@@ -104,10 +104,10 @@ BEGIN
 				TO_TIMESTAMP(ERDAT, 'YYYYMMDD') "INIT_DATE", 
 				TO_TIMESTAMP('9999-12-31') "END_DATE"
 			FROM (
-				SELECT GPART, ERDAT
-				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
-				WHERE GPART IN (SELECT GPART FROM :LT_CUST)
-				ORDER BY ERDAT, GPART
+				SELECT X.GPART as GPART, ERDAT
+				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" X
+				INNER JOIN :LT_CUST delt ON X.GPART = delt.GPART
+				ORDER BY ERDAT, X.GPART
 			) A
 			JOIN (
 				SELECT CUST_ID, EXT_ID
@@ -144,10 +144,10 @@ BEGIN
 						MAX_DATE,
 						(YEAR_ - ROW_NUMBER() OVER( PARTITION BY CUST_ID  ORDER BY YEAR_)) AS GRP
 					FROM (
-						SELECT PRGPA, MAX(ERDAT) AS MAX_DATE, SUBSTRING(ERDAT, 0,4) AS YEAR_
-						FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
-						WHERE PRGPA IN (SELECT PRGPA FROM :LT_CUST_1)
-						GROUP BY PRGPA, SUBSTRING(ERDAT, 0,4)
+						SELECT X.PRGPA as PRGPA, MAX(ERDAT) AS MAX_DATE, SUBSTRING(ERDAT, 0,4) AS YEAR_
+						FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" X
+						INNER JOIN :LT_CUST_1 delt ON X.PRGPA = delt.PRGPA
+						GROUP BY X.PRGPA, SUBSTRING(ERDAT, 0,4)
 					) A
 					LEFT JOIN (
 						SELECT EXT_ID, CUST_ID
@@ -194,15 +194,15 @@ BEGIN
 		            FROM(
 		                SELECT A.PRGPA, A.MAX_DATE, A.YEAR_, B.PPKEY
 		                FROM(
-		                    SELECT PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
-		                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
-		                    WHERE PRGPA IN (SELECT PRGPA FROM :LT_CUST_2)
-		                    GROUP BY PRGPA, SUBSTRING(ERDAT, 0,4)
+		                    SELECT X.PRGPA as PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
+		                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" X
+		                    INNER JOIN :LT_CUST_2 delt ON X.PRGPA = delt.PRGPA
+		                    GROUP BY X.PRGPA, SUBSTRING(ERDAT, 0,4)
 		                ) A
 		                JOIN(
-		                    SELECT PRGPA, ERDAT, PPKEY
-		                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"
-		                    WHERE PRGPA IN (SELECT PRGPA FROM :LT_CUST_2)
+		                    SELECT X.PRGPA as PRGPA, ERDAT, PPKEY
+		                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"X
+		                    INNER JOIN :LT_CUST_2 delt ON X.PRGPA = delt.PRGPA
 		                ) B
 		                ON A.PRGPA = B.PRGPA AND A.MAX_DATE = B.ERDAT
 		                ORDER BY A.PRGPA
@@ -271,9 +271,9 @@ BEGIN
 		) B
 		ON A.PPKEY = B.PPKEY
 		JOIN (
-			SELECT PPKEY, GPART 
-			FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" -- header table
-			WHERE GPART IN (SELECT GPART FROM :LT_CUST_3)
+			SELECT PPKEY, X.GPART as GPART
+			FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" X -- header tableX
+            INNER JOIN :LT_CUST_3 delt ON X.GPART = delt.GPART
 		) C
 		ON B.PPKEY = C.PPKEY
 		JOIN (
