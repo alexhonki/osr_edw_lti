@@ -2,7 +2,7 @@
 	"description": "Create Customer Reactions Data",
 	"action": "procedures.masterData::PR_EXTRACT_LT_CUSTOMER_REACTIONS",
 	"schedules": [{
-		"description": "Perform my task every * * * * 22 10 0", 
+		"description": "Create Customer Reactions Data with schedule frequency: Initial Load", 
 		"xscron": "2016 * * * 22 10 0",
 		"parameter": {} 
 	}]

@@ -2,13 +2,13 @@
 	"description": "CRM Event Data",
 	"action": "procedures.text::PR_CRM_EVENT_CREATE_MAIN",
 	"schedules": [{
-		"description": "Perform my task every * * * * 21 10 0", 
+		"description": "CRM Event with schedule frequency: Initial Load", 
 		"xscron": "2016 * * * 21 10 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Perform my task every * * * * 21 10 0", 
+		"description": "CRM Event with schedule frequency: Delta Load every * * * * 21 10 0", 
 		"xscron": "2016 * * * 21 10 0",
 		"parameter": {
 			"IV_MODE": 1

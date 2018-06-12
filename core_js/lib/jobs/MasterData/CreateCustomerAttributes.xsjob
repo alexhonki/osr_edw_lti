@@ -2,13 +2,13 @@
 	"description": "Create Customer Attributes Data",
 	"action": "procedures.masterData::PR_EXTRACT_LT_CUSTOMER_ATTRIBUTES",
 	"schedules": [{
-		"description": "Initial Load my task every * * * * 21 10 0", 
+		"description": "Create Customer Attributes with schedule frequency: Initial Load", 
 		"xscron": "2016 * * * 21 10 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Delta Load my task every * * * * 21 10 0", 
+		"description": "Create Customer Attributes with schedule frequency: Delta Load every * * * * 21 10 0", 
 		"xscron": "2016 * * * 21 10 0",
 		"parameter": {
 			"IV_MODE": 1
