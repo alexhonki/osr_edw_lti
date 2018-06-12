@@ -38,24 +38,28 @@ BEGIN
 	LV_MAX_LASTSEQ_ID_TOY = 0;
 	END IF;
 	
-	LT_CUST_EDITED_TMY = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
+	LT_CUST_EDITED_TMY = SELECT GPART, BUDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
 							"db::app.Customer" on EXT_ID = GPART WHERE 
 						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_TMY;
-	LT_CUST_ID_EDITED_TMY = select to_int(GPART) as "CUST_ID" from :LT_CUST_EDITED_TMY;
+	LT_CUST_ID_EDITED_TMY = select to_int(GPART) as "CUST_ID", YEAR(BUDAT) AS TO_YEAR from :LT_CUST_EDITED_TMY;
 	
-	LT_CUST_EDITED_TOY = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
+	LT_CUST_EDITED_TOY = SELECT GPART, BUDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
 							"db::app.Customer" on EXT_ID = GPART WHERE 
 						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_TOY;
-	LT_CUST_ID_EDITED_TOY = select to_int(GPART) as "CUST_ID" from :LT_CUST_EDITED_TOY;
+	LT_CUST_ID_EDITED_TOY = select to_int(GPART) as "CUST_ID", YEAR(BUDAT) AS TO_YEAR from :LT_CUST_EDITED_TOY;
 	
-	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
-		IV_EVENT_NAME=>:LV_TAX_MUL,
-		IT_CUST=>:LT_CUST_ID_EDITED_TMY
-   );
-   CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
-		IV_EVENT_NAME=>:LV_TAX_ONE,
-		IT_CUST=>:LT_CUST_ID_EDITED_TOY
-   );
+	IF :LV_MAX_LASTSEQ_ID_TMY != 0 THEN
+		CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST_FOR_YEAR"(
+			IV_EVENT_NAME=>:LV_TAX_MUL,
+			IT_CUST=>:LT_CUST_ID_EDITED_TMY
+		);
+	END IF;
+	IF :LV_MAX_LASTSEQ_ID_TOY != 0 THEN
+		CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST_FOR_YEAR"(
+			IV_EVENT_NAME=>:LV_TAX_ONE,
+			IT_CUST=>:LT_CUST_ID_EDITED_TOY
+		);
+	END IF;
    LT_CUST_ID = SELECT GPART FROM :LT_CUST_EDITED_TMY UNION SELECT GPART FROM :LT_CUST_EDITED_TOY;
    	INSERT INTO "db::app.CustomerEvents"
 	select
@@ -85,7 +89,7 @@ BEGIN
 	LEFT(BUDAT,6)  as END_TS
 	from 
 	(SELECT GPART,BUDAT,count(distinct FBNUM) as EVENT_VALUE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP"
-	WHERE KOFIZ='LT' and BLART='AB' and HVORG='4000' and TVORG='0150' AND GPART IN (SELECT GPART FROM :LT_CUST_ID)
+	WHERE KOFIZ='LT' and BLART='AB' and HVORG='4000' and TVORG='0150' AND (GPART IN (SELECT GPART FROM :LT_CUST_ID) AND YEAR(BUDAT) IN (SELECT YEAR(BUDAT) FROM :LT_CUST_ID))
 	GROUP BY GPART,BUDAT) as b
 	INNER JOIN "db::app.Customer" c on c.EXT_ID = b.GPART;
 	

@@ -1,14 +1,15 @@
 {
 	"description": "Extract Assessment Event Data",
 	"action": "procedures.events.erp::PR_EXTRACT_ASSESSMENT_EVENT",
+	
 	"schedules": [{
-		"description": "Perform my task every * * * * 21 10 0", 
+		"description": "Assessment event with schedule frequency: Initial Load", 
 		"xscron": "2016 * * * 21 10 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Delta load task every * * * * 21 10 0", 
+		"description": "Assessment event with schedule frequency: Delta Load every * * * * 21 10 0", 
 		"xscron": "2016 * * * 21 10 0",
 		"parameter": {
 			"IV_MODE": 1

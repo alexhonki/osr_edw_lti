@@ -43,35 +43,47 @@ BEGIN
 	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_TSA from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_SERV_ADDR_CHG);
 	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_TRA from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_RESD_ADDR_CHG);
 	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_SA from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_STD_ADDR_CHG);
-	--LV_MAX_SEQ_ID = SELECT OUT_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_CHRG_REG_DUNN);
+	
 	IF :LV_MAX_LASTSEQ_ID_TSA is null then
-	LV_MAX_LASTSEQ_ID_TSA = 0;
+		LV_MAX_LASTSEQ_ID_TSA = 0;
 	END IF;
 	
 	IF :LV_MAX_LASTSEQ_ID_TRA is null then
-	LV_MAX_LASTSEQ_ID_TRA  = 0;
+		LV_MAX_LASTSEQ_ID_TRA  = 0;
 	END IF;
 	
 	IF :LV_MAX_LASTSEQ_ID_SA is null then
-	LV_MAX_LASTSEQ_ID_SA = 0;
+		LV_MAX_LASTSEQ_ID_SA = 0;
 	END IF;
 	
-	LT_CUST_EDITED_TSA = SELECT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" inner join
-							"db::app.Customer" on EXT_ID = PARTNER WHERE 
-						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_TSA;
-	LT_CUST_ID_EDITED_TSA = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_TSA;
+	LT_CUST_EDITED_TSA = SELECT PARTNER, 
+								CASE WHEN VALID_FROM LIKE '%0000%' THEN TO_TIMESTAMP(CAST('20100701' AS DATE))
+									ELSE TO_TIMESTAMP(cast(VALID_FROM as date))
+									END as INIT_DATE
+							FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" 
+							inner join "db::app.Customer" on EXT_ID = PARTNER 
+							WHERE "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_TSA AND ADR_KIND in ('LTX_ADD', 'LTX_AD2', 'XXDEFAULT');
+	LT_CUST_ID_EDITED_TSA = select to_int(PARTNER) as "CUST_ID" AS TO_YEAR from :LT_CUST_EDITED_TSA;
 	
-	LT_CUST_EDITED_TRA = SELECT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" inner join
-							"db::app.Customer" on EXT_ID = PARTNER WHERE 
-						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_TRA;
-	LT_CUST_ID_EDITED_TRA = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_TRA;
+	LT_CUST_EDITED_TRA = SELECT PARTNER, 
+								CASE WHEN VALID_FROM LIKE '%0000%' THEN TO_TIMESTAMP(CAST('20100701' AS DATE))
+									ELSE TO_TIMESTAMP(cast(VALID_FROM as date))
+									END as INIT_DATE
+							FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" 
+							inner join "db::app.Customer" on EXT_ID = PARTNER 
+							WHERE "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_TRA AND ADR_KIND in ('LTX_ADD', 'LTX_AD2', 'XXDEFAULT');
+	LT_CUST_ID_EDITED_TRA = select to_int(PARTNER) as "CUST_ID" AS TO_YEAR from :LT_CUST_EDITED_TRA;
 	
-	LT_CUST_EDITED_SA = SELECT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" inner join
-							"db::app.Customer" on EXT_ID = PARTNER WHERE 
-						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_SA;
-	LT_CUST_ID_EDITED_SA = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_SA;
+	LT_CUST_EDITED_SA = SELECT PARTNER,
+							   CASE WHEN VALID_FROM LIKE '%0000%' THEN TO_TIMESTAMP(CAST('20100701' AS DATE))
+									ELSE TO_TIMESTAMP(cast(VALID_FROM as date))
+									END as INIT_DATE
+							FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS"
+							inner join "db::app.Customer" on EXT_ID = PARTNER 
+							WHERE "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_SA AND ADR_KIND in ('LTX_ADD', 'LTX_AD2', 'XXDEFAULT');
+	LT_CUST_ID_EDITED_SA = select to_int(PARTNER) as "CUST_ID" AS TO_YEAR from :LT_CUST_EDITED_SA;
+	
 	--Delete the events from Customer Events table
-	--delete from "db::app.CustomerEvents" where CUST_ID in (LT_CUST_ID_EDITED) and EVENT_ID = (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_CHRG_REG_DUNN));
 	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 		IV_EVENT_NAME=>:LV_SERV_ADDR_CHG,
 		IT_CUST=>:LT_CUST_ID_EDITED_TSA
@@ -116,7 +128,7 @@ BEGIN
 				select SAP.CUST_ID AS CUST_ID ,PARTNER,VALID_FROM, ROW_NUMBER() OVER(PARTITION BY PARTNER ORDER BY VALID_FROM ASC) RN , init_date as INITDATE
 				from "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" AS B 	
 				INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=B.PARTNER
-				where ADR_KIND = 'LTX_ADD' AND PARTNER IN (SELECT PARTNER FROM :LT_CUST_EDITED_TSA)
+				where ADR_KIND = 'LTX_ADD' AND ( PARTNER IN (SELECT PARTNER FROM :LT_CUST_EDITED_TSA) ) 
 				) WHERE RN>1
 			)  
 		) where INITDATE <= init_date 

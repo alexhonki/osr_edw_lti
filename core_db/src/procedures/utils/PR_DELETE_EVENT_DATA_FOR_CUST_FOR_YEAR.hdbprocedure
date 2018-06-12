@@ -1,0 +1,23 @@
+PROCEDURE "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST_FOR_YEAR" (
+	IN IV_EVENT_NAME NVARCHAR(500),
+	IN IT_CUST TABLE (
+		CUST_ID bigint,
+		TO_YEAR INTEGER
+	)
+)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   DECLARE EXIT HANDLER FOR SQL_ERROR_CODE 1299
+   SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+   delete from "db::app.CustomerEvents" where (CUST_ID, "EVENT_ID.ID") in (select CUST_ID, "EVENT_ID.ID" from "db::app.CustomerEvents" 
+																										where CUST_ID in (select CUST_ID from :IT_CUST) 
+																										and "EVENT_ID.ID" in (SELECT "EVENT_ID" FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:IV_EVENT_NAME))
+																										AND YEAR(INIT_DATE) IN (SELECT TO_YEAR FROM :IT_CUST));
+END
