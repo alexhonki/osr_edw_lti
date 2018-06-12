@@ -10,9 +10,24 @@ FUNCTION "functions::TF_CONSOLIDATED_SEARCH" ( IN I_SEARCH_PARAMETER NVARCHAR(25
     SQL SECURITY INVOKER AS 
 BEGIN 
 	DECLARE LV_CONTAINS_SPACE INT;
+	DECLARE LV_FUZZY_SCORE DOUBLE;
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+		
 	SELECT 
 							CASE WHEN :I_SEARCH_PARAMETER LIKE_REGEXPR '[ \t]' THEN 0 ELSE 1 END 
 						INTO LV_CONTAINS_SPACE FROM  "synonyms::dummy" ;
+						
+	SELECT FROM_DEFAULT/100
+		INTO LV_FUZZY_SCORE 
+		FROM "models.adm::CV_CONFIG" 
+		WHERE "BUCKET_ID" = 'SEARCH_SCORE_THRESHOLD'
+		AND REACTION_TYPE = 'DEBTOR_INITIAL_ASSESSMENT'
+		AND IS_ENABLED = 1;
+		
+	IF :LV_FUZZY_SCORE IS NULL OR :LV_FUZZY_SCORE = 0 THEN
+		SELECT 0.75 INTO LV_FUZZY_SCORE FROM  "synonyms::dummy" ;
+	END IF;
 	
 	IF :LV_CONTAINS_SPACE = 1 THEN
 		RETURN
@@ -25,7 +40,7 @@ BEGIN
 						TO_NVARCHAR("ID") AS "CONSOLIDATED_ID",
 						"CATEGORY_NAME" || ': ' || "EVENT_NAME" AS "CONSOLIDATED_NAME"	
 				FROM "db::adm.config.event.name"
-				WHERE ( CONTAINS("EVENT_NAME", :I_SEARCH_PARAMETER, FUZZY(0.75, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')) )
+				WHERE ( CONTAINS("EVENT_NAME", :I_SEARCH_PARAMETER, FUZZY(:LV_FUZZY_SCORE, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')) )
 				AND "IS_ENABLED" = 1
 			UNION
 				select TO_INT(ROUND(SCORE()*100)) AS "SCORE",
@@ -34,8 +49,8 @@ BEGIN
 						"EXT_ID" AS "CONSOLIDATED_ID", 
 						"NAME" AS "CONSOLIDATED_NAME"
 				FROM "models.apps.customer::CV_CUSTOMER_LIST"
-				WHERE ( CONTAINS("CUST_ID", :I_SEARCH_PARAMETER, FUZZY(0.9)) OR 
-						CONTAINS("NAME", :I_SEARCH_PARAMETER, FUZZY(0.75, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')))
+				WHERE ( CONTAINS("CUST_ID", :I_SEARCH_PARAMETER, FUZZY(1.0)) OR 
+						CONTAINS("NAME", :I_SEARCH_PARAMETER, FUZZY(:LV_FUZZY_SCORE, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')))
 						AND "STATUS" = 0
 					) ORDER BY SCORE desc;
 				
@@ -50,7 +65,7 @@ BEGIN
 						TO_NVARCHAR("ID") AS "CONSOLIDATED_ID",
 						"CATEGORY_NAME" || ': ' || "EVENT_NAME" AS "CONSOLIDATED_NAME"	
 				FROM "db::adm.config.event.name"
-				WHERE ( CONTAINS("EVENT_NAME", :I_SEARCH_PARAMETER, FUZZY(0.75, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')) )
+				WHERE ( CONTAINS("EVENT_NAME", :I_SEARCH_PARAMETER, FUZZY(:LV_FUZZY_SCORE, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')) )
 				AND "IS_ENABLED" = 1
 			UNION
 				select TO_INT(ROUND(SCORE()*100)) AS "SCORE",
@@ -59,7 +74,7 @@ BEGIN
 						"EXT_ID" AS "CONSOLIDATED_ID", 
 						"NAME" AS "CONSOLIDATED_NAME"
 				FROM "models.apps.customer::CV_CUSTOMER_LIST"
-				WHERE ( CONTAINS("NAME", :I_SEARCH_PARAMETER, FUZZY(0.75, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')))
+				WHERE ( CONTAINS("NAME", :I_SEARCH_PARAMETER, FUZZY(:LV_FUZZY_SCORE, 'textsearch=compare, considernonmatchingtokens=input, composewords=5, decomposewords=5')))
 						AND "STATUS" = 0
 					) ORDER BY SCORE desc;
 	END IF;
