@@ -17,7 +17,7 @@ NN_MOMENTUM_FACTOR,Momentum factor for gradient descent,1,0,0.9,
 NN_HIDDEN_LAYER_SIZE,Number of hidden layers and nodes per layer used in NN,1,0,0,"10,10"
 FPG_COMB_EVT2_THREAD_NUMBER,Thread number,1,10,,
 FPG_COMB_EVT2_MIN_SUPPORT,Minimum Support,1,,0.105,
-FPG_COMB_EVT2_MIN_CONFIDENCE,Minimum Confidence,1,,0.92,
+FPG_COMB_EVT2_MIN_CONFIDENCE,Minimum Confidence,1,,0.90,
 FPG_COMB_EVT2_MIN_LIFT,Minimum Lift,1,,0.1,
 FPG_COMB_EVT2_MAXITEMLENGTH,Maximum Length,1,1000,,
 FPG_COMB_EVT2_MAX_CONSEQUENT,Max Consequent,1,2,,

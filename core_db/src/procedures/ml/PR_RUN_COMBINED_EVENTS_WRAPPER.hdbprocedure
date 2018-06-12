@@ -109,7 +109,7 @@ BEGIN
 		    DECLARE LV_EVT_NAME_INDEX		INT;
 			
 			-- For each combined events row
-			DECLARE CURSOR c_cursor1  FOR SELECT PRERULE,SUPPORT,CONFIDENCE,LIFT FROM :LT_RESULT ORDER BY LENGTH(PRERULE) DESC;
+			DECLARE CURSOR c_cursor1  FOR SELECT TOP 10 PRERULE,SUPPORT,CONFIDENCE,LIFT FROM :LT_RESULT ORDER BY LENGTH(PRERULE) DESC;
 			FOR cur_row AS c_cursor1
 			DO
 				------------------------------------------------------------------------------------------------
