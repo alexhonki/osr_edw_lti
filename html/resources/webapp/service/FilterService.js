@@ -248,11 +248,12 @@ sap.ui.define([
         
         setDefaultToDate: function (sToDate) {
         	var oConfig = this.getFilterConfig();
-        	oConfig.filters.toDate = sToDate;
-        	oConfig.filters.fromDate = "";
-			var oFilter = this.buildDefaultFilters();
-        	this.setFilterData(oFilter);
-        	               
+        	if(this.getFilterData()[oConfig.filterKeys.toDate] === sToDate) {
+        		oConfig.filters.toDate = sToDate;
+        		oConfig.filters.fromDate = "";
+				var oFilter = this.buildDefaultFilters();
+        		this.setFilterData(oFilter);
+        	}	               
         }
     };
 });
