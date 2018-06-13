@@ -55,7 +55,7 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_NAME" source="EVENT_NAME"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY_NAME" source="CATEGORY_NAME"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="COMMENT"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="PRIORITY" source="PRIORITY"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ICON" source="ICON"/>
     </input>
@@ -172,7 +172,9 @@
   
     <attribute id="PRIORITY" order="9" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="Event Priority"/>
+  
       <keyMapping columnObjectName="Join_1" columnName="PRIORITY"/>
+  
     </attribute>
     <attribute id="ICON" order="10" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="Event Icon"/>
