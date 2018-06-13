@@ -44,19 +44,19 @@
                         <table:Column width="15rem">
                             <Label text="{i18n>EventManagement.EventList.Name}"/>
                             <table:template>
-                                <Text text="{CRI>EVENT_NAME}"/>
+                                <Text text="{CRI>EVENT_NAME_FINAL}"/>
                             </table:template>
                         </table:Column>
                         <table:Column width="15rem">
                             <Label text="{i18n>EventManagement.EventList.Category}"/>
                             <table:template>
-                                <Text text="{CRI>CATEGORY_NAME}"/>
+                                <Text text="{CRI>CATEGORY_NAME_FINAL}"/>
                             </table:template>
                         </table:Column>
                         <table:Column>
                             <Label text="{i18n>EventManagement.EventList.Description}"/>
                             <table:template>
-                                <Text text="{CRI>DESCRIPTION}"/>
+                                <Text text="{CRI>DESCRIPTION_FINAL}"/>
                             </table:template>
                         </table:Column>
                         <table:Column width="10rem" hAlign="Center">
