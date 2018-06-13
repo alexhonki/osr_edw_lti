@@ -100,7 +100,7 @@ sap.ui.define([
                 return "";
             },
             filterCustomers : function(oEvent) {
-                var sQuery = oEvent.getParameter("query");
+                var sQuery = oEvent.getParameter("query").toUpperCase();
                 var filter = null;
                 if (sQuery) {
                     var filterArray = [new Filter("NAME", FilterOperator.Contains, sQuery)];

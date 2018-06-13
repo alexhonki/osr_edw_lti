@@ -117,10 +117,31 @@
   
     <attribute id="UI_ENABLED" order="12" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="UI_ENABLED"/>
+  
       <keyMapping columnObjectName="P_EVENT_NAME" columnName="UI_ENABLED"/>
+  
     </attribute>
   </attributes>
-  <calculatedAttributes/>
+  <calculatedAttributes>
+    <calculatedAttribute id="EVENT_NAME_FINAL" order="13" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="EVENT_NAME_FINAL"/>
+      <keyCalculation datatype="NVARCHAR" expressionLanguage="COLUMN_ENGINE" length="200">
+        <formula>upper(&quot;EVENT_NAME&quot;)</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+    <calculatedAttribute id="CATEGORY_NAME_FINAL" order="14" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CATEGORY_NAME_FINAL"/>
+      <keyCalculation datatype="NVARCHAR" expressionLanguage="COLUMN_ENGINE" length="200">
+        <formula>upper(&quot;CATEGORY_NAME&quot;)</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+    <calculatedAttribute id="DESCRIPTION_FINAL" order="15" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DESCRIPTION_FINAL"/>
+      <keyCalculation datatype="NVARCHAR" expressionLanguage="COLUMN_ENGINE" length="200">
+        <formula>upper(&quot;DESCRIPTION&quot;)</formula>
+      </keyCalculation>
+      </calculatedAttribute>
+  </calculatedAttributes>
   <baseMeasures/>
   <calculatedMeasures/>
   <restrictedMeasures/>

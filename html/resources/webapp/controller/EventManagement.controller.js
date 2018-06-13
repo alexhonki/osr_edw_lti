@@ -89,12 +89,13 @@ sap.ui.define([
                 }
             },
             filterEvents : function(oEvent) {
-                var sQuery = oEvent.getParameter("query");
+                var sQuery = oEvent.getParameter("query").toUpperCase();
                 var filter = null;
                 if (sQuery) {
                     var filterArray = [
-                        new Filter("EVENT_NAME", FilterOperator.Contains, sQuery),
-                        new Filter("CATEGORY_NAME", FilterOperator.Contains, sQuery)
+                        new Filter("EVENT_NAME_FINAL", FilterOperator.Contains, sQuery),
+                        new Filter("CATEGORY_NAME_FINAL", FilterOperator.Contains, sQuery),
+                        new Filter("DESCRIPTION_FINAL", FilterOperator.Contains, sQuery)
                     ];
 
                     filter = new Filter(filterArray, false);
@@ -122,8 +123,8 @@ sap.ui.define([
                     var model = context.getModel().getProperty(context.getPath());
                     if(model.IS_ENABLED == sActionValue){
                         eventListData.push({
-                            EventName: model["EVENT_NAME"],
-                            EventCategory: model["CATEGORY_NAME"],
+                            EventName: model["EVENT_NAME_FINAL"],
+                            EventCategory: model["CATEGORY_NAME_FINAL"],
                             Enabled: model["IS_ENABLED"],
                             Data: model,
                             Path: context.getPath()
