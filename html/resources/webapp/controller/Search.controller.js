@@ -224,10 +224,12 @@ sap.ui.define([
                                 oFilters.push(oFilter);
                             }
                         });
-                        var customerSearchObjects = {};
-                        oResponse.results.forEach(function(d){
-                            customerSearchObjects[d.RECORD_ID] = d;
+                        var customerSearchObjects = [];
+                        
+                        oResponse.results.forEach(function(d,i){
+                            customerSearchObjects[i] = d;
                         });
+                        customerSearchObjects.sort(this.getSortOrder('SCORE'));
                         if (oFilters.length > 0) {
                             oDataModel.read("/Customer", {
                                 filters:oFilters,
@@ -236,8 +238,14 @@ sap.ui.define([
                                 },
                                 success: function (oData) {
                                     oData.results.forEach(function (d) {
-                                        customerSearchObjects[d.KeyValues.results[0].CUST_ID].RISK = d.KeyValues.results[0];
+                                    	customerSearchObjects.forEach(function(a,index){
+                                    		if(a.RECORD_ID === d.KeyValues.results[0].CUST_ID){
+                                    			customerSearchObjects[index].RISK = d.KeyValues.results[0];
+                                    		}
+                                    	});              
+                                        //customerSearchObjects[d.KeyValues.results[0].CUST_ID].RISK = d.KeyValues.results[0];
                                     });
+                                    
                                     try {
                                         var aResults = Object.keys(customerSearchObjects).map(function(itm) { return customerSearchObjects[itm]; });
                                         oModel.setProperty("/SearchListItems", aResults);
@@ -246,7 +254,7 @@ sap.ui.define([
                                         if (aResults.length == 0) {
                                             that.byId("idResultList").bindProperty("noDataText", "Labels>/ResultsTableNoData");
                                         }
-                                    } catch (oError) {
+                                    }	 catch (oError) {
                                         ErrorService.raiseGenericError(oError);
                                     } finally {
                                         oSearchPanel.setBusy(false);
@@ -268,13 +276,25 @@ sap.ui.define([
                                 oSearchPanel.setBusy(false);
                             }
                         }
-                    },
+                    }.bind(this),
                     error: function(oError) {
                         ErrorService.raiseGenericError(oError);
                         oSearchPanel.setBusy(false);
                     }
                 });
             },
+  
+    		getSortOrder: function(prop) {  
+					 return function(a, b) {  
+    				  if (a[prop] < b[prop]) {  
+    				      return 1;  
+    				  } else if (a[prop] > b[prop]) {  
+    				      return -1;  
+    				   }  
+    					   return 0;  
+				 };  
+			} ,
+  
             searchListItemFactory: function(sId, oContext) {
                 var isCustomer = this.isCustomer(oContext),
                     sPath = oContext.getPath(),
