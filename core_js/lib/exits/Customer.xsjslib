@@ -47,7 +47,7 @@ function updateCustomer(param) {
 			oCustomerDelete = aValues[1].entities[0];
 			tx = aValues[0].tx;
 			$.trace.debug('Check Deleted');
-			if(oCustomerDelete && oCustomerDelete.STATUS == STATUS.DELETED){ 
+			if(oCustomerDelete && oCustomerDelete.STATUS === STATUS.DELETED){ 
 				throw "Customer Deleted";
 			}
 			$.trace.debug('Check Blocked');
@@ -76,11 +76,11 @@ function updateCustomer(param) {
 							$entity 		: aValues[0].entityType,
 							ID				: newID_block.NewID[0].NEW_ID,
 						    CUST_ID			: oRow.CUST_ID,
-						    BLOCKED_BY		: oRow.STATUS == 1 ? $.session.getUsername() : '' ,
-							BLOCKED_DATE	: oRow.STATUS == 1 ? new Date() : undefined,
-						    UNBLOCKED_BY	: oRow.STATUS == 0 ? $.session.getUsername() : '' ,
-							UNBLOCKED_DATE	: oRow.STATUS == 0 ? new Date() : undefined,	
-						    STATUS			: oRow.STATUS == 0 ? 0 : 1
+						    BLOCKED_BY		: oRow.STATUS === 1 ? $.session.getUsername() : '' ,
+							BLOCKED_DATE	: oRow.STATUS === 1 ? new Date() : undefined,
+						    UNBLOCKED_BY	: oRow.STATUS === 0 ? $.session.getUsername() : '' ,
+							UNBLOCKED_DATE	: oRow.STATUS === 0 ? new Date() : undefined,	
+						    STATUS			: oRow.STATUS === 0 ? 0 : 1
 						};	
 						oCustomerBlock.isChanged = true;
 						break;

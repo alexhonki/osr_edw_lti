@@ -496,7 +496,7 @@ function updateEvent(oEvent, oRow) {
  * @param oValue2
  */
 function validValue(oValue1, oValue2) {
-	return (oValue1 != undefined) ? oValue1 : oValue2;
+	return (oValue1 !== undefined && oValue1 !== null && oValue1 !== "") ? oValue1 : oValue2;
 }
 
 /**
