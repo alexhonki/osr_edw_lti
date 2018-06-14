@@ -110,6 +110,9 @@ context app {
 
             @Comment : 'End Calendar Month YYYYMM'
             END_TIME_SEGMENT  : Integer null;
+            
+            @Comment : 'Sort Order for Attribute'
+            ATTRIBUTE_SORT_ORDER : Integer null;
     }
     technical configuration {
         column store;

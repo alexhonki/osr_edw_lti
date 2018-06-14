@@ -35,6 +35,10 @@
       <viewAttribute id="END_TS" aggregationType="sum">
         <descriptions defaultDescription="End Calendar Month YYYYMM"/>
       </viewAttribute>
+    
+      <viewAttribute id="ATTRIBUTE_SORT_ORDER" aggregationType="sum">
+        <descriptions defaultDescription="Sort Order for Attribute"/>
+      </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes>
       <calculatedViewAttribute id="NEW_END_TS" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
@@ -50,6 +54,8 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="END_DATE" source="END_DATE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TIME_SEGMENT"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="END_TS" source="END_TIME_SEGMENT"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_SORT_ORDER" source="ATTRIBUTE_SORT_ORDER"/>
     </input>
   </calculationView>
   <calculationView xsi:type="Calculation:ProjectionView" id="AttrTy" filterExpressionLanguage="SQL">
@@ -106,6 +112,9 @@
       <viewAttribute id="ATTR_DESCRIPTION">
         <descriptions defaultDescription="Description"/>
       </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_SORT_ORDER" aggregationType="sum">
+        <descriptions defaultDescription="Sort Order for Attribute"/>
+      </viewAttribute>
       <viewAttribute hidden="true" id="JOIN$ATTRIBUTE_ID$ATTRIBUTE_ID"/>
     </viewAttributes>
     <calculatedViewAttributes>
@@ -127,6 +136,7 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_END_DATE" source="END_DATE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_INIT_TS" source="INIT_TS"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_END_TS" source="END_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_SORT_ORDER" source="ATTRIBUTE_SORT_ORDER"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$ATTRIBUTE_ID$ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
     </input>
     <joinAttribute name="JOIN$ATTRIBUTE_ID$ATTRIBUTE_ID"/>
@@ -163,6 +173,10 @@
       <viewAttribute id="ATTR_END_TS" aggregationType="sum">
         <descriptions defaultDescription="End Calendar Month YYYYMM"/>
       </viewAttribute>
+    
+      <viewAttribute id="ATTRIBUTE_SORT_ORDER" aggregationType="sum">
+        <descriptions defaultDescription="Sort Order for Attribute"/>
+      </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
@@ -177,6 +191,8 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_END_DATE" source="ATTR_END_DATE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_INIT_TS" source="ATTR_INIT_TS"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_END_TS" source="ATTR_END_TS"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_SORT_ORDER" source="ATTRIBUTE_SORT_ORDER"/>
     </input>
   </calculationView>
 </calculationViews>
@@ -221,6 +237,11 @@
     <attribute id="ATTR_END_TS" order="10" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="End Calendar Month YYYYMM"/>
       <keyMapping columnObjectName="Projection_1" columnName="ATTR_END_TS"/>
+    </attribute>
+  
+    <attribute id="ATTRIBUTE_SORT_ORDER" order="11" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Sort Order for Attribute"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ATTRIBUTE_SORT_ORDER"/>
     </attribute>
   </attributes>
   <calculatedAttributes/>

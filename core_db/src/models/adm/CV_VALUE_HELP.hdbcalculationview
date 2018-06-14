@@ -31,6 +31,10 @@
       <viewAttribute id="FIELD_ID">
         <descriptions defaultDescription="ATTRIBUTE_ID"/>
       </viewAttribute>
+    
+      <viewAttribute id="ATTRIBUTE_SORT_ORDER">
+        <descriptions defaultDescription="Sort Order for Attribute"/>
+      </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
@@ -39,6 +43,8 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_VALUE" source="ATTRIBUTE_VALUE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_DESCRIPTION" source="ATTR_DESCRIPTION"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_ID" source="ATTRIBUTE_ID"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_SORT_ORDER" source="ATTRIBUTE_SORT_ORDER"/>
     </input>
     <filter>(&quot;FIELD_NAME&quot;='$$IP_FIELD_NAME$$')</filter>
   </calculationView>
@@ -56,6 +62,10 @@
       <viewAttribute id="FIELD_DESCRIPTION">
         <descriptions defaultDescription="DESCRIPTION"/>
       </viewAttribute>
+    
+      <viewAttribute id="ATTRIBUTE_SORT_ORDER">
+        <descriptions defaultDescription="Sort Order for Attribute"/>
+      </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
@@ -64,6 +74,8 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_NAME" source="FIELD_NAME"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_VALUE" source="FIELD_VALUE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="FIELD_DESCRIPTION" source="FIELD_DESCRIPTION"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_SORT_ORDER" source="ATTRIBUTE_SORT_ORDER"/>
     </input>
   </calculationView>
 </calculationViews>
@@ -84,6 +96,11 @@
     <attribute id="FIELD_DESCRIPTION" order="4" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="DESCRIPTION"/>
       <keyMapping columnObjectName="Aggregation_1" columnName="FIELD_DESCRIPTION"/>
+    </attribute>
+  
+    <attribute id="ATTRIBUTE_SORT_ORDER" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Sort Order for Attribute"/>
+      <keyMapping columnObjectName="Aggregation_1" columnName="ATTRIBUTE_SORT_ORDER"/>
     </attribute>
   </attributes>
   <calculatedAttributes/>

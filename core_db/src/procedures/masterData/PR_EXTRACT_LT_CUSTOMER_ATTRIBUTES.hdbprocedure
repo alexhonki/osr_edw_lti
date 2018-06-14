@@ -137,11 +137,16 @@ BEGIN
     						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
     						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
     						CASE WHEN ("VALUE"<=100 ) THEN 'Under $100' 
-						    WHEN ("VALUE">100 and "VALUE"<=1000 ) THEN '$100 TO $1000'
-						    WHEN ("VALUE">1000 and "VALUE"<=10000 ) THEN '$1000 TO $10000'
+						    WHEN ("VALUE">100 and "VALUE"<=1000 ) THEN '$100 to $1000'
+						    WHEN ("VALUE">1000 and "VALUE"<=10000 ) THEN '$1000 to $10000'
 						    WHEN ("VALUE">10000 ) THEN 'Over $10000'
 						    END AS "ATTRIBUTE_VALUE",
-    						'OUTSTANDING_REVENUE' AS "ATTRIBUTE_NAME"
+    						'OUTSTANDING_REVENUE' AS "ATTRIBUTE_NAME",
+    						CASE WHEN ("VALUE"<=100 ) THEN '1' 
+						    WHEN ("VALUE">100 and "VALUE"<=1000 ) THEN '2'
+						    WHEN ("VALUE">1000 and "VALUE"<=10000 ) THEN '3'
+						    WHEN ("VALUE">10000 ) THEN '4'
+						    END AS "ATTRIBUTE_SORT_ORDER"
     						FROM :LT_OA_TEMP;
     						
     --BP Value
@@ -176,7 +181,19 @@ BEGIN
 								WHEN TAXAMOUNT>100000 AND TAXAMOUNT<=1000000 THEN '$100000 to $1M'
 								WHEN TAXAMOUNT>1000000 THEN 'Over $1M'
 							END as "ATTRIBUTE_VALUE",
-							'CUSTOMER_SEGMENT' AS "ATTRIBUTE_NAME" 
+							'CUSTOMER_SEGMENT' AS "ATTRIBUTE_NAME",
+							CASE 
+								WHEN TAXAMOUNT<=500 THEN '1'
+								WHEN TAXAMOUNT>500 AND TAXAMOUNT<=1000 THEN '2'
+								WHEN TAXAMOUNT>1000 AND TAXAMOUNT<=2500 THEN '3'
+								WHEN TAXAMOUNT>2500 AND TAXAMOUNT<=5000 THEN '4'
+								WHEN TAXAMOUNT>5000 AND TAXAMOUNT<=10000 THEN '5'
+								WHEN TAXAMOUNT>10000 AND TAXAMOUNT<=25000 THEN '6'
+								WHEN TAXAMOUNT>25000 AND TAXAMOUNT<=50000 THEN '7'
+								WHEN TAXAMOUNT>50000 AND TAXAMOUNT<=100000 THEN '8'
+								WHEN TAXAMOUNT>100000 AND TAXAMOUNT<=1000000 THEN '9'
+								WHEN TAXAMOUNT>1000000 THEN '10'
+							END as "ATTRIBUTE_SORT_ORDER"
     						FROM :LT_BP_TAX_TEMP; 
     						
     -- Parcel Count
@@ -184,10 +201,10 @@ BEGIN
 							CUST_ID,INIT_DATE,END_DATE,
     						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
     						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
-    						CASE WHEN (PARCELCNT>=1 and PARCELCNT<=2) THEN '01 TO 02' 
-    						WHEN (PARCELCNT>=3 and PARCELCNT<=5) THEN '03 TO 05' 
-    						WHEN (PARCELCNT>=6 and PARCELCNT<=15) THEN '06 TO 15'
-    						WHEN (PARCELCNT>=16 and PARCELCNT<=55) THEN '16 TO 55'
+    						CASE WHEN (PARCELCNT>=1 and PARCELCNT<=2) THEN '01 to 02' 
+    						WHEN (PARCELCNT>=3 and PARCELCNT<=5) THEN '03 to 05' 
+    						WHEN (PARCELCNT>=6 and PARCELCNT<=15) THEN '06 to 15'
+    						WHEN (PARCELCNT>=16 and PARCELCNT<=55) THEN '16 to 55'
     						WHEN (PARCELCNT>55                   ) THEN '55 PLUS' 
     						END AS "ATTRIBUTE_VALUE",
     						'PARCEL_COUNT' AS "ATTRIBUTE_NAME"
@@ -262,7 +279,8 @@ BEGIN
 						  INIT_DATE,
 						  END_DATE,
 						  INIT_TS,
-						  END_TS
+						  END_TS,
+						  NULL AS ATTRIBUTE_SORT_ORDER
 						  FROM :LT_CUSTOMER_AGE_GROUP AS A
 						  INNER JOIN "db::app.AttributeTypes" AS B
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
@@ -275,7 +293,8 @@ BEGIN
 						  INIT_DATE,
 						  END_DATE,
 						  INIT_TS,
-						  END_TS
+						  END_TS,
+						  NULL AS ATTRIBUTE_SORT_ORDER
 						  FROM :LT_PARTNER_TYPE AS A
 						  INNER JOIN "db::app.AttributeTypes" AS B
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
@@ -288,7 +307,8 @@ BEGIN
 						  INIT_DATE,
 						  END_DATE,
 						  INIT_TS,
-						  END_TS
+						  END_TS,
+						  ATTRIBUTE_SORT_ORDER
 						  --FROM :LT_BP_VALUE AS A
 						  FROM :LT_BP_TAX AS A
 						  INNER JOIN "db::app.AttributeTypes" AS B
@@ -302,7 +322,8 @@ BEGIN
 						  INIT_DATE,
 						  END_DATE,
 						  INIT_TS,
-						  END_TS
+						  END_TS,
+						  NULL AS ATTRIBUTE_SORT_ORDER
 						  FROM :LT_PARCEL_COUNT AS A
 						  INNER JOIN "db::app.AttributeTypes" AS B
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
@@ -315,7 +336,8 @@ BEGIN
 						  INIT_DATE,
 						  END_DATE,
 						  INIT_TS,
-						  END_TS
+						  END_TS,
+						  ATTRIBUTE_SORT_ORDER
 						  FROM :LT_OUT_AMT AS A
 						  INNER JOIN "db::app.AttributeTypes" AS B
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
@@ -328,7 +350,8 @@ BEGIN
 						  INIT_DATE,
 						  END_DATE,
 						  INIT_TS,
-						  END_TS
+						  END_TS,
+						  NULL AS ATTRIBUTE_SORT_ORDER
 						  FROM :LT_FIRST_TIME_TP AS A
 						  INNER JOIN "db::app.AttributeTypes" AS B
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
@@ -341,7 +364,8 @@ BEGIN
 						  INIT_DATE,
 						  END_DATE,
 						  INIT_TS,
-						  END_TS
+						  END_TS,
+						  NULL AS ATTRIBUTE_SORT_ORDER
 						  FROM :LT_PPR_CODE AS A
 						  INNER JOIN "db::app.AttributeTypes" AS B
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
@@ -358,7 +382,8 @@ BEGIN
 	"INIT_DATE",
 	"END_DATE",
 	"INIT_TIME_SEGMENT",
-	"END_TIME_SEGMENT"
+	"END_TIME_SEGMENT",
+	"ATTRIBUTE_SORT_ORDER"
 	)
     SELECT CUST_ID,
 		   ATTRIBUTE_ID,
@@ -366,7 +391,8 @@ BEGIN
 		   INIT_DATE,
 		   END_DATE,
 		   INIT_TS,
-		   END_TS 
+		   END_TS,
+		   ATTRIBUTE_SORT_ORDER
 		   FROM :LT_CUST_ATTRIBUTES;
 	select max(Z_RUN_SEQ_ID) INTO LV_NEW_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV";
 	
