@@ -223,6 +223,11 @@ sap.ui.define([
             listColumnFactory: function (sId, oContext) {
                 var mSettings = oContext.oModel.getProperty(oContext.sPath);
                 mSettings.vAlign = "Bottom";
+                if(mSettings.hAlign){
+                	mSettings.width ="30%";
+                } else {
+                	mSettings.width ="70%";
+                }
                 return new sap.m.Column(mSettings);
             },
             listItemFactory: function (sId, oContext) {
@@ -233,10 +238,10 @@ sap.ui.define([
 
                 var value = Number(oData.TOTAL) || 0;
 
-                var vBox1 = new sap.m.VBox({ alignItems:"Start"});
+                var vBox1 = new sap.m.VBox({ alignItems:"Start",width:"100%"});
                 vBox1.addStyleClass("sapUiTinyMarginTop sapUiNoMarginBottom");
 
-                var categoryText = new sap.m.Text({text:oData.CATEGORY, maxLines:1});
+                var categoryText = new sap.m.Text({text:oData.CATEGORY});
                 categoryText.addStyleClass("sapThemeDarkText");
 
                 vBox1.addItem(categoryText);
