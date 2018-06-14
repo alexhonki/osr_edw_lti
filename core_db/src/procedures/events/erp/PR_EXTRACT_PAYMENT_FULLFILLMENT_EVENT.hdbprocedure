@@ -77,7 +77,6 @@ BEGIN
 		)) AND PPSTA = '1' AND PPCAT='Z7' 
 		) a
 	INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART
-	WHERE a.GPART >= '0001000335' and a.GPART <= '0001076855'
 	;
 	
 	
