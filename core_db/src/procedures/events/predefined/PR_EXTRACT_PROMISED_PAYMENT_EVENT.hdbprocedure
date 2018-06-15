@@ -49,25 +49,25 @@ BEGIN
 	LV_MAX_LASTSEQ_ID_3 = 0;
 	END IF;
 	
-	LT_CUST        = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+	LT_CUST        = SELECT DISTINCT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
 						 "db::app.Customer" on EXT_ID = GPART WHERE 
 						  "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID;
-	LT_CUST_EDITED = select to_int(GPART) as "CUST_ID" from :LT_CUST ;
+	LT_CUST_EDITED = select DISTINCT to_int(GPART) as "CUST_ID" from :LT_CUST ;
 	
-	LT_CUST_1        = SELECT PRGPA FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+	LT_CUST_1        = SELECT DISTINCT PRGPA FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
 						 "db::app.Customer" on EXT_ID = PRGPA WHERE 
 						  "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_1;
-	LT_CUST_EDITED_1 = select to_int(PRGPA) as "CUST_ID" from :LT_CUST_1 ;
+	LT_CUST_EDITED_1 = select DISTINCT to_int(PRGPA) as "CUST_ID" from :LT_CUST_1 ;
 	
-	LT_CUST_2        = SELECT PRGPA FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+	LT_CUST_2        = SELECT DISTINCT PRGPA FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
 						 "db::app.Customer" on EXT_ID = PRGPA WHERE 
 						  "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_2;
-	LT_CUST_EDITED_2 = select to_int(PRGPA) as "CUST_ID" from :LT_CUST_2 ;
+	LT_CUST_EDITED_2 = select DISTINCT to_int(PRGPA) as "CUST_ID" from :LT_CUST_2 ;
 	
-	LT_CUST_3        = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+	LT_CUST_3        = SELECT DISTINCT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
 						 "db::app.Customer" on EXT_ID = GPART WHERE 
 						  "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_3;
-	LT_CUST_EDITED_3 = select to_int(GPART) as "CUST_ID" from :LT_CUST_3 ;
+	LT_CUST_EDITED_3 = select DISTINCT to_int(GPART) as "CUST_ID" from :LT_CUST_3 ;
 	
 	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 	IV_EVENT_NAME=>:LV_PP,
