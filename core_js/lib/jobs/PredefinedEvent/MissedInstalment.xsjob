@@ -4,13 +4,13 @@
 	
 	"schedules": [{
 		"description": "Missed Instalment Event with schedule frequency: Initial Load", 
-		"xscron": "2016 * * * 21 10 0",
+		"xscron": "2018 6 17 * 03 00 01",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Missed Instalment Event with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "2016 * * * 21 10 0",
+		"description": "Missed Instalment Event with schedule frequency: Delta Load every * * * sun 06 20 01", 
+		"xscron": "* * * sun 06 20 01",
 		"parameter": {
 			"IV_MODE": 1
 		} 
