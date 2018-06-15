@@ -4,13 +4,13 @@
 	
 	"schedules": [{
 		"description": "Assessment event with schedule frequency: Initial Load", 
-		"xscron": "2016 * * * 21 10 0",
+		"xscron": "2018 6 17 * 12 10 01",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
 		"description": "Assessment event with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "2016 * * * 21 10 0",
+		"xscron": "* * * sun 16 10 01",
 		"parameter": {
 			"IV_MODE": 1
 		} 

@@ -3,13 +3,13 @@
 	"action": "procedures.events.erp::PR_EXTRACT_CONCESSION_EVENT",
 	"schedules": [{
 		"description": "Concession Event with schedule frequency: Initial Load", 
-		"xscron": "2016 * * * 21 10 0",
+		"xscron": "2018 6 17 * 12 40 01",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
 		"description": "Concession Event with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "2016 * * * 21 10 0",
+		"xscron": "* * * sun 16 40 01",
 		"parameter": {
 			"IV_MODE": 1
 		} 
