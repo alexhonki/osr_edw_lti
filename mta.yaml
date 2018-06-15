@@ -21,7 +21,7 @@ modules:
     requires:
       - name: OSR_LTI-Container
       - name: OSR_LTI-uaa
-      - name: OSR_LTI-JobScheduler
+    #  - name: OSR_LTI-JobScheduler
     provides:
       - name: ti_core_api
         properties:
