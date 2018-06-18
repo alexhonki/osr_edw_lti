@@ -52,17 +52,17 @@ BEGIN
 		SELECT 0 INTO LV_MAX_LASTSEQ_ID_LP_I FROM "synonyms::dummy";
 	END IF;
 	
-	LT_CUST_EDITED_CL_F = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
+	LT_CUST_EDITED_CL_F = SELECT DISTINCT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
 							"db::app.Customer" on EXT_ID = GPART WHERE 
 						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_CL_F;
 	LT_CUST_ID_EDITED_CL_F = select to_int(GPART) as "CUST_ID" from :LT_CUST_EDITED_CL_F;
 	
-	LT_CUST_EDITED_CL_P = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
+	LT_CUST_EDITED_CL_P = SELECT DISTINCT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
 							"db::app.Customer" on EXT_ID = GPART WHERE 
 						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_CL_P;
 	LT_CUST_ID_EDITED_CL_P = select to_int(GPART) as "CUST_ID" from :LT_CUST_EDITED_CL_P;
 	
-	LT_CUST_EDITED_LP_I = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
+	LT_CUST_EDITED_LP_I = SELECT DISTINCT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
 							"db::app.Customer" on EXT_ID = GPART WHERE 
 						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_LP_I;
 	LT_CUST_ID_EDITED_LP_I = select to_int(GPART) as "CUST_ID" from :LT_CUST_EDITED_LP_I;
@@ -81,11 +81,6 @@ BEGIN
 		IT_CUST=>:LT_CUST_ID_EDITED_LP_I
 	);
 
-	LT_CUST_ID = SELECT GPART FROM :LT_CUST_EDITED_CL_F 
-					UNION 
-				SELECT GPART FROM :LT_CUST_EDITED_CL_P 
-					UNION 
-				SELECT GPART FROM :LT_CUST_EDITED_LP_I;
 				
 	TEMP_DFKKOP = SELECT OPBEL,BLART,KOFIZ,CLEARED_DATE , AUGDT, AUGVD, HVORG,GPART, TVORG,PAYMENT_DATE,ROW_NUMBER() OVER(PARTITION BY OPBEL ORDER BY CLEARED_DATE ASC) AS RN   
 					FROM (	SELECT OPBEL,BLART,KOFIZ , AUGDT, AUGVD, HVORG, TVORG,GPART,PAYMENT_DATE,
@@ -103,7 +98,6 @@ BEGIN
 													FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" A6 
 													WHERE AUGBL IN (SELECT AUGBL
 																	from  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" as DF
-																	INNER JOIN :LT_CUST_ID AS DELT ON DF.GPART = DELT.GPART
 																		WHERE AUGBL != '')
 													AND A6.HVORG = '5000' GROUP BY AUGBL ) B8 
 									ON A8.AUGBL = B8.AUGBL  )
@@ -123,6 +117,7 @@ BEGIN
 				concat(year(AUGDT), lpad(month(AUGDT), 2, 0)) AS INIT_TS, 
 				NULL AS END_TS
 			FROM :TEMP_DFKKOP AS TEMP
+			INNER JOIN :LT_CUST_EDITED_CL_F AS DELT ON TEMP.GPART = DELT.GPART
 			INNER JOIN ( SELECT OPBEL, MAX(RN) AS MAXRN
 							FROM :TEMP_DFKKOP
 							GROUP BY OPBEL) AS t
@@ -151,6 +146,7 @@ BEGIN
 				concat(	year(AUGDT), lpad(month(AUGDT), 2, 0)) AS INIT_TS, 
 				NULL AS END_TS
 			FROM :TEMP_DFKKOP TEMP
+			INNER JOIN :LT_CUST_EDITED_CL_P AS DELT ON TEMP.GPART = DELT.GPART
 			INNER JOIN ( SELECT OPBEL, MAX(RN) AS MAXRN
 							FROM :TEMP_DFKKOP
 							GROUP BY OPBEL) AS t
@@ -179,6 +175,7 @@ BEGIN
 				concat(year(FAEDN), lpad(month(FAEDN), 2, 0)) AS INIT_TS, 
 				NULL AS END_TS
 			FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" AS A
+			INNER JOIN :LT_CUST_EDITED_LP_I AS DELT ON A.GPART = DELT.GPART
 			INNER JOIN "db::app.Customer" AS SAP
 				ON SAP.EXT_ID = A.GPART
 			WHERE HVORG = '0040' AND KOFIZ ='LT'
