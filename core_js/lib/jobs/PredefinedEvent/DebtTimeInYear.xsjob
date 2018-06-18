@@ -4,7 +4,7 @@
 	
 	"schedules": [{
 		"description": "Debt Time in Year Event with schedule frequency: Initial Load", 
-		"xscron": "2018 6 17 * 01 20 01",
+		"xscron": "2018 6 19 * 20 20 01",
 		"parameter": {
 			"IV_MODE": 0
 		} 
