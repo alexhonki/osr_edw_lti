@@ -61,7 +61,7 @@ BEGIN
 			LEFT(VALIDFROM,6)  as INIT_TS,
 			NULL  as END_TS
 		from "osr.edw.staging.md.rms.proxy.synonym::CV_LTCNEXMD" as A
-		inner join :LT_CUST_ID as delt on A.BPARTNER = delt.BPARTNER and CAST(A.VALIDFROM as date) = init_date
+		inner join :LT_CUST_ID as delt on A.BPARTNER = delt.BPARTNER -- and CAST(A.VALIDFROM as date) = init_date
 		INNER JOIN  "db::app.Customer" as SAP on SAP.EXT_ID=A.BPARTNER
 		where INVALID_EXMD=''  AND 	SAP.INIT_DATE <= CAST(VALIDFROM as date) 
 	UNION ALL
@@ -84,7 +84,7 @@ BEGIN
 			LEFT(VALIDTO,6)   as INIT_TS,
 			NULL  as END_TS
 		from "osr.edw.staging.md.rms.proxy.synonym::CV_LTCNEXMD" as A
-		inner join :LT_CUST_ID_REM as delt on A.BPARTNER = delt.BPARTNER and CAST(A.VALIDTO as date) = init_date
+		inner join :LT_CUST_ID_REM as delt on A.BPARTNER = delt.BPARTNER -- and CAST(A.VALIDTO as date) = init_date
 		INNER JOIN  "db::app.Customer" as SAP on SAP.EXT_ID=A.BPARTNER
 		where CAST(VALIDTO AS DATE)<cast(NOW() as date) and  INVALID_EXMD='' AND 	SAP.INIT_DATE <= CAST(VALIDFROM as date) 
 		UNION ALL
@@ -101,7 +101,7 @@ BEGIN
 			LEFT(TAXYRSTARTDT,6)   as INIT_TS,
 			NULL  as END_TS 
 	      FROM :LT_TEMP_RESV as A
-	      inner join :LT_CUST_ID_SUBD as delt on A.ZZ_PARTNER = delt.ZZ_PARTNER and CAST(TAXYRSTARTDT as date) = init_date
+	      inner join :LT_CUST_ID_SUBD as delt on A.ZZ_PARTNER = delt.ZZ_PARTNER -- and CAST(TAXYRSTARTDT as date) = init_date
 	      INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=A.ZZ_PARTNER 
           WHERE CONCESSCODE = '*' AND (CONCESSCODE_LAG IS NULL OR CONCESSCODE_LAG != '*')  
 			UNION ALL
@@ -118,7 +118,7 @@ BEGIN
 			LEFT(TAXYRSTARTDT,6)   as INIT_TS,
 			NULL  as END_TS 
 	      FROM :LT_TEMP_RESV as A
-	      inner join :LT_CUST_ID_SUBD as delt on A.ZZ_PARTNER = delt.ZZ_PARTNER and CAST(A.TAXYRSTARTDT as date) = init_date
+	      inner join :LT_CUST_ID_SUBD as delt on A.ZZ_PARTNER = delt.ZZ_PARTNER -- and CAST(A.TAXYRSTARTDT as date) = init_date
 	      INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=A.ZZ_PARTNER 
           WHERE (CONCESSCODE = '' OR CONCESSCODE != '*') AND CONCESSCODE_LAG ='*');
    	
