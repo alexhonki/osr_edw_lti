@@ -32,21 +32,20 @@ BEGIN
    	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
 	IF IV_MODE = 0 THEN 
-		DELETE FROM "db::app.CustomerEvents" where EVENT_GROUP = :LV_EVENT_GROUP;
-		UPDATE "db::adm.config.event.name" SET LATEST_EXTRACTED_SEQUENCE = 0 where CATEGORY_NAME = :LV_EVENT_GROUP;
+		DELETE FROM "db::app.CustomerEvents" where EVENT_NAME IN (SELECT EVENT_NAME FROM "db::adm.config.event.name" WHERE  UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GROUP) 
+		AND "SOURCE" = 'ERP');
+		UPDATE "db::adm.config.event.name" SET LATEST_EXTRACTED_SEQUENCE = 0 where CATEGORY_NAME = :LV_EVENT_GROUP AND "SOURCE" = 'ERP';
 	END IF;
-	SELECT MAX(LATEST_EXTRACTED_SEQUENCE) into LV_EVENT_MAX_ID from "db::adm.config.event.name" where CATEGORY_NAME = :LV_EVENT_GROUP;
+	SELECT MAX(LATEST_EXTRACTED_SEQUENCE) into LV_EVENT_MAX_ID from "db::adm.config.event.name" where CATEGORY_NAME = :LV_EVENT_GROUP AND "SOURCE" = 'ERP';
 	IF :LV_EVENT_MAX_ID IS NULL THEN 
 		SELECT 0 INTO LV_EVENT_MAX_ID FROM "synonyms::dummy";
 	END IF;
-	LT_CUST_EDITED = SELECT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_ZBUT0000HJCXO9" inner join
+	LT_CUST_EDITED = SELECT DISTINCT PARTNER,INITCAP(ZZTFLDPVC3OA) as EVENT_NAME FROM "osr.edw.staging.md.rms.proxy.synonym::CV_ZBUT0000HJCXO9" inner join
 							"db::app.Customer" on EXT_ID = PARTNER WHERE 
-						"Z_RUN_SEQ_ID">:LV_EVENT_MAX_ID;
-	LT_CUST_ID_EDITED = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED;
+						"Z_RUN_SEQ_ID">:LV_EVENT_MAX_ID  AND ZZTFLD2WCKOA>=20100101 and ZZTFLDPVC3OA!='' AND ZZTFLD2WCKOA!=00000000;
+	LT_CUST_ID_EDITED = select distinct PARTNER from :LT_CUST_EDITED;
 	
-	delete from "db::app.CustomerEvents" where (CUST_ID, "EVENT_GROUP") in (select CUST_ID, "EVENT_GROUP" from "db::app.CustomerEvents" 
-																										where CUST_ID in (select CUST_ID from :LT_CUST_ID_EDITED) 
-																										and "EVENT_GROUP" = :LV_EVENT_GROUP);
+	delete from "db::app.CustomerEvents" where (CUST_ID, "EVENT_NAME") in (select CUST_ID, "EVENT_NAME" FROM :LT_CUST_EDITED);
    	INSERT INTO "db::app.CustomerEvents"
 	select
 	c.CUST_ID as CUST_ID,
@@ -62,7 +61,7 @@ BEGIN
 	LEFT(ZZTFLD2WCKOA,6)  as INIT_TS,
 	LEFT(ZZTFLD2ACBOA,6)  as END_TS
 	from "osr.edw.staging.md.rms.proxy.synonym::CV_ZBUT0000HJCXO9" a
-	INNER JOIN :LT_CUST_EDITED as delt ON a.PARTNER = delt.PARTNER
+	INNER JOIN :LT_CUST_ID_EDITED as delt ON a.PARTNER = delt.PARTNER
 	INNER JOIN "db::app.Customer" c on c.EXT_ID = a.PARTNER  
 --	INNER JOIN "db::adm.config.event.name" b on a.ZZTFLDPVC3OA = UPPER(b.EVENT_NAME)
 	WHERE ZZTFLDPVC3OA!='' AND ZZTFLD2WCKOA!=00000000 AND ZZTFLD2WCKOA>=20100101;
