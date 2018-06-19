@@ -537,7 +537,7 @@ sap.ui.define([
                 var eventCategories = this.byId('idEventCategorySelect');
                 var items = eventCategories.getItems();
                 for (var i = 0; i < items.length; i++) {
-                    if (items[i].getText() == sGroup) {
+                    if (items[i].getText() === sGroup) {
                         eventCategories.setSelectedKey(items[i].getKey());
                     }
                 }
@@ -552,7 +552,7 @@ sap.ui.define([
                     aDisplayedEvents = aEvents;
                 } else {
                     aEvents.forEach(function (oEvent) {
-                        if (oEvent.EVENT_GROUP == sGroup) {
+                        if (oEvent.EVENT_GROUP.toLowerCase() === sGroup.toLowerCase()) {
                             aDisplayedEvents.push(oEvent);
                         }
                     });
