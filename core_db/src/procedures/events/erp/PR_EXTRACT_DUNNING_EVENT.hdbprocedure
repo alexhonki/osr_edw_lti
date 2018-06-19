@@ -17,17 +17,20 @@ BEGIN
 		Check whether Registration Fee was charged to a Customer or not for Main transaction as 4050
    *************************************/
     DECLARE LV_CHRG_REG_DUNN NVARCHAR(500) := 'Charge Registration' ;
-     DECLARE LV_ASSESS_EVENT_GRP NVARCHAR(500) := 'Assessment';
-     DECLARE LV_ICON NVARCHAR(500) := 'unpaid-leave';
+    DECLARE LV_ASSESS_EVENT_GRP NVARCHAR(500) := 'Debt Management';
+    DECLARE LV_EVENT_ICON NVARCHAR(500) := 'sales-order';
+    
     DECLARE LV_TEST INTEGER;
-     DECLARE LV_MAX_SEQ_ID INTEGER;
-      DECLARE LV_MAX_EVENT_ID INTEGER;
+    DECLARE LV_MAX_SEQ_ID INTEGER;
+    DECLARE LV_MAX_EVENT_ID INTEGER;
+    
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
-	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+		
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_CHRG_REG_DUNN);
 	SELECT OUT_MAX_SEQ_ID into lv_test from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_CHRG_REG_DUNN);
 	IF :lv_test IS NULL THEN
-	lv_test = 0;
+		lv_test = 0;
 	END IF;
 	--LV_MAX_SEQ_ID = SELECT OUT_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_CHRG_REG_DUNN);
 	LT_CUST_EDITED = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
@@ -39,37 +42,33 @@ BEGIN
     CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 		IV_EVENT_NAME=>:LV_CHRG_REG_DUNN,
 		IT_CUST=>:LT_CUST_ID_EDITED
-   );
+    );
     INSERT INTO "db::app.CustomerEvents"
-   /*Charge Registration*/
-   select DISTINCT 
-			SAP.CUST_ID as CUST_ID, 
-			--(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_CHRG_REG_DUNN)) as EVENT_ID,
-			--(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_CHRG_REG_DUNN)) as EVENT_GROUP,
-			NULL as EVENT_ID,
-			:LV_ASSESS_EVENT_GRP as EVENT_GROUP,
-			:LV_CHRG_REG_DUNN as EVENT_NAME,
-			CAST(BUDAT as date) as INIT_DATE,
-			NULL as END_DATE,1 as EVENT_VALUE,
-			:LV_CHRG_REG_DUNN as DESCRIPTION,
-			LEFT(BUDAT,6) as INIT_TS,
-			NULL as END_TS 
-			from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" AS a
-			INNER JOIN :LT_CUST_EDITED as b on a.GPART = b.GPART
-			INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART
-			WHERE HVORG='4050' and TVORG='0525'AND KOFIZ='LT' and BETRH>0 AND AUGRD NOT IN ('04','14','05','99');
+    /*Charge Registration*/
+	    select DISTINCT 
+				SAP.CUST_ID as CUST_ID, 
+				--(SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_CHRG_REG_DUNN)) as EVENT_ID,
+				--(SELECT EVENT_GROUP FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_CHRG_REG_DUNN)) as EVENT_GROUP,
+				NULL as EVENT_ID,
+				:LV_ASSESS_EVENT_GRP as EVENT_GROUP,
+				:LV_CHRG_REG_DUNN as EVENT_NAME,
+				CAST(BUDAT as date) as INIT_DATE,
+				NULL as END_DATE,1 as EVENT_VALUE,
+				:LV_CHRG_REG_DUNN as DESCRIPTION,
+				LEFT(BUDAT,6) as INIT_TS,
+				NULL as END_TS 
+				from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" AS a
+				INNER JOIN :LT_CUST_EDITED as b on a.GPART = b.GPART
+				INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART
+				WHERE HVORG='4050' and TVORG='0525'AND KOFIZ='LT' and BETRH>0 AND AUGRD NOT IN ('04','14','05','99');
+				
 	select max(Z_RUN_SEQ_ID) INTO LV_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP";
-	/*SELECT EVENT_ID INTO LV_MAX_EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_CHRG_REG_DUNN);
-	  CALL "procedures.utils::PR_UPDATE_SEQ_ID_FOR_EVENTS"(
-		SEQ_ID=> :LV_MAX_SEQ_ID,
-		EVENT_ID=>:LV_MAX_EVENT_ID
-	   );*/
 
 	-- Generate Event IDs for newly created Events
 	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	
    
    	UPDATE "db::adm.config.event.name" 
-		SET "ICON" = LV_ICON, "PRIORITY" = 11,"LATEST_EXTRACTED_SEQUENCE" = LV_MAX_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
+		SET "ICON" = LV_EVENT_ICON, "PRIORITY" = 40,"LATEST_EXTRACTED_SEQUENCE" = LV_MAX_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
 		WHERE  UPPER("EVENT_NAME") = UPPER(LV_CHRG_REG_DUNN)
 		AND UPPER("CATEGORY_NAME") = UPPER(LV_ASSESS_EVENT_GRP);
   
