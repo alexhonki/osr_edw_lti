@@ -31,12 +31,12 @@ BEGIN
 	IF :LV_PYMNT_FULF2_MAX_SEQ_ID IS NULL THEN 
 		LV_PYMNT_FULF2_MAX_SEQ_ID = 0;
 	END IF;
-	LT_CUST_EDITED_FULF1 = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+	LT_CUST_EDITED_FULF1 = SELECT DISTINCT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
 							"db::app.Customer" on EXT_ID = GPART WHERE 
 						"Z_RUN_SEQ_ID">:LV_PYMNT_FULF1_MAX_SEQ_ID;
 	LT_CUST_ID_EDITED_FULF1 = select to_int(GPART) as "CUST_ID" from :LT_CUST_EDITED_FULF1;
 	
-	LT_CUST_EDITED_FULF2 = SELECT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
+	LT_CUST_EDITED_FULF2 = SELECT DISTINCT GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" inner join
 							"db::app.Customer" on EXT_ID = GPART WHERE 
 						"Z_RUN_SEQ_ID">:LV_PYMNT_FULF2_MAX_SEQ_ID;
 	LT_CUST_ID_EDITED_FULF2 = select to_int(GPART) as "CUST_ID" from :LT_CUST_EDITED_FULF2;
