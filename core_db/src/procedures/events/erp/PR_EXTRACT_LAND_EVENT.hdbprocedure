@@ -44,12 +44,12 @@ BEGIN
 	IF :LV_LAND_LOST_MAX_SEQ_ID IS NULL THEN 
 		SELECT 0 INTO LV_LAND_LOST_MAX_SEQ_ID FROM "synonyms::dummy";
 	END IF;
-	LT_CUST_EDITED_LAND_ACQ = SELECT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" inner join
+	LT_CUST_EDITED_LAND_ACQ = SELECT DISTINCT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" inner join
 							"db::app.Customer" on EXT_ID = PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAND_ACQ_MAX_SEQ_ID;
 	LT_CUST_ID_EDITED_LAND_ACQ = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_LAND_ACQ;
 	
-	LT_CUST_EDITED_LAND_LOST = SELECT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" inner join
+	LT_CUST_EDITED_LAND_LOST = SELECT DISTINCT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" inner join
 							"db::app.Customer" on EXT_ID = PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAND_LOST_MAX_SEQ_ID;
 	LT_CUST_ID_EDITED_LAND_LOST = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_LAND_LOST;
