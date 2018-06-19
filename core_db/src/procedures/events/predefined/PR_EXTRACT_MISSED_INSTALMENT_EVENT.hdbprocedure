@@ -10,7 +10,7 @@ BEGIN
        Write your procedure logic 
    *************************************/
    
-   	DECLARE LV_MI NVARCHAR(500) := 'Missed instalment payment';
+   	DECLARE LV_MI NVARCHAR(500) := 'Default payment arrangement';
 	DECLARE LV_MI_1 NVARCHAR(500) := '1-3 times missing instalment payment';
 	DECLARE LV_MI_2 NVARCHAR(500) := '>3 times missing instalment payment';
 	DECLARE LV_MI_3 NVARCHAR(500) := '>6 times missing instalment payment';

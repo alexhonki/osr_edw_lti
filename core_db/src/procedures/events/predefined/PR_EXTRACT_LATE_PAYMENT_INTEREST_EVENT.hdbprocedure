@@ -9,11 +9,11 @@ BEGIN
    /*************************************
        Write your procedure logic 
    *************************************/
-	DECLARE LV_LATE_PMNT_1 NVARCHAR(500) := 'Late Payment Interest Occurred >50 times in a Financial Year';
-	DECLARE LV_LATE_PMNT_2 NVARCHAR(500) := 'Late Payment Interest Occurred >25 times in a Financial Year';
-	DECLARE LV_LATE_PMNT_3 NVARCHAR(500) := 'Late Payment Interest Occurred >15 times in a Financial Year' ;
-	DECLARE LV_LATE_PMNT_4 NVARCHAR(500) := 'Late Payment Interest Occurred >5 times in a Financial Year';
-   	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Predefined';
+	DECLARE LV_LATE_PMNT_1 NVARCHAR(500) := 'Late Payment Interest  >50 times in a Financial Year';
+	DECLARE LV_LATE_PMNT_2 NVARCHAR(500) := 'Late Payment Interest  >25 times in a Financial Year';
+	DECLARE LV_LATE_PMNT_3 NVARCHAR(500) := 'Late Payment Interest  >15 times in a Financial Year' ;
+	DECLARE LV_LATE_PMNT_4 NVARCHAR(500) := 'Late Payment Interest  >5 times in a Financial Year';
+   	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'LPI';
    	
    	DECLARE LV_MAX_SEQ_ID_1 INTEGER;
    	DECLARE LV_MAX_SEQ_ID_2 INTEGER;
@@ -88,7 +88,7 @@ BEGIN
 							ROW_NUMBER() OVER (PARTITION BY a.CUST_ID, YEAR(INIT_DATE) ORDER BY a.CUST_ID, INIT_DATE) AS NUM
 						FROM "db::app.CustomerEvents" a
 						INNER JOIN :LT_CUST_ID delt on a.CUST_ID = delt.CUST_ID
-						WHERE EVENT_NAME = 'Occured Late Payment Interest'
+						WHERE EVENT_NAME = 'Late Payment Interest'
 						GROUP BY a.CUST_ID, INIT_DATE
 						ORDER BY a.CUST_ID, INIT_DATE;
 						

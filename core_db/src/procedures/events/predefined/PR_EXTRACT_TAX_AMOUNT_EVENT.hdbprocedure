@@ -11,7 +11,7 @@ BEGIN
    *************************************/
    
 	DECLARE LV_TA CONSTANT NVARCHAR(500) := 'Increase in Tax Amount by 50% or more';
-	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Land Related';
+	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Assessment';
 	DECLARE LV_MAX_LASTSEQ_ID INTEGER;
 	DECLARE LV_MAX_NEWSEQ_ID INTEGER;
 	

@@ -10,11 +10,11 @@ BEGIN
        Write your procedure logic 
    *************************************/
    
-	DECLARE LV_PP NVARCHAR(500) := 'Promised Payment';
-	DECLARE LV_PP_1 NVARCHAR(500) := 'Promised Payment in 3 or more Consecutive Years';
-	DECLARE LV_PP_2 NVARCHAR(500) := 'Promised Payment with More Than 3 Instalments';  --TBD
-	DECLARE LV_PP_3 NVARCHAR(500) := 'Promise to Pay Payment was Late';	--TBD
-	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Predefined';
+	--DECLARE LV_PP NVARCHAR(500) := 'Promised Payment'; -NOT REQUIRED
+	DECLARE LV_PP_1 NVARCHAR(500) := 'Payment Arrangement in 3 or more Consecutive Years';
+	DECLARE LV_PP_2 NVARCHAR(500) := 'Payment Arrangement with More Than 3 Instalments'; 
+	DECLARE LV_PP_3 NVARCHAR(500) := 'Payment Arrangement was Late';	
+	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Payment Arrangement';
    
     DECLARE LV_MAX_LASTSEQ_ID INTEGER;
     DECLARE LV_MAX_LASTSEQ_ID_1 INTEGER;
@@ -27,11 +27,11 @@ BEGIN
 	
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
-	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_PP);
+	/*CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_PP);*/
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_PP_1);
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_PP_2);
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_PP_3);
-	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_PP);
+	--SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_PP);
 	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_1 from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_PP_1);
 	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_2 from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_PP_2);
 	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_3 from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_PP_3);
@@ -69,9 +69,9 @@ BEGIN
 						  "Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_3;
 	LT_CUST_EDITED_3 = select DISTINCT to_int(GPART) as "CUST_ID" from :LT_CUST_3 ;
 	
-	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+	/*CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 	IV_EVENT_NAME=>:LV_PP,
-	IT_CUST=>:LT_CUST_EDITED);
+	IT_CUST=>:LT_CUST_EDITED);*/
 	
 	 CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 	IV_EVENT_NAME=>:LV_PP_1,
@@ -86,7 +86,7 @@ BEGIN
 	IT_CUST=>:LT_CUST_EDITED_3);
 	
 	/*Promised Payment*/
-	INSERT INTO "db::app.CustomerEvents" 
+	/*INSERT INTO "db::app.CustomerEvents" 
 	   SELECT
 		CUST_ID,
 		NULL,
@@ -116,7 +116,7 @@ BEGIN
 			ON A.GPART = B.EXT_ID
 		)
 	WHERE CUST_ID IS NOT NULL
-	ORDER BY INIT_DATE;
+	ORDER BY INIT_DATE;*/
    
    /*Promised Payment in 3 or more Consecutive Years*/
     INSERT INTO "db::app.CustomerEvents" 
@@ -294,10 +294,10 @@ BEGIN
 	
     CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'PREDEFINED', I_TYPE => 1);
 	
-	UPDATE "db::adm.config.event.name" 
+	/*UPDATE "db::adm.config.event.name" 
 		SET "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEWSEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
 		WHERE UPPER("EVENT_NAME") = UPPER(LV_PP)
-		AND UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GROUP);	
+		AND UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GROUP);	*/
 	
 	UPDATE "db::adm.config.event.name" 
 		SET "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEWSEQ_ID_1, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
