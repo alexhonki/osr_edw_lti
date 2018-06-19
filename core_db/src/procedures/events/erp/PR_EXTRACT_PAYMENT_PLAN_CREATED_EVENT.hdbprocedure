@@ -9,7 +9,7 @@ BEGIN
    /*************************************
        Write your procedure logic 
    *************************************/
-   DECLARE LV_PYMNT_PLAN_1 NVARCHAR(500) := 'Installment plan created';
+   DECLARE LV_PYMNT_PLAN_1 NVARCHAR(500) := 'Payment Arrangement Created';
    DECLARE LV_PYMNT_PLAN_2 NVARCHAR(500) := 'EPO created';
    
    DECLARE LV_PYMNT_PLAN_1_GRP NVARCHAR(500) := 'Payment Arrangement';
