@@ -19,7 +19,7 @@ BEGIN
    
    
     DECLARE LV_LAND_ACQUIRED NVARCHAR(500) := 'Acquired Land';
-	DECLARE LV_LAND_LOST NVARCHAR(500) := 'Lost Land';
+	DECLARE LV_LAND_LOST NVARCHAR(500) := 'Disposed Land';
 	
     DECLARE LV_LAND_ACQUIRED_GRP NVARCHAR(500) := 'Land Related';
 	DECLARE LV_LAND_LOST_GRP NVARCHAR(500) := 'Land Related';
@@ -103,7 +103,7 @@ BEGIN
 	LEFT JOIN "osr.edw.staging.md.rms.proxy.synonym::CV_VILMPL" b on a.INTRENO=b.INTRENO
 	WHERE (DAYDIFF_LAG IS NULL OR DAYDIFF_LAG> 1);
 	
-	/*Lost Land*/
+	/*Disposed Land*/
 	/*=========================================================================================================================
 	   	If a Land is Lost then it will always have Valid To entry ( Entry For Customer/Parcel )- Straight Forward scenario - DAYDIFF_LEAD will be null
     		as there will not be any succeeding entry for that Customer/Parcel.

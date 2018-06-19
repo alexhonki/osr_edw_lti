@@ -53,7 +53,13 @@ BEGIN
 	--b.CATEGORY_NAME as EVENT_GROUP,
 	NULL as  EVENT_ID,
 	:LV_EVENT_GROUP as EVENT_GROUP,
-	INITCAP(ZZTFLDPVC3OA) as EVENT_NAME,
+	case 
+		when INITCAP(ZZTFLDPVC3OA) = 'Receiver Manager' then 'Receiver and Manager Appointed'
+		when INITCAP(ZZTFLDPVC3OA) = 'Administrator' then 'Administration Appointed'
+		when INITCAP(ZZTFLDPVC3OA) = 'Receiver' then 'Receiver Appointed'
+		when INITCAP(ZZTFLDPVC3OA) = 'Mortgagee' then 'Mortgagee In Possession'
+		else INITCAP(ZZTFLDPVC3OA)
+		end as EVENT_NAME,
 	CAST(ZZTFLD2WCKOA as date) as INIT_DATE,
 	CAST(ZZTFLD2ACBOA as date) as END_DATE,
 	1 as EVENT_VALUE,

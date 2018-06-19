@@ -18,8 +18,8 @@ BEGIN
 	DECLARE LV_ASSESS_ORG_5 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $5,000 - $10,000';
 	DECLARE LV_ASSESS_ORG_6 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $10,000 - $25,000';
 	DECLARE LV_ASSESS_ORG_7 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $25,000 - $50,000' ;
-	DECLARE LV_ASSESS_ORG_8 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $50,000 - $1,00,000';
-	DECLARE LV_ASSESS_ORG_9 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $1,00,000 - $1M';
+	DECLARE LV_ASSESS_ORG_8 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $50,000 - $100,000';
+	DECLARE LV_ASSESS_ORG_9 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $100,000 - $1M';
 	DECLARE LV_ASSESS_ORG_10 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount over $1M';
 	--  variables for assessment of individual
 	DECLARE LV_ASSESS_IND_1 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount under $500';
@@ -29,8 +29,8 @@ BEGIN
 	DECLARE LV_ASSESS_IND_5 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $5,000 - $10,000';
 	DECLARE LV_ASSESS_IND_6 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $10,000 - $25,000';
 	DECLARE LV_ASSESS_IND_7 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $25,000 - $50,000' ;
-	DECLARE LV_ASSESS_IND_8 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $50,000 - $1,00,000';
-	DECLARE LV_ASSESS_IND_9 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $1,00,000 - $1M';
+	DECLARE LV_ASSESS_IND_8 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $50,000 - $100,000';
+	DECLARE LV_ASSESS_IND_9 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $100,000 - $1M';
 	DECLARE LV_ASSESS_IND_10 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount over $1M';
    
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
