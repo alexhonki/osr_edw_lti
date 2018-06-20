@@ -112,9 +112,7 @@
                                                         <HBox alignItems="End">
                                                             <FormattedText htmlText="&lt;span style='color: #bb0000;font-size: 2em;'&gt;{path: 'IMPACT', formatter: '.formatNumericContent'}&lt;/span&gt;"/>
                                                             <Label text="{i18n>EventOverview.TopEventItemImpactLabel}" class="sapUiTinyMarginBegin sapUiMediumMarginEnd"/>
-                                                            <layoutData>
-                                                                <FlexItemData baseSize="120px" growFactor="0" shrinkFactor="0" />
-                                                            </layoutData>
+                   
                                                         </HBox>
                                                     </HBox>
                                                 </VBox>
