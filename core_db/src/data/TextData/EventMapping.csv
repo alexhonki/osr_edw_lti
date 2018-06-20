@@ -1,119 +1,96 @@
-CATEGORY_NAME,EVENT_NAME,SEARCH_STRING,PRIORITY,EXCLUSION
-Account Enquiry,Account Enquiry,pay%enquiry,1,0
-Account Enquiry,Account Enquiry,extra%payment,1,0
-Account Enquiry,Account Enquiry,extra%pymnt,1,0
-Account Enquiry,Account Enquiry,pay%arrear,1,0
-Account Enquiry,Account Enquiry,query%pay,1,0
-Account Enquiry,Account Enquiry,enquiry%instal%plan,1,0
-Complaint,Complaint,complaint,2,0
-EPO,EPO,epo,3,0
-Mortgagee,Mortgagee S62 Letter,final%demand%mortgagee,4,0
-Mortgagee,Mortgagee S62 Letter,final%demand%coa,4,0
-Mortgagee,Mortgagee S62 Letter,s62,4,0
-Mortgagee,Mortgagee S62 Letter,final%demand%cba,4,0
-Mortgagee,Mortgagee S62 Letter,final%demand%bank,4,0
-Mortgagee,Mortgagee S62 Letter,final%demand%westp,4,0
-Mortgagee,Mortgagee S62 Letter,final%demand%nab,4,0
-Mortgagee,Mortgagee S62 Letter,final%demand%anz,4,0
-Mortgagee,Mortgagee S62 Letter,final%demand%sec%62,4,0
-Mortgagee,Mortgagee S62 Letter,final%demand%suncorp,4,0
-Mortgagee,Mortgagee S62 Letter,final%demand%ee,4,0
-Mortgagee,Mortgagee S62 Letter,ee%final%demand,4,0
-Payment arrangement,Payment arrangement,final%demand%p2p,5,0
-Payment arrangement,Payment arrangement,withdraw%p2p,5,0
-Payment arrangement,Payment arrangement,TA2,5,0
-Payment arrangement,Payment arrangement,installment,5,0
-Payment arrangement,Payment arrangement,payment%arrange,5,0
-Payment arrangement,Payment arrangement,payment%plan,5,0
-Reassessment,Reassessment,reassessment%dunning,6,0
-Reassessment,Reassessment,dunning%reassess,6,0
-Reassessment,Reassessment,valuation%dunning%block,6,0
-Reissue,Reissue,reissue%dunning,7,0
-Financial Consideration,Financial Consideration,flood,8,0
-Financial Consideration,Financial Consideration,cyclone,8,0
-Land Related,Land Related,change%land%val,9,0
-Debt Management,Debt Management,dunning%interest%block,10,0
-Debt Management,Debt Management,dunning%block%removed,10,0
-Debt Management,Debt Management,dunning%revers,10,0
-Debt Management,Debt Management,dunning%block,10,0
-Debt Management,Debt Management,reset%dunning%steps,10,0
-Debt Management,Debt Management,exemption%LT12%dunning%block,10,0
-Debt Management,Debt Management,charge%release,10,0
-Debt Management,Garnishee,garn,10,0
-Debt Management,Debt Management,reduce%GN,10,0
-Debt Management,Debt Management,G/N,10,0
-Dunning,Dunning,dun%letter,11,0
-Dunning,Dunning,dun%COA,11,0
-Dunning,Dunning,final%demand,11,0
-Exemption,Exemption,lt12,12,0
-Payment Extension,Payment Extension,defer%interest%block,13,0
-Payment Extension,Payment Extension,dunning%hold,13,0
-Payment Extension,Payment Extension,payment%extension,13,0
-Payment Extension,Payment Extension,extension%pay,13,0
-Payment Extension,Payment Extension,ext%pay,13,0
-Payment Extension,Payment Extension,pay%ext,13,0
-Payment Extension,Payment Extension,py%ext,13,0
-Payment,Decline,payment%decline,14,0
-Reassessment,Reassessment,reassessment%dunning,15,0
-Reassessment,Reassessment,dunning%reassessment,15,0
-Dunning,Dunning,legal%letter,16,0
-Mortgagee,Mortgagee S62 Letter,mortgag,17,0
-Mortgagee,Mortgagee S62 Letter,sec%62,17,0
-Mortgagee,Mortgagee S62 Letter,requisition,17,0
-Financial Consideration,Financial Consideration,relief,18,0
-Reassessment,Reassessment,reassessment,19,0
-Reissue,Reissue,reissue,20,0
-Dunning,Dunning,dunn,21,0
-Payment arrangement,Payment arrangement,pay%plan,22,0
-Payment arrangement,Payment arrangement,arrang,22,0
-Payment arrangement,Payment arrangement,p2p,22,0
-General Enquiry,General Enquiry,general,23,0
-General Enquiry,General Enquiry,inquiry,23,0
-General Enquiry,General Enquiry,query,23,0
-Payment Extension,Payment Extension,ext,24,0
-Dunning,Dunning,COA,26,0
-Dunning,Dunning,dem,26,0
-Reassessment,Reassessment,reass,27,0
-Exemption,Exemption,exempt,28,0
-Exemption,Exemption,lt,28,0
-Exemption,Exemption,ppr ,28,0
-Debt Management,Debt Management,block,29,0
-Change of details,Change of details,change,30,0
-Change of details,Change of details,addr,30,0
-Change of details,Change of details,return%sender,30,0
-Land Tax Assessment,Dispute,dispute,33,0
-Land Tax Assessment,Ownership,owner,34,0
-Land Tax Assessment,Assessment,assess,35,0
-Land Tax Assessment,Enquiry,enquir,38,0
-Land Tax Assessment,Enquiry,outstand,38,0
-Land Tax Assessment,Enquiry,compliance,38,0
-Land Tax Assessment,Enquiry,noia,38,0
-Payment,Refund,refund,40,0
-Payment,Credit,credit,41,0
-Payment,Payment,bank,44,0
-Payment,Payment,chequ,44,0
-Payment,Payment,chq,44,0
-Payment,Payment,remit,44,0
-Payment,Payment,money,44,0
-Payment,Payment,pay,44,0
-Land Related,Land Related,land,46,0
-Complaint,Complaint,objection,48,0
-Complaint,Complaint,dispute,48,0
-Account Enquiry,Account Enquiry,balance,51,0
-Account Enquiry,Account Enquiry,account,51,0
-General Enquiry,General Enquiry,client,61,0
-General Enquiry,General Enquiry,search,61,0
-General Enquiry,General Enquiry,request,61,0
-General Enquiry,General Enquiry,clarif,61,0
-General Enquiry,General Enquiry,collect,61,0
-General Enquiry,General Enquiry,project,61,0
-General Enquiry,General Enquiry,file,61,0
-General Enquiry,General Enquiry,letter,61,0
-General Enquiry,General Enquiry,debit,61,0
-General Enquiry,General Enquiry,credit,61,0
-General Enquiry,General Enquiry,waive,61,0
-General Enquiry,General Enquiry,certificate,61,0
-General Enquiry,General Enquiry,charge,61,0
-General Enquiry,General Enquiry,liability,61,0
-General Enquiry,General Enquiry,insolvency,61,0
-CRM General,CRM General, ,1001,0
+CATEGORY_NAME,EVENT_NAME,SEARCH_STRING,PRIORITY,EXCLUSION,ICON
+Account Enquiry,Account Enquiry,pay%enquiry,120,0,sales-notification
+Account Enquiry,Account Enquiry,extra%payment,120,0,sales-notification
+Account Enquiry,Account Enquiry,extra%pymnt,120,0,sales-notification
+Account Enquiry,Account Enquiry,pay%arrear,120,0,sales-notification
+Account Enquiry,Account Enquiry,query%pay,120,0,sales-notification
+Account Enquiry,Account Enquiry,enquiry%instal%plan,120,0,sales-notification
+Complaint,Complaint,complaint,80,0,message-popup
+EPO,EPO,epo,49,0,batch-payments
+Debt Management,Debt Management - S62,final%demand%mortgagee,45,0,sales-order
+Debt Management,Debt Management - S62,final%demand%coa,45,0,sales-order
+Debt Management,Debt Management - S62,s62,45,0,sales-order
+Debt Management,Debt Management - S62,final%demand%cba,45,0,sales-order
+Debt Management,Debt Management - S62,final%demand%bank,45,0,sales-order
+Debt Management,Debt Management - S62,final%demand%westp,45,0,sales-order
+Debt Management,Debt Management - S62,final%demand%nab,45,0,sales-order
+Debt Management,Debt Management - S62,final%demand%anz,45,0,sales-order
+Debt Management,Debt Management - S62,final%demand%sec%62,45,0,sales-order
+Debt Management,Debt Management - S62,final%demand%suncorp,45,0,sales-order
+Debt Management,Debt Management - S62,final%demand%ee,45,0,sales-order
+Debt Management,Debt Management - S62,ee%final%demand,45,0,sales-order
+Payment arrangement,Payment arrangement,final%demand%p2p,60,0,monitor-payments
+Payment arrangement,Payment arrangement-Withdraw,withdraw%p2p,61,0,monitor-payments
+Payment arrangement,Payment arrangement,TA2,60,0,monitor-payments
+Payment arrangement,Payment arrangement,installment,60,0,monitor-payments
+Payment arrangement,Payment arrangement,payment%arrange,60,0,monitor-payments
+Payment arrangement,Payment arrangement,payment%plan,60,0,monitor-payments
+Reassessment,Reassessment,reassessment%dunning,20,0,add-product
+Reassessment,Reassessment,dunning%reassess,20,0,add-product
+Debt Management,Debt Management - Block,valuation%dunning%block,41,0,sales-order
+Reissue,Reissue,reissue%dunning,30,0,sys-first-page
+Financial Consideration,Financial Consideration,flood,1,0,accidental-leave
+Financial Consideration,Financial Consideration,cyclone,1,0,accidental-leave
+Financial Consideration,Financial Consideration,disaster,1,0,accidental-leave
+Dispute Assessment,Dispute Assessment,change%land%val,75,0,inspection
+Debt Management,Debt Management - Block,dunning%interest%block,41,0,sales-order
+Debt Management,Debt Management - Remove,dunning%block%removed,46,0,sales-order
+Debt Management,Debt Management - Reverse,dunning%revers,44,0,sales-order
+Debt Management,Debt Management - Block,dunning%block,41,0,sales-order
+Debt Management,Debt Management - Reverse,reset%dunning%steps,44,0,sales-order
+Debt Management,Debt Management - Block,exemption%LT12%dunning%block,41,0,sales-order
+Debt Management,Debt Management - Charge Release,charge%release,42,0,sales-order
+Debt Management,Debt Management - Garnishee,garn,43,0,sales-order
+Debt Management,Debt Management - Garnishee,reduce%GN,43,0,sales-order
+Debt Management,Debt Management - Garnishee,G/N,43,0,sales-order
+Debt Management,Debt Management,dun%letter,40,0,sales-order
+Debt Management,Debt Management,dun%COA,40,0,sales-order
+Debt Management,Debt Management,final%demand,40,0,sales-order
+Exemption,Exemption,lt12,70,0,insurance-life
+Payment Extension,Payment Extension,defer%interest%block,64,0,time-overtime
+Payment Extension,Payment Extension,dunning%hold,64,0,time-overtime
+Payment Extension,Payment Extension,payment%extension,64,0,time-overtime
+Payment Extension,Payment Extension,extension%pay,64,0,time-overtime
+Payment Extension,Payment Extension,ext%pay,64,0,time-overtime
+Payment Extension,Payment Extension,pay%ext,64,0,time-overtime
+Payment Extension,Payment Extension,py%ext,64,0,time-overtime
+Debt Management,Debt Management - S62,mortgag,45,0,sales-order
+Debt Management,Debt Management - S62,sec%62,45,0,sales-order
+Debt Management,Debt Management - S62,requisition,45,0,sales-order
+Financial Consideration,Financial Consideration,relief,1,0,accidental-leave
+Reassessment,Reassessment,reassessment,20,0,add-product
+Reissue,Reissue,reissue,30,0,sys-first-page
+Debt Management,Debt Management,dunn,40,0,sales-order
+Payment arrangement,Payment arrangement,pay%plan,60,0,monitor-payments
+Payment arrangement,Payment arrangement,arrang,60,0,monitor-payments
+Payment arrangement,Payment arrangement,p2p,60,0,monitor-payments
+Payment Extension,Payment Extension,ext,64,0,time-overtime
+Debt Management,Debt Management,COA,40,0,sales-order
+Debt Management,Debt Management,dem,40,0,sales-order
+Reassessment,Reassessment,reass,20,0,add-product
+Exemption,Exemption,exempt,70,0,insurance-life
+Exemption,Exemption,lt,70,0,insurance-life
+Exemption,Exemption,ppr ,70,0,insurance-life
+Debt Management,Debt Management - Block,block,41,0,sales-order
+Change of details,Change of details,change,90,0,key-user-settings
+Change of details,Change of details,addr,90,0,key-user-settings
+Change of details,RTS,return%sender,91,0,inbox
+Dispute Assessment,Dispute Assessment,dispute,75,0,inspection
+Dispute Assessment,Dispute Assessment,owner,75,0,inspection
+Assessment,Assessment,assess,25,0,add-document
+Assessment,Assessment,enquir,25,0,add-document
+Assessment,Assessment,assmt,25,0,add-document
+Assessment,Assessment,reprint,25,0,add-document
+Dispute Assessment,Dispute Assessment,outstand,75,0,inspection
+Campaign,Campaign,compliance,108,0,add-filter
+Campaign,Campaign,campaign,108,0,add-filter
+Assessment,Assessment,noia,25,0,add-document
+Payment,Payment Refund,refund,65,0,simple-payment
+Payment,Payment Credit,credit,66,0,simple-payment
+Payment,Payment,bank,67,0,simple-payment
+Payment,Payment,chequ,67,0,simple-payment
+Payment,Payment,chq,67,0,simple-payment
+Payment,Payment,remit,67,0,simple-payment
+Payment,Payment,money,67,0,simple-payment
+Payment,Payment,pay,67,0,simple-payment
+Objection,Objection,objection,81,0,message-popup

@@ -28,7 +28,8 @@
 					"EVENT_NAME",
 					"SEARCH_STRING",
 					"PRIORITY",
-					"EXCLUSION"
+					"EXCLUSION",
+					"ICON"
 				]
 			}
 		}
