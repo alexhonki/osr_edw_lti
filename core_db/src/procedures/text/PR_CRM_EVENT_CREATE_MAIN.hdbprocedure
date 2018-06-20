@@ -45,9 +45,11 @@ BEGIN
 		CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'CRM', I_TYPE => 3);
 		
 		FOR curr_row_upd AS c_crm DO
-			UPDATE "db::adm.config.event.name" SET "ICON" = curr_row_upd.ICON
-			where UPPER("EVENT_NAME") = UPPER(curr_row_upd.EVENT_NAME) and 
-					UPPER("SOURCE") = 'CRM';
+			UPDATE "db::adm.config.event.name" SET "ICON" = curr_row_upd.ICON, "PRIORITY" = curr_row_upd.PRIORITY
+			where (UPPER("EVENT_NAME") = UPPER(CONCAT(CONCAT(CONCAT('CRM - ', 'Inbound'), ' - '), curr_row_upd.EVENT_NAME))
+				OR UPPER("EVENT_NAME") = UPPER(CONCAT(CONCAT(CONCAT('CRM - ', 'Outbound'), ' - '), curr_row_upd.EVENT_NAME))
+				OR UPPER("EVENT_NAME") = UPPER(CONCAT(CONCAT(CONCAT('CRM - ', 'Internal'), ' - '), curr_row_upd.EVENT_NAME)))
+				AND	UPPER("SOURCE") = 'CRM';
 		END FOR;
 		
 		CALL "procedures.utils::PR_UPDATE_SEQ_ID_FOR_MASTERDATA"(
