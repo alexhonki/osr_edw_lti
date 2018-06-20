@@ -41,17 +41,17 @@ BEGIN
 	IF :LV_LAND_PARCEL_3_MAX_SEQ_ID IS NULL THEN
 		LV_LAND_PARCEL_3_MAX_SEQ_ID = 0;
 	END IF;
-	LT_CUST_EDITED_LP_1 = SELECT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
+	LT_CUST_EDITED_LP_1 = SELECT distinct ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
 							"db::app.Customer" on EXT_ID = ZZ_PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAND_PARCEL_1_MAX_SEQ_ID;
 	LT_CUST_ID_EDITED_LP_1 = select to_int(ZZ_PARTNER) as "CUST_ID" from :LT_CUST_EDITED_LP_1;
 	
-	LT_CUST_EDITED_LP_2 = SELECT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
+	LT_CUST_EDITED_LP_2 = SELECT distinct ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
 							"db::app.Customer" on EXT_ID = ZZ_PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAND_PARCEL_2_MAX_SEQ_ID;
 	LT_CUST_ID_EDITED_LP_2 = select to_int(ZZ_PARTNER) as "CUST_ID" from :LT_CUST_EDITED_LP_2;
 	
-	LT_CUST_EDITED_LP_3 = SELECT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
+	LT_CUST_EDITED_LP_3 = SELECT distinct ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
 							"db::app.Customer" on EXT_ID = ZZ_PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAND_PARCEL_3_MAX_SEQ_ID;
 	LT_CUST_ID_EDITED_LP_3 = select to_int(ZZ_PARTNER) as "CUST_ID" from :LT_CUST_EDITED_LP_3;
