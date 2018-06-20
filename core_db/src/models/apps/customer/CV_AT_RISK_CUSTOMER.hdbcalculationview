@@ -159,7 +159,7 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
     </input>
   </calculationView>
-  <calculationView xsi:type="Calculation:JoinView" id="Join_2" cardinality="C1_1" joinType="inner">
+  <calculationView xsi:type="Calculation:JoinView" id="Join_2" cardinality="C1_1" joinType="leftOuter">
     <viewAttributes>
       <viewAttribute id="ACTUAL_DTR" aggregationType="sum">
         <descriptions defaultDescription="ACTUAL_DTR"/>
@@ -197,7 +197,11 @@
         <descriptions defaultDescription="STR_VALUE"/>
       </viewAttribute>
     </viewAttributes>
-    <calculatedViewAttributes/>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="CC_INCOME_LOSS" datatype="DECIMAL" length="30" scale="2" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isnull(&quot;INCOME_LOSS&quot;) , 0, &quot;INCOME_LOSS&quot;)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
     <restrictedViewAttributes/>
     <input node="Join_1">
       <mapping xsi:type="Calculation:AttributeMapping" target="ACTUAL_DTR" source="ACTUAL_DTR"/>
@@ -259,7 +263,9 @@
   
     <attribute id="INCOME_LOSS" order="9" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="VALUE"/>
-      <keyMapping columnObjectName="Join_2" columnName="INCOME_LOSS"/>
+  
+      <keyMapping columnObjectName="Join_2" columnName="CC_INCOME_LOSS"/>
+  
     </attribute>
     <attribute id="CURRENCY_DESC" order="10" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="DESCRIPTION"/>
@@ -278,21 +284,21 @@
 <layout>
   <shapes>
     <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
-      <upperLeftCorner x="306.2345980802909" y="112"/>
+      <upperLeftCorner x="306" y="112"/>
     
       <rectangleSize width="140"/>
     </shape>
   
     <shape expanded="true" modelObjectName="AT_RISK" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="92" y="496.9999976158142"/>
+      <upperLeftCorner x="92" y="496"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape expanded="true" modelObjectName="CUSTOMER" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="282" y="496.9999976158142"/>
+      <upperLeftCorner x="282" y="496"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="115.33333333333331" y="356.9999988079071"/>
+      <upperLeftCorner x="115" y="356"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape modelObjectName="AT_RISK" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
@@ -304,13 +310,13 @@
       <rectangleSize width="250"/>
     </shape>
     <shape expanded="true" modelObjectName="INCOME" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="366.77360404183236" y="356.9999988079071"/>
+      <upperLeftCorner x="366" y="356"/>
       <rectangleSize height="30" width="140"/>
     </shape>
   
   
     <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="306.2345980802909" y="217"/>
+      <upperLeftCorner x="306" y="217"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape modelObjectName="Join_1" modelObjectNameSpace="Join_2" modelObjectType="JoinNodeInput">
