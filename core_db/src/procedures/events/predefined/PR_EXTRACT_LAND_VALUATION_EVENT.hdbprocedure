@@ -35,12 +35,12 @@ BEGIN
 		LV_LAND_VAL_I_MAX_SEQ_ID = 0;
 	END IF;
 	
-	LT_CUST_EDITED_LV_D = SELECT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
+	LT_CUST_EDITED_LV_D = SELECT distinct ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
 							"db::app.Customer" on EXT_ID = ZZ_PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAND_VAL_D_MAX_SEQ_ID;
 	LT_CUST_ID_EDITED_LV_D = select to_int(ZZ_PARTNER) as "CUST_ID" from :LT_CUST_EDITED_LV_D;
 	
-	LT_CUST_EDITED_LV_I = SELECT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
+	LT_CUST_EDITED_LV_I = SELECT distinct ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
 							"db::app.Customer" on EXT_ID = ZZ_PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAND_VAL_I_MAX_SEQ_ID;
 	LT_CUST_ID_EDITED_LV_I = select to_int(ZZ_PARTNER) as "CUST_ID" from :LT_CUST_EDITED_LV_I;
