@@ -825,6 +825,54 @@ sap.ui.define([
                 });
 
                 this.getOwnerComponent().exportDialog.open(this.getView(), customersToExport);
+            },
+            
+            filterEvents : function(oEvent) {
+                var sQuery = oEvent.getParameter("query");
+                var oFilter = null;
+
+                if (sQuery) {
+                    var filterArray = [
+                        new Filter("EVENT_NAME", FilterOperator.Contains, sQuery),
+                        new Filter("EVENT_GROUP", FilterOperator.Contains, sQuery)
+                    ];
+
+                    oFilter = new sap.ui.model.Filter(filterArray, false);
+                }
+
+				var oTable = this.getView().byId("idEventListTable");
+                oTable.setBusyIndicatorDelay(0);
+                oTable.setBusy(true);
+                oTable.getBinding("rows").filter(oFilter, "Control");
+                oTable.setBusy(false);
+	
+            },
+            
+            filterCustomers : function(oEvent) {
+                var sQuery = oEvent.getParameter("query").toUpperCase();
+                var filter = null;
+                if (sQuery) {
+                    var filterArray = [new Filter("NAME", FilterOperator.Contains, sQuery)];
+
+                    if (!isNaN(sQuery)){
+                        filterArray.push(new Filter("CUST_ID", FilterOperator.EQ, sQuery));
+                    }
+
+                    filter = new Filter(filterArray, false);
+                }
+
+                var oTable = this.getView().byId("idCustomerListTable");
+                oTable.setBusyIndicatorDelay(0);
+                oTable.setBusy(true);
+
+                var oBinding = oTable.getBinding("rows");
+                oBinding.attachDataReceived(function () {
+                    oTable.setBusy(false);
+                    oBinding.detachDataReceived(this);
+                });
+
+                oBinding.filter(filter, "Application");
+	
             }
         });
     });
