@@ -94,3 +94,18 @@ Payment,Payment,remit,67,0,simple-payment
 Payment,Payment,money,67,0,simple-payment
 Payment,Payment,pay,67,0,simple-payment
 Objection,Objection,objection,81,0,message-popup
+Debt Management,Debt Management,insolvency,40,0,sales-order
+Deceased,Deceased,deceased,100,0,employee-reject
+Duplicate,Duplicate,duplicate,107,0,dimension
+Absentee,Absentee,absentee,106,0,travel-expense
+Clearance,Clearance,clearance,145,0,journey-depart
+Complex,Complex,complex,105,0,message-error
+MOSN,MOSN,mosn,101,0,citizen-connect
+Dispute Assessment,Dispute Assessment,valuation,75,0,inspection
+Dispute Assessment,Dispute Assessment,share%interest,75,0,inspection
+Account Enquiry,Account Enquiry,balance,120,0,sales-notification
+Account Enquiry,Account Enquiry,account,120,0,sales-notification
+Reassessment,Reassessment,dunning%reassessment,20,0,add-product
+Debt Management,Debt Management,legal%letter,40,0,sales-order
+Payment,Payment Declined,payment%decline,63,0,simple-payment
+CRM Undefined,CRM Undefined, ,1001,0,sys-help
