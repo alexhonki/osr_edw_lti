@@ -27,5 +27,6 @@ context text {
         key SEARCH_STRING : String(100);
         key PRIORITY      : Integer;
             EXCLUSION     : Integer;
+            ICON          : String(200);
     };
 };
