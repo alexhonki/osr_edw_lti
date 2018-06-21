@@ -3,7 +3,7 @@
 	"action": "procedures.masterData::PR_EXTRACT_LT_CUSTOMER_REACTIONS",
 	"schedules": [{
 		"description": "Create Customer Reactions Data with schedule frequency: Initial Load", 
-		"xscron": "* * * sun 00 40 01",
+		"xscron": "2016 * * sun 00 40 01",
 		"parameter": {} 
 	}]
 }

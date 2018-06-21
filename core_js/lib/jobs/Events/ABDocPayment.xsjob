@@ -3,13 +3,13 @@
 	"action": "procedures.events.erp::PR_EXTRACT_AB_DOC_PAYMENT_EVENT",
 	"schedules": [{
 		"description": "AB Document Event with schedule frequency: Initial Load", 
-		"xscron": "2018 6 17 * 12 00 01",
+		"xscron": "2016 6 17 * 12 00 01",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
 		"description": "AB Document Event with schedule frequency: Delta Load every * * * sun 14,16,18 59 59", 
-		"xscron": "* * * sun 16 01 01",
+		"xscron": "2016 * * sun 16 01 01",
 		"parameter": {
 			"IV_MODE": 1
 		} 
