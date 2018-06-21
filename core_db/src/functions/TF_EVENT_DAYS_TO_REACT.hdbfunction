@@ -56,8 +56,8 @@ BEGIN
 	return select
 			"EVENT_ID.ID" as "EVENT_ID", 
 			--MEDIAN("DAYS_TO_REACT") "DAYS_TO_REACT",
-			ROUND(AVG("DAYS_TO_REACT") + 30) "DAYS_TO_REACT", 
-			ROUND(AVG("DAYS_TO_REACT") + 30) "DTR_AVG",
+	     	0 "DAYS_TO_REACT", 	--ROUND(AVG("DAYS_TO_REACT") + 30) "DAYS_TO_REACT", 
+			0 "DTR_AVG",  	--ROUND(AVG("DAYS_TO_REACT") + 30) "DTR_AVG",
 			COUNT(*) "DTR_COUNT"
 		   from (
 				select
