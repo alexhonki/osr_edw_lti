@@ -3,13 +3,13 @@
 	"action": "procedures.events.erp::PR_EXTRACT_PAYMENT_FULLFILLMENT_EVENT",
 	"schedules": [{
 		"description": "Payment Fulfilment Event with schedule frequency: Initial Load", 
-		"xscron": "2018 6 17 * 14 00 01",
+		"xscron": "2016 6 17 * 14 00 01",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
 		"description": "Payment Fulfilment Event with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "* * * sun 18 00 01",
+		"xscron": "2016 * * sun 18 00 01",
 		"parameter": {
 			"IV_MODE": 1
 		} 

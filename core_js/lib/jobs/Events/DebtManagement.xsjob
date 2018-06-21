@@ -3,13 +3,13 @@
 	"action": "procedures.events.erp::PR_EXTRACT_DEBT_MANAGEMENT_EVENT",
 	"schedules": [{
 		"description": "Debt Management Event with schedule frequency: Initial Load", 
-		"xscron": "2018 6 17 * 13 00 01",
+		"xscron": "2016 6 17 * 13 00 01",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
 		"description": "Debt Management Event with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "* * * sun 17 00 01",
+		"xscron": "2016 * * sun 17 00 01",
 		"parameter": {
 			"IV_MODE": 1
 		} 

@@ -26,7 +26,7 @@ BEGIN
 		INTO OM_FORECAST_WINDOW 
 		FROM "models.adm::CV_CONFIG" A
 		INNER JOIN "functions::TF_CONF_GET_REACTION_TYPE" ( ) B on A."REACTION_TYPE" = B."REACTION_TYPE"
-		WHERE A."IS_ENABLED" = 1 
+		WHERE A."IS_ENABLED" = 0 -- Changed from 1 to avoid Exception
 		AND A."BUCKET_ID" = 'FORECAST_WINDOW' 
 		AND A."SEQ" = 1;
 	

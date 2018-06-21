@@ -24,7 +24,7 @@
         },
         {
             "id": "CustomerChanges",
-            "title": "Tax Payer Changes",
+            "title": "Assessment Trend",
             "entity": "TrendCustomerChangesParameters",
             "sorters":[{"path":"TIME_SEGMENT"}],
             "subtitle": {

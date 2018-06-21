@@ -38,6 +38,7 @@ sap.ui.define([
 
                 var predictionDateLoaded = false;
                 var trainingDateLoaded = false;
+                var combinedEventTrainingDateLoaded = false;
                 var dataRetentionLoaded = false;
                 var onLoaded = function () {
                     if (predictionDateLoaded && dataRetentionLoaded && trainingDateLoaded) {
@@ -116,10 +117,34 @@ sap.ui.define([
                         oBusyDialog.close();
                     }
                 });
+                oBusyDialog.open();
+                model.read("/ConfigCombinedEventTrainDate", {
+                    success: function (oData) {
+                        try {
+                            combinedEventTrainingDateLoaded = true;
+                            oData.results.forEach(function (dateSetting) {
+                                if (dateSetting["IS_ENABLED"] == 1) {
+                                    var defaultCombinedEventTrainDateKey = dateSetting["SEQ"] + "";
+                                    var defaultCombinedEventTrainDate = new Date(dateSetting["TO_DATE"]);
+                                    properties.setProperty("/CombinedEventTrainFixedDate", defaultCombinedEventTrainDate);
+                                    properties.setProperty("/CombinedEventTrainFixedDateKey", defaultCombinedEventTrainDateKey);
+                                    onLoaded();
+                                }
+                            });
+                        } catch (oError) {
+                            ErrorService.raiseGenericError(oError);
+                        }
+                        oBusyDialog.close();
+                    },
+                    error: function (oError) {
+                        ErrorService.raiseGenericError(oError);
+                        oBusyDialog.close();
+                    }
+                });
             },
             updateSettings: function (event) {
                 var path = event.getParameter("path");
-                if (path == "/SelectedPredictionDate" || path == "/SelectedFixedDate" || path == "/PreservationMonths" || path =="/TrainFixedDate") {
+                if (path == "/SelectedPredictionDate" || path == "/SelectedFixedDate" || path == "/PreservationMonths" || path =="/TrainFixedDate" || path == "/CombinedEventTrainFixedDate") {
                     this.enableSaveButton(true);
                 }
             },
@@ -148,9 +173,14 @@ sap.ui.define([
                 }
 				
 				var trainKey = properties.getProperty("/TrainFixedDateKey");
+				var combinedEventTrainKey =  properties.getProperty("/CombinedEventTrainFixedDateKey");
 				var updateTrainDate = {
 					IS_ENABLED: "1",
 					STR_VALUE: properties.getProperty("/TrainFixedDate").getTime() + ""
+				};
+				var updateCombinedEventTrainDate = {
+					IS_ENABLED: "1",
+					STR_VALUE: properties.getProperty("/CombinedEventTrainFixedDate").getTime() + ""
 				};
                 var dateSaved = false;
                 var daysSaved = false;
@@ -205,7 +235,23 @@ sap.ui.define([
                         onFinished();
                     }
                 });
-
+				 model.update("/ConfigCombinedEventTrainDate(" + combinedEventTrainKey + ")", updateCombinedEventTrainDate, {
+                    eTag: "*",
+                    success: function () {
+                        try {
+                            dateSaved = true;
+                            onFinished();
+                        } catch (oError) {
+                            ErrorService.raiseGenericError(oError);
+                        }
+                    },
+                    error: function (oError) {
+                        ErrorService.raiseGenericError(oError);
+                        dateSaved = true;
+                        error = true;
+                        onFinished();
+                    }
+                });
                 model.update("/Config(BUCKET_ID='DATA_RETENTION_PERIOD',SEQ=1)",
                     {
                         "FROM_VALUE": properties.getProperty("/PreservationMonths") + ""

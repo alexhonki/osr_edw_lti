@@ -1,0 +1,53 @@
+PROCEDURE "procedures.ml::PR_ML_AUC" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+
+   -- GET THE DATA FROM "db::ml.test.predict" and "db::ml.predict.CustomerRiskResults" AND  [ID, ORIGINAL, PREDICT]
+   AUC_DATA =
+   SELECT A."CUST_ID" AS ID, B."REACTED" AS ORIGINAL, (A."RF_SCORE" + A."NN_SCORE")/2 AS PREDICT
+   -- SELECT A."CUST_ID", B."REACTED", A."RF_SCORE"
+   -- SELECT A."CUST_ID", B."REACTED", A."NN_SCORE"
+   FROM "db::ml.predict.CustomerRiskResults" A
+   JOIN "db::ml.test.predict" B
+   ON A."CUST_ID" = B."CUST_ID.CUST_ID";
+   
+   -- SET THE CONTROL PARAMETER
+   CREATE LOCAL TEMPORARY COLUMN TABLE #PAL_PARAMETER_TBL(
+    "PARAM_NAME" NVARCHAR(256),
+    "INT_VALUE" INTEGER, 
+    "DOUBLE_VALUE" DOUBLE, 
+    "STRING_VALUE" NVARCHAR (1000)
+	);
+	
+	INSERT INTO #PAL_PARAMETER_TBL VALUES('POSITIVE_LABEL',NULL,NULL,'1');
+
+	LT_PARAMETERS =
+	SELECT *
+	FROM #PAL_PARAMETER_TBL;
+
+	TRUNCATE TABLE "db::ml.test.area";
+	TRUNCATE TABLE "db::ml.test.roc";
+
+	OT_AREA = 
+	SELECT *
+	FROM "db::ml.test.area";
+
+	OT_ROC =
+	SELECT *
+	FROM "db::ml.test.roc";
+
+
+   CALL "procedures.ml::PR_PAL_AUC_CALC"(:AUC_DATA, :LT_PARAMETERS , :OT_AREA, :OT_ROC);
+   
+   INSERT INTO "db::ml.test.area"(
+	SELECT * FROM :OT_AREA);
+   
+   INSERT INTO "db::ml.test.roc"(
+	SELECT * FROM :OT_ROC);
+END

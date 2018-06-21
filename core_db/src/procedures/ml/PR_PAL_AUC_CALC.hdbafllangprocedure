@@ -1,0 +1,22 @@
+{ 
+  "area" : "AFLPAL", 
+  "function" : "AUC", 
+  "parameters" : [ 
+    { 
+      "type" : "db::ml.type.auc.data",
+      "direction" : "IN" 
+    }, 
+    { 
+      "type" : "db::ml.type.auc.parameter", 
+      "direction" : "IN" 
+    }, 
+    { 
+      "type" : "db::ml.type.auc.area", 
+      "direction" : "OUT" 
+    }, 
+    { 
+      "type" : "db::ml.type.auc.roc", 
+      "direction" : "OUT" 
+    }
+  ]
+}
