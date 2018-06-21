@@ -250,7 +250,7 @@ sap.ui.define([
         	var oConfig = this.getFilterConfig();
         	if(this.getFilterData()[oConfig.filterKeys.toDate] === "" || this.getFilterData()[oConfig.filterKeys.toDate] === sToDate) {
         		oConfig.filters.toDate = sToDate;
-        		oConfig.filters.fromDate = "";
+        		oConfig.filters.fromDate = this.getFilterData()[oConfig.filterKeys.toDate].length > 0 ? this.getFilterData()[oConfig.filterKeys.fromDate] : "";
 				var oFilter = this.buildDefaultFilters();
         		this.setFilterData(oFilter);
         	}	               
