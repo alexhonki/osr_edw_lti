@@ -587,7 +587,12 @@ sap.ui.define([
                 var kpiIndex = oDataSet.length - 1;
                 var comparisonIndex = kpiIndex - 1;
                 var oDataSetCopy = jQuery.extend(true,{},oDataSet);
-	
+				//polyfill for Number.isFinite method to support IE
+				
+				  Number.isFinite = Number.isFinite || function(value) {
+    					return typeof value === "number" && isFinite(value);
+					}
+			
 	                var kpiData = oDataSetCopy[kpiIndex];
 	                //Set kpi to accumulated value of oCardConfig.kpi.valuePath
 	                kpiData[oCardConfig.kpi.valuePath] = oDataSet.reduce(function(acc, val){ 

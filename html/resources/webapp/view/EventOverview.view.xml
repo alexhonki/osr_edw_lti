@@ -112,9 +112,6 @@
                                                         <HBox alignItems="End">
                                                             <FormattedText htmlText="&lt;span style='color: #bb0000;font-size: 2em;'&gt;{path: 'IMPACT', formatter: '.formatNumericContent'}&lt;/span&gt;"/>
                                                             <Label text="{i18n>EventOverview.TopEventItemImpactLabel}" class="sapUiTinyMarginBegin sapUiMediumMarginEnd"/>
-                                                            <layoutData>
-                                                                <FlexItemData baseSize="120px" growFactor="0" shrinkFactor="0" />
-                                                            </layoutData>
                                                         </HBox>
                                                     </HBox>
                                                 </VBox>
@@ -159,6 +156,11 @@
                         <Toolbar class="sapUiTinyMarginTop">
                             <Title text="{i18n>EventOverview.BubbleChartTableTitle}"/>
                             <ToolbarSpacer/>
+                            <SearchField
+                                    placeholder="Search"
+                                    value="{/eventFilterString}"
+                                    search="filterEvents"
+                                    width="15rem"/>
                             <Button id="idExportEvents" text="Export CSV" press="exportEventList"/>
                         </Toolbar>
                     </table:toolbar>
@@ -167,6 +169,18 @@
                             <Label text="{i18n>EventOverview.BubbleChartTableColumnEventName}"/>
                             <table:template>
                                 <Text id="idEventName" text="{EVENT_NAME}" maxLines="2"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column resizable="false" sortProperty="EVENT_GROUP">
+                            <Label text="{i18n>EventOverview.BubbleChartTableColumnEventCategory}"/>
+                            <table:template>
+                                <Text text="{EVENT_GROUP}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column width="9rem" resizable="false" sortProperty="TOTAL_CUSTOMERS" hAlign="End">
+                            <Label text="{i18n>EventOverview.BubbleChartTableColumnTotalCustomer}"/>
+                            <table:template>
+                                <Text text="{TOTAL_CUSTOMERS}"/>
                             </table:template>
                         </table:Column>
                         <table:Column width="6rem" resizable="false" sortProperty="INFLUENCE" hAlign="End">
@@ -204,6 +218,11 @@
                             <!--<Title text="{i18n>EventOverview.CustomerListTitle}{= (${viewModel>/SelectedEventName}) ? ' : \'' + ${viewModel>/SelectedEventName} + '\'' : ''}"/>-->
                             <Title text="{parts: [{path: 'i18n>EventOverview.CustomerListTitle'},{path: 'i18n>EventOverview.CustomerListSubTitle'},{path: 'viewModel>/SelectedEventName'}], formatter: '.formatCustomerTableTitle'}"/>
                             <ToolbarSpacer/>
+                            <SearchField
+                                    placeholder="Search"
+                                    value="{/customerFilterString}"
+                                    search="filterCustomers"
+                                    width="15rem"/>
                             <Button id="idExportCustomers" text="Export CSV" press="exportCustomerList"/>
                         </Toolbar>
                     </table:toolbar>

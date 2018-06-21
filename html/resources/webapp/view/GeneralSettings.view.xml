@@ -9,11 +9,17 @@
         height="100%">
     <Page id="idGeneralSettingsPage" showHeader="true" title="{i18n>GeneralSettings.Title}" enableScrolling="true">
         <content>
-            <Panel width="auto" headerText="{i18n>GeneralSettings.DataPreservationHeading}" class="sapUiResponsiveMargin" backgroundDesign="Transparent">
+           <!-- <Panel width="auto" headerText="{i18n>GeneralSettings.DataPreservationHeading}" class="sapUiResponsiveMargin" backgroundDesign="Transparent">
                 <HBox alignItems="Center">
                     <Text text="{i18n>GeneralSettings.DataPreservationInputLabel}" class="sapUiSmallMarginEnd"/>
                     <StepInput min="3" step="1" value="{/PreservationMonths}" width="6rem"/>
                     <Text text="{i18n>GeneralSettings.DataPreservationInputLabelScale}" class="sapUiMediumMarginBegin"/>
+                </HBox>
+            </Panel> -->
+            <Panel width="auto" headerText="{i18n>GeneralSettings.CombinedEventPanel}" class="sapUiResponsiveMargin" backgroundDesign="Transparent">
+               <HBox alignItems="Center" class="sapUiResponsiveMargin">
+                        <Text text="{i18n>GeneralSettings.TrainingDateInputLabelForOption}" class="sapUiSmallMarginEnd"/>
+                        <DatePicker dateValue="{/CombinedEventTrainFixedDate}"/>
                 </HBox>
             </Panel>
             <Panel width="auto" headerText="{i18n>GeneralSettings.PredictionDateInputLabel}" class="sapUiResponsiveMargin" backgroundDesign="Transparent">

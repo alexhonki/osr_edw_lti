@@ -147,7 +147,15 @@
                                         <core:Item key="{key}" text="{key}"/>
                                     </Select>
                                 </HBox>
+                               <HBox alignItems="Center" justifyContent="End">
+                                <SearchField
+                                    placeholder="Search"
+                                    value="{/eventFilterString}"
+                                    search="filterEvents"
+                                    width="15rem"/>
+                                
                                 <Button text="{i18n>CustomerPulse.ExportEvents}" press="exportEventList" type="Transparent"/>
+                                </HBox>
                             </HBox>
                             <FlexBox>
                                 <table:Table

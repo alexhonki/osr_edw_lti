@@ -8,8 +8,7 @@ sap.ui.define([
     "sap/m/VBox",
     "sap/m/FlexAlignItems",
     "sap/m/FlexJustifyContent",
-    "sap/m/FlexBox",
-    "sap/fiori/cri/service/Utilities"
+    "sap/m/FlexBox"
     ],
     /**
      * Pulse Chart Control
@@ -23,10 +22,9 @@ sap.ui.define([
      * @param {sap.m.FlexAlignItems} FlexAlignItems FlexAlignItems
      * @param {sap.m.FlexJustifyContent} FlexJustifyContent FlexJustifyContent
      * @param {sap.m.FlexBox} FlexBox FlexBox
-     * @param {sap.fiori.cri.service.Utilities} Utilities Utility Service
      * @returns {sap.fiori.cri.control.PulseChart} Pulse Chart control
      */
-    function (Control, d3, DateFormat, JSONModel, PulseChartItem, Formatter, VBox, FlexAlignItems, FlexJustifyContent, FlexBox, Utilities) {
+    function (Control, d3, DateFormat, JSONModel, PulseChartItem, Formatter, VBox, FlexAlignItems, FlexJustifyContent, FlexBox) {
         "use strict";
         return Control.extend("sap.fiori.cri.control.PulseChart", {
 
@@ -161,8 +159,7 @@ sap.ui.define([
                 var green = "#61a656";
                 var orange = "#f8ac29";//"yellow"//"#e17b24";
                 var red = "#d32030";
-                var blue ="#00bfff";
-                var colorScale = d3.scale.linear().range([blue, green, orange, red]).domain([0, thresholdLowValue - 5 , thresholdLowValue + 5, thresholdHighValue + 5]);
+                var colorScale = d3.scale.linear().range([green, orange, red]).domain([0, thresholdLowValue, thresholdHighValue, 100]);
 
                 // Setup X Axis
                 var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
@@ -267,7 +264,8 @@ sap.ui.define([
 
                     reactionData.push({
                         date: d.getDate(),
-                        label: d.getLabel()
+                        //label: d.getLabel()
+                        label: sap.ui.core.IconPool.getIconInfo('alert').content
                     });
                 });
 
@@ -433,6 +431,7 @@ sap.ui.define([
                     .attr("fill", "darkgray")
                     .attr("x", 3)
                     .attr("dominant-baseline", "hanging")
+                    .style("font-family","SAP-icons")
                     .text(function (d) {
                         return d.label;
                     });
@@ -473,7 +472,7 @@ sap.ui.define([
                     };
 
 
-                    if (currentBlockIndex != null && currentBlockIndex < reactionBlocks.length) {
+              /*      if (currentBlockIndex != null && currentBlockIndex < reactionBlocks.length) {
                         var block = reactionBlocks[currentBlockIndex];
 
                         if(!inReactionBlock && pulseLinePoint.date < block.start) {
@@ -493,7 +492,8 @@ sap.ui.define([
                         }
                     } else {
                         lineSegData.push(pulseLinePoint);
-                    }
+                    }*/
+                    lineSegData.push(pulseLinePoint);
                 }
 
                 if(inReactionBlock) {
@@ -536,36 +536,32 @@ sap.ui.define([
                     this._oPopover.setModel(new JSONModel());
                     this._oPopover.getModel().setProperty("/valueLabel", this.getYAxisLabel());
                 }
-                
-                var _getColorByReaction = function(d, reactionBlocks, colorScale){
-            	var inReaction = false;
-
-                        if(reactionBlocks.length > 0) {
-                            reactionBlocks.forEach(function (reactionBlock) {
-                                if(d.date > reactionBlock.start && d.date < reactionBlock.end) {
-                                    inReaction = true;
-                                }
-                            });
-                        }
-
-                        return inReaction ? "lightgrey" : colorScale(d.value);
-            	};
 
                 var popover = this._oPopover;
+                
+                var filteredPulseData = {};
+                var filteredData = data.filter(function(d){ return d.visible;});
+                
+                filteredData.forEach(function (d) {
+                    var dateKey = d.date.toDateString();
+                    var dateKeyMax = filteredPulseData[dateKey] ? Math.max(filteredPulseData[dateKey].max, d.value) : d.value;
+                    var itemsOnDate = filteredPulseData[dateKey] ? filteredPulseData[dateKey].items : [];
+                    itemsOnDate.push(d);
+                    filteredPulseData[dateKey] = {
+                        max: dateKeyMax,
+                        items: itemsOnDate
+                    };
+                });
 
                 var pointData = [];
-                for (var pointDate in pulseData) {
+                for (var pointDate in filteredPulseData) {
                     pointData.push({
                         date: new Date(pointDate),
-                        value: pulseData[pointDate].max,
-                        items: pulseData[pointDate].items
+                        value: filteredPulseData[pointDate].max,
+                        items: filteredPulseData[pointDate].items
                     });
                 }
 
-                //multiple events points
-                var multiPoints = this.svg.selectAll(".point")
-                	 .data(pointData);
-                    
                 var dataPoints = this.svg.selectAll(".point")
                     .data(pointData)
                     .enter().append("circle")
@@ -576,113 +572,92 @@ sap.ui.define([
                     .attr("cy", function (d) {
                         return yScale(d.value);
                     });
-                    
-                multiPoints
-                    .enter().append("circle")
-                    .attr("class", "point")
-                    .attr("cx", function (d) {
-                        return xScale(d.date);
-                    })
-                    .attr("cy", function (d) {
-                        return yScale(d.value);
-                    });
-                    
-                multiPoints
-                    	.filter(function (d) {
-                        return d.items.length > 1;
-                    })
-                    .attr("stroke", function(d){
-                    	return _getColorByReaction(d,reactionBlocks, colorScale);
-                    })
-                    //.attr("stroke-opacity", 0.5)
-                    .attr("fill", "white")
-                    .attr("r", 10);
 
                 dataPoints
                     .filter(function (d) {
-                        return d.items.length === 1;
+                        return d.items.length == 1;
                     })
                     .attr("stroke", function (d) {
-                    	//return "lightblue";
-                        // var inReaction = false;
+                        //var inReaction = false;
 
-                        // if(reactionBlocks.length > 0) {
-                        //     reactionBlocks.forEach(function (reactionBlock) {
-                        //         if(d.date > reactionBlock.start && d.date < reactionBlock.end) {
-                        //             inReaction = true;
-                        //         }
-                        //     });
-                        // }
-
-                        // return inReaction ? "lightgrey" : colorScale(d.value);
-                        return d.items.some(function(itm){ return itm.icon !== ""; }) ? _getColorByReaction(d,reactionBlocks, colorScale) : "white";
+                        if(reactionBlocks.length > 0) {
+                            reactionBlocks.forEach(function (reactionBlock) {
+                                if(d.date > reactionBlock.start && d.date < reactionBlock.end) {
+                                    return "lightgrey";
+                                    //inReaction = true;
+                                } 
+                            })
+                        }
+                        return d.items.filter(function (el) { if(el.icon) {return(el.icon);} }).length === 1 ? "white" : colorScale(d.value);	
                     })
-                    //.attr("stroke-opacity", 0.5)
-                    .attr("fill", function(d){
-                    	return d.items.some(function(itm){ return itm.icon !== ""; }) ? "white" : _getColorByReaction(d,reactionBlocks, colorScale);
-                    })
-                    .attr("r", function(d){
-                    	return d.items.some(function(itm){ return itm.icon !== ""; }) ? 10 : 6 ;
-                    });
+                    .attr("fill", "white")
+                    .attr("r", 8);
 
                 dataPoints
                     .filter(function (d) {
                         return d.items.length > 1;
                     })
-                    .attr("stroke", function(d){
-                    return _getColorByReaction(d,reactionBlocks, colorScale);
+/*                    .attr("stroke", function (d) {
+                        var inReaction = false;
+
+                        if(reactionBlocks.length > 0) {
+                            reactionBlocks.forEach(function (reactionBlock) {
+                                if(d.date > reactionBlock.start && d.date < reactionBlock.end) {
+                                    inReaction = true;
+                                }
+                            })
+                        }
+
+                        return inReaction ? "lightgrey" : colorScale(d.value);
+                    })*/
+                    .attr("stroke", function (d) {
+                        //var inReaction = false;
+
+                        if(reactionBlocks.length > 0) {
+                            reactionBlocks.forEach(function (reactionBlock) {
+                                if(d.date > reactionBlock.start && d.date < reactionBlock.end) {
+                                    return "lightgrey";
+                                    //inReaction = true;
+                                } 
+                            })
+                        }
+                        return d.items.filter(function (el) { if(el.icon) {return(el.icon);} }).length > 0 ? "white" : colorScale(d.value);	
                     })
-                    //.attr("stroke-opacity", 0.5)
+/*                    .attr("fill", function (d) {
+                        var inReaction = false;
+
+                        if(reactionBlocks.length > 0) {
+                            reactionBlocks.forEach(function (reactionBlock) {
+                                if(d.date > reactionBlock.start && d.date < reactionBlock.end) {
+                                    inReaction = true;
+                                }
+                            })
+                        }
+
+                        return inReaction ? "lightgrey" : colorScale(d.value);
+                    })*/
                     .attr("fill", function (d) {
-                    	//	return "lightblue";
-                        // var inReaction = false;
+                        //var inReaction = false;
 
-                        // if(reactionBlocks.length > 0) {
-                        //     reactionBlocks.forEach(function (reactionBlock) {
-                        //         if(d.date > reactionBlock.start && d.date < reactionBlock.end) {
-                        //             inReaction = true;
-                        //         }
-                        //     });
-                        // }
-
-                        // return inReaction ? "lightgrey" : colorScale(d.value);
-                        return "white";
-                        //_getColorByReaction(d,reactionBlocks, colorScale);
+                        if(reactionBlocks.length > 0) {
+                            reactionBlocks.forEach(function (reactionBlock) {
+                                if(d.date > reactionBlock.start && d.date < reactionBlock.end) {
+                                    return "lightgrey";
+                                    //inReaction = true;
+                                } 
+                            })
+                        }
+                        return d.items.filter(function (el) { if(el.icon) {return(el.icon);} }).length > 0 ? "white" : colorScale(d.value);	
                     })
-                    .attr("r", 12);
+/*                    .attr("r", function (d) {
+                    	return d.items.filter(function (el) { if(el.icon) { return(el.icon );} }).length > 0 ? 12 : 6;
+                    });*/
+                    .attr("r",8)
 
                 dataPoints.on("mouseover", function (d) {
                     var d3This = d3.select(this);
                     d.oldStroke = d3This.attr("stroke");
-                    d3.select(this).attr("stroke", "blue");
-                    popover.getModel().setProperty("/dataPoint", d);
-                    popover.openBy(this);
-                })
-                    .on("mouseout", function (d) {
-                        d3.select(this).attr("stroke", d.oldStroke);
-                        popover.close();
-                    })
-                    .on("click", function (d) {
-                        d3.event.stopPropagation();
-                        d3.select(this).attr("stroke", d.oldStroke);
-                        popover.close();
-                        var boundItems = [];
-                        d.items.forEach(function(item) {
-                            boundItems.push(item.item);
-                        });
-
-                        that.selectedItems = boundItems;
-
-                        that.fireEvent("itemSelect", {
-                            items: boundItems,
-                            control: this
-                        });
-                    });
-                    
-                multiPoints.on("mouseover", function (d) {
-                    var d3This = d3.select(this);
-                    d.oldStroke = d3This.attr("stroke");
-                    d3.select(this).attr("stroke", "lightgrey");
+                    d3.select(this).attr("stroke", "grey");
                     popover.getModel().setProperty("/dataPoint", d);
                     popover.openBy(this);
                 })
@@ -720,66 +695,36 @@ sap.ui.define([
                         });
                     }
                 });
-				
-				//single events with icon
-				var singlePointLabels = this.svg.selectAll(".pointLabel")
+
+                var pointLabels = this.svg.selectAll(".pointLabel")
                     .data(pointData.filter(function (d) {
-                        return d.items.length === 1 && d.items.some(function(itm){return itm.icon !== "";});
+                        return d.items.filter(function (el) { if(el.icon) {return(el.icon);} }).length > 0;
                     }));
-                    
-                 var pointLabels = this.svg.selectAll(".pointLabel")
-                    .data(pointData.filter(function (d) {
-                        return d.items.length > 1;
-                    }));
-				
-				singlePointLabels.enter().append("text")
-                    .attr("class", "pointLabel")
-                    .style("pointer-events", "none")
-                    .style("dominant-baseline", "central")
-                    .style("text-anchor", "middle")
-                    .style("fill", function(d){
-                    	 return _getColorByReaction(d,reactionBlocks, colorScale);
-                    })
-                    .style("font-family","SAP-icons")
-                    .style("font-size", "15px");
-                
-                singlePointLabels
-                    .attr("transform", function (d) {
-                        return "translate(" + xScale(d.date) + "," + yScale(d.value) + ")";
-                    })
-                    .text(function (d) {
-                    	//show the icon
-                        var oIcon = d.items[0];
-                        var s = oIcon.icon && oIcon.icon.length > 0 ? sap.ui.core.IconPool.getIconInfo(oIcon.icon).content : "";
-                        
-                        return s;
-                    });
 
                 pointLabels.enter().append("text")
                     .attr("class", "pointLabel")
                     .style("pointer-events", "none")
                     .style("dominant-baseline", "central")
                     .style("text-anchor", "middle")
-                    .style("fill", function(d){
-                    	 return _getColorByReaction(d,reactionBlocks, colorScale);
+                    .style("fill", function (d) {
+                    	//return d.items.length > 1 ? colorScale(d.value) : "white" ;  
+                    	return colorScale(d.value);
                     })
-                    .style("font-family","SAP-icons")
-                    .style("font-size", "15px");
+                   /* .style("stroke", function (d) {
+                    	return d.items.length > 1 ? "white" : colorScale(d.value);  
+                    	//return colorScale(d.value);
+                    })*/
+                    //.style("font-weight", "bold")
+                    .style("font-family","SAP-icons");
 
                 pointLabels
                     .attr("transform", function (d) {
                         return "translate(" + xScale(d.date) + "," + yScale(d.value) + ")";
                     })
                     .text(function (d) {
-                    	//check priority when multiple events, display icon for highest priority
-                        var oIcon = {};
-                        if(d.items.length > 1){
-                        	oIcon =	d.items.reduce(function(prev,curr){
-                        		return prev.priority < curr.priority ? prev : curr;
-                        	});
-                        }
-                        var s = oIcon.icon && oIcon.icon.length > 0 ? sap.ui.core.IconPool.getIconInfo(oIcon.icon).content : "";
-                        return s;
+                        // return d.items.length > 9 ? "9+" : d.items.length;
+                        //return sap.ui.core.IconPool.getIconInfo('document-text').content;
+                        return sap.ui.core.IconPool.getIconInfo(d.items.filter(function (el) { if(el.icon) { return(el.icon);} }).sort(function(a,b) { return (a.priority || 1000)-(b.priority || 1000);})[0].icon).content;
                     });
 
                 this.svg.selectAll(".axis path")
@@ -848,81 +793,8 @@ sap.ui.define([
                         .attr("transform", function (d) {
                             return "translate(" + xScale(d.date) + "," + yScale(d.value) + ")";
                         });
-                        
-                    // multipoints 
-                    multiPoints.transition().attr("cx", function (d) {
-                        return xScale(d.date);
-                    })
-                        .attr("cy", function (d) {
-                            return yScale(d.value);
-                        });
-                        
-                    //single events
-                     singlePointLabels.transition()
-                        .attr("transform", function (d) {
-                            return "translate(" + xScale(d.date) + "," + yScale(d.value) + ")";
-                        });
                 };
-					
-					// add legend  
-					// var color = d3.scale.ordinal()
-					// 		    .domain(["1450"])
-					// 		    .range(["#1a9850", "#66bd63", "#a6d96a","#d9ef8b","#ffffbf","#fee08b","#fdae61","#f46d43","#d73027"]);
-					// var legendRectSize = 20,
-					// legendSpacing = 4;
-					// var legend = d3.select('svg')
-					// 		    .append("g")
-					// 		    .selectAll("g")
-					// 		    .data(color.domain())
-					// 		    .enter()
-					// 		    .append('g')
-					// 		      .attr('class', 'legend')
-					// 		      .attr('transform', function(d, i) {
-					// 		        var height = legendRectSize;
-					// 		        var x = 0;
-					// 		        var y = i * height;
-					// 		        return 'translate(' + x + ',' + y + ')';
-					// 		    });
-					// 	legend.append('rect')
-					// 	    .attr('width', legendRectSize)
-					// 	    .attr('height', legendRectSize)
-					// 	    .style('fill', color)
-					// 	    .style('stroke', color);
-						
-					// 	legend.append('text')
-					// 	    .attr('x', legendRectSize + legendSpacing)
-					// 	    .attr('y', legendRectSize - legendSpacing)
-					// 	    .text(function(d) { return d; });	    
-					
-					// var legend = this.svg.append("g")
-					//   .attr("class", "legend")
-					//   .attr("x", 500)
-					//   // .attr("y", 10)
-					//   .attr("height", 50)
-					//   .attr("width", 300)
-					//   .attr("transform", "translate(" + (500 - 200) + ", -50)");
 
-					//Legend
-					// var color = d3.scale.category10();
-					// var wrap = this.svg.selectAll('.legend').append('g').data(color.domain());
-			  //      var gEnter = wrap.enter().append('g').attr('class', 'legend')
-			  //          .append('g');
-			  //      var legend = wrap.select('g').style("width",1000)
-			  //          .attr("transform", function(d, i) { return "translate(" + i * 80 + ",0)"; });
-			
-			        // draw legend colored circles
-			        // legend.append("circle")
-			        //     .style("fill", 'lightblue')
-			        //     .style('stroke', 'lightblue')
-			        //     .attr('r', 5)
-			        //     .attr('transform', 'translate(550,20)');
-			
-			        // // // draw legend text
-			        // legend.append("text")
-			        //     .attr("dy", ".35em")
-			        //     .attr('transform', 'translate(560,20)')
-			        //     .text(function(d) { return d;})
-			
                 zoomBrush.on("brushend", function () {
                     var zoomExtents = zoomBrush.extent();
 
@@ -1005,7 +877,6 @@ sap.ui.define([
             parseLine: function (cItems) {
                 var lineData = [];
                 var dates = [];
-                var sEventGroupIconName, sEventIconText, sEventPriority = "";
 
                 for (var i = 0; i < cItems.length; i++) {
                     var item = cItems[i];
@@ -1017,26 +888,22 @@ sap.ui.define([
                      }
                      */
                     dates.push(date.getTime());
-                    sEventGroupIconName = item.getProperty("data") && item.getProperty("data").Icon ? item.getProperty("data").Icon : "";
-                    //when priority not returned from backend then set as lowest priority (Number.MAX_SAFE_INTEGER)
-                    sEventPriority = item.getProperty("data") && item.getProperty("data").Priority ? item.getProperty("data").Priority : Number.MAX_SAFE_INTEGER;
-                    //when no icon returned from backend then set as empty
-                    sEventIconText = item.getProperty("data") && item.getProperty("data").Icon ? item.getProperty("data").Icon : "";
+
                     lineData.push({
                         date: date,
                         label: item.getLabel(),
                         value: item.getValue(),
+                        icon: item.getData() && item.getData().Icon,
+                        priority: item.getData() && item.getData().Priority,
                         formattedValue: this.formatter.percentage(item.getValue() / 100.0),
                         item: item,
-                        group: sEventGroupIconName,
-                        priority: sEventPriority,
-                        icon: sEventIconText
+                        visible: item.getData() && item.getData().Visible
                     });
                 }
 
                 lineData.sort(function (a, b) {
                     if (a.date.getTime() < b.date.getTime()) { return 1; }
-                    if (a.date.getTime() === b.date.getTime()) { return 0; }
+                    if (a.date.getTime() == b.date.getTime()) { return 0; }
                     return -1;
                 });
 
@@ -1112,6 +979,5 @@ sap.ui.define([
 
                 return oChartLayout;
             }
-          
         });
     });

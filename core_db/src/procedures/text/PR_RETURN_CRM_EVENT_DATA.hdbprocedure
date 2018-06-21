@@ -67,9 +67,9 @@ BEGIN
    	LT_TEMP = SELECT CUST_ID,
 					OBJECT_ID,
 					lower("DESCRIPTION") as DESCRIPTION,
-					(CASE when DIRECTION = '1' then 'OUTBOUND'
-						 WHEN DIRECTION = '0' THEN 'INBOUND'
-						 ELSE 'INTERNAL'
+					(CASE when DIRECTION = '1' then 'Outbound'
+						 WHEN DIRECTION = '0' THEN 'Inbound'
+						 ELSE 'Internal'
 					END) AS DIRECTION,
 					CATEGORY_DESC,
 					:IV_EVENT_NAME as EVENT_NAME,

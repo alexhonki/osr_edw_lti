@@ -56,11 +56,15 @@ sap.ui.define([
                     text: "24 Months"
                 },
                 {
+                	key: "2010",
+                	text: "2010 Onwards"
+                },
+                {
                     key: "All",
                     text: "All Time"
                 }
             ]);
-            model.setProperty("/TimeRangeFilter", 12);
+            model.setProperty("/TimeRangeFilter", "2010");
             this.getView().setModel(model);
         },
         _initChart: function () {
@@ -180,7 +184,11 @@ sap.ui.define([
             var filters = [];
             if (timeRange != "All") {
                 var date = new Date();
-                date.setMonth(date.getMonth() - timeRange);
+                if (timeRange === "2010") {
+                    date.setFullYear(2010, 0, 1);
+                } else {
+                    date.setMonth(date.getMonth() - timeRange);
+                }
                 filters.push(new Filter("INIT_DATE", FilterOperator.GE, date.getTime()));
             }
 
@@ -425,7 +433,11 @@ sap.ui.define([
             var timeFilter = [];
             if (timeRange != "All") {
                 var date = new Date();
-                date.setMonth(date.getMonth() - timeRange);
+                if (timeRange === "2010") {
+                    date.setFullYear(2010, 0, 1);
+                } else {
+                    date.setMonth(date.getMonth() - timeRange);
+                }
                 timeFilter.push(new Filter("INIT_DATE", FilterOperator.GE, date.getTime()));
             }
 
@@ -464,6 +476,7 @@ sap.ui.define([
                                 Comment: d.DESCRIPTION,
                                 Priority: d.PRIORITY,
                                 Icon: d.ICON,
+                                Visible: true,
                                 Data: d
                             };
 
@@ -512,12 +525,24 @@ sap.ui.define([
 
             var filteredList = [];
             if (categoryfilter != this.AllCategoriesKey) {
-                eventList.forEach(function (event) {
+             /*   eventList.forEach(function (event) {
                     if (event.EventGroup == categoryfilter) {
+                        event.Visible = true;
                         filteredList.push(event);
+                    } else {
+                    	event.Visible = false;
+                    	//filteredList.push(event);
                     }
-                });
+                });*/
+                
+               filteredList = eventList.map(function(oEvent){
+               	var oNewEvent = jQuery.extend(false,{},oEvent);
+               	oNewEvent.Visible = !!(oNewEvent.EventGroup === categoryfilter);
+               	return oNewEvent;
+               }); 
+                
             } else {
+            	event.Visible = true;
                 filteredList = eventList;
             }
 
