@@ -22,10 +22,6 @@ context ml {
             "TOTAL_EVENTS_HIGH_IMPACT"                 : BinaryFloat;
             "TOTAL_EVENTS_MEDIUM_IMPACT"               : BinaryFloat;
             "TOTAL_EVENTS_LOW_IMPACT"                  : BinaryFloat;
-            "EVENTS_REACT_30DAYS"                      : BinaryFloat;
-            "EVENTS_REACT_60DAYS"                      : BinaryFloat;
-            "EVENTS_REACT_90DAYS"                      : BinaryFloat;
-            "EVENTS_REACT_120DAYS"                     : BinaryFloat;
             "TOTAL_PREDEFINED_EVENTS"                  : BinaryFloat;
             "PREDEFINED_EVENTS_30DAYS"                 : BinaryFloat;
             "PREDEFINED_EVENTS_90DAYS"                 : BinaryFloat;
@@ -33,18 +29,6 @@ context ml {
             "PREDEFINED_EVENTS_360DAYS"                : BinaryFloat;
             "AVG_MONTHLY_EVENTS"                       : BinaryFloat;
             "TOTAL_MONTHS_WITH_COMPANY"                : BinaryFloat;
-            "INACTIVE_EVENTS"                          : BinaryFloat;
-            "INACTIVE_EVENTS_30DAYS"                   : BinaryFloat;
-            "INACTIVE_EVENTS_90DAYS"                   : BinaryFloat;
-            "INACTIVE_EVENTS_180DAYS"                  : BinaryFloat;
-            "NEGATIVE_SURVEY"                          : BinaryFloat;
-            "NEGATIVE_SURVEY_30DAYS"                   : BinaryFloat;
-            "NEGATIVE_SURVEY_90DAYS"                   : BinaryFloat;
-            "NEGATIVE_SURVEY_180DAYS"                  : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS"                   : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS_30DAYS"            : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS_90DAYS"            : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS_180DAYS"           : BinaryFloat;
             "PAYMENT_ARRANGEMENT_EVENTS_WITHIN_WINDOW" : BinaryFloat;
             "OUT_FINAL_DEMAND_DUNNING_WITHIN_WINDOW"   : BinaryFloat;
             "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"       : BinaryFloat;
@@ -62,11 +46,6 @@ context ml {
             "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
             "TOTAL_COMBINED_EVENTS"                    : BinaryFloat;
             "MISSED_INSTALMENT_PAYMENT"                : BinaryFloat;
-            "MISSING_INSTALMENT_1_3"                   : BinaryFloat;
-            "MISSING_INSTALMENT_12"                    : BinaryFloat;
-            "MISSING_INSTALMENT_GT_3"                  : BinaryFloat;
-            "MISSING_INSTALMENT_GT_6"                  : BinaryFloat;
-            "MISSING_INSTALMENT_GT_9"                  : BinaryFloat;
             "RECIEVE_NEW_LAND_EVALUATION"              : BinaryFloat;
             "INCREASE_LAND_VALUE_30_PER"               : BinaryFloat;
             "INCRESE_TAX_50_PER_PLUS"                  : BinaryFloat;
@@ -79,6 +58,12 @@ context ml {
             "ASSESSMENT"                               : BinaryFloat;
             "DEBTOR_LAST_6_MONTHS"                     : BinaryFloat;
             "DEBTOR_IN_PAST"                           : BinaryFloat;
+            "DECREASE_LAND_VALUE_BY_20_PER"				: BinaryFloat;
+			"DECREASE_PARCELS_10_PLUS"					: BinaryFloat;
+			"DECREASE_INTEREST_LAND_HOLDINGS"			: BinaryFloat;
+			"PAST_LATE_PAYMENT_RATIO_PER_ASSESSMENT"	: BinaryFloat;
+			"PAST_DEBTOR_RATIO_PER_ASSESSMENT"			: BinaryFloat;
+            "ASSESSMENT_IND_ORG_AMNT"                  : BinaryFloat;
             "REACTED"                                  : Integer;
         }
         technical configuration {
@@ -172,10 +157,6 @@ context ml {
             "TOTAL_EVENTS_HIGH_IMPACT"                 : BinaryFloat;
             "TOTAL_EVENTS_MEDIUM_IMPACT"               : BinaryFloat;
             "TOTAL_EVENTS_LOW_IMPACT"                  : BinaryFloat;
-            "EVENTS_REACT_30DAYS"                      : BinaryFloat;
-            "EVENTS_REACT_60DAYS"                      : BinaryFloat;
-            "EVENTS_REACT_90DAYS"                      : BinaryFloat;
-            "EVENTS_REACT_120DAYS"                     : BinaryFloat;
             "TOTAL_PREDEFINED_EVENTS"                  : BinaryFloat;
             "PREDEFINED_EVENTS_30DAYS"                 : BinaryFloat;
             "PREDEFINED_EVENTS_90DAYS"                 : BinaryFloat;
@@ -183,18 +164,6 @@ context ml {
             "PREDEFINED_EVENTS_360DAYS"                : BinaryFloat;
             "AVG_MONTHLY_EVENTS"                       : BinaryFloat;
             "TOTAL_MONTHS_WITH_COMPANY"                : BinaryFloat;
-            "INACTIVE_EVENTS"                          : BinaryFloat;
-            "INACTIVE_EVENTS_30DAYS"                   : BinaryFloat;
-            "INACTIVE_EVENTS_90DAYS"                   : BinaryFloat;
-            "INACTIVE_EVENTS_180DAYS"                  : BinaryFloat;
-            "NEGATIVE_SURVEY"                          : BinaryFloat;
-            "NEGATIVE_SURVEY_30DAYS"                   : BinaryFloat;
-            "NEGATIVE_SURVEY_90DAYS"                   : BinaryFloat;
-            "NEGATIVE_SURVEY_180DAYS"                  : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS"                   : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS_30DAYS"            : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS_90DAYS"            : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS_180DAYS"           : BinaryFloat;
             "PAYMENT_ARRANGEMENT_EVENTS_WITHIN_WINDOW" : BinaryFloat;
             "OUT_FINAL_DEMAND_DUNNING_WITHIN_WINDOW"   : BinaryFloat;
             "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"       : BinaryFloat;
@@ -212,11 +181,6 @@ context ml {
             "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
             "TOTAL_COMBINED_EVENTS"                    : BinaryFloat;
             "MISSED_INSTALMENT_PAYMENT"                : BinaryFloat;
-            "MISSING_INSTALMENT_1_3"                   : BinaryFloat;
-            "MISSING_INSTALMENT_12"                    : BinaryFloat;
-            "MISSING_INSTALMENT_GT_3"                  : BinaryFloat;
-            "MISSING_INSTALMENT_GT_6"                  : BinaryFloat;
-            "MISSING_INSTALMENT_GT_9"                  : BinaryFloat;
             "RECIEVE_NEW_LAND_EVALUATION"              : BinaryFloat;
             "INCREASE_LAND_VALUE_30_PER"               : BinaryFloat;
             "INCRESE_TAX_50_PER_PLUS"                  : BinaryFloat;
@@ -229,6 +193,12 @@ context ml {
             "ASSESSMENT"                               : BinaryFloat;
             "DEBTOR_LAST_6_MONTHS"                     : BinaryFloat;
             "DEBTOR_IN_PAST"                           : BinaryFloat;
+            "DECREASE_LAND_VALUE_BY_20_PER"				: BinaryFloat;
+			"DECREASE_PARCELS_10_PLUS"					: BinaryFloat;
+			"DECREASE_INTEREST_LAND_HOLDINGS"			: BinaryFloat;
+			"PAST_LATE_PAYMENT_RATIO_PER_ASSESSMENT"	: BinaryFloat;
+			"PAST_DEBTOR_RATIO_PER_ASSESSMENT"			: BinaryFloat;
+            "ASSESSMENT_IND_ORG_AMNT"                  : BinaryFloat;
         }
         technical configuration {
             column store;
@@ -299,10 +269,6 @@ context ml {
             "TOTAL_EVENTS_HIGH_IMPACT"                 : BinaryFloat;
             "TOTAL_EVENTS_MEDIUM_IMPACT"               : BinaryFloat;
             "TOTAL_EVENTS_LOW_IMPACT"                  : BinaryFloat;
-            "EVENTS_REACT_30DAYS"                      : BinaryFloat;
-            "EVENTS_REACT_60DAYS"                      : BinaryFloat;
-            "EVENTS_REACT_90DAYS"                      : BinaryFloat;
-            "EVENTS_REACT_120DAYS"                     : BinaryFloat;
             "TOTAL_PREDEFINED_EVENTS"                  : BinaryFloat;
             "PREDEFINED_EVENTS_30DAYS"                 : BinaryFloat;
             "PREDEFINED_EVENTS_90DAYS"                 : BinaryFloat;
@@ -310,18 +276,6 @@ context ml {
             "PREDEFINED_EVENTS_360DAYS"                : BinaryFloat;
             "AVG_MONTHLY_EVENTS"                       : BinaryFloat;
             "TOTAL_MONTHS_WITH_COMPANY"                : BinaryFloat;
-            "INACTIVE_EVENTS"                          : BinaryFloat;
-            "INACTIVE_EVENTS_30DAYS"                   : BinaryFloat;
-            "INACTIVE_EVENTS_90DAYS"                   : BinaryFloat;
-            "INACTIVE_EVENTS_180DAYS"                  : BinaryFloat;
-            "NEGATIVE_SURVEY"                          : BinaryFloat;
-            "NEGATIVE_SURVEY_30DAYS"                   : BinaryFloat;
-            "NEGATIVE_SURVEY_90DAYS"                   : BinaryFloat;
-            "NEGATIVE_SURVEY_180DAYS"                  : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS"                   : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS_30DAYS"            : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS_90DAYS"            : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS_180DAYS"           : BinaryFloat;
             "PAYMENT_ARRANGEMENT_EVENTS_WITHIN_WINDOW" : BinaryFloat;
             "OUT_FINAL_DEMAND_DUNNING_WITHIN_WINDOW"   : BinaryFloat;
             "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"       : BinaryFloat;
@@ -339,11 +293,6 @@ context ml {
             "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
             "TOTAL_COMBINED_EVENTS"                    : BinaryFloat;
             "MISSED_INSTALMENT_PAYMENT"                : BinaryFloat;
-            "MISSING_INSTALMENT_1_3"                   : BinaryFloat;
-            "MISSING_INSTALMENT_12"                    : BinaryFloat;
-            "MISSING_INSTALMENT_GT_3"                  : BinaryFloat;
-            "MISSING_INSTALMENT_GT_6"                  : BinaryFloat;
-            "MISSING_INSTALMENT_GT_9"                  : BinaryFloat;
             "RECIEVE_NEW_LAND_EVALUATION"              : BinaryFloat;
             "INCREASE_LAND_VALUE_30_PER"               : BinaryFloat;
             "INCRESE_TAX_50_PER_PLUS"                  : BinaryFloat;
@@ -356,6 +305,12 @@ context ml {
             "ASSESSMENT"                               : BinaryFloat;
             "DEBTOR_LAST_6_MONTHS"                     : BinaryFloat;
             "DEBTOR_IN_PAST"                           : BinaryFloat;
+            "DECREASE_LAND_VALUE_BY_20_PER"				: BinaryFloat;
+			"DECREASE_PARCELS_10_PLUS"					: BinaryFloat;
+			"DECREASE_INTEREST_LAND_HOLDINGS"			: BinaryFloat;
+			"PAST_LATE_PAYMENT_RATIO_PER_ASSESSMENT"	: BinaryFloat;
+			"PAST_DEBTOR_RATIO_PER_ASSESSMENT"			: BinaryFloat;
+            "ASSESSMENT_IND_ORG_AMNT"                  : BinaryFloat;
             "REACTED"                                  : Integer;
             "REACTION_TYPE"                            : hana.VARCHAR(100);
             "INIT_DATE"                                : UTCTimestamp;
@@ -382,10 +337,6 @@ context ml {
             "TOTAL_EVENTS_HIGH_IMPACT"                 : BinaryFloat;
             "TOTAL_EVENTS_MEDIUM_IMPACT"               : BinaryFloat;
             "TOTAL_EVENTS_LOW_IMPACT"                  : BinaryFloat;
-            "EVENTS_REACT_30DAYS"                      : BinaryFloat;
-            "EVENTS_REACT_60DAYS"                      : BinaryFloat;
-            "EVENTS_REACT_90DAYS"                      : BinaryFloat;
-            "EVENTS_REACT_120DAYS"                     : BinaryFloat;
             "TOTAL_PREDEFINED_EVENTS"                  : BinaryFloat;
             "PREDEFINED_EVENTS_30DAYS"                 : BinaryFloat;
             "PREDEFINED_EVENTS_90DAYS"                 : BinaryFloat;
@@ -393,18 +344,6 @@ context ml {
             "PREDEFINED_EVENTS_360DAYS"                : BinaryFloat;
             "AVG_MONTHLY_EVENTS"                       : BinaryFloat;
             "TOTAL_MONTHS_WITH_COMPANY"                : BinaryFloat;
-            "INACTIVE_EVENTS"                          : BinaryFloat;
-            "INACTIVE_EVENTS_30DAYS"                   : BinaryFloat;
-            "INACTIVE_EVENTS_90DAYS"                   : BinaryFloat;
-            "INACTIVE_EVENTS_180DAYS"                  : BinaryFloat;
-            "NEGATIVE_SURVEY"                          : BinaryFloat;
-            "NEGATIVE_SURVEY_30DAYS"                   : BinaryFloat;
-            "NEGATIVE_SURVEY_90DAYS"                   : BinaryFloat;
-            "NEGATIVE_SURVEY_180DAYS"                  : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS"                   : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS_30DAYS"            : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS_90DAYS"            : BinaryFloat;
-            "TOTAL_QUERY_COMPLAINTS_180DAYS"           : BinaryFloat;
             "PAYMENT_ARRANGEMENT_EVENTS_WITHIN_WINDOW" : BinaryFloat;
             "OUT_FINAL_DEMAND_DUNNING_WITHIN_WINDOW"   : BinaryFloat;
             "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"       : BinaryFloat;
@@ -422,11 +361,6 @@ context ml {
             "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
             "TOTAL_COMBINED_EVENTS"                    : BinaryFloat;
             "MISSED_INSTALMENT_PAYMENT"                : BinaryFloat;
-            "MISSING_INSTALMENT_1_3"                   : BinaryFloat;
-            "MISSING_INSTALMENT_12"                    : BinaryFloat;
-            "MISSING_INSTALMENT_GT_3"                  : BinaryFloat;
-            "MISSING_INSTALMENT_GT_6"                  : BinaryFloat;
-            "MISSING_INSTALMENT_GT_9"                  : BinaryFloat;
             "RECIEVE_NEW_LAND_EVALUATION"              : BinaryFloat;
             "INCREASE_LAND_VALUE_30_PER"               : BinaryFloat;
             "INCRESE_TAX_50_PER_PLUS"                  : BinaryFloat;
@@ -439,6 +373,12 @@ context ml {
             "ASSESSMENT"                               : BinaryFloat;
             "DEBTOR_LAST_6_MONTHS"                     : BinaryFloat;
             "DEBTOR_IN_PAST"                           : BinaryFloat;
+            "DECREASE_LAND_VALUE_BY_20_PER"				: BinaryFloat;
+			"DECREASE_PARCELS_10_PLUS"					: BinaryFloat;
+			"DECREASE_INTEREST_LAND_HOLDINGS"			: BinaryFloat;
+			"PAST_LATE_PAYMENT_RATIO_PER_ASSESSMENT"	: BinaryFloat;
+			"PAST_DEBTOR_RATIO_PER_ASSESSMENT"			: BinaryFloat;
+            "ASSESSMENT_IND_ORG_AMNT"                  : BinaryFloat;
             "REACTED"                                  : Integer;
             "REACTION_TYPE"                            : hana.VARCHAR(100);
             "INIT_DATE"                                : UTCTimestamp;
@@ -593,10 +533,6 @@ context ml {
                 "TOTAL_EVENTS_HIGH_IMPACT"                 : BinaryFloat;
                 "TOTAL_EVENTS_MEDIUM_IMPACT"               : BinaryFloat;
                 "TOTAL_EVENTS_LOW_IMPACT"                  : BinaryFloat;
-                "EVENTS_REACT_30DAYS"                      : BinaryFloat;
-                "EVENTS_REACT_60DAYS"                      : BinaryFloat;
-                "EVENTS_REACT_90DAYS"                      : BinaryFloat;
-                "EVENTS_REACT_120DAYS"                     : BinaryFloat;
                 "TOTAL_PREDEFINED_EVENTS"                  : BinaryFloat;
                 "PREDEFINED_EVENTS_30DAYS"                 : BinaryFloat;
                 "PREDEFINED_EVENTS_90DAYS"                 : BinaryFloat;
@@ -604,18 +540,6 @@ context ml {
                 "PREDEFINED_EVENTS_360DAYS"                : BinaryFloat;
                 "AVG_MONTHLY_EVENTS"                       : BinaryFloat;
                 "TOTAL_MONTHS_WITH_COMPANY"                : BinaryFloat;
-                "INACTIVE_EVENTS"                          : BinaryFloat;
-                "INACTIVE_EVENTS_30DAYS"                   : BinaryFloat;
-                "INACTIVE_EVENTS_90DAYS"                   : BinaryFloat;
-                "INACTIVE_EVENTS_180DAYS"                  : BinaryFloat;
-                "NEGATIVE_SURVEY"                          : BinaryFloat;
-                "NEGATIVE_SURVEY_30DAYS"                   : BinaryFloat;
-                "NEGATIVE_SURVEY_90DAYS"                   : BinaryFloat;
-                "NEGATIVE_SURVEY_180DAYS"                  : BinaryFloat;
-                "TOTAL_QUERY_COMPLAINTS"                   : BinaryFloat;
-                "TOTAL_QUERY_COMPLAINTS_30DAYS"            : BinaryFloat;
-                "TOTAL_QUERY_COMPLAINTS_90DAYS"            : BinaryFloat;
-                "TOTAL_QUERY_COMPLAINTS_180DAYS"           : BinaryFloat;
                 "PAYMENT_ARRANGEMENT_EVENTS_WITHIN_WINDOW" : BinaryFloat;
                 "OUT_FINAL_DEMAND_DUNNING_WITHIN_WINDOW"   : BinaryFloat;
                 "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"       : BinaryFloat;
@@ -633,11 +557,6 @@ context ml {
                 "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
                 "TOTAL_COMBINED_EVENTS"                    : BinaryFloat;
                 "MISSED_INSTALMENT_PAYMENT"                : BinaryFloat;
-                "MISSING_INSTALMENT_1_3"                   : BinaryFloat;
-                "MISSING_INSTALMENT_12"                    : BinaryFloat;
-                "MISSING_INSTALMENT_GT_3"                  : BinaryFloat;
-                "MISSING_INSTALMENT_GT_6"                  : BinaryFloat;
-                "MISSING_INSTALMENT_GT_9"                  : BinaryFloat;
                 "RECIEVE_NEW_LAND_EVALUATION"              : BinaryFloat;
                 "INCREASE_LAND_VALUE_30_PER"               : BinaryFloat;
                 "INCRESE_TAX_50_PER_PLUS"                  : BinaryFloat;
@@ -650,8 +569,15 @@ context ml {
                 "ASSESSMENT"                               : BinaryFloat;
                 "DEBTOR_LAST_6_MONTHS"                     : BinaryFloat;
                 "DEBTOR_IN_PAST"                           : BinaryFloat;
+                "DECREASE_LAND_VALUE_BY_20_PER"				: BinaryFloat;
+				"DECREASE_PARCELS_10_PLUS"					: BinaryFloat;
+				"DECREASE_INTEREST_LAND_HOLDINGS"			: BinaryFloat;
+				"PAST_LATE_PAYMENT_RATIO_PER_ASSESSMENT"	: BinaryFloat;
+				"PAST_DEBTOR_RATIO_PER_ASSESSMENT"			: BinaryFloat;
+                "ASSESSMENT_IND_ORG_AMNT"                  : BinaryFloat;
                 "REACTED"                                  : Integer;
             };
+            
             table type nn_model {
                 "NAME"  : hana.VARCHAR(100);
                 "MODEL" : hana.CLOB;
@@ -698,10 +624,6 @@ context ml {
                 "TOTAL_EVENTS_HIGH_IMPACT"                 : BinaryFloat;
                 "TOTAL_EVENTS_MEDIUM_IMPACT"               : BinaryFloat;
                 "TOTAL_EVENTS_LOW_IMPACT"                  : BinaryFloat;
-                "EVENTS_REACT_30DAYS"                      : BinaryFloat;
-                "EVENTS_REACT_60DAYS"                      : BinaryFloat;
-                "EVENTS_REACT_90DAYS"                      : BinaryFloat;
-                "EVENTS_REACT_120DAYS"                     : BinaryFloat;
                 "TOTAL_PREDEFINED_EVENTS"                  : BinaryFloat;
                 "PREDEFINED_EVENTS_30DAYS"                 : BinaryFloat;
                 "PREDEFINED_EVENTS_90DAYS"                 : BinaryFloat;
@@ -709,18 +631,6 @@ context ml {
                 "PREDEFINED_EVENTS_360DAYS"                : BinaryFloat;
                 "AVG_MONTHLY_EVENTS"                       : BinaryFloat;
                 "TOTAL_MONTHS_WITH_COMPANY"                : BinaryFloat;
-                "INACTIVE_EVENTS"                          : BinaryFloat;
-                "INACTIVE_EVENTS_30DAYS"                   : BinaryFloat;
-                "INACTIVE_EVENTS_90DAYS"                   : BinaryFloat;
-                "INACTIVE_EVENTS_180DAYS"                  : BinaryFloat;
-                "NEGATIVE_SURVEY"                          : BinaryFloat;
-                "NEGATIVE_SURVEY_30DAYS"                   : BinaryFloat;
-                "NEGATIVE_SURVEY_90DAYS"                   : BinaryFloat;
-                "NEGATIVE_SURVEY_180DAYS"                  : BinaryFloat;
-                "TOTAL_QUERY_COMPLAINTS"                   : BinaryFloat;
-                "TOTAL_QUERY_COMPLAINTS_30DAYS"            : BinaryFloat;
-                "TOTAL_QUERY_COMPLAINTS_90DAYS"            : BinaryFloat;
-                "TOTAL_QUERY_COMPLAINTS_180DAYS"           : BinaryFloat;
                 "PAYMENT_ARRANGEMENT_EVENTS_WITHIN_WINDOW" : BinaryFloat;
                 "OUT_FINAL_DEMAND_DUNNING_WITHIN_WINDOW"   : BinaryFloat;
                 "OUT_FINAL_DEMAND_DUNNING_ALL_YEARS"       : BinaryFloat;
@@ -738,11 +648,6 @@ context ml {
                 "PAYMENT_ARRANGEMENT_EVENTS_ALL_YEARS"     : BinaryFloat;
                 "TOTAL_COMBINED_EVENTS"                    : BinaryFloat;
                 "MISSED_INSTALMENT_PAYMENT"                : BinaryFloat;
-                "MISSING_INSTALMENT_1_3"                   : BinaryFloat;
-                "MISSING_INSTALMENT_12"                    : BinaryFloat;
-                "MISSING_INSTALMENT_GT_3"                  : BinaryFloat;
-                "MISSING_INSTALMENT_GT_6"                  : BinaryFloat;
-                "MISSING_INSTALMENT_GT_9"                  : BinaryFloat;
                 "RECIEVE_NEW_LAND_EVALUATION"              : BinaryFloat;
                 "INCREASE_LAND_VALUE_30_PER"               : BinaryFloat;
                 "INCRESE_TAX_50_PER_PLUS"                  : BinaryFloat;
@@ -755,6 +660,12 @@ context ml {
                 "ASSESSMENT"                               : BinaryFloat;
                 "DEBTOR_LAST_6_MONTHS"                     : BinaryFloat;
                 "DEBTOR_IN_PAST"                           : BinaryFloat;
+                "DECREASE_LAND_VALUE_BY_20_PER"				: BinaryFloat;
+				"DECREASE_PARCELS_10_PLUS"					: BinaryFloat;
+				"DECREASE_INTEREST_LAND_HOLDINGS"			: BinaryFloat;
+				"PAST_LATE_PAYMENT_RATIO_PER_ASSESSMENT"	: BinaryFloat;
+				"PAST_DEBTOR_RATIO_PER_ASSESSMENT"			: BinaryFloat;
+                "ASSESSMENT_IND_ORG_AMNT"                  : BinaryFloat;
             };
             table type nn_result {
                 "ID"      : Integer;
@@ -826,6 +737,33 @@ context ml {
                 TEXT    : String(1000);
             };
         };
+
+        context auc {
+            table type data {
+                "ID"                                       : Integer;
+                "ORIGINAL"                                 : Integer;
+                "PREDICT"                                  : BinaryFloat;
+            };
+
+            table type parameter {
+                "PARAM_NAME"                               : hana.VARCHAR(100);
+                "INT_VALUE"                                : Integer;
+                "DOUBLE_VALUE"                             : BinaryFloat;
+                "STRING_VALUE"                             : hana.VARCHAR(200);
+            };
+
+            table type area {
+                "STAT_NAME"                                : hana.VARCHAR(100);
+                "STAT_VALUE"                               : BinaryFloat;
+            };
+
+            table type roc {
+                "ID"                                       : Integer;
+                "FPR"                                      : BinaryFloat;
+                "TPR"                                      : BinaryFloat;
+            };
+
+        };
     };
 
     @Comment : 'Combined Events'
@@ -859,5 +797,16 @@ context ml {
             "RF"     : BinaryFloat;
             "NN"     : BinaryFloat;
         };
+
+        entity area {
+                "STAT_NAME"                                : hana.VARCHAR(100);
+                "STAT_VALUE"                               : BinaryFloat;
+            };
+
+        entity roc {
+                "ID"                                       : Integer;
+                "FPR"                                      : BinaryFloat;
+                "TPR"                                      : BinaryFloat;
+            };
     };
 };

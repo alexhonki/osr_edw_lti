@@ -48,7 +48,7 @@ BEGIN
 	DECLARE END_DATE 			DATE;
 	DECLARE PRED_START 			DATE; --AJ
 	DECLARE START_DATE_WINDOWS  DATE;
-	DECLARE PREDICTION_WINDOW   INT := 6;
+	DECLARE PREDICTION_WINDOW   INT := 18;
 	DECLARE STR_TS_INPUT        VARCHAR(500) := 'INTERVAL 12 MONTH';
 	
 	--DECLARE RUN_DAY DATE;
@@ -77,6 +77,7 @@ BEGIN
 	END IF; 
 	*/
 	START_DATE_WINDOWS := TO_DATE(:CURRENT_START_TS); -- CBAJ
+	--START_DATE_WINDOWS := ADD_MONTHS(:RUN_DAY, -9); -- CBAJ
 	-----------------------------------
 	-- GET CURRENT DATA DATE
 	-----------------------------------
@@ -99,13 +100,7 @@ BEGIN
 		AND "CUST_ID" NOT IN 
 			(SELECT CUST_ID FROM "db::app.Customer" -- Customers are not in 'BLOCKED' OR DELETED state
 			WHERE STATUS != 0);
-		-- aj : to discard customers which were already reacted
-		/*
-		AND "CUST_ID" NOT IN
-			( SELECT "CUST_ID" 
-			FROM "db::app.CustomerReactions"
-			WHERE "INIT_DATE" >= :START_DATE_WINDOWS AND "INIT_DATE" < :PRED_START );
-		*/
+
 	-----------------------------------
 	-- EXTRACT NON-REACTED CUSTOMERS
 	-----------------------------------
@@ -113,18 +108,18 @@ BEGIN
 		SELECT A.CUST_ID AS CUST_ID, 0 AS REACTED, NULL AS REACTION_DATE
 		FROM :LT_ACTIVE_CUSTOMERS A;
 
-/**************************
-		Vinita
-******************************/
+---------------------------------------------------------------------
+--		Extracting Actual information for evaluation metrices
+---------------------------------------------------------------------
 	
 	LT_TEST = SELECT  CUST_ID , 
-	CASE WHEN CUST_ID IN( SELECT  B."CUST_ID" AS CUST_ID
-	FROM :LT_ACTIVE_CUSTOMERS A
-	JOIN "db::app.CustomerReactions" B
-	ON A.CUST_ID = B."CUST_ID" 
-	--WHERE B.INIT_DATE >= :START_DATE_WINDOWS AND B.INIT_DATE <= :RUN_DAY )  THEN 1 ELSE 0 END AS REACTED
-	WHERE B.INIT_DATE >= :PRED_START AND B.INIT_DATE < ADD_MONTHS(:PRED_START, :PREDICTION_WINDOW) )  THEN 1 ELSE 0 END AS REACTED
-	FROM :LT_ACTIVE_CUSTOMERS ;
+				CASE WHEN CUST_ID IN( SELECT  B."CUST_ID" AS CUST_ID
+				FROM :LT_ACTIVE_CUSTOMERS A
+				JOIN "db::app.CustomerReactions" B
+				ON A.CUST_ID = B."CUST_ID" 
+				--WHERE B.INIT_DATE >= :START_DATE_WINDOWS AND B.INIT_DATE <= :RUN_DAY )  THEN 1 ELSE 0 END AS REACTED
+				WHERE B.INIT_DATE >= :PRED_START AND B.INIT_DATE < ADD_MONTHS(:PRED_START, :PREDICTION_WINDOW) )  THEN 1 ELSE 0 END AS REACTED
+				FROM :LT_ACTIVE_CUSTOMERS ;
 	
 	LT_TEST1 = SELECT * FROM :LT_TEST WHERE REACTED = 1;
 	LT_TEST0 = SELECT * FROM :LT_TEST WHERE REACTED = 0;
@@ -135,10 +130,7 @@ BEGIN
 				"CUST_ID",
 				"REACTED"
 			FROM :LT_TEST);
-	
-/**************************
-		Vinita
-******************************/
+
 	-----------------------------------
 	-- EXTRACT EVENTS FOR NON-REACTED CUSTOMERS
 	-----------------------------------
