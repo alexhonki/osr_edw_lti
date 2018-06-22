@@ -228,15 +228,36 @@ sap.ui.define([
                     });
 
                     var saveButton = new Button({icon: "sap-icon://accept", type: ButtonType.Transparent});
-
-                    var inputWithSave = new HBox({
-                        visible: false,
-                        alignItems: "Center",
-                        items: [
-                            new Input({placeholder: item.name, value: {path: "name"}}),
-                            saveButton
-                        ]
-                    });
+					if(item.updatePath.includes('SEARCH_SCORE_THRESHOLD')){
+						var inputWithSave = new HBox({
+	                        visible: false,
+	                        alignItems: "Center",
+	                        items: [
+	                            new Input({
+	                            	placeholder: item.name, 
+	                            	value: {
+	                            		path: "name", 
+	                            		type: "sap.ui.model.type.Integer", 
+	                            		constraints: {
+	                            			minimum: 0,
+	                            			maximum: 100
+	                            		}
+	                            	}
+	                            }),
+	                            saveButton
+	                        ]
+                    	});
+					} else{
+						
+	                    var inputWithSave = new HBox({
+	                        visible: false,
+	                        alignItems: "Center",
+	                        items: [
+	                            new Input({placeholder: item.name, value: {path: "name"}}),
+	                            saveButton
+	                        ]
+	                    });
+					}
 
                     editButton.attachPress(function () {
                         labelWithEdit.setVisible(false);
@@ -308,19 +329,74 @@ sap.ui.define([
                 setting.needsUpdate = true;
                 var inputsValid = true;
                 var groups = this.getView().getModel().getProperty("/SettingsControls");
+                //var errorText = this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("invalidInputError");
+                var oMinMaxLowRisk = {max: groups[0].items[1].value.from,min:0},
+                oMinMaxMedRisk = {min: groups[0].items[0].value.to, max: groups[0].items[2].value.from},
+                oMinMaxHighRisk = {max: 100, min: groups[0].items[1].value.to};
                 groups.forEach(function (group) {
+                	
                    group.items.forEach(function (item) {
-                       var controls = item.control.getAggregation("items");
-                       controls.forEach(function (control) {
-                           if (control.getMetadata().getName() == "sap.m.StepInput") {
-                               var min = control.getMin();
-                               var max = control.getMax();
-                               var value = control.getValue();
-                               if (value < min || value > max) {
-                                   inputsValid = false;
-                               }
-                           }
-                       });
+                   	var controls = item.control.getAggregation("items");
+	                       controls.forEach(function (control) {
+	                       	if(control.getBindingContext().getObject().updatePath.includes("SEARCH_SCORE_THRESHOLD")){
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = 0;
+	                               var max = 101;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value < min || value > max) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	} else if(control.getBindingContext().getObject().updatePath.includes("CUSTOMER_RISK") 
+	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=1")) {
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = oMinMaxLowRisk.min;
+	                               var max = oMinMaxLowRisk.max;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value < min || value > max) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	}else if(control.getBindingContext().getObject().updatePath.includes("CUSTOMER_RISK") 
+	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=2")) {
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = oMinMaxMedRisk.min;
+	                               var max = oMinMaxMedRisk.max;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value < min || value > max) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	}else if(control.getBindingContext().getObject().updatePath.includes("CUSTOMER_RISK") 
+	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=3")) {
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = oMinMaxHighRisk.min;
+	                               var max = oMinMaxHighRisk.max;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value < min || value > max) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	}else{
+	                           if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = control.getMin();
+	                               var max = control.getMax();
+	                               var value = control.getValue();
+	                               if (value < min || value > max) {
+	                                   inputsValid = false;
+	                               }
+	                           }
+	                       	}
+	                       });
+                   		
                    });
                 });
 
