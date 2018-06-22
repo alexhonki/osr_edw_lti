@@ -524,7 +524,7 @@ sap.ui.define([
                 });
                 var binding = customerTable.getBinding("rows");
 
-                binding.attachDataReceived(function () {
+                binding.attachDataReceived(function (oEvent) {
                     customerTable.setBusy(false);
                 });
             },
@@ -808,23 +808,51 @@ sap.ui.define([
              */
             exportCustomerList: function() {
                 var table = this.getView().byId("idCustomerListTable");
-                var selectedCustomers = table.getSelectedIndices();
+                var selectedCustomers = [],
+                sCustomerReadPath = "",
+                aFilter = [],oFilter=[],
+                mParameters = {};
                 var customersToExport = [];
+                var oModel = this.getModel("CRI");
+                if(table.getBinding("rows").getContexts().length < 1 || table.getSelectedIndices().length < 1){
+                	return;
+                }
+                if(table.getSelectedIndices().length > table.getBinding("rows").getContexts().length){
+	                var eventId =  table.getBinding("rows").getContexts()[0].getProperty("IP_EVENT_ID");
+	                var sDateRangeFilters = this.getDateRangeFilterString();
+	                var sFilterString = FilterService.getEncodedFilterString() || "";
+	                sCustomerReadPath = "/CustomerByEventParameters(IP_EVENT_ID='" +  encodeURIComponent(eventId) + "'," + sDateRangeFilters + ",IP_FILTER='" + sFilterString + "')/Results";
+	                
+	                var sCustomerFilterString = this.getView().byId("idCustomerSearch").getValue().toUpperCase();
+	                if(sCustomerFilterString){
+	                	//build odata filters to be applied
+	                	aFilter = [new Filter("NAME", FilterOperator.Contains, sCustomerFilterString)];
+	
+	                    if (!isNaN(sCustomerFilterString)){
+	                        aFilter.push(new Filter("CUST_ID", FilterOperator.EQ, sCustomerFilterString));
+	                    }
+	
+	                    oFilter = [new Filter(aFilter, false)];
+	                }
+	                mParameters = {
+	                	filters : oFilter,
+	                	success : function(oData, oResponse){
+	                		
+	                		this.prepareCustomerListForExport(oData.results, table);
+	                
+	                	}.bind(this),
+	                	error : function(oError){
+	                		
+	                	}
+	                };
+                	oModel.read(sCustomerReadPath,mParameters);
+                } else {
+                	selectedCustomers = table.getSelectedIndices();
+                	this.prepareCustomerListForExport(selectedCustomers, table);
+                }
 
-                selectedCustomers.forEach(function (rowIndex) {
-                    var context = table.getContextByIndex(rowIndex);
-                    var data = context.getModel().getProperty(context.getPath());
-                    customersToExport.push({
-                        CustomerId: data['CUST_ID'],
-                        OriginId: data['EXT_ID'],
-                        CustomerName: data['NAME'],
-                        OperatingIncome: data['INCOME_LOSS_ROUND'],
-                        Churned: data['CHURNED_FLAG'] ? 'Yes' : 'No',
-                        Currency: data['CURRENCY']
-                    });
-                });
-
-                this.getOwnerComponent().exportDialog.open(this.getView(), customersToExport);
+                
+                
             },
             
             filterEvents : function(oEvent) {
@@ -850,15 +878,15 @@ sap.ui.define([
             
             filterCustomers : function(oEvent) {
                 var sQuery = oEvent.getParameter("query").toUpperCase();
-                var filter = null;
+                var oFilter = null;
                 if (sQuery) {
-                    var filterArray = [new Filter("NAME", FilterOperator.Contains, sQuery)];
+                    var aFilter = [new Filter("NAME", FilterOperator.Contains, sQuery)];
 
                     if (!isNaN(sQuery)){
-                        filterArray.push(new Filter("CUST_ID", FilterOperator.EQ, sQuery));
+                        aFilter.push(new Filter("CUST_ID", FilterOperator.EQ, sQuery));
                     }
 
-                    filter = new Filter(filterArray, false);
+                    oFilter = new Filter(aFilter, false);
                 }
 
                 var oTable = this.getView().byId("idCustomerListTable");
@@ -871,8 +899,33 @@ sap.ui.define([
                     oBinding.detachDataReceived(this);
                 });
 
-                oBinding.filter(filter, "Application");
+                oBinding.filter(oFilter, "Application");
 	
+            },
+            
+            prepareCustomerListForExport: function(aCustomers, oTable){
+            	 var selectedCustomers = aCustomers,
+            	 customersToExport = [];
+            	 selectedCustomers.forEach(function (oContext) {
+                    var context, data;
+                    if(oContext instanceof Object){
+                    	data = oContext;
+                    } else{
+                    	context = oTable.getContextByIndex(oContext);
+                    	data = context.getModel().getProperty(context.getPath());
+                    }
+                   
+                    customersToExport.push({
+                        CustomerId: data['CUST_ID'],
+                        OriginId: data['EXT_ID'],
+                        CustomerName: data['NAME'],
+                        OperatingIncome: data['INCOME_LOSS_ROUND'],
+                        Churned: data['CHURNED_FLAG'] ? 'Yes' : 'No',
+                        Currency: data['CURRENCY']
+                    });
+                });
+
+                this.getOwnerComponent().exportDialog.open(this.getView(), customersToExport);
             }
         });
     });

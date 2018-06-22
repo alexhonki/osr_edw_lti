@@ -588,7 +588,7 @@ sap.ui.define([
                     success: function (oData) {
                         try {
                             var arrayOfData = [
-                                ["Event Name", "Event Group", "Risk", "Date"]
+                                ["Event Name", "Event Group","Event Comment", "Influence", "Date"]
                             ];
                             var dateFormat = DateFormat.getDateTimeInstance({pattern: 'dd MMM yyyy'});
 
@@ -596,6 +596,7 @@ sap.ui.define([
                                 arrayOfData.push([
                                     entry.EVENT_NAME,
                                     entry.EVENT_GROUP,
+                                    entry.DESCRIPTION,
                                     entry.INFLUENCE,
                                     dateFormat.format(entry.INIT_DATE)
                                 ]);
