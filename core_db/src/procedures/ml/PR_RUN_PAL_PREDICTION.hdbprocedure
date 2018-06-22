@@ -44,7 +44,7 @@ BEGIN
 		
 		-- Insert results from softmax to final customer risk table
 		TRUNCATE TABLE "db::ml.predict.CustomerRiskResults";
-		COMMIT;
+		--COMMIT;
 	ELSE -- run RF prediction
 		CALL "procedures.ml::PR_PAL_RF_PREDICT"(:IT_DATA,:RF_CONTROL, :IT_RF_MODEL, OT_RF_RESULT);
 
@@ -58,7 +58,7 @@ BEGIN
 		
 		-- Insert results from softmax to final customer risk table
 		TRUNCATE TABLE "db::ml.predict.CustomerRiskResults";
-		COMMIT;
+		--COMMIT;
 	END IF;
 	
 END
