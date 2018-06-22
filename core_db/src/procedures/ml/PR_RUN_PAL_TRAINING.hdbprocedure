@@ -115,7 +115,7 @@ BEGIN
 		
 		INSERT INTO "db::ml.train.nn_result" (SELECT * FROM :OT_NN_RESULT);
 		INSERT INTO "db::ml.train.nn_model" (SELECT * FROM :OT_NN_MODEL);
-		COMMIT;
+		--COMMIT;
 	ELSE -- run RF prediction
 		CALL "procedures.ml::PR_PAL_RF_TRAIN"(:IT_DATA, :RF_CONTROL , OT_RF_MODEL, OT_RF_VAR, OT_RF_ERROR, OT_RF_CONF);
 		--CALL _SYS_AFL.PAL_RANDOM_DECISION_TREES (PAL_RDT_DATA_TBL, #PAL_PARAMETER_TBL, PAL_RDT_MODEL_TBL, ?, ?, ?) WITH OVERVIEW;
@@ -131,6 +131,6 @@ BEGIN
 		INSERT INTO "db::ml.train.rf_model" (SELECT * FROM :OT_RF_MODEL);
 		INSERT INTO "db::ml.train.rf_error" (SELECT * FROM :OT_RF_ERROR);
 		INSERT INTO "db::ml.train.rf_var_imp" (SELECT * FROM :OT_RF_VAR);
-		COMMIT;
+		--COMMIT;
 	END IF;
 END
