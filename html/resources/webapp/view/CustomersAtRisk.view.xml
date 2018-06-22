@@ -140,17 +140,23 @@
                                 <Toolbar>
                                     <Title text="{i18n>CustomersAtRisk.CustomerListTitle}"/>
                                     <ToolbarSpacer/>
+                                    <SearchField
+                                    placeholder="Search"
+                                    value="{/customerFilterString}"
+                                    search="filterCustomers"
+                                    width="15rem"/>
+                                    
                                     <Button id="idExportAllCustomers" text="{i18n>CustomersAtRisk.CustomersAtRiskExportButton}" press="exportAtRiskCustomerList"/>
                                 </Toolbar>
                             </table:toolbar>
                             <table:columns>
-                                <table:Column width="15rem">
+                                <table:Column width="15rem" sortProperty="EXT_ID">
                                     <Label text="{i18n>CustomersAtRisk.CustomerListColumnId}"/>
                                     <table:template>
                                         <Text text="{CRI>EXT_ID}"/>
                                     </table:template>
                                 </table:Column>
-                                <table:Column>
+                                <table:Column sortProperty="NAME">
                                     <Label text="{i18n>CustomersAtRisk.CustomerListColumnName}"/>
                                     <table:template>
                                         <Text text="{CRI>NAME}"/>

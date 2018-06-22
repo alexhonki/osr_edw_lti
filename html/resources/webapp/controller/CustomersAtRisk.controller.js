@@ -546,6 +546,33 @@ sap.ui.define([
             getInputParameterString: function (sFilters, iBucketSize) {
                 var filters = sFilters ? encodeURIComponent(sFilters) : "";
                 return "IP_FILTER='" + filters + "'";
+            },
+            
+            filterCustomers : function(oEvent) {
+                var sQuery = oEvent.getParameter("query").toUpperCase();
+                var filter = null;
+                if (sQuery) {
+                    var filterArray = [new Filter("NAME", FilterOperator.Contains, sQuery)];
+
+                    if (!isNaN(sQuery)){
+                        filterArray.push(new Filter("CUST_ID", FilterOperator.EQ, sQuery));
+                    }
+
+                    filter = new Filter(filterArray, false);
+                }
+
+                var oTable = this.getView().byId("idCustomerListTable");
+                oTable.setBusyIndicatorDelay(0);
+                oTable.setBusy(true);
+
+                var oBinding = oTable.getBinding("rows");
+                oBinding.attachDataReceived(function () {
+                    oTable.setBusy(false);
+                    oBinding.detachDataReceived(this);
+                });
+
+                oBinding.filter(filter, "Application");
+	
             }
         });
     });
