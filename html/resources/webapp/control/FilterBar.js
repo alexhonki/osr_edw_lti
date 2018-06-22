@@ -149,10 +149,14 @@ sap.ui.define([
 								control.setValue("");
 								break;
 							default:
-								control.clearSelection();
+								
 								control.setValue("");
-								if (control.getMetadata().getElementName().toLowerCase().indexOf("multicombobox") > -1) {
+								if (control.getMetadata().hasAggregation("tokens")) {
+									control.removeAllTokens();
 									control.rerender();
+									
+								} else{
+									control.clearSelection();
 								}
 								break;
 						}
@@ -326,7 +330,7 @@ sap.ui.define([
 						var aTokens = [];
 						var that = this;
 						oControl = new MultiInput({
-							enableMultiLineMode: true,
+							enableMultiLineMode: false,
 							showSuggestion: true,
 							maxSuggestionWidth: "auto",
 							tokenUpdate: function(oControlEvent) {
@@ -427,7 +431,7 @@ sap.ui.define([
 								},
 
 								cancel: function(oControlEvent) {
-									sap.m.MessageToast.show("Cancel pressed!");
+									
 									oValueHelpDialog.close();
 									oValueHelpDialog = null;
 								},
@@ -455,6 +459,9 @@ sap.ui.define([
 							oValueTable.setModel(oModel);
 							oValueTable.bindRows("/ValueHelpData");
 							oValueHelpDialog.setTable(oValueTable);
+							if(oControl.getValue().length < 1){
+								aTokens = [];
+							}
 							oValueHelpDialog.setTokens(aTokens);
 							var oFilterBar = new sap.ui.comp.filterbar.FilterBar({
 								advancedMode: true,
