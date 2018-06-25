@@ -677,6 +677,32 @@ sap.ui.define([
         },
         onCloseDistinctEventPopover: function () {
           this._distinctEventPopover.close();
-        }
+        },
+        filterEvents: function(oEvent) {
+				var sQuery = oEvent.getParameter("query");
+				var oFilter = null;
+
+				if (sQuery) {
+					var filterArray = [
+						new Filter("EventName", FilterOperator.Contains, sQuery),
+						new Filter("EventGroup", FilterOperator.Contains, sQuery)
+					];
+
+					oFilter = new sap.ui.model.Filter(filterArray, false);
+				}
+
+				var oTable = this.getView().byId("idCustomerEventsTable");
+				var oDistinctEventTable = this.getView().byId("idDistinctCustomerEventsTable");
+				oTable.setBusyIndicatorDelay(0);
+				oTable.setBusy(true);
+				oTable.getBinding("rows").filter(oFilter, "Control");
+				oTable.setBusy(false);
+				
+				oDistinctEventTable.setBusyIndicatorDelay(0);
+				oDistinctEventTable.setBusy(true);
+				oDistinctEventTable.getBinding("rows").filter(oFilter, "Control");
+				oDistinctEventTable.setBusy(false);
+
+			}
     });
 });
