@@ -5,7 +5,7 @@ sap.ui.define([
 	return {
 		raiseGenericError: function(oError) {
 			if (oError && oError.statusCode == 401) {
-				MessageBox.error(oError.message + " : " + oError.statusText);
+				MessageBox.error("Your session has timed out! Please Re-login again");
 			} else {
 
 				MessageBox.error("Something went wrong");
