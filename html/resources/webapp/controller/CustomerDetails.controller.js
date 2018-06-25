@@ -519,11 +519,12 @@ sap.ui.define([
             this.getView().getModel().setProperty("/EventCategoryFilter", sSelectedCategory);
             this.showFilteredEvents();
         },
+
         showFilteredEvents: function () {
             var categoryfilter = this.getView().getModel().getProperty("/EventCategoryFilter");
             var eventList = this.getView().getModel().getProperty("/CustomerEvents");
-
-            var filteredList = [];
+			var aDeepCopyEvents = jQuery.extend(true,[],eventList);
+            var filteredList = [],filteredTableData, groupedTableData;
             if (categoryfilter != this.AllCategoriesKey) {
              /*   eventList.forEach(function (event) {
                     if (event.EventGroup == categoryfilter) {
@@ -535,7 +536,7 @@ sap.ui.define([
                     }
                 });*/
                 
-               filteredList = eventList.map(function(oEvent){
+               filteredList = aDeepCopyEvents.map(function(oEvent){
                	var oNewEvent = jQuery.extend(false,{},oEvent);
                	oNewEvent.Visible = !!(oNewEvent.EventGroup === categoryfilter);
                	return oNewEvent;
@@ -543,7 +544,7 @@ sap.ui.define([
                 
             } else {
             	event.Visible = true;
-                filteredList = eventList;
+                filteredList = aDeepCopyEvents;
             }
 
             var groups = {};
@@ -569,8 +570,12 @@ sap.ui.define([
             });
 
             this.getView().getModel().setProperty("/FilteredCustomerEvents", filteredList);
-            this.getView().getModel().setProperty("/DistinctCustomerEvents", grouped);
+            filteredTableData = filteredList.filter(function(d){ return d.Visible;});
+            groupedTableData = grouped.filter(function(d){ return d.Visible;});
+            this.getView().getModel().setProperty("/FilteredCustomerEventsTable", filteredTableData);
+            this.getView().getModel().setProperty("/DistinctCustomerEvents", groupedTableData);
         },
+
         exportEventList: function (event) {
             var customerId = this.getView().getModel().getProperty("/CustomerId");
             var currentCategory = this.getView().getModel().getProperty("/EventCategoryFilter");
