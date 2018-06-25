@@ -47,15 +47,15 @@ BEGIN
 			null as EVENT_ID,
 			:LV_LAND_EVAL_GRP as EVENT_GROUP,
 			:LV_LAND_EVAL as EVENT_NAME,
-			CAST(VALIDFROM as date) AS INIT_DATE, 
+			CAST(ASSESSDATE as date) AS INIT_DATE, 
 			NULL AS END_DATE, 
 			count(*) AS EVENT_VALUE, 
 			:LV_LAND_EVAL AS DESCRIPTION, 
-			LEFT(VALIDFROM,6)  as INIT_TS,
+			LEFT(ASSESSDATE,6)  as INIT_TS,
 			NULL AS END_TS
 		FROM (
 				SELECT a.ZZ_PARTNER, 
-					c.VALIDFROM
+					c.ASSESSDATE
 				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" AS a
 					INNER JOIN :LT_CUST_EDITED as delt ON a.ZZ_PARTNER = delt.ZZ_PARTNER
 					LEFT OUTER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNA" AS b
@@ -63,7 +63,7 @@ BEGIN
 					INNER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNAVAL" AS c
 					ON b.INTRENO = c.INTRENO
 						AND a.TAXYRSTARTDT = CONCAT(
-								YEAR(c.VALIDFROM), 
+								YEAR(c.ASSESSDATE), 
 								'0701'
 							)
 				WHERE NASTMNTTYPE != 'ANV'
@@ -71,7 +71,7 @@ BEGIN
 			INNER JOIN "db::app.Customer" AS SAP
 			ON SAP.EXT_ID = a.ZZ_PARTNER
 		GROUP BY CUST_ID, 
-			VALIDFROM; 
+			ASSESSDATE; 
 	
 	-- Generate event ID
     CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	
