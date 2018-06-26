@@ -7,8 +7,8 @@
   <DataSource id="models.apps.customer::CV_CUSTOMER_EVENTS">
     <resourceUri>models.apps.customer::CV_CUSTOMER_EVENTS</resourceUri>
   </DataSource>
-  <DataSource id="models.apps.event::CV_EVENT_INFLUENCE">
-    <resourceUri>models.apps.event::CV_EVENT_INFLUENCE</resourceUri>
+  <DataSource id="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_EVENT_INFLUENCE_IMPACT_FILTER</resourceUri>
   </DataSource>
 </dataSources>
 <calculationViews>
@@ -71,8 +71,8 @@
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
-    <input node="models.apps.event::CV_EVENT_INFLUENCE">
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID_ID" source="EVENT_ID_ID"/>
+    <input node="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER">
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID_ID" source="EVENT_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
     </input>
   </calculationView>
