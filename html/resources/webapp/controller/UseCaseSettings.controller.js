@@ -332,7 +332,16 @@ sap.ui.define([
                 //var errorText = this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("invalidInputError");
                 var oMinMaxLowRisk = {max: groups[0].items[1].value.from,min:0},
                 oMinMaxMedRisk = {min: groups[0].items[0].value.to, max: groups[0].items[2].value.from},
-                oMinMaxHighRisk = {max: 100, min: groups[0].items[1].value.to};
+                oMinMaxHighRisk = {max: 101, min: groups[0].items[1].value.to},
+                oMinMaxLowImpact = {max: groups[1].items[1].value.from,min:0},
+                oMinMaxMedImpact = {max: groups[1].items[2].value.from,min:groups[1].items[0].value.to},
+                oMinMaxHighImpact = {min: groups[1].items[1].value.to},
+                oMinMaxLowIncomeLoss = {max: groups[2].items[1].value.from,min:0},
+                oMinMaxMedIncomeLoss = {max: groups[2].items[2].value.from,min:groups[2].items[0].value.to},
+                oMinMaxHighIncomeLoss = {min: groups[2].items[1].value.to},
+                oMinMaxLowInfluence = {max: groups[3].items[1].value.from,min:0},
+                oMinMaxMedInfluence = {max: groups[3].items[2].value.from,min:groups[3].items[0].value.to},
+                oMinMaxHighInfluence = {min: groups[3].items[1].value.to, max: 101};
                 groups.forEach(function (group) {
                 	
                    group.items.forEach(function (item) {
@@ -344,7 +353,7 @@ sap.ui.define([
 	                               var max = 101;
 	                               var value = control.getValue();
 	                               control.setValueState("None");
-	                               if (value < min || value > max) {
+	                               if (value < min || value >= max) {
 	                                   inputsValid = false;
 	                                   control.setValueState("Error");
 	                               }
@@ -356,7 +365,7 @@ sap.ui.define([
 	                               var max = oMinMaxLowRisk.max;
 	                               var value = control.getValue();
 	                               control.setValueState("None");
-	                               if (value < min || value > max) {
+	                               if (value < min || value >= max) {
 	                                   inputsValid = false;
 	                                   control.setValueState("Error");
 	                               }
@@ -368,7 +377,7 @@ sap.ui.define([
 	                               var max = oMinMaxMedRisk.max;
 	                               var value = control.getValue();
 	                               control.setValueState("None");
-	                               if (value < min || value > max) {
+	                               if (value <= min || value >= max) {
 	                                   inputsValid = false;
 	                                   control.setValueState("Error");
 	                               }
@@ -380,7 +389,118 @@ sap.ui.define([
 	                               var max = oMinMaxHighRisk.max;
 	                               var value = control.getValue();
 	                               control.setValueState("None");
-	                               if (value < min || value > max) {
+	                               if (value <= min || value >= max) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	}else if(control.getBindingContext().getObject().updatePath.includes("IMPACT") 
+	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=1")
+	                       	&& !control.getBindingContext().getObject().updatePath.includes("IMPACT_")) {
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = oMinMaxLowImpact.min;
+	                               var max = oMinMaxLowImpact.max;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value < min || value >= max) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	}else if(control.getBindingContext().getObject().updatePath.includes("IMPACT") 
+	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=2")
+	                       	&& !control.getBindingContext().getObject().updatePath.includes("IMPACT_")) {
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = oMinMaxMedImpact.min;
+	                               var max = oMinMaxMedImpact.max;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value <= min || value >= max) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	}else if(control.getBindingContext().getObject().updatePath.includes("IMPACT") 
+	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=3")
+	                       	&& !control.getBindingContext().getObject().updatePath.includes("IMPACT_")) {
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = oMinMaxHighImpact.min;
+	                               //var max = oMinMaxHighImpact.max;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value <= min) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	}else if(control.getBindingContext().getObject().updatePath.includes("INCOME_LOSS") 
+	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=1")) {
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = oMinMaxLowIncomeLoss.min;
+	                               var max = oMinMaxLowIncomeLoss.max;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value < min || value >= max) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	}else if(control.getBindingContext().getObject().updatePath.includes("INCOME_LOSS") 
+	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=2")) {
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = oMinMaxMedIncomeLoss.min;
+	                               var max = oMinMaxMedIncomeLoss.max;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value <= min || value >= max) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	}else if(control.getBindingContext().getObject().updatePath.includes("INCOME_LOSS") 
+	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=3")) {
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = oMinMaxHighIncomeLoss.min;
+	                               //var max = oMinMaxHighImpact.max;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value <= min) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	}else if(control.getBindingContext().getObject().updatePath.includes("INFLUENCE") 
+	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=1")) {
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = oMinMaxLowInfluence.min;
+	                               var max = oMinMaxLowInfluence.max;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value < min || value >= max) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	}else if(control.getBindingContext().getObject().updatePath.includes("INFLUENCE") 
+	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=2")) {
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = oMinMaxMedInfluence.min;
+	                               var max = oMinMaxMedInfluence.max;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value <= min || value >= max) {
+	                                   inputsValid = false;
+	                                   control.setValueState("Error");
+	                               }
+	                           }
+	                       	}else if(control.getBindingContext().getObject().updatePath.includes("INFLUENCE") 
+	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=3")) {
+	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
+	                               var min = oMinMaxHighInfluence.min;
+	                               var max = oMinMaxHighImpact.max;
+	                               var value = control.getValue();
+	                               control.setValueState("None");
+	                               if (value <= min || value >= max) {
 	                                   inputsValid = false;
 	                                   control.setValueState("Error");
 	                               }
