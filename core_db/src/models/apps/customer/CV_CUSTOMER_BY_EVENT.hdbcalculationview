@@ -34,331 +34,213 @@
   </variable>
 </localVariables>
 <variableMappings>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_FILTER_FROM_TO">
-    <targetVariable name="IM_FILTER" resourceUri="functions::TF_CUSTOMER_FILTER_FROM_TO"/>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_BY_IMPACT_EVENTS">
+    <targetVariable name="IM_FILTER" resourceUri="functions::TF_CUSTOMER_BY_IMPACT_EVENTS"/>
     <localVariable>IP_FILTER</localVariable>
   </mapping>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_FILTER_FROM_TO">
-    <targetVariable name="IM_FROM" resourceUri="functions::TF_CUSTOMER_FILTER_FROM_TO"/>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_BY_IMPACT_EVENTS">
+    <targetVariable name="IM_FROM" resourceUri="functions::TF_CUSTOMER_BY_IMPACT_EVENTS"/>
     <localVariable>IP_FROM</localVariable>
   </mapping>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_FILTER_FROM_TO">
-    <targetVariable name="IM_TO" resourceUri="functions::TF_CUSTOMER_FILTER_FROM_TO"/>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_BY_IMPACT_EVENTS">
+    <targetVariable name="IM_TO" resourceUri="functions::TF_CUSTOMER_BY_IMPACT_EVENTS"/>
     <localVariable>IP_TO</localVariable>
   </mapping>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.customer::CV_CUSTOMER_YEARLY_INCOME_LOSS">
-    <targetVariable name="IP_TO" resourceUri="models.apps.customer::CV_CUSTOMER_YEARLY_INCOME_LOSS"/>
-    <localVariable>IP_TO</localVariable>
-  </mapping>
-  <mapping xsi:type="Variable:ConstantVariableMapping" dataSource="models.apps.customer::CV_CUSTOMER_YEARLY_INCOME_LOSS" value="20001">
-    <targetVariable name="IP_FROM" resourceUri="models.apps.customer::CV_CUSTOMER_YEARLY_INCOME_LOSS"/>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_CUSTOMER_BY_IMPACT_EVENTS">
+    <targetVariable name="IM_EVENT_ID" resourceUri="functions::TF_CUSTOMER_BY_IMPACT_EVENTS"/>
+    <localVariable>IP_EVENT_ID</localVariable>
   </mapping>
 </variableMappings>
 <dataSources>
-  <DataSource id="models.apps.customer::CV_CUSTOMER_EVENTS">
-    <resourceUri>models.apps.customer::CV_CUSTOMER_EVENTS</resourceUri>
+  <DataSource id="functions::TF_CUSTOMER_BY_IMPACT_EVENTS" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_CUSTOMER_BY_IMPACT_EVENTS</resourceUri>
   </DataSource>
-  <DataSource id="functions::TF_CUSTOMER_FILTER_FROM_TO" type="TABLE_FUNCTION">
-    <resourceUri>functions::TF_CUSTOMER_FILTER_FROM_TO</resourceUri>
-  </DataSource>
-  <DataSource id="db::app.CustomerReactions">
-    <resourceUri>db::app.CustomerReactions</resourceUri>
-  </DataSource>
-  <DataSource id="functions::TF_CONF_GET_REACTION_TYPE" type="TABLE_FUNCTION">
-    <resourceUri>functions::TF_CONF_GET_REACTION_TYPE</resourceUri>
-  </DataSource>
-  <DataSource id="models.apps.customer::CV_CUSTOMER_YEARLY_INCOME_LOSS">
-    <resourceUri>models.apps.customer::CV_CUSTOMER_YEARLY_INCOME_LOSS</resourceUri>
+  <DataSource id="models.adm::CV_CONFIG">
+    <resourceUri>models.adm::CV_CONFIG</resourceUri>
   </DataSource>
   <DataSource id="db::app.Customer">
     <resourceUri>db::app.Customer</resourceUri>
   </DataSource>
 </dataSources>
 <calculationViews>
-  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1" filterExpressionLanguage="COLUMN_ENGINE">
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_3">
     <viewAttributes>
-      <viewAttribute id="CUST_ID">
-        <descriptions defaultDescription="Customer ID (Internal)"/>
+      <viewAttribute id="TO_TS" aggregationType="sum">
+        <descriptions defaultDescription="TO_TS"/>
       </viewAttribute>
-      <viewAttribute id="EVENT_ID">
-        <descriptions defaultDescription="Event ID"/>
+      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="DUE_AMOUNT"/>
       </viewAttribute>
-      <viewAttribute id="INIT_TS">
-        <descriptions defaultDescription="INIT_TS"/>
+      <viewAttribute id="INIT_DATE" aggregationType="min">
+        <descriptions defaultDescription="DUE_DATE"/>
       </viewAttribute>
-      <viewAttribute id="END_TS">
-        <descriptions defaultDescription="END_TS"/>
+      <viewAttribute id="REACTION_VALUE" aggregationType="sum">
+        <descriptions defaultDescription="REACTION_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID"/>
+      </viewAttribute>
+      <viewAttribute id="FROM_TS" aggregationType="sum">
+        <descriptions defaultDescription="FROM_TS"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_ID" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_ID"/>
+      </viewAttribute>
+    
+      <viewAttribute id="EVENT_DATE" aggregationType="min">
+        <descriptions defaultDescription="EVENT_DATE"/>
       </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes>
+      <calculatedViewAttribute id="JOIN" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>1</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="REACTED_CUST_ID" datatype="BIGINT" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(&quot;REACTION_VALUE&quot;=1, &quot;CUST_ID&quot;,0)</formula>
+      </calculatedViewAttribute>
       <calculatedViewAttribute id="EVENT_YEAR" datatype="INTEGER" expressionLanguage="SQL">
-        <formula>LEFT(&quot;INIT_TS&quot;, 4)</formula>
+        <formula>YEAR(&quot;EVENT_DATE&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="CUST_ID_BIGINT" datatype="BIGINT" expressionLanguage="SQL">
+        <formula>&quot;CUST_ID&quot;</formula>
       </calculatedViewAttribute>
     </calculatedViewAttributes>
     <restrictedViewAttributes/>
-    <input node="models.apps.customer::CV_CUSTOMER_EVENTS">
+    <input node="functions::TF_CUSTOMER_BY_IMPACT_EVENTS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="TO_TS" source="TO_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="DUE_AMOUNT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="DUE_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_VALUE" source="REACTION_VALUE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FROM_TS" source="FROM_TS"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="END_TS" source="END_TS"/>
-    </input>
-    <filter>(&quot;INIT_TS&quot;&lt;=int($$IP_TO$$))and(&quot;INIT_TS&quot;&gt;=int($$IP_FROM$$))and(&quot;EVENT_ID&quot;=$$IP_EVENT_ID$$)</filter>
-  </calculationView>
-  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
-    <viewAttributes>
-      <viewAttribute id="CUST_ID">
-        <descriptions defaultDescription="Customer ID (Internal)"/>
-      </viewAttribute>
-      <viewAttribute id="EVENT_ID">
-        <descriptions defaultDescription="Event ID"/>
-      </viewAttribute>
-      <viewAttribute id="COUNT_EVENT_ID" aggregationType="count">
-        <descriptions defaultDescription="Event ID"/>
-      </viewAttribute>
     
-      <viewAttribute id="EVENT_YEAR">
-        <descriptions defaultDescription="EVENT_YEAR"/>
-      </viewAttribute>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="Projection_1">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="COUNT_EVENT_ID" source="EVENT_ID"/>
-    
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_YEAR" source="EVENT_YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_DATE" source="EVENT_DATE"/>
     </input>
   </calculationView>
-  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="CN_N" joinType="inner">
+  <calculationView xsi:type="Calculation:ProjectionView" id="P_Currency" filterExpressionLanguage="COLUMN_ENGINE">
     <viewAttributes>
-      <viewAttribute id="EVENT_ID" aggregationType="sum">
-        <descriptions defaultDescription="Event ID"/>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="DESCRIPTION"/>
       </viewAttribute>
-      <viewAttribute id="CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID"/>
+      <viewAttribute id="IS_ENABLED">
+        <descriptions defaultDescription="IS_ENABLED"/>
       </viewAttribute>
-      <viewAttribute id="EVENT_YEAR" aggregationType="sum">
-        <descriptions defaultDescription="EVENT_YEAR"/>
-      </viewAttribute>
-      <viewAttribute hidden="true" id="JOIN$CUST_ID$CUST_ID"/>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="Aggregation_1">
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_YEAR" source="EVENT_YEAR"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CUST_ID$CUST_ID" source="CUST_ID"/>
-    </input>
-    <input node="functions::TF_CUSTOMER_FILTER_FROM_TO">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CUST_ID$CUST_ID" source="CUST_ID"/>
-    </input>
-    <joinAttribute name="JOIN$CUST_ID$CUST_ID"/>
-  </calculationView>
-  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2" filterExpressionLanguage="COLUMN_ENGINE">
-    <viewAttributes>
       <viewAttribute id="REACTION_TYPE">
         <descriptions defaultDescription="REACTION_TYPE"/>
       </viewAttribute>
-      <viewAttribute id="INIT_TS" aggregationType="sum">
-        <descriptions defaultDescription="INIT_TS"/>
+      <viewAttribute id="BUCKET_ID">
+        <descriptions defaultDescription="BUCKET_ID"/>
       </viewAttribute>
-      <viewAttribute id="END_TS" aggregationType="sum">
-        <descriptions defaultDescription="END_TS"/>
+      <viewAttribute id="STR_VALUE">
+        <descriptions defaultDescription="STR_VALUE"/>
       </viewAttribute>
-    
-      <viewAttribute id="CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
-    
-      <viewAttribute id="INIT_DATE" aggregationType="min">
-        <descriptions defaultDescription="INIT_DATE"/>
-      </viewAttribute>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="db::app.CustomerReactions">
-      <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TS"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="END_TS" source="END_TS"/>
-    
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-    
-      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
-    </input>
-    <filter>(&quot;INIT_TS&quot;&gt;=int($$IP_FROM$$))and(&quot;INIT_TS&quot;&lt;=int($$IP_TO$$))
-</filter>
-  </calculationView>
-  <calculationView xsi:type="Calculation:JoinView" id="Join_2" cardinality="CN_N" joinType="inner">
-    <viewAttributes>
-      <viewAttribute id="REACTION_TYPE">
-        <descriptions defaultDescription="REACTION_TYPE"/>
-      </viewAttribute>
-      <viewAttribute id="CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
-      <viewAttribute id="INIT_DATE" aggregationType="min">
-        <descriptions defaultDescription="INIT_DATE"/>
-      </viewAttribute>
-      <viewAttribute hidden="true" id="JOIN$REACTION_TYPE$REACTION_TYPE"/>
     </viewAttributes>
     <calculatedViewAttributes>
-      <calculatedViewAttribute id="REACTED_YEAR" datatype="INTEGER" expressionLanguage="SQL">
-        <formula>LEFT(&quot;INIT_DATE&quot;,4)</formula>
+      <calculatedViewAttribute id="JOIN" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>1</formula>
       </calculatedViewAttribute>
     </calculatedViewAttributes>
     <restrictedViewAttributes/>
-    <input node="Projection_2">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$REACTION_TYPE$REACTION_TYPE" source="REACTION_TYPE"/>
-    </input>
-    <input node="functions::TF_CONF_GET_REACTION_TYPE">
+    <input node="models.adm::CV_CONFIG">
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_ENABLED" source="IS_ENABLED"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="REACTION_TYPE" source="REACTION_TYPE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$REACTION_TYPE$REACTION_TYPE" source="REACTION_TYPE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="BUCKET_ID" source="BUCKET_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STR_VALUE" source="STR_VALUE"/>
     </input>
-    <joinAttribute name="JOIN$REACTION_TYPE$REACTION_TYPE"/>
+    <filter>(&quot;BUCKET_ID&quot; ='CURRENCY') AND (&quot;IS_ENABLED&quot; =1) AND (&quot;REACTION_TYPE&quot; ='NA')</filter>
   </calculationView>
-  <calculationView xsi:type="Calculation:JoinView" id="Join_3" cardinality="C1_1" joinType="leftOuter">
+  <calculationView xsi:type="Calculation:JoinView" id="Join_6" cardinality="CN_N" joinType="inner">
     <viewAttributes>
-      <viewAttribute id="EVENT_ID" aggregationType="sum">
-        <descriptions defaultDescription="Event ID"/>
-      </viewAttribute>
-      <viewAttribute id="CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID"/>
-      </viewAttribute>
-      <viewAttribute id="REACTED_CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
-    
-      <viewAttribute id="INIT_DATE" aggregationType="min">
-        <descriptions defaultDescription="INIT_DATE"/>
-      </viewAttribute>
-    
-      <viewAttribute id="EVENT_YEAR" aggregationType="sum">
-        <descriptions defaultDescription="EVENT_YEAR"/>
-      </viewAttribute>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="Join_1">
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-    
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_YEAR" source="EVENT_YEAR"/>
-    </input>
-    <input node="Join_2">
-      <mapping xsi:type="Calculation:AttributeMapping" target="REACTED_CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_YEAR" source="REACTED_YEAR"/>
-    </input>
-    <joinAttribute name="CUST_ID"/>
-    <joinAttribute name="EVENT_YEAR"/>
-  </calculationView>
-  <calculationView xsi:type="Calculation:JoinView" id="Join_4" cardinality="C1_1" joinType="leftOuter">
-    <viewAttributes>
-      <viewAttribute id="EVENT_ID" aggregationType="sum">
-        <descriptions defaultDescription="Event ID"/>
-      </viewAttribute>
       <viewAttribute id="CUST_ID" aggregationType="sum">
         <descriptions defaultDescription="CUST_ID"/>
       </viewAttribute>
       <viewAttribute id="INCOME_LOSS" aggregationType="sum">
-        <descriptions defaultDescription="INCOME LOSS(AVG)"/>
+        <descriptions defaultDescription="DUE_AMOUNT"/>
       </viewAttribute>
       <viewAttribute id="CURRENCY">
-        <descriptions defaultDescription="Currency Code"/>
+        <descriptions defaultDescription="STR_VALUE"/>
       </viewAttribute>
       <viewAttribute id="CURRENCY_DESC">
-        <descriptions defaultDescription="Currency Description"/>
+        <descriptions defaultDescription="DESCRIPTION"/>
       </viewAttribute>
-    
       <viewAttribute id="REACTED_CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID_ID"/>
+        <descriptions defaultDescription="REACTED_CUST_ID"/>
       </viewAttribute>
-    
       <viewAttribute id="INIT_DATE" aggregationType="min">
-        <descriptions defaultDescription="INIT_DATE"/>
+        <descriptions defaultDescription="DUE_DATE"/>
       </viewAttribute>
-    
       <viewAttribute id="EVENT_YEAR" aggregationType="sum">
         <descriptions defaultDescription="EVENT_YEAR"/>
       </viewAttribute>
-    
-      <viewAttribute id="REVENUE_YEAR">
-        <descriptions defaultDescription="REVENUE_YEAR"/>
+      <viewAttribute id="CHURNED_FLAG" aggregationType="sum">
+        <descriptions defaultDescription="REACTION_VALUE"/>
       </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$JOIN$JOIN"/>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
-    <input node="Join_3">
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="REACTED_CUST_ID" source="REACTED_CUST_ID"/>
-    
-      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
-    
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_YEAR" source="EVENT_YEAR"/>
-    </input>
-    <input node="models.apps.customer::CV_CUSTOMER_YEARLY_INCOME_LOSS">
+    <input node="Projection_3">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID_BIGINT"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="INCOME_LOSS"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY_DESC" source="CURRENCY_DESC"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="REVENUE_YEAR" source="REVENUE_YEAR"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_YEAR" source="REVENUE_YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="REACTED_CUST_ID" source="REACTED_CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_YEAR" source="EVENT_YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHURNED_FLAG" source="REACTION_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$JOIN$JOIN" source="JOIN"/>
     </input>
-    <joinAttribute name="CUST_ID"/>
-    <joinAttribute name="EVENT_YEAR"/>
+    <input node="P_Currency">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="STR_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY_DESC" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$JOIN$JOIN" source="JOIN"/>
+    </input>
+    <joinAttribute name="JOIN$JOIN$JOIN"/>
   </calculationView>
-  <calculationView xsi:type="Calculation:JoinView" id="Join_5" cardinality="CN_N" joinType="inner">
+  <calculationView xsi:type="Calculation:JoinView" id="Join_7" cardinality="CN_N" joinType="inner">
     <viewAttributes>
       <viewAttribute id="CUST_ID" aggregationType="sum">
         <descriptions defaultDescription="CUST_ID"/>
       </viewAttribute>
       <viewAttribute id="INCOME_LOSS" aggregationType="sum">
-        <descriptions defaultDescription="INCOME LOSS(AVG)"/>
+        <descriptions defaultDescription="DUE_AMOUNT"/>
       </viewAttribute>
       <viewAttribute id="CURRENCY">
-        <descriptions defaultDescription="Currency Code"/>
+        <descriptions defaultDescription="STR_VALUE"/>
       </viewAttribute>
       <viewAttribute id="CURRENCY_DESC">
-        <descriptions defaultDescription="Currency Description"/>
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="REACTED_CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="REACTED_CUST_ID"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE" aggregationType="min">
+        <descriptions defaultDescription="DUE_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="EVENT_YEAR" aggregationType="sum">
+        <descriptions defaultDescription="EVENT_YEAR"/>
       </viewAttribute>
       <viewAttribute id="EXT_ID">
-        <descriptions defaultDescription="EXT_ID"/>
+        <descriptions defaultDescription="Identifiable External ID"/>
       </viewAttribute>
       <viewAttribute id="NAME">
-        <descriptions defaultDescription="NAME"/>
+        <descriptions defaultDescription="Customer Name"/>
       </viewAttribute>
-    
-      <viewAttribute id="REACTED_CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
-    
-      <viewAttribute id="INIT_DATE" aggregationType="min">
-        <descriptions defaultDescription="INIT_DATE"/>
-      </viewAttribute>
-    
-      <viewAttribute id="EVENT_YEAR" aggregationType="sum">
-        <descriptions defaultDescription="EVENT_YEAR"/>
+      <viewAttribute id="CHURNED_FLAG" aggregationType="sum">
+        <descriptions defaultDescription="REACTION_VALUE"/>
       </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
-    <input node="Join_4">
+    <input node="Join_6">
       <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="INCOME_LOSS"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY_DESC" source="CURRENCY_DESC"/>
-    
       <mapping xsi:type="Calculation:AttributeMapping" target="REACTED_CUST_ID" source="REACTED_CUST_ID"/>
-    
       <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
-    
       <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_YEAR" source="EVENT_YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CHURNED_FLAG" source="CHURNED_FLAG"/>
     </input>
     <input node="db::app.Customer">
       <mapping xsi:type="Calculation:AttributeMapping" target="EXT_ID" source="EXT_ID"/>
@@ -368,67 +250,56 @@
     <joinAttribute name="CUST_ID"/>
   </calculationView>
 </calculationViews>
-<logicalModel id="Join_5">
+<logicalModel id="Join_7">
   <attributes>
-    <attribute id="CUST_ID" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
-      <descriptions defaultDescription="Customer ID(Internal)"/>
-      <keyMapping columnObjectName="Join_5" columnName="CUST_ID"/>
+    <attribute id="CUST_ID" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CUST_ID"/>
+      <keyMapping columnObjectName="Join_7" columnName="CUST_ID"/>
     </attribute>
-    <attribute id="INCOME_LOSS" hidden="true" order="2" displayAttribute="false" attributeHierarchyActive="false">
-      <descriptions defaultDescription="INCOME LOSS(AVG)"/>
-      <keyMapping columnObjectName="Join_5" columnName="INCOME_LOSS"/>
+    <attribute id="INCOME_LOSS" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DUE_AMOUNT"/>
+      <keyMapping columnObjectName="Join_7" columnName="INCOME_LOSS"/>
     </attribute>
-    <attribute id="CURRENCY" order="3" displayAttribute="false" attributeHierarchyActive="false">
-      <descriptions defaultDescription="Currency Code"/>
-      <keyMapping columnObjectName="Join_5" columnName="CURRENCY"/>
+    <attribute id="CURRENCY" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STR_VALUE"/>
+      <keyMapping columnObjectName="Join_7" columnName="CURRENCY"/>
     </attribute>
-    <attribute id="CURRENCY_DESC" order="4" displayAttribute="false" attributeHierarchyActive="false">
-      <descriptions defaultDescription="Currency Description"/>
-      <keyMapping columnObjectName="Join_5" columnName="CURRENCY_DESC"/>
+    <attribute id="CURRENCY_DESC" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DESCRIPTION"/>
+      <keyMapping columnObjectName="Join_7" columnName="CURRENCY_DESC"/>
     </attribute>
-    <attribute id="EXT_ID" order="5" displayAttribute="false" attributeHierarchyActive="false">
-      <descriptions defaultDescription="EXT_ID"/>
-      <keyMapping columnObjectName="Join_5" columnName="EXT_ID"/>
+    <attribute id="REACTED_CUST_ID" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="REACTED_CUST_ID"/>
+      <keyMapping columnObjectName="Join_7" columnName="REACTED_CUST_ID"/>
     </attribute>
-    <attribute id="NAME" order="6" displayAttribute="false" attributeHierarchyActive="false">
-      <descriptions defaultDescription="NAME"/>
-      <keyMapping columnObjectName="Join_5" columnName="NAME"/>
+    <attribute id="INIT_DATE" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="DUE_DATE"/>
+      <keyMapping columnObjectName="Join_7" columnName="INIT_DATE"/>
     </attribute>
-  
-    <attribute id="REACTED_CUST_ID" order="9" displayAttribute="false" attributeHierarchyActive="false">
-      <descriptions defaultDescription="CUST_ID_ID"/>
-  
-      <keyMapping columnObjectName="Join_5" columnName="REACTED_CUST_ID"/>
-  
-    </attribute>
-  
-    <attribute id="INIT_DATE" order="10" displayAttribute="false" attributeHierarchyActive="false">
-      <descriptions defaultDescription="INIT_DATE"/>
-  
-      <keyMapping columnObjectName="Join_5" columnName="INIT_DATE"/>
-  
-    </attribute>
-  
-    <attribute id="EVENT_YEAR" order="11" displayAttribute="false" attributeHierarchyActive="false">
+    <attribute id="EVENT_YEAR" order="8" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="EVENT_YEAR"/>
-  
-      <keyMapping columnObjectName="Join_5" columnName="EVENT_YEAR"/>
-  
+      <keyMapping columnObjectName="Join_7" columnName="EVENT_YEAR"/>
+    </attribute>
+    <attribute id="EXT_ID" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Identifiable External ID"/>
+      <keyMapping columnObjectName="Join_7" columnName="EXT_ID"/>
+    </attribute>
+    <attribute id="NAME" order="10" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Customer Name"/>
+      <keyMapping columnObjectName="Join_7" columnName="NAME"/>
+    </attribute>
+    <attribute id="CHURNED_FLAG" order="11" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="REACTION_VALUE"/>
+      <keyMapping columnObjectName="Join_7" columnName="CHURNED_FLAG"/>
     </attribute>
   </attributes>
   <calculatedAttributes>
-    <calculatedAttribute id="CHURNED_FLAG" order="7" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
-      <descriptions defaultDescription="Reacted flag"/>
-      <keyCalculation datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
-        <formula>if(isnull(&quot;REACTED_CUST_ID&quot;),0,1)</formula>
-      </keyCalculation>
-    </calculatedAttribute>
-    <calculatedAttribute id="INCOME_LOSS_ROUND" order="8" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
+    <calculatedAttribute id="INCOME_LOSS_ROUND" order="1" semanticType="empty" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="INCOME_LOSS_ROUND"/>
       <keyCalculation datatype="DECIMAL" expressionLanguage="COLUMN_ENGINE" length="30" scale="2">
         <formula>fixed(&quot;INCOME_LOSS&quot;,30,2)</formula>
       </keyCalculation>
-    </calculatedAttribute>
+      </calculatedAttribute>
   </calculatedAttributes>
   <baseMeasures/>
   <calculatedMeasures/>
@@ -437,81 +308,41 @@
 <layout>
   <shapes>
     <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
-      <upperLeftCorner x="211" y="112"/>
+      <upperLeftCorner x="229.9632123527728" y="112"/>
     
       <rectangleSize width="140"/>
     </shape>
   
-    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="93" y="861"/>
+    <shape expanded="true" modelObjectName="Projection_3" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92.00000000000006" y="496.9999976158142"/>
       <rectangleSize height="30" width="140"/>
     </shape>
-    <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="93" y="756"/>
+    <shape expanded="true" modelObjectName="P_Currency" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="282" y="496.9999976158142"/>
       <rectangleSize height="30" width="140"/>
     </shape>
-    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="92" y="616"/>
+    <shape expanded="true" modelObjectName="Join_6" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="213.4294423938989" y="356.9999988079071"/>
       <rectangleSize height="30" width="140"/>
     </shape>
-    <shape modelObjectName="Aggregation_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+    <shape modelObjectName="Projection_3" modelObjectNameSpace="Join_6" modelObjectType="JoinNodeInput">
       <upperLeftCorner x="20" y="30"/>
       <rectangleSize width="250"/>
     </shape>
-    <shape modelObjectName="functions::TF_CUSTOMER_FILTER_FROM_TO" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+    <shape modelObjectName="P_Currency" modelObjectNameSpace="Join_6" modelObjectType="JoinNodeInput">
       <upperLeftCorner x="320" y="30"/>
       <rectangleSize width="250"/>
     </shape>
-    <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="283" y="756"/>
+    <shape expanded="true" modelObjectName="Join_7" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="213.4294423938989" y="236.9999988079071"/>
       <rectangleSize height="30" width="140"/>
     </shape>
-    <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="282" y="616"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
-    <shape modelObjectName="Projection_2" modelObjectNameSpace="Join_2" modelObjectType="JoinNodeInput">
+    <shape modelObjectName="Join_6" modelObjectNameSpace="Join_7" modelObjectType="JoinNodeInput">
       <upperLeftCorner x="20" y="30"/>
       <rectangleSize width="250"/>
     </shape>
-    <shape modelObjectName="functions::TF_CONF_GET_REACTION_TYPE" modelObjectNameSpace="Join_2" modelObjectType="JoinNodeInput">
-      <upperLeftCorner x="307" y="60"/>
-      <rectangleSize width="240"/>
-    </shape>
-    <shape expanded="true" modelObjectName="Join_3" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="197" y="476"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
-    <shape modelObjectName="Join_1" modelObjectNameSpace="Join_3" modelObjectType="JoinNodeInput">
-      <upperLeftCorner x="20" y="30"/>
-      <rectangleSize width="250"/>
-    </shape>
-    <shape modelObjectName="Join_2" modelObjectNameSpace="Join_3" modelObjectType="JoinNodeInput">
-      <upperLeftCorner x="337" y="30"/>
-      <rectangleSize width="250"/>
-    </shape>
-    <shape expanded="true" modelObjectName="Join_4" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="197" y="356"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
-    <shape modelObjectName="Join_3" modelObjectNameSpace="Join_4" modelObjectType="JoinNodeInput">
-      <upperLeftCorner x="20" y="30"/>
-      <rectangleSize width="250"/>
-    </shape>
-    <shape modelObjectName="models.apps.customer::CV_CUSTOMER_YEARLY_INCOME_LOSS" modelObjectNameSpace="Join_4" modelObjectType="JoinNodeInput">
+    <shape modelObjectName="db::app.Customer" modelObjectNameSpace="Join_7" modelObjectType="JoinNodeInput">
       <upperLeftCorner x="320" y="30"/>
-      <rectangleSize width="250"/>
-    </shape>
-    <shape expanded="true" modelObjectName="Join_5" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="211" y="217"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
-    <shape modelObjectName="Join_4" modelObjectNameSpace="Join_5" modelObjectType="JoinNodeInput">
-      <upperLeftCorner x="20" y="30"/>
-      <rectangleSize width="250"/>
-    </shape>
-    <shape modelObjectName="db::app.Customer" modelObjectNameSpace="Join_5" modelObjectType="JoinNodeInput">
-      <upperLeftCorner x="377" y="23"/>
       <rectangleSize width="250"/>
     </shape>
   </shapes>
