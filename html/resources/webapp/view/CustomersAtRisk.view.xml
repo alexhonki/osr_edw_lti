@@ -142,6 +142,7 @@
                                     <ToolbarSpacer/>
                                     <SearchField
                                     placeholder="Search"
+                                    id="idCustomerSearch"
                                     value="{/customerFilterString}"
                                     search="filterCustomers"
                                     width="15rem"/>

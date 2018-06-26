@@ -38,13 +38,14 @@ sap.ui.define([
             }
             return this._oDialog;
         },
-        open : function (oView, customerList) {
+        open : function (oView, customerList, bSourceEvent) {
             var oDialog = this._getDialog();
             if (oView.indexOfDependent(oDialog) == -1) {
                 oView.addDependent(oDialog);
             }
             this._view = oView;
             oDialog.getModel().setProperty("/customerList", customerList);
+            oDialog.getModel().setProperty("/sourceEvent", bSourceEvent);
             oDialog.open();
         },
         exportEMail: function () {
@@ -55,20 +56,47 @@ sap.ui.define([
             this._getDialog().close();
         },
         exportCSV: function () {
-            //var labels = this._getDialog().getModel("Labels");
+            var bSourceEvent = this._getDialog().getModel().getProperty("/sourceEvent");
 			var i18nModel = this._view.getModel("i18n").getResourceBundle();
-            var arrayOfData = [
+            var arrayOfData = [];
+            if(bSourceEvent){
+            	arrayOfData = [
+                [i18nModel.getText("EventOverview.CustomerListColumnId"), 
+                i18nModel.getText("EventOverview.CustomerListColumnName"),
+                i18nModel.getText("EventOverview.CustomerListColumnOperatingIncomeLoss"),
+                i18nModel.getText("EventOverview.CustomerListColumnEventYr"),
+                i18nModel.getText("EventOverview.CustomerListColumnReacted"),
+                i18nModel.getText("EventOverview.CustomerListColumnReactedDate")]
+            ];
+            } else{
+            	arrayOfData = [
                 [i18nModel.getText("CustomersAtRisk.CustomerListColumnId"), 
                 i18nModel.getText("CustomersAtRisk.CustomerListColumnName"),
-                i18nModel.getText("CustomersAtRisk.CustomerListColumnOperatingIncomeLoss")]
+                i18nModel.getText("CustomersAtRisk.CustomerListColumnOperatingIncomeLoss"),
+                i18nModel.getText("CustomersAtRisk.AllCustomersTableColumnRisk")]
             ];
+            }
+           
             var customers = this._getDialog().getModel().getProperty("/customerList");
             customers.forEach(function (entry) {
-                arrayOfData.push([
+                if(bSourceEvent){
+                	arrayOfData.push([
                     entry.OriginId,
                     entry.CustomerName,
-                    entry.OperatingIncome
+                    entry.OperatingIncome,
+                    entry.EVENT_YEAR,
+                    entry.Churned,
+                    entry.INIT_DATE        
+                	]);
+                } else {
+                	arrayOfData.push([
+                    entry.OriginId,
+                    entry.CustomerName,
+                    entry.OperatingIncome,
+                    entry.Risk        
                 ]);
+                }
+                
             });
             Utilities.saveCSV(arrayOfData, "Customer List");
         },

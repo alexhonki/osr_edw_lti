@@ -427,6 +427,9 @@ sap.ui.define([
                 var table = this.getView().byId("idSuggestedCustomersTable");
                 var selectedCustomers = table.getSelectedItems();
                 var exportCustomers = [];
+                if(selectedCustomers.length < 1){
+                	return;
+                }
                 selectedCustomers.forEach(function (row) {
                     var data = row.getBindingContext("CRI").getObject();
                     exportCustomers.push({
@@ -435,18 +438,32 @@ sap.ui.define([
                         CustomerName: data.NAME,
                         OperatingIncome: data.INCOME_LOSS,
                         Churned: data.CHURNED_FLAG ? "Yes" : "No",
-                        Currency: data.CURRENCY
+                        Currency: data.CURRENCY,
+                        Risk : data.INFLUENCE
                     });
                 });
-                this.getOwnerComponent().exportDialog.open(this.getView(), exportCustomers);
+                this.getOwnerComponent().exportDialog.open(this.getView(), exportCustomers,false);
             },
             exportAtRiskCustomerList: function (event) {
                 var table = this.getView().byId("idCustomerListTable");
                 var tableQuery = table.getBinding().getPath();
                 var that = this;
+                var aFilter = [],
+					aOdataFilter = [];
+				var sCustomerFilterString = this.getView().byId("idCustomerSearch").getValue().toUpperCase();
+					if (sCustomerFilterString) {
+						//build odata filters to be applied
+						aFilter = [new Filter("NAME", FilterOperator.Contains, sCustomerFilterString)];
 
+						if (!isNaN(sCustomerFilterString)) {
+							aFilter.push(new Filter("CUST_ID", FilterOperator.EQ, sCustomerFilterString));
+						}
+
+						aOdataFilter = [new Filter(aFilter, false)];
+					}
                 table.setBusy(true);
                 this.getView().getModel("CRI").read(tableQuery, {
+                	filters: aOdataFilter,
                     success: function (oData) {
                         try {
                             table.setBusy(false);
@@ -459,11 +476,12 @@ sap.ui.define([
                                     CustomerName: data.NAME,
                                     OperatingIncome: data.INCOME_LOSS,
                                     Churned: data.CHURNED_FLAG ? "Yes" : "No",
-                                    Currency: data.CURRENCY
+                                    Currency: data.CURRENCY,
+                                    Risk : data.INFLUENCE
                                 });
                             });
 
-                            that.getOwnerComponent().exportDialog.open(that.getView(), customersToExport);
+                            that.getOwnerComponent().exportDialog.open(that.getView(), customersToExport,false);
                         } catch (oError) {
                             ErrorService.raiseGenericError(oError);
                         }

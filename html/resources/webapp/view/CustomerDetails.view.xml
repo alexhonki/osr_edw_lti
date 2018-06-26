@@ -163,7 +163,7 @@
                                         visible="{= ${viewModel>/SelectedEventViewType} === 'History'}"
                                         selectionBehavior="RowOnly"
                                         selectionMode="Single"
-                                        rows="{ path: '/FilteredCustomerEvents' }"
+                                        rows="{ path: '/FilteredCustomerEventsTable' }"
                                         rowHeight="34"
                                         visibleRowCountMode="Auto">
                                     <table:columns>

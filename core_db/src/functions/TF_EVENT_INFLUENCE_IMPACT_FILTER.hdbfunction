@@ -1,0 +1,71 @@
+FUNCTION "functions::TF_EVENT_INFLUENCE_IMPACT_FILTER" (
+		IN IM_FILTER 	NVARCHAR(5000) default '',	-- Filter
+		IN IM_FROM 		VARCHAR(6), -- From Time Segment YYYYMM
+		IN IM_TO VARCHAR(6), -- YYYYMM
+		IN IM_REACTION_TYPE VARCHAR(200)
+	) 
+	RETURNS TABLE (
+		"EVENT_ID"			INTEGER,
+		"EVENT_IMPACT" 		INTEGER,
+		"TOTAL_CUSTOMERS" 	INTEGER,
+		"INFLUENCE" 		INTEGER
+	)
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+	DECLARE LV_TO_TS		 		VARCHAR(6);
+	DECLARE LV_FROM_TS		 		VARCHAR(6);
+	-- Default Reaction Type
+	DECLARE LV_REACTION_TYPE 	VARCHAR(200);
+	-- Impact Threshold Variable
+	DECLARE LV_IMPACT_THRESHOLD INT := 1;
+	-- Influence Threshold
+--	DECLARE LV_INFLUENCE_THRESHOLD INT;
+	
+	-- Get the Reaction type configured ---> needs to be extended in future to support multiple
+	IF :IM_REACTION_TYPE IS NULL OR LENGTH(:IM_REACTION_TYPE) = 0 THEN
+		CALL "procedures.utils::PR_CONF_GET_REACTION_TYPE"(:LV_REACTION_TYPE);
+	ELSE
+		LV_REACTION_TYPE := :IM_REACTION_TYPE;
+	END IF;
+	
+	-- Set Default To Time Segment
+	IF :IM_TO IS NULL OR length(:IM_TO) = 0 THEN
+		CALL "procedures.utils::PR_CONF_GET_PREDICTION_TIME_SEGMENT"(:LV_TO_TS);
+	ELSE
+		LV_TO_TS := :IM_TO;
+	END IF;	
+	
+	-- Set Default From Time Segment
+	IF :IM_FROM IS NULL OR length(:IM_FROM) = 0 THEN
+		LV_FROM_TS := '201001';
+	ELSE
+		LV_FROM_TS := :IM_FROM;
+	END IF;
+	
+	------------------------------------------------
+	-- Set Impact Threshold
+	------------------------------------------------
+	SELECT TOP 1 TO_INT(COALESCE("FROM_VALUE","TO_VALUE","FROM_DEFAULT")) 
+	 	INTO LV_IMPACT_THRESHOLD
+	 	FROM "models.adm::CV_CONFIG"
+	 	WHERE "BUCKET_ID" 		= 'IMPACT_THRESHOLD'
+	 	  AND "REACTION_TYPE" 	= :LV_REACTION_TYPE;
+
+	------------------------------------------------
+	-- Influence and event impact
+	------------------------------------------------
+	RETURN  SELECT EVENT_ID, 
+				SUM(reaction_value) AS EVENT_IMPACT, 
+				COUNT(CUST_ID) AS TOTAL_CUSTOMERS, 
+				ROUND(( SUM(reaction_value) / COUNT(CUST_ID) ) * 100) AS INFLUENCE
+			FROM (
+					select cust_id,reaction_value, EVENT_ID  from "functions::TF_CUSTOMER_BY_IMPACT_EVENTS" (:IM_FILTER,:LV_FROM_TS,:LV_TO_TS,:LV_REACTION_TYPE) 
+				) AS ei
+			INNER JOIN "db::adm.config.event.name" AS en
+				ON event_id = en.id
+			WHERE en.is_enabled = 1
+			GROUP BY event_id, en.event_name
+			HAVING SUM(reaction_value) >= :LV_IMPACT_THRESHOLD
+			ORDER BY event_id ASC;
+END;
