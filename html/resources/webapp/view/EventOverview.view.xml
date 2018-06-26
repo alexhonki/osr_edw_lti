@@ -158,6 +158,7 @@
                             <ToolbarSpacer/>
                             <SearchField
                                     placeholder="Search"
+                                    id="idEventSearch"
                                     value="{/eventFilterString}"
                                     search="filterEvents"
                                     width="15rem"/>
@@ -220,6 +221,7 @@
                             <ToolbarSpacer/>
                             <SearchField
                                     placeholder="Search"
+                                    id="idCustomerSearch"
                                     value="{/customerFilterString}"
                                     search="filterCustomers"
                                     width="15rem"/>
