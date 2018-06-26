@@ -181,7 +181,7 @@ sap.ui.define([
                     });
 
                     var barStart = maxLabelTextWidth + barPadding * 2 + barPadding; //TEXT WIDTH + TEXT PADDING + RECT PADDING
-
+					barStart = -40;
                     var maxValueTextWidth = 0;
                     var valueTexts;
                     var barMaxWidth = that.canvasWidth - barStart - barPadding - maxValueTextWidth - barPadding; //SVG WIDTH - BAR START - BAR END PADDING

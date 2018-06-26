@@ -66,7 +66,7 @@
                                  <Column>
                                     <Text text="{i18n>CustomersAtRisk.CustomerListColumnName}" />
                                 </Column>
-                                <Column demandPopin="true" minScreenWidth="800px" popinDisplay="Block">
+                                <Column demandPopin="true" minScreenWidth="800px" popinDisplay="Block" hAlign="Left">
                                     <Text text="{i18n>CustomersAtRisk.SuggestedCustomersColumnRisk}" class="sapSuiteBMCContent"/>
                                 </Column>
                                 <Column demandPopin="true" minScreenWidth="Tablet"
@@ -86,7 +86,7 @@
                             <items>
                                 <ColumnListItem id="idSuggestedCustomerItemTemplate">
                                     <cells>
-                                        <Text text="{CRI>EXT_ID}" class="sapUiMediumMargin" />
+                                        <Text text="{CRI>EXT_ID}" class="sapUiMediumMarginTopBottom" />
                                         <Label text="{CRI>NAME}" design="Bold"/>
                                         <VBox class="sapUiNoContentPadding" alignItems="Start">
                                             <cri:control.IndicatorBar
