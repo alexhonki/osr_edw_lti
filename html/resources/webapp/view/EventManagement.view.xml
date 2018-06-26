@@ -13,6 +13,7 @@
                 <table:Table
                         id="idEventListTable"
                         selectionMode="MultiToggle"
+                        enableSelectAll="false"
                         rows="{CRI>/EventManagement}"
                         enableCellFilter="true"
                         rowHeight="44"
