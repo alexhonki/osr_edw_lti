@@ -60,7 +60,7 @@ BEGIN
 				COUNT(CUST_ID) AS TOTAL_CUSTOMERS, 
 				ROUND(( SUM(reaction_value) / COUNT(CUST_ID) ) * 100) AS INFLUENCE
 			FROM (
-					select cust_id,reaction_value, EVENT_ID  from "functions::TF_CUSTOMER_BY_IMPACT_EVENTS" (:IM_FILTER,:LV_FROM_TS,:LV_TO_TS,:LV_REACTION_TYPE) 
+					select cust_id,reaction_value, EVENT_ID  from "functions::TF_CUSTOMER_BY_IMPACT_EVENTS" (:IM_FILTER,:LV_FROM_TS,:LV_TO_TS,:LV_REACTION_TYPE,0) 
 				) AS ei
 			INNER JOIN "db::adm.config.event.name" AS en
 				ON event_id = en.id
