@@ -13,6 +13,7 @@
                 <table:Table
                         id="idCustomerListTable"
                         selectionMode="MultiToggle"
+                        enableSelectAll="false"
                         rows="{CRI>/Customer}"
                         enableCellFilter="true"
                         rowHeight="44"

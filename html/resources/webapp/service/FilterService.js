@@ -252,6 +252,7 @@ sap.ui.define([
         		oConfig.filters.toDate = sToDate;
         		oConfig.filters.fromDate = this.getFilterData()[oConfig.filterKeys.toDate].length > 0 ? this.getFilterData()[oConfig.filterKeys.fromDate] : "";
 				var oFilter = this.buildDefaultFilters();
+				this._defaultFilters = oFilter;
         		this.setFilterData(oFilter);
         	}	               
         }

@@ -459,7 +459,7 @@ sap.ui.define([
 							oValueTable.setModel(oModel);
 							oValueTable.bindRows("/ValueHelpData");
 							oValueHelpDialog.setTable(oValueTable);
-							if(oControl.getValue().length < 1){
+							if(oControl.getTokens().length < 1){
 								aTokens = [];
 							}
 							oValueHelpDialog.setTokens(aTokens);
@@ -505,6 +505,22 @@ sap.ui.define([
 							oValueHelpDialog.update();
 
 						});
+						if(sValue){
+							var aPostcodeTokens = [];
+							//filter value set from other view, then create tokens
+							var aTokenList = sValue.split(",");
+							aPostcodeTokens.push(aTokenList[0]);
+							if(aTokenList.length > 1){
+								for(var i = 1; i < aTokenList.length; i++){
+									aPostcodeTokens.push(aTokenList[i].split(":")[1]);
+								}
+							}
+							aPostcodeTokens.forEach(function(item){
+								aTokens.push(new sap.m.Token({key: item, text: item +" (" + item + ")"}));
+							});
+							oControl.setTokens(aTokens);
+							oControl.rerender();
+						}
 						break;
 					default:
 						break;
