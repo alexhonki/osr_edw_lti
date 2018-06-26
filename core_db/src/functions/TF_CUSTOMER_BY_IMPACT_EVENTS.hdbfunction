@@ -1,0 +1,93 @@
+FUNCTION "functions::TF_CUSTOMER_BY_IMPACT_EVENTS" (
+		IN IM_FILTER 	NVARCHAR(5000) default '',	-- Filter
+		IN IM_FROM 		VARCHAR(6), -- From Time Segment YYYYMM
+		IN IM_TO VARCHAR(6), -- YYYYMM
+		IN IM_REACTION_TYPE VARCHAR(200)
+	) 
+       RETURNS TABLE (
+		"CUST_ID"			INTEGER,
+		"FROM_TS" 			INTEGER,
+		"TO_TS" 			INTEGER,
+		"DUE_AMOUNT"		DOUBLE,
+		"DUE_DATE"			TIMESTAMP,
+		"REACTION_VALUE" 	INTEGER,
+		"EVENT_ID"			INTEGER
+	) 
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+/*****************************  
+       Write your function logic 
+ *****************************/ 
+ 	DECLARE LV_TO_TS		 		VARCHAR(6);
+	DECLARE LV_FROM_TS		 		VARCHAR(6);
+	-- Default Reaction Type
+	DECLARE LV_REACTION_TYPE 	VARCHAR(200);
+
+	-- Get the Reaction type configured ---> needs to be extended in future to support multiple
+	IF :IM_REACTION_TYPE IS NULL OR LENGTH(:IM_REACTION_TYPE) = 0 THEN
+		CALL "procedures.utils::PR_CONF_GET_REACTION_TYPE"(:LV_REACTION_TYPE);
+	ELSE
+		LV_REACTION_TYPE := :IM_REACTION_TYPE;
+	END IF;
+	
+	-- Set Default To Time Segment
+	IF :IM_TO IS NULL OR length(:IM_TO) = 0 THEN
+		CALL "procedures.utils::PR_CONF_GET_PREDICTION_TIME_SEGMENT"(:LV_TO_TS);
+	ELSE
+		LV_TO_TS := :IM_TO;
+	END IF;	
+	
+	-- Set Default From Time Segment
+	IF :IM_FROM IS NULL OR length(:IM_FROM) = 0 THEN
+		LV_FROM_TS := '201001';
+	ELSE
+		LV_FROM_TS := :IM_FROM;
+	END IF;
+
+	RETURN  SELECT DISTINCT cdd.cust_id, 
+				cdd.from_ts, 
+				cdd.to_ts,
+				cdd.due_amount,
+				cdd.due_date,
+				cdd.reaction_value, 
+				ce."EVENT_ID.ID" AS event_id
+			FROM (
+				SELECT cd.cust_id, 
+						cd.to_ts, 
+						CASE
+							WHEN add_months(cd.to_due_date,-18) <= cd.from_due_date 
+								THEN year(cd.from_due_date) * 100 + month(cd.from_due_date)
+								ELSE year(add_months(cd.to_due_date,-18)) * 100 + month(add_months(cd.to_due_date,-18))
+						END AS from_ts, 
+						cd.reaction_value,
+						cd.to_due_date as due_date,
+						cd.due_amount
+					FROM (
+							SELECT cv2.cust_id, 
+								cv2.init_date AS to_due_date, 
+								IFNULL(cr."REACTION_VALUE",0) AS reaction_value, 
+								IFNULL((SELECT max(cv1.init_date)
+										FROM "db::app.CustomerValues" AS cv1
+										WHERE cv1.init_time_segment < cv2.init_time_segment
+											AND cv1.cust_id = cv2.cust_id),ADD_MONTHS(cv2.init_date, -18)
+								) AS from_due_date, 
+								cv2.init_time_segment AS to_ts,
+								cv2.value AS due_amount
+							FROM "db::app.CustomerValues" AS cv2
+							INNER JOIN "functions::TF_CUSTOMER_FILTER_FROM_TO"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS) AS cf
+								ON cv2.cust_id = cf.cust_id
+							LEFT OUTER JOIN "db::app.CustomerReactions" AS cr
+								ON cv2.cust_id = cr.cust_id
+									AND cv2.init_date = cr.init_date
+							WHERE cv2.init_time_segment >= TO_INT(:LV_FROM_TS)
+							AND cv2.init_time_segment <= TO_INT(:LV_TO_TS)
+						) AS cd
+				) AS cdd
+			INNER JOIN "db::app.CustomerEvents" AS ce
+				ON cdd.cust_id = ce.cust_id
+				AND cdd.from_ts <= ce.init_ts
+				AND cdd.due_date >= ce.init_date
+			WHERE ce.init_ts >= TO_INT(:LV_FROM_TS)
+			AND ce.init_ts <= TO_INT(:LV_TO_TS);
+END;
