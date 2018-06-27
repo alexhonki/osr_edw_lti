@@ -58,6 +58,7 @@
             "entity": "TrendParameters",
             "sorters":[{"path":"TIME_SEGMENT"}],
             "subtitle": {
+            	"prefix": "Overall Debtor Rate",
                 "path": "TIME_SEGMENT"
             },
             "kpi": {
@@ -85,6 +86,7 @@
             "entity": "TrendParameters",
             "sorters":[{"path":"TIME_SEGMENT"}],
             "subtitle": {
+            	"prefix": "Cumulative Outstanding Revenue",
                 "path": "TIME_SEGMENT"
             },
             "kpi": {

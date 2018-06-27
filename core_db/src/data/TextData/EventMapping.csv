@@ -7,18 +7,18 @@ Account Enquiry,Account Enquiry,query%pay,120,0,sales-notification
 Account Enquiry,Account Enquiry,enquiry%instal%plan,120,0,sales-notification
 Complaint,Complaint,complaint,80,0,message-popup
 EPO,EPO,epo,49,0,batch-payments
-Debt Management,Debt Management - S62,final%demand%mortgagee,45,0,sales-order
-Debt Management,Debt Management - S62,final%demand%coa,45,0,sales-order
-Debt Management,Debt Management - S62,s62,45,0,sales-order
-Debt Management,Debt Management - S62,final%demand%cba,45,0,sales-order
-Debt Management,Debt Management - S62,final%demand%bank,45,0,sales-order
-Debt Management,Debt Management - S62,final%demand%westp,45,0,sales-order
-Debt Management,Debt Management - S62,final%demand%nab,45,0,sales-order
-Debt Management,Debt Management - S62,final%demand%anz,45,0,sales-order
-Debt Management,Debt Management - S62,final%demand%sec%62,45,0,sales-order
-Debt Management,Debt Management - S62,final%demand%suncorp,45,0,sales-order
-Debt Management,Debt Management - S62,final%demand%ee,45,0,sales-order
-Debt Management,Debt Management - S62,ee%final%demand,45,0,sales-order
+Debt Management,Debt Management - S62,final%demand%mortgagee,45,0,capital-projects
+Debt Management,Debt Management - S62,final%demand%coa,45,0,capital-projects
+Debt Management,Debt Management - S62,s62,45,0,capital-projects
+Debt Management,Debt Management - S62,final%demand%cba,45,0,capital-projects
+Debt Management,Debt Management - S62,final%demand%bank,45,0,capital-projects
+Debt Management,Debt Management - S62,final%demand%westp,45,0,capital-projects
+Debt Management,Debt Management - S62,final%demand%nab,45,0,capital-projects
+Debt Management,Debt Management - S62,final%demand%anz,45,0,capital-projects
+Debt Management,Debt Management - S62,final%demand%sec%62,45,0,capital-projects
+Debt Management,Debt Management - S62,final%demand%suncorp,45,0,capital-projects
+Debt Management,Debt Management - S62,final%demand%ee,45,0,capital-projects
+Debt Management,Debt Management - S62,ee%final%demand,45,0,capital-projects
 Payment arrangement,Payment arrangement,final%demand%p2p,60,0,monitor-payments
 Payment arrangement,Payment arrangement-Withdraw,withdraw%p2p,61,0,monitor-payments
 Payment arrangement,Payment arrangement,TA2,60,0,monitor-payments
@@ -54,9 +54,9 @@ Payment Extension,Payment Extension,extension%pay,64,0,time-overtime
 Payment Extension,Payment Extension,ext%pay,64,0,time-overtime
 Payment Extension,Payment Extension,pay%ext,64,0,time-overtime
 Payment Extension,Payment Extension,py%ext,64,0,time-overtime
-Debt Management,Debt Management - S62,mortgag,45,0,sales-order
-Debt Management,Debt Management - S62,sec%62,45,0,sales-order
-Debt Management,Debt Management - S62,requisition,45,0,sales-order
+Debt Management,Debt Management - S62,mortgag,45,0,capital-projects
+Debt Management,Debt Management - S62,sec%62,45,0,capital-projects
+Debt Management,Debt Management - S62,requisition,45,0,capital-projects
 Financial Consideration,Financial Consideration,relief,1,0,accidental-leave
 Reassessment,Reassessment,reassessment,20,0,add-product
 Reissue,Reissue,reissue,30,0,sys-first-page

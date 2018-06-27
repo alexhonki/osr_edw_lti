@@ -23,7 +23,7 @@ sap.ui.define([
                     dateFormat: {type: "string"},
                     label: {type: "string"},
                     value: {type: "float"},
-                    data: {type: "Object" }
+                    data: {type: "Object"}
                 }
             },
 

@@ -208,7 +208,7 @@ sap.ui.define([
             };
 
             if(oChartConfig.type == "donut" && isFiltered) {
-                oDimension.value = "{CATEGORY} - Filtered"
+                oDimension.value = "{CATEGORY} - Filtered";
             }
 
             if (oChartConfig.type.indexOf("timeseries") != -1) {

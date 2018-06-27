@@ -238,7 +238,7 @@ sap.ui.define([
 
                 var value = Number(oData.TOTAL) || 0;
 
-                var vBox1 = new sap.m.VBox({ alignItems:"Start",width:"100%"});
+                var vBox1 = new sap.m.VBox({alignItems:"Start",width:"100%"});
                 vBox1.addStyleClass("sapUiTinyMarginTop sapUiNoMarginBottom");
 
                 var categoryText = new sap.m.Text({text:oData.CATEGORY});

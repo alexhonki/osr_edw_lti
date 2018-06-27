@@ -591,7 +591,7 @@ sap.ui.define([
                         return d.items.filter(function (el) { if(el.icon) {return(el.icon);} }).length === 1 ? "white" : colorScale(d.value);	
                     })
                     .attr("fill", "white")
-                    .attr("r", 8);
+                    .attr("r", 6);
 
                 dataPoints
                     .filter(function (d) {
@@ -652,7 +652,7 @@ sap.ui.define([
 /*                    .attr("r", function (d) {
                     	return d.items.filter(function (el) { if(el.icon) { return(el.icon );} }).length > 0 ? 12 : 6;
                     });*/
-                    .attr("r",8)
+                    .attr("r",6)
 
                 dataPoints.on("mouseover", function (d) {
                     var d3This = d3.select(this);
@@ -715,6 +715,7 @@ sap.ui.define([
                     	//return colorScale(d.value);
                     })*/
                     //.style("font-weight", "bold")
+                    .style("font-size","20px")
                     .style("font-family","SAP-icons");
 
                 pointLabels

@@ -24,16 +24,16 @@ BEGIN
     Check if any of the Collection Step mentioned above has data in FKKMAKO table. If yes, Generate Event for that Step		
     		
    *************************************/
-   DECLARE LV_DEBT_FNL_DMD NVARCHAR(500) := 'Final Demand' ;
-   DECLARE LV_DEBT_LGL_LTR NVARCHAR(500) := 'Legal Letter';
-   DECLARE LV_DEBT_PRT_PMT NVARCHAR(500)  := 'Part Payment Letter';
-   DECLARE LV_DEBT_SEC_24 NVARCHAR(500) := 'Section 24';
-   DECLARE LV_DEBT_SRCH_UPD_24 NVARCHAR(500) := 'Search and Update Section 24';
-   DECLARE LV_DEBT_MRTG_LTR NVARCHAR(500) := 'Mortgagee Letter';
-   DECLARE LV_DEBT_CHRG_REG NVARCHAR(500) := 'Charge Registration- P011';
-   DECLARE LV_DEBT_MRTG_DMD NVARCHAR(500)  := 'Mortgagee Final Demand';
-   DECLARE LV_DEBT_PHN_LGL NVARCHAR(500) := 'Phone Call Pending Legal Proceedings';
-   DECLARE LV_DEBT_CRD_LSTNG NVARCHAR(500) := 'Refer for credit listing';
+   DECLARE LV_DEBT_FNL_DMD NVARCHAR(500) := 'Progressed Final Demand' ;
+   DECLARE LV_DEBT_LGL_LTR NVARCHAR(500) := 'Progressed Legal Letter';
+   DECLARE LV_DEBT_PRT_PMT NVARCHAR(500)  := 'Progressed Part Payment Letter';
+   DECLARE LV_DEBT_SEC_24 NVARCHAR(500) := 'Progressed Section 24';
+   DECLARE LV_DEBT_SRCH_UPD_24 NVARCHAR(500) := 'Progressed Search and Update Section 24';
+   DECLARE LV_DEBT_MRTG_LTR NVARCHAR(500) := 'Progressed Mortgagee Letter';
+   DECLARE LV_DEBT_CHRG_REG NVARCHAR(500) := 'Progressed Charge Registration- P011';
+   DECLARE LV_DEBT_MRTG_DMD NVARCHAR(500)  := 'Progressed Mortgagee Final Demand';
+   DECLARE LV_DEBT_PHN_LGL NVARCHAR(500) := 'Progressed Phone Call Pending Legal Proceedings';
+   DECLARE LV_DEBT_CRD_LSTNG NVARCHAR(500) := 'Progressed Refer for credit listing';
    
    DECLARE LV_EVENT_GRP NVARCHAR(500) := 'Debt Management';
    

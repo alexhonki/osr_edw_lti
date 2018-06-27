@@ -1,4 +1,4 @@
-sap.ui.define([ "sap/ui/core/Element"],
+sap.ui.define(["sap/ui/core/Element"],
     /**
      * Frame
      * @param {sap.ui.core.Element} Element UI5 Base Element

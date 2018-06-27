@@ -1,4 +1,4 @@
-sap.ui.define([ "sap/ui/core/Control"],
+sap.ui.define(["sap/ui/core/Control"],
     function (Control) {
         'use strict';
         /**
