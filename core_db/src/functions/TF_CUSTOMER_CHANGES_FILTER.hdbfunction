@@ -53,9 +53,9 @@ BEGIN
 			select Z."INIT_TS" "TIME_SEGMENT", 
 			       0 "TOTAL_REACT_CUSTOMERS", 
 			       COUNT(Z."CUST_ID") "TOTAL_NEW_CUSTOMERS" 
-				from "db::app.Customer" Z 
+				from "db::app.CustomerEvents" Z 
 				INNER JOIN :T_FILTERED Y on Z."CUST_ID" = Y."CUST_ID"
-				WHERE Z."INIT_TS" <= TO_INT(:IM_TO) AND Z."INIT_TS" >= TO_INT(:IM_FROM)
+				WHERE "EVENT_NAME" like 'Assessment Posted%' and Z."INIT_TS" <= TO_INT(:IM_TO) AND Z."INIT_TS" >= TO_INT(:IM_FROM)
 				GROUP BY Z."INIT_TS"
 		)
 		GROUP BY "TIME_SEGMENT" 
