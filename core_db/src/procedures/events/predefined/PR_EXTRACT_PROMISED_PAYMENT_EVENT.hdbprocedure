@@ -11,9 +11,9 @@ BEGIN
    *************************************/
    
 	--DECLARE LV_PP NVARCHAR(500) := 'Promised Payment'; -NOT REQUIRED
-	DECLARE LV_PP_1 NVARCHAR(500) := 'Payment Arrangement in 3 or more Consecutive Years';
-	DECLARE LV_PP_2 NVARCHAR(500) := 'Payment Arrangement with More Than 3 Instalments'; 
-	DECLARE LV_PP_3 NVARCHAR(500) := 'Payment Arrangement was Late';	
+	DECLARE LV_PP_1 CONSTANT NVARCHAR(500) := 'Payment Arrangement in 3 or more Consecutive Years';
+	DECLARE LV_PP_2 CONSTANT NVARCHAR(500) := 'Payment Arrangement with More Than 3 Instalments'; 
+	DECLARE LV_PP_3 CONSTANT NVARCHAR(500) := 'Payment Arrangement was Late';	
 	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Payment Arrangement';
 	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'monitor-payments';
    

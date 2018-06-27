@@ -10,9 +10,9 @@ BEGIN
        Get the events for Taxed -  One year or multiyear
    *************************************/
    
-	DECLARE LV_TAX_MUL NVARCHAR(500) := 'Multiple Year Assessments Issued';
+	DECLARE LV_TAX_MUL CONSTANT NVARCHAR(500) := 'Multiple Year Assessments Issued';
 --	DECLARE LV_TAX_ONE NVARCHAR(500) := 'Taxed - One year'; NOT NEEDED FOR NOW 
-	DECLARE LV_EVENT_GRP NVARCHAR(500) := 'Assessment';
+	DECLARE LV_EVENT_GRP CONSTANT NVARCHAR(500) := 'Assessment';
 	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'add-document';
    	
    	DECLARE LV_MAX_LASTSEQ_ID_TMY INTEGER;

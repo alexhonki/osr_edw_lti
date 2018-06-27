@@ -11,14 +11,14 @@ BEGIN
          Removed Exemption - If it's not an invalid Exemption but Current Date > ValidTo of the Exemption/Deduction Received
          Invalid Exemption - If it's an invalid Exemption(INVALID_EXMD = 'X')
    *************************************/
-	DECLARE LV_REC_CON_HOME NVARCHAR(500) := 'Received Exemption For Home' ;
-	DECLARE LV_REC_CON_PROD NVARCHAR(500) := 'Received Exemption For Primary Production';
-	DECLARE LV_REC_CON_OTH NVARCHAR(500)  := 'Received Exemption For Other Exemption';
-	DECLARE LV_REC_CON_SUBD NVARCHAR(500) := 'Received Exemption For Subdivider Discount';
-	DECLARE LV_REM_CON_HOME NVARCHAR(500) := 'Removed Exemption For Home';
-	DECLARE LV_REM_CON_PROD NVARCHAR(500) := 'Removed Exemption For Primary Production';
-	DECLARE LV_REM_CON_OTH NVARCHAR(500)  := 'Removed Exemption For Other Exemption';
-	DECLARE LV_REM_CON_SUBD NVARCHAR(500) := 'Removed Exemption For Subdivider Discount';
+	DECLARE LV_REC_CON_HOME CONSTANT NVARCHAR(500) := 'Received Exemption For Home' ;
+	DECLARE LV_REC_CON_PROD CONSTANT NVARCHAR(500) := 'Received Exemption For Primary Production';
+	DECLARE LV_REC_CON_OTH CONSTANT NVARCHAR(500)  := 'Received Exemption For Other Exemption';
+	DECLARE LV_REC_CON_SUBD CONSTANT NVARCHAR(500) := 'Received Exemption For Subdivider Discount';
+	DECLARE LV_REM_CON_HOME CONSTANT NVARCHAR(500) := 'Removed Exemption For Home';
+	DECLARE LV_REM_CON_PROD CONSTANT NVARCHAR(500) := 'Removed Exemption For Primary Production';
+	DECLARE LV_REM_CON_OTH CONSTANT NVARCHAR(500)  := 'Removed Exemption For Other Exemption';
+	DECLARE LV_REM_CON_SUBD CONSTANT NVARCHAR(500) := 'Removed Exemption For Subdivider Discount';
 	
 	DECLARE LV_CATEGORY NVARCHAR(100) := 'Exemption';
    

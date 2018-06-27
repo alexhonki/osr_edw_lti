@@ -9,14 +9,14 @@ BEGIN
    /*************************************
        Write your procedure logic 
    *************************************/
-   DECLARE LV_PYMNT_PLAN_1 NVARCHAR(500) := 'Payment Arrangement Created';
-   DECLARE LV_PYMNT_PLAN_2 NVARCHAR(500) := 'EPO created';
+   DECLARE LV_PYMNT_PLAN_1 CONSTANT NVARCHAR(500) := 'Payment Arrangement Created';
+   DECLARE LV_PYMNT_PLAN_2 CONSTANT NVARCHAR(500) := 'EPO created';
    
-   DECLARE LV_PYMNT_PLAN_1_GRP NVARCHAR(500) := 'Payment Arrangement';
-   DECLARE LV_PYMNT_PLAN_2_GRP NVARCHAR(500) := 'Payment Arrangement';
+   DECLARE LV_PYMNT_PLAN_1_GRP CONSTANT NVARCHAR(500) := 'Payment Arrangement';
+   DECLARE LV_PYMNT_PLAN_2_GRP CONSTANT NVARCHAR(500) := 'Payment Arrangement';
    
-   DECLARE LV_PYMNT_PLAN_1_ICON NVARCHAR(500) := 'monitor-payments';
-   DECLARE LV_PYMNT_PLAN_2_ICON NVARCHAR(500) := 'monitor-payments';
+   DECLARE LV_PYMNT_PLAN_1_ICON CONSTANT NVARCHAR(500) := 'monitor-payments';
+   DECLARE LV_PYMNT_PLAN_2_ICON CONSTANT NVARCHAR(500) := 'monitor-payments';
    
    DECLARE LV_PYMNT_PLAN_1_MAX_SEQ_ID INTEGER;
    DECLARE LV_PYMNT_PLAN_2_MAX_SEQ_ID INTEGER;

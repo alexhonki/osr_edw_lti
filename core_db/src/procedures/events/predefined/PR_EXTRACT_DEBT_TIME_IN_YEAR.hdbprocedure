@@ -9,9 +9,9 @@ BEGIN
    /*************************************
        Write your procedure logic  - INCOMPLETE
    *************************************/
-   DECLARE LV_HVNG_DEBT_1 NVARCHAR(500) := 'Having debts 2 times or more in a year' ;
-   DECLARE LV_HVNG_DEBT_2 NVARCHAR(500) := 'Having debts in the past 2 years';
-   DECLARE LV_HVNG_DEBT_3 NVARCHAR(500)  := 'Having debt >2 times in Past Years';
+   DECLARE  LV_HVNG_DEBT_1 CONSTANT NVARCHAR(500) := 'Having debts 2 times or more in a year' ;
+   DECLARE LV_HVNG_DEBT_2 CONSTANT NVARCHAR(500) := 'Having debts in the past 2 years';
+   DECLARE LV_HVNG_DEBT_3 CONSTANT NVARCHAR(500)  := 'Having debt >2 times in Past Years';
    DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Non-Payment';
    DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'unpaid-leave';
    

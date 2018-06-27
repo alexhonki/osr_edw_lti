@@ -11,7 +11,7 @@ BEGIN
        Write your procedure logic 
    *************************************/
 
-	DECLARE LV_LAND_VALUE NVARCHAR(500) := 'Moved to Lower Value Land';
+	DECLARE LV_LAND_VALUE CONSTANT NVARCHAR(500) := 'Moved to Lower Value Land';
 	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Land Related';
 	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'home';
 	
