@@ -10,29 +10,29 @@ BEGIN
    /*************************************
        Write your procedure logic 
    *************************************/
-	DECLARE LV_ASSESS_ORG_1 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount under $500';
-	DECLARE LV_ASSESS_ORG_2 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $500 - $1,000';
-	DECLARE LV_ASSESS_ORG_3 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $1,000 - $2,500' ;
-	DECLARE LV_ASSESS_ORG_4 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $2,500 - $5,000';
-	DECLARE LV_ASSESS_ORG_5 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $5,000 - $10,000';
-	DECLARE LV_ASSESS_ORG_6 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $10,000 - $25,000';
-	DECLARE LV_ASSESS_ORG_7 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $25,000 - $50,000' ;
-	DECLARE LV_ASSESS_ORG_8 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $50,000 - $100,000';
-	DECLARE LV_ASSESS_ORG_9 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $100,000 - $1M';
-	DECLARE LV_ASSESS_ORG_10 NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount over $1M';
+	DECLARE LV_ASSESS_ORG_1 CONSTANT  NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount under $500';
+	DECLARE LV_ASSESS_ORG_2 CONSTANT  NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $500 - $1,000';
+	DECLARE LV_ASSESS_ORG_3 CONSTANT  NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $1,000 - $2,500' ;
+	DECLARE LV_ASSESS_ORG_4 CONSTANT  NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $2,500 - $5,000';
+	DECLARE LV_ASSESS_ORG_5 CONSTANT  NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $5,000 - $10,000';
+	DECLARE LV_ASSESS_ORG_6 CONSTANT  NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $10,000 - $25,000';
+	DECLARE LV_ASSESS_ORG_7 CONSTANT  NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $25,000 - $50,000' ;
+	DECLARE LV_ASSESS_ORG_8 CONSTANT  NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $50,000 - $100,000';
+	DECLARE LV_ASSESS_ORG_9 CONSTANT  NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount $100,000 - $1M';
+	DECLARE LV_ASSESS_ORG_10 CONSTANT  NVARCHAR(500) := 'Assessment Posted - ORG - Tax Amount over $1M';
 	
-	DECLARE LV_ASSESS_EVENT_GRP NVARCHAR(500) := 'Assessment';
+	DECLARE LV_ASSESS_EVENT_GRP CONSTANT  NVARCHAR(500) := 'Assessment';
 	
-	DECLARE LV_ASSESS_IND_1 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount under $500';
-	DECLARE LV_ASSESS_IND_2 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $500 - $1,000';
-	DECLARE LV_ASSESS_IND_3 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $1,000 - $2,500' ;
-	DECLARE LV_ASSESS_IND_4 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $2,500 - $5,000';
-	DECLARE LV_ASSESS_IND_5 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $5,000 - $10,000';
-	DECLARE LV_ASSESS_IND_6 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $10,000 - $25,000';
-	DECLARE LV_ASSESS_IND_7 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $25,000 - $50,000' ;
-	DECLARE LV_ASSESS_IND_8 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $50,000 - $100,000';
-	DECLARE LV_ASSESS_IND_9 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $100,000 - $1M';
-	DECLARE LV_ASSESS_IND_10 NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount over $1M';
+	DECLARE LV_ASSESS_IND_1 CONSTANT  NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount under $500';
+	DECLARE LV_ASSESS_IND_2 CONSTANT  NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $500 - $1,000';
+	DECLARE LV_ASSESS_IND_3 CONSTANT  NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $1,000 - $2,500' ;
+	DECLARE LV_ASSESS_IND_4 CONSTANT  NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $2,500 - $5,000';
+	DECLARE LV_ASSESS_IND_5 CONSTANT  NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $5,000 - $10,000';
+	DECLARE LV_ASSESS_IND_6 CONSTANT  NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $10,000 - $25,000';
+	DECLARE LV_ASSESS_IND_7 CONSTANT  NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $25,000 - $50,000' ;
+	DECLARE LV_ASSESS_IND_8 CONSTANT  NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $50,000 - $100,000';
+	DECLARE LV_ASSESS_IND_9 CONSTANT  NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount $100,000 - $1M';
+	DECLARE LV_ASSESS_IND_10 CONSTANT  NVARCHAR(500) := 'Assessment Posted - IND - Tax Amount over $1M';
 	
 	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'add-document';
 	DECLARE LV_MAX_NEW_SEQ_ID INTEGER;
