@@ -1,4 +1,4 @@
-sap.ui.define([ "sap/fiori/cri/control/VisualFilterItem"],
+sap.ui.define(["sap/fiori/cri/control/VisualFilterItem"],
     /**
      * Heatmap Item
      * @param {sap.fiori.cri.control.VisualFilterItem} VisualFilterItem Base Visual Filter Item

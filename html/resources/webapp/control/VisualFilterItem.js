@@ -1,4 +1,4 @@
-sap.ui.define([ "sap/ui/core/Element"],
+sap.ui.define(["sap/ui/core/Element"],
     /**
      * Heatmap Item
      * @param {sap.ui.core.Element} Element UI5 Base Element
