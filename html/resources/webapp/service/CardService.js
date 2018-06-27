@@ -591,7 +591,7 @@ sap.ui.define([
 				
 				  Number.isFinite = Number.isFinite || function(value) {
     					return typeof value === "number" && isFinite(value);
-					}
+					};
 			
 	                var kpiData = oDataSetCopy[kpiIndex];
 	                //Set kpi to accumulated value of oCardConfig.kpi.valuePath
