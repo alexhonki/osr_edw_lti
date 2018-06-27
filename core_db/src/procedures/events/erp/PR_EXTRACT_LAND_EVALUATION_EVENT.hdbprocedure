@@ -18,9 +18,9 @@ BEGIN
     		NASTMNTTYPE	- Determination Type in Notice of Assessment(ANV  - LAST YEAR EVALUATION)
    *************************************/
    
-    DECLARE LV_LAND_EVAL NVARCHAR(500) := 'Receive new land evaluation';
-    DECLARE LV_LAND_EVAL_GRP NVARCHAR(500) := 'Land Related';
-    DECLARE LV_EVENT_ICON NVARCHAR(500) := 'home';
+    DECLARE LV_LAND_EVAL CONSTANT NVARCHAR(500) := 'Receive new land evaluation';
+    DECLARE LV_LAND_EVAL_GRP CONSTANT NVARCHAR(500) := 'Land Related';
+    DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'home';
     DECLARE LV_MAX_SEQ_ID INTEGER;
     DECLARE LV_NEW_MAX_SEQ_ID INTEGER;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -34,49 +34,43 @@ BEGIN
 	LT_CUST_EDITED = SELECT DISTINCT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
 							"db::app.Customer" on EXT_ID = ZZ_PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_MAX_SEQ_ID;
-	LT_CUST_ID_EDITED = select to_int(ZZ_PARTNER) as "CUST_ID" from :LT_CUST_EDITED;
+	LT_CUST_ID_EDITED = SELECT TO_INT(ZZ_PARTNER) AS "CUST_ID" FROM :LT_CUST_EDITED;
 	
 	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 		IV_EVENT_NAME=>:LV_LAND_EVAL,
 		IT_CUST=>:LT_CUST_ID_EDITED
    );
+
    	INSERT INTO "db::app.CustomerEvents"
    	
    	/*New Land Evaluations*/
-		   SELECT SAP.CUST_ID AS CUST_ID, 
-			null as EVENT_ID,
-			:LV_LAND_EVAL_GRP as EVENT_GROUP,
-			:LV_LAND_EVAL as EVENT_NAME,
-			CAST(ASSESSDATE as date) AS INIT_DATE, 
+		SELECT SAP.CUST_ID AS CUST_ID, 
+			NULL AS EVENT_ID, 
+			:LV_LAND_EVAL_GRP AS EVENT_GROUP,
+			:LV_LAND_EVAL AS EVENT_NAME,
+			CAST(ASSESSDATE AS DATE) AS INIT_DATE, 
 			NULL AS END_DATE, 
-			count(*) AS EVENT_VALUE, 
+			COUNT(*) AS EVENT_VALUE, 
 			:LV_LAND_EVAL AS DESCRIPTION, 
-			LEFT(ASSESSDATE,6)  as INIT_TS,
+			LEFT(ASSESSDATE,6) AS INIT_TS,
 			NULL AS END_TS
-		FROM (
-				SELECT a.ZZ_PARTNER, 
-					c.ASSESSDATE
 				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" AS a
-					INNER JOIN :LT_CUST_EDITED as delt ON a.ZZ_PARTNER = delt.ZZ_PARTNER
 					LEFT OUTER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNA" AS b
 					ON a.NANO = b.NANO
 					INNER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNAVAL" AS c
 					ON b.INTRENO = c.INTRENO
-						AND a.TAXYRSTARTDT = CONCAT(
-								YEAR(c.ASSESSDATE), 
-								'0701'
-							)
+						AND a.TAXYRSTARTDT = CONCAT(YEAR(c.ASSESSDATE), '0701')
+					INNER JOIN "db::app.Customer" AS SAP
+					ON SAP.EXT_ID = a.ZZ_PARTNER
 				WHERE NASTMNTTYPE != 'ANV'
-			) AS a
-			INNER JOIN "db::app.Customer" AS SAP
-			ON SAP.EXT_ID = a.ZZ_PARTNER
-		GROUP BY CUST_ID, 
-			ASSESSDATE; 
+				GROUP BY CUST_ID, 
+					ASSESSDATE;
+
 	
 	-- Generate event ID
     CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	
 	
-   	select max(Z_RUN_SEQ_ID) INTO LV_NEW_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV";
+   	SELECT MAX(Z_RUN_SEQ_ID) INTO LV_NEW_MAX_SEQ_ID FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV";
 	
 	UPDATE "db::adm.config.event.name" 
 		SET "ICON" = LV_EVENT_ICON, "PRIORITY" = null, "LATEST_EXTRACTED_SEQUENCE" = LV_NEW_MAX_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP

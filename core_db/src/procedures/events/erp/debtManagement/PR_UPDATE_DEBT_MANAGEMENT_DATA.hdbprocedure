@@ -15,17 +15,17 @@ BEGIN
 		
 		Check whether Registration Fee was charged to a Customer or not for Main transaction as 4050
    *************************************/
-	DECLARE LV_DEBT_FNL_DMD NVARCHAR(500) := 'Progressed Final Demand' ;
-	DECLARE LV_DEBT_LGL_LTR NVARCHAR(500) := 'Progressed Legal Letter';
-	DECLARE LV_DEBT_PRT_PMT NVARCHAR(500)  := 'Progressed Part Payment Letter';
-	DECLARE LV_DEBT_SEC_24 NVARCHAR(500) := 'Progressed Section 24';
-	DECLARE LV_DEBT_SRCH_UPD_24 NVARCHAR(500) := 'Progressed Search and Update Section 24';
-	DECLARE LV_DEBT_MRTG_LTR NVARCHAR(500) := 'Progressed Mortgagee Letter';
-	DECLARE LV_DEBT_CHRG_REG NVARCHAR(500) := 'Progressed Charge Registration- P011';
-	DECLARE LV_DEBT_MRTG_DMD NVARCHAR(500)  := 'Progressed Mortgagee Final Demand';
-	DECLARE LV_DEBT_PHN_LGL NVARCHAR(500) := 'Progressed Phone Call Pending Legal Proceedings';
-	DECLARE LV_DEBT_CRD_LSTNG NVARCHAR(500) := 'Progressed Refer for credit listing';
-	DECLARE LV_EVENT_GRP NVARCHAR(500) := 'Debt Management';
+	DECLARE LV_DEBT_FNL_DMD CONSTANT  NVARCHAR(500) := 'Progressed Final Demand' ;
+	DECLARE LV_DEBT_LGL_LTR CONSTANT  NVARCHAR(500) := 'Progressed Legal Letter';
+	DECLARE LV_DEBT_PRT_PMT CONSTANT  NVARCHAR(500)  := 'Progressed Part Payment Letter';
+	DECLARE LV_DEBT_SEC_24 CONSTANT  NVARCHAR(500) := 'Progressed Section 24';
+	DECLARE LV_DEBT_SRCH_UPD_24 CONSTANT  NVARCHAR(500) := 'Progressed Search and Update Section 24';
+	DECLARE LV_DEBT_MRTG_LTR CONSTANT  NVARCHAR(500) := 'Progressed Mortgagee Letter';
+	DECLARE LV_DEBT_CHRG_REG CONSTANT  NVARCHAR(500) := 'Progressed Charge Registration- P011';
+	DECLARE LV_DEBT_MRTG_DMD CONSTANT  NVARCHAR(500)  := 'Progressed Mortgagee Final Demand';
+	DECLARE LV_DEBT_PHN_LGL CONSTANT  NVARCHAR(500) := 'Progressed Phone Call Pending Legal Proceedings';
+	DECLARE LV_DEBT_CRD_LSTNG CONSTANT  NVARCHAR(500) := 'Progressed Refer for credit listing';
+	DECLARE LV_EVENT_GRP CONSTANT  NVARCHAR(500) := 'Debt Management';
 	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'sales-order';
 	
 	DECLARE LV_MAX_NEWSEQ_ID_FNL_DMD INTEGER;

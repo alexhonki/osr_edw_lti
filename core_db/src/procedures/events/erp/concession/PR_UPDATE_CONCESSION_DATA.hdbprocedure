@@ -15,15 +15,15 @@ BEGIN
 		
 		Check whether Registration Fee was charged to a Customer or not for Main transaction as 4050
 	*************************************/
-	DECLARE LV_DEBT_REC_CON_HOME NVARCHAR(500) := 'Received Exemption For Home' ;
-	DECLARE LV_DEBT_REC_CON_PROD NVARCHAR(500) := 'Received Exemption For Primary Production';
-	DECLARE LV_DEBT_REC_CON_OTH NVARCHAR(500)  := 'Received Exemption For Other Exemption';
-	DECLARE LV_DEBT_REC_CON_SUBD NVARCHAR(500) := 'Received Exemption For Subdivider Discount';
-	DECLARE LV_DEBT_REM_CON_HOME NVARCHAR(500) := 'Removed Exemption For Home';
-	DECLARE LV_DEBT_REM_CON_PROD NVARCHAR(500) := 'Removed Exemption For Primary Production';
-	DECLARE LV_DEBT_REM_CON_OTH NVARCHAR(500)  := 'Removed Exemption For Other Exemption';
-	DECLARE LV_DEBT_REM_CON_SUBD NVARCHAR(500) := 'Removed Exemption For Subdivider Discount';
-	DECLARE LV_EVENT_GRP NVARCHAR(500) := 'Exemption';
+	DECLARE LV_DEBT_REC_CON_HOME CONSTANT  NVARCHAR(500) := 'Received Exemption For Home' ;
+	DECLARE LV_DEBT_REC_CON_PROD CONSTANT  NVARCHAR(500) := 'Received Exemption For Primary Production';
+	DECLARE LV_DEBT_REC_CON_OTH CONSTANT  NVARCHAR(500)  := 'Received Exemption For Other Exemption';
+	DECLARE LV_DEBT_REC_CON_SUBD CONSTANT  NVARCHAR(500) := 'Received Exemption For Subdivider Discount';
+	DECLARE LV_DEBT_REM_CON_HOME CONSTANT  NVARCHAR(500) := 'Removed Exemption For Home';
+	DECLARE LV_DEBT_REM_CON_PROD CONSTANT  NVARCHAR(500) := 'Removed Exemption For Primary Production';
+	DECLARE LV_DEBT_REM_CON_OTH CONSTANT  NVARCHAR(500)  := 'Removed Exemption For Other Exemption';
+	DECLARE LV_DEBT_REM_CON_SUBD CONSTANT  NVARCHAR(500) := 'Removed Exemption For Subdivider Discount';
+	DECLARE LV_EVENT_GRP CONSTANT  NVARCHAR(500) := 'Exemption';
 	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'insurance-life';
 	
 	DECLARE LV_MAX_NEWSEQ_ID_REC_CON_HOME INTEGER;

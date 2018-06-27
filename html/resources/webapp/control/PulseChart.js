@@ -586,7 +586,7 @@ sap.ui.define([
                                     return "lightgrey";
                                     //inReaction = true;
                                 } 
-                            })
+                            });
                         }
                         return d.items.filter(function (el) { if(el.icon) {return(el.icon);} }).length === 1 ? "white" : colorScale(d.value);	
                     })
@@ -619,7 +619,7 @@ sap.ui.define([
                                     return "lightgrey";
                                     //inReaction = true;
                                 } 
-                            })
+                            });
                         }
                         return d.items.filter(function (el) { if(el.icon) {return(el.icon);} }).length > 0 ? "white" : colorScale(d.value);	
                     })
@@ -645,14 +645,14 @@ sap.ui.define([
                                     return "lightgrey";
                                     //inReaction = true;
                                 } 
-                            })
+                            });
                         }
                         return d.items.filter(function (el) { if(el.icon) {return(el.icon);} }).length > 0 ? "white" : colorScale(d.value);	
                     })
 /*                    .attr("r", function (d) {
                     	return d.items.filter(function (el) { if(el.icon) { return(el.icon );} }).length > 0 ? 12 : 6;
                     });*/
-                    .attr("r",6)
+                    .attr("r",6);
 
                 dataPoints.on("mouseover", function (d) {
                     var d3This = d3.select(this);

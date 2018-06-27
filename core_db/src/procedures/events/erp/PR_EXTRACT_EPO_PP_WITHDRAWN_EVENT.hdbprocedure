@@ -11,10 +11,10 @@ BEGIN
    *************************************/
    
    /*EPO Withdrawn*/
-    DECLARE LV_EPO_WITHDRAWN NVARCHAR(500) := 'EPO Withdrawn';
-	DECLARE LV_PP_WITHDRAWN NVARCHAR(500) := 'Instalment Plan Withdrawn';
-	DECLARE LV_EVENT_GRP NVARCHAR(500) := 'Payment Arrangement';
-	DECLARE LV_EVENT_ICON NVARCHAR(500) := 'monitor-payments';
+    DECLARE LV_EPO_WITHDRAWN CONSTANT NVARCHAR(500) := 'EPO Withdrawn';
+	DECLARE LV_PP_WITHDRAWN CONSTANT NVARCHAR(500) := 'Instalment Plan Withdrawn';
+	DECLARE LV_EVENT_GRP CONSTANT NVARCHAR(500) := 'Payment Arrangement';
+	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'monitor-payments';
 	
 	DECLARE LV_PP_WITH_MAX_SEQ_ID INTEGER;
 	DECLARE LV_EPO_WITH_MAX_SEQ_ID INTEGER;

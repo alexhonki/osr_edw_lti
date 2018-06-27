@@ -16,9 +16,9 @@ BEGIN
 		
 		Check whether Registration Fee was charged to a Customer or not for Main transaction as 4050
    *************************************/
-    DECLARE LV_CHRG_REG_DUNN NVARCHAR(500) := 'Progressed Charge Registration' ;
-    DECLARE LV_ASSESS_EVENT_GRP NVARCHAR(500) := 'Debt Management';
-    DECLARE LV_EVENT_ICON NVARCHAR(500) := 'sales-order';
+    DECLARE LV_CHRG_REG_DUNN CONSTANT NVARCHAR(500) := 'Progressed Charge Registration' ;
+    DECLARE LV_ASSESS_EVENT_GRP CONSTANT NVARCHAR(500) := 'Debt Management';
+    DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'sales-order';
     
     DECLARE LV_TEST INTEGER;
     DECLARE LV_MAX_SEQ_ID INTEGER;

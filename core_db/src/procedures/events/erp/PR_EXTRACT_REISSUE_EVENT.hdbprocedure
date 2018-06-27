@@ -18,7 +18,7 @@ BEGIN
     == Left Join with DFKKOP only helps in fetching GPART which further has Inner Join with app.Customer to only get the results for Active Taxpayers
    *************************************/
    
-   	DECLARE LV_REISSUE NVARCHAR(500) := 'Reissue Assessment';
+   	DECLARE LV_REISSUE CONSTANT NVARCHAR(500) := 'Reissue Assessment';
    	DECLARE LV_REISSUE_GROUP CONSTANT NVARCHAR(500) := 'Reissue';
    	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'sys-first-page';
    	DECLARE LV_MAX_SEQ_ID INTEGER;

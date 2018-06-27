@@ -11,9 +11,9 @@ BEGIN
        Write your procedure logic 
    *************************************/
 
-	DECLARE LV_LAND_PARCEL_1 NVARCHAR(500) := 'Decrease in Number of Parcels Owned by 10 or more';
-	DECLARE LV_LAND_PARCEL_2 NVARCHAR(500) := 'Increase in Number of Parcels Owned by 2 or more';
-	DECLARE LV_LAND_PARCEL_3 NVARCHAR(500) := 'Increase in Number of Parcels Owned by 8 or more';
+	DECLARE LV_LAND_PARCEL_1 CONSTANT NVARCHAR(500) := 'Decrease in Number of Parcels Owned by 10 or more';
+	DECLARE LV_LAND_PARCEL_2 CONSTANT  NVARCHAR(500) := 'Increase in Number of Parcels Owned by 2 or more';
+	DECLARE LV_LAND_PARCEL_3 CONSTANT NVARCHAR(500) := 'Increase in Number of Parcels Owned by 8 or more';
 	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Land Related';
 	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'home';
 	

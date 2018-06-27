@@ -9,12 +9,12 @@ BEGIN
    /*************************************
        Write your procedure logic 
    *************************************/
-	DECLARE LV_PYMNT_FULF_1 NVARCHAR(500) := 'EPO Fulfilled';
-	DECLARE LV_PYMNT_FULF_2 NVARCHAR(500) := 'Payment Arrangement Fulfilled';
+	DECLARE LV_PYMNT_FULF_1 CONSTANT NVARCHAR(500) := 'EPO Fulfilled';
+	DECLARE LV_PYMNT_FULF_2 CONSTANT NVARCHAR(500) := 'Payment Arrangement Fulfilled';
    
-	DECLARE LV_PYMNT_FULF_1_GRP NVARCHAR(500) := 'Payment';
-	DECLARE LV_PYMNT_FULF_2_GRP NVARCHAR(500) := 'Payment';
-	DECLARE LV_EVENT_ICON NVARCHAR(500) := 'simple-payment';
+	DECLARE LV_PYMNT_FULF_1_GRP CONSTANT NVARCHAR(500) := 'Payment';
+	DECLARE LV_PYMNT_FULF_2_GRP CONSTANT NVARCHAR(500) := 'Payment';
+	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'simple-payment';
 	
 	DECLARE LV_PYMNT_FULF1_MAX_SEQ_ID INTEGER;
 	DECLARE LV_PYMNT_FULF2_MAX_SEQ_ID INTEGER;

@@ -10,12 +10,12 @@ BEGIN
        Write your procedure logic 
    *************************************/
    
-   	DECLARE LV_MI NVARCHAR(500) := 'Default payment arrangement';
-	DECLARE LV_MI_1 NVARCHAR(500) := '1-3 times missing instalment payment';
-	DECLARE LV_MI_2 NVARCHAR(500) := '>3 times missing instalment payment';
-	DECLARE LV_MI_3 NVARCHAR(500) := '>6 times missing instalment payment';
-	DECLARE LV_MI_4 NVARCHAR(500) := '>9 times missing instalment payment';
-	DECLARE LV_MI_5 NVARCHAR(500) := '>12 times missing instalment payment';
+   	DECLARE LV_MI CONSTANT NVARCHAR(500) := 'Default payment arrangement';
+	DECLARE LV_MI_1 CONSTANT NVARCHAR(500) := '1-3 times missing instalment payment';
+	DECLARE LV_MI_2 CONSTANT NVARCHAR(500) := '>3 times missing instalment payment';
+	DECLARE LV_MI_3 CONSTANT NVARCHAR(500) := '>6 times missing instalment payment';
+	DECLARE LV_MI_4 CONSTANT NVARCHAR(500) := '>9 times missing instalment payment';
+	DECLARE LV_MI_5 CONSTANT NVARCHAR(500) := '>12 times missing instalment payment';
 	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Non-Payment';
 	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'unpaid-leave';
 

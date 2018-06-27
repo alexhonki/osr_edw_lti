@@ -11,8 +11,8 @@ BEGIN
        Write your procedure logic 
    *************************************/
    
-   	DECLARE LV_LAND_VAL_D NVARCHAR(500) := 'Decrease in Land Valuation by 20%';
-   	DECLARE LV_LAND_VAL_I NVARCHAR(500) := 'Increase in Land Valuation by 30%';
+   	DECLARE LV_LAND_VAL_D CONSTANT NVARCHAR(500) := 'Decrease in Land Valuation by 20%';
+   	DECLARE LV_LAND_VAL_I CONSTANT NVARCHAR(500) := 'Increase in Land Valuation by 30%';
    	DECLARE LV_EVENT_GROUP CONSTANT NVARCHAR(500) := 'Land Related';
    	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'home';
    	
