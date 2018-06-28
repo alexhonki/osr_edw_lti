@@ -13,7 +13,7 @@
                 "categoryPath":"EVENT_NAME",
                 "categoryLabel":"Events",
                 "valuePath":"CUST_COUNT",
-                "valueLabel":"Debtors"
+                "valueLabel":"Impact"
             },
             "actions": [{
                 "label":"Show More",
@@ -54,11 +54,11 @@
         },
         {
             "id": "ReactionRate",
-            "title": "Debtor Rate",
+            "title": "Overdue Client Rate",
             "entity": "TrendParameters",
             "sorters":[{"path":"TIME_SEGMENT"}],
             "subtitle": {
-            	"prefix": "Overall Debtor Rate",
+            	"prefix": "Overall Rate",
                 "path": "TIME_SEGMENT"
             },
             "kpi": {
@@ -109,7 +109,7 @@
         },
         {
             "id": "ChurnForecast",
-            "title": "Debtor Forecast",
+            "title": "Customers At Risk",
             "entity": "AtRiskCustomersTrendParameters",
             "inputParameters": ["IP_FILTER"],
             "filters":[{"path":"BUCKET_ID", "value":"CUSTOMER_RISK"}],

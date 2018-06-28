@@ -1,0 +1,38 @@
+FUNCTION "functions.utils::TF_GET_AGE_CUST_ATTR" ( 
+     IN AGE INT
+    
+  )     RETURNS 
+       AGEGROUP NVARCHAR(100)
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+/*****************************  
+       Write your function logic 
+ *****************************/ 
+ 
+				    	IF AGE>=0 and AGE<=20  THEN 
+				    		AGEGROUP =  '0-20' ;
+						ELSEIF   AGE>20 and AGE<=25  THEN  
+							AGEGROUP = '21-25';
+						ELSEIF   AGE>25 and AGE<=30  THEN 
+							AGEGROUP =  '26-30';
+						ELSEIF   AGE>30 and AGE<=35  THEN 
+							AGEGROUP =  '31-35';
+						ELSEIF   AGE>35 and AGE<=40  THEN 
+							AGEGROUP =  '36-40';
+						ELSEIF   AGE>40 and AGE<=45  THEN 
+							AGEGROUP =  '41-45';
+						ELSEIF   AGE>45 and AGE<=50  THEN 
+							AGEGROUP =  '46-50';
+						ELSEIF   AGE>50 and AGE<=55  THEN 
+							AGEGROUP =  '51-55';
+						ELSEIF   AGE>55 and AGE<=60  THEN 
+							AGEGROUP =  '56-60';
+						ELSEIF   AGE>60 and  AGE<=75  THEN
+							AGEGROUP =  '61-75'; 
+						ELSEIF   AGE>75 THEN 
+							AGEGROUP =  '75 PLUS'; 
+					    ELSE 
+					    	AGEGROUP = 'NOT APPLICABLE';
+						END IF;
+END;

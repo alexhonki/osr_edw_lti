@@ -25,9 +25,9 @@ BEGIN
 		LV_LAST_MAX_SEQ_ID = 0;
 	END IF;
 	IF LV_LAST_MAX_SEQ_ID = 0 THEN
-	LT_CUST_EDITED = SELECT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV";
+	LT_CUST_EDITED = SELECT DISTINCT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV";
 	ELSE
-	LT_CUST_EDITED = SELECT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
+	LT_CUST_EDITED = SELECT DISTINCT ZZ_PARTNER FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" inner join
 							"db::app.Customer" on EXT_ID = ZZ_PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAST_MAX_SEQ_ID;
 	LT_CUST_ID_EDITED = select to_int(ZZ_PARTNER) as "CUST_ID" from :LT_CUST_EDITED;
@@ -35,7 +35,7 @@ BEGIN
 	END IF;
 	
 	
-   LT_RESV_CUSTOMERS =   SELECT TO_BIGINT("ZZ_PARTNER") AS CUST_ID, 
+   LT_RESV_CUSTOMERS =   /*SELECT TO_BIGINT("ZZ_PARTNER") AS CUST_ID, 
 						  ZZ_PARTNER AS EXT_ID,
 						  TAXYRSTARTDT,
 						  TAXYRENDDT,
@@ -47,28 +47,31 @@ BEGIN
 						  PARCELCNT,
 						  TAXAMOUNT
 						  FROM
-							(SELECT A."ZZ_PARTNER",
+							(*/
+							SELECT TO_BIGINT(A."ZZ_PARTNER") AS CUST_ID,
+							 A."ZZ_PARTNER" AS EXT_ID,
 							 -- MIN(TO_DATE(A."TAXYRSTARTDT")) AS "INIT_DATE",
 							 --MAX(TO_DATE(A."TAXYRENDDT")) AS "END_DATE",
-							  TO_TIMESTAMP(A."TAXYRSTARTDT") AS "TAXYRSTARTDT", 
-							  TO_TIMESTAMP(A."TAXYRENDDT") AS "TAXYRENDDT",
-							  TO_DATE(C."BIRTHDT") AS "BIRTHDT",
+							  TO_TIMESTAMP(A."TAXYRSTARTDT") AS "INIT_DATE", 
+							  TO_TIMESTAMP(A."TAXYRENDDT") AS "END_DATE",
 							  A."INDIVORG" AS "INDIVORG",
 							  A."TOTBPRELVNTVAL" AS "TOTBPRELVNTVAL",
+							  TO_DATE(C."BIRTHDT") AS "BIRTHDT",
 							  A."PARCELCNT" AS "PARCELCNT", 
 							  A."TAXAMOUNT" AS "TAXAMOUNT"
 							  FROM  "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" AS A 
 							  INNER JOIN "db::app.Customer" AS B ON B.EXT_ID = A.ZZ_PARTNER
 							  INNER JOIN "osr.edw.staging.md.rms.proxy.synonym::CV_BUT000" AS C ON A.ZZ_PARTNER = C.PARTNER
-							  WHERE  A.TAXAMOUNT > 0 AND A."ZZ_PARTNER" IN (SELECT ZZ_PARTNER FROM :LT_CUST_EDITED)
+							  INNER JOIN :LT_CUST_EDITED DELT  ON DELT.ZZ_PARTNER = C.PARTNER
+							  WHERE  A.TAXAMOUNT > 0 ;
 							 -- GROUP BY A.ZZ_PARTNER,C."BIRTHDT" 
-							  ) ;
+							--  ) ;
 							  
 							  
 	
 	LT_AGE_TEMP = SELECT CUST_ID, 
-						  MIN(TO_DATE(TAXYRSTARTDT)) AS "INIT_DATE",
-						  MAX(TO_DATE(TAXYRENDDT)) AS "END_DATE",
+						  MIN(TO_DATE(INIT_DATE)) AS "INIT_DATE",
+						  MAX(TO_DATE(END_DATE)) AS "END_DATE",
 						  BIRTHDT
 						  FROM :LT_RESV_CUSTOMERS
 						  GROUP BY CUST_ID,BIRTHDT;
@@ -89,36 +92,23 @@ BEGIN
 						  GROUP BY CUST_ID,TOTBPRELVNTVAL;*/
 	
 	LT_BP_TAX_TEMP = SELECT CUST_ID, 
-						  MIN(TO_DATE(TAXYRSTARTDT)) AS "INIT_DATE",
-						  MAX(TO_DATE(TAXYRENDDT)) AS "END_DATE",
+						  MIN(TO_DATE(INIT_DATE)) AS "INIT_DATE",
+						  MAX(TO_DATE(END_DATE)) AS "END_DATE",
 						  TAXAMOUNT
 						  FROM :LT_RESV_CUSTOMERS
 						  GROUP BY CUST_ID,TAXAMOUNT;					  
     
     --Age Group Attribute
     --End Date from Customer table or it should be Current Time Stamp??
-    LT_CUSTOMER_AGE_GROUP = SELECT
-    						CUST_ID,INIT_DATE,END_DATE,
-    						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
+    LT_CUSTOMER_AGE_GROUP =  SELECT CUST_ID,INIT_DATE,END_DATE,
+						    ((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
     						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
-						    CASE WHEN ("AGE">=0 and "AGE"<=20 ) THEN '0-20' 
-						    WHEN ("AGE">20 and "AGE"<=25 ) THEN '21-25'
-						    WHEN ("AGE">25 and "AGE"<=30 ) THEN '26-30'
-						    WHEN ("AGE">30 and "AGE"<=35 ) THEN '31-35'
-						    WHEN ("AGE">35 and "AGE"<=40 ) THEN '36-40'
-						    WHEN ("AGE">40 and "AGE"<=45 ) THEN '41-45'
-						    WHEN ("AGE">45 and "AGE"<=50 ) THEN '46-50'
-						    WHEN ("AGE">50 and "AGE"<=55 ) THEN '51-55'
-						    WHEN ("AGE">55 and "AGE"<=60 ) THEN '56-60'
-						    WHEN ("AGE">60 and  "AGE"<=75 ) THEN '61-75' 
-						    WHEN ("AGE">75                ) THEN '75 PLUS' 
-						    ELSE 'NOT APPLICABLE' END AS "ATTRIBUTE_VALUE",
-						    'AGE_GROUP' AS "ATTRIBUTE_NAME"
-						    FROM
-						    (SELECT CUST_ID,INIT_DATE,END_DATE,
-						    ROUND(DAYS_BETWEEN("BIRTHDT","END_DATE")/365,1) "AGE" 
+						    "functions.utils::TF_GET_AGE_CUST_ATTR"( ROUND(DAYS_BETWEEN("BIRTHDT","END_DATE")/365,1)).AGEGROUP AS "ATTRIBUTE_VALUE",
+						    'AGE_GROUP' AS "ATTRIBUTE_NAME" 
 						    FROM :LT_AGE_TEMP 
-						    WHERE BIRTHDT > '0000-00-00' ); 
+						    WHERE BIRTHDT > '0000-00-00' ; 
+						    
+						   
 						    
 	--Partner Type
 	LT_PARTNER_TYPE     = SELECT 
@@ -242,17 +232,24 @@ BEGIN
 								GROUP BY PARTNER
 						) c
 						on a.PARTNER=c.PARTNER AND a.ADR_PRIORITY=c.ADR_PRIORITY;
-	LT_PPR_CODE =		SELECT
+	LT_PPR_CODE =		/*SELECT
     						CUST_ID,INIT_DATE,END_DATE,
     						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
     						((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
     						POST_CODE1 AS "ATTRIBUTE_VALUE",
     						'PPR_POSTCODE' AS "ATTRIBUTE_NAME"
-    						FROM (
-    						SELECT  TO_INT(PARTNER) AS CUST_ID ,ADR_KIND, ADR_PRIORITY,to_timestamp(VALID_FROM) as INIT_DATE,to_timestamp(VALID_TO) as END_DATE,a.ADDRNUMBER,POST_CODE1 FROM  :ADR_PRIORITY a
+    						FROM (*/
+    						SELECT  TO_INT(PARTNER) AS CUST_ID ,
+    						TO_TIMESTAMP(VALID_FROM) as INIT_DATE,
+    						TO_TIMESTAMP(VALID_TO) as END_DATE,
+    						((YEAR(TO_TIMESTAMP(VALID_FROM))*100) + MONTH(TO_TIMESTAMP(VALID_FROM))) AS INIT_TS,
+    						((YEAR(TO_TIMESTAMP(VALID_FROM))*100) + MONTH(TO_TIMESTAMP(VALID_FROM))) AS END_TS,
+    						POST_CODE1 AS "ATTRIBUTE_VALUE",
+    						'PPR_POSTCODE' AS "ATTRIBUTE_NAME"
+    						FROM  :ADR_PRIORITY a
 							INNER JOIN "osr.edw.staging.md.rms.proxy.synonym::CV_ADRC" b
-							on a.ADDRNUMBER=b.ADDRNUMBER
-    						);
+							on a.ADDRNUMBER=b.ADDRNUMBER;
+    						--);
 /*	LT_PPR_CODE =     SELECT
     						CUST_ID,INIT_DATE,END_DATE,
     						((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
