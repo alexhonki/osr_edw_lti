@@ -55,7 +55,7 @@
         {
             "id": "ReactionRate",
             "title": "Overdue Client Rate",
-            "entity": "TrendParameters",
+            "entity": "TrendRateParameters",
             "sorters":[{"path":"TIME_SEGMENT"}],
             "subtitle": {
             	"prefix": "Overall Rate",
