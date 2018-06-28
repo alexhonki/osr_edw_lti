@@ -668,14 +668,14 @@ sap.ui.define([
 
 				var sEventName = this.getSearchFilterValue();
 				if (sEventName) {
-					var sFilterString = encodeURIComponent("'" + sEventName.toLowerCase() + "'");
+					var sFilterString = "'" + sEventName.toLowerCase() + "'";
 					var oSearchFilter = new Filter("tolower(EVENT_NAME)", FilterOperator.Contains, sFilterString);
 					ODataFilters.push(oSearchFilter);
 				}
 
 				var sGroup = FilterService.getFilterValue("EventGroup", this.EventSelectionStorageKey) || this.AllCategoriesKey;
 
-				if (sGroup != this.AllCategoriesKey) {
+				if (sGroup !== this.AllCategoriesKey) {
 					ODataFilters.push(new Filter("EVENT_GROUP", FilterOperator.EQ, sGroup));
 				}
 
