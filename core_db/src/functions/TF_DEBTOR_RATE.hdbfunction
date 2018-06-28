@@ -1,0 +1,60 @@
+FUNCTION "functions::TF_DEBTOR_RATE" 
+	(
+		IM_FILTER NVARCHAR(5000) default '',
+		IM_FROM	  VARCHAR(6),
+		IM_TO     VARCHAR(6),
+		IM_REACTION_TYPE VARCHAR(200) default ''
+	)
+       RETURNS TABLE (
+		"TIME_SEGMENT" 				INT,
+		"RATE" 		DOUBLE
+	) 
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+	
+	-- Default Reaction Type
+	DECLARE LV_REACTION_TYPE 	VARCHAR(200);
+	
+	-- Get the Reaction type configured ---> needs to be extended in future to support multiple
+	IF :IM_REACTION_TYPE IS NULL OR LENGTH(:IM_REACTION_TYPE) = 0 THEN
+		CALL "procedures.utils::PR_CONF_GET_REACTION_TYPE"(:LV_REACTION_TYPE);
+	ELSE
+		LV_REACTION_TYPE := :IM_REACTION_TYPE;
+	END IF;
+
+
+	-- FIltered data
+	IF length(:IM_FILTER) > 0 AND :IM_FILTER IS NOT NULL THEN
+		RETURN select 	"TIME_SEGMENT",
+							"RATE"
+							from "functions::TF_DEBTOR_RATE_FILTER"(:IM_FILTER,:IM_FROM,:IM_TO,:LV_REACTION_TYPE); 
+	
+	ELSE
+
+
+		RETURN  SELECT 
+					"TIME_SEGMENT",
+					"TOTAL_REACT_CUSTOMERS"/"TOTAL_DUE_CUSTOMERS" AS "RATE"
+					FROM
+						( 
+							select 
+								"TIME_SEGMENT", 
+								sum("TOTAL_REACT_CUSTOMERS") "TOTAL_REACT_CUSTOMERS", 
+								sum("TOTAL_DUE_CUSTOMERS") "TOTAL_DUE_CUSTOMERS" 
+								from
+								(select "INIT_TS" "TIME_SEGMENT", COUNT(DISTINCT("CUST_ID")) "TOTAL_REACT_CUSTOMERS", 0 "TOTAL_DUE_CUSTOMERS"
+										FROM "db::app.CustomerReactions"
+										WHERE "REACTION_TYPE" = :LV_REACTION_TYPE
+										  AND "INIT_TS" <= TO_INT(:IM_TO) AND "INIT_TS" >= TO_INT(:IM_FROM)
+										GROUP BY "INIT_TS"
+								UNION 		
+								select "INIT_TIME_SEGMENT" "TIME_SEGMENT", 0 "TOTAL_REACT_CUSTOMERS" ,COUNT(DISTINCT("CUST_ID")) "TOTAL_DUE_CUSTOMERS"
+									from "db::app.CustomerValues" 
+									where "INIT_TIME_SEGMENT" <= TO_INT(:IM_TO) AND "INIT_TIME_SEGMENT" >= TO_INT(:IM_FROM)
+									GROUP BY "INIT_TIME_SEGMENT"
+								) 
+							GROUP BY "TIME_SEGMENT" 
+						);
+	END IF;
+END;
