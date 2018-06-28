@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" id="models.apps.trend::CV_OUTSTANDING_REVE" applyPrivilegeType="NONE" dataCategory="DIMENSION" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_OUTSTANDING_REVENUE"/>
+<localVariables>
+  <variable id="IP_FILTER" parameter="true">
+    <descriptions defaultDescription="IP_FILTER"/>
+    <variableProperties datatype="NVARCHAR" length="5000" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_FROM" parameter="true">
+    <descriptions defaultDescription="From Year/Month"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_UTIL_GET_PREDICTED_FILTER_FROM_TIME_SEGMENT</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+  <variable id="IP_TO" parameter="true">
+    <descriptions defaultDescription="IP_TO"/>
+    <variableProperties mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="Single"/>
+      <derivationRule inputEnabled="true">
+        <resourceUri>procedures.utils::PR_UTIL_GET_PREDICTED_FILTER_TO_TIME_SEGMENT</resourceUri>
+      </derivationRule>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_OUTSTANDING_REVENUE">
+    <targetVariable name="IM_FILTER" resourceUri="functions::TF_OUTSTANDING_REVENUE"/>
+    <localVariable>IP_FILTER</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_OUTSTANDING_REVENUE">
+    <targetVariable name="IM_FROM" resourceUri="functions::TF_OUTSTANDING_REVENUE"/>
+    <localVariable>IP_FROM</localVariable>
+  </mapping>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_OUTSTANDING_REVENUE">
+    <targetVariable name="IM_TO" resourceUri="functions::TF_OUTSTANDING_REVENUE"/>
+    <localVariable>IP_TO</localVariable>
+  </mapping>
+</variableMappings>
+<dataSources>
+  <DataSource id="functions::TF_OUTSTANDING_REVENUE" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_OUTSTANDING_REVENUE</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews/>
+<logicalModel id="functions::TF_OUTSTANDING_REVENUE">
+  <attributes>
+    <attribute id="TIME_SEGMENT" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="TIME_SEGMENT"/>
+      <keyMapping columnObjectName="TF_OUTSTANDING_REVENUE" columnName="TIME_SEGMENT"/>
+    </attribute>
+    <attribute id="CURRENCY" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CURRENCY"/>
+      <keyMapping columnObjectName="TF_OUTSTANDING_REVENUE" columnName="CURRENCY"/>
+    </attribute>
+    <attribute id="INCOME_LOSS" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="INCOME_LOSS"/>
+      <keyMapping columnObjectName="TF_OUTSTANDING_REVENUE" columnName="INCOME_LOSS"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/></logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="82" y="105"/>
+    
+      <rectangleSize width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>
