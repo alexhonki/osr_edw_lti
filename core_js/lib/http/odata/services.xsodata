@@ -24,10 +24,22 @@ service namespace "com.odata.v2.sap.cr" {
  	// T R E N D S
  	//------------------------------- 
 	
-	"models.apps.trend::CV_DASHBOARD_TREND" as "Trend" 
+	//"models.apps.trend::CV_DASHBOARD_TREND" as "Trend" 
+	//	key generate local "GEN_ID" 
+	//	aggregates always 
+	//	parameters via entity;
+	// Trend - Debtor rate	
+	"models.apps.trend::CV_DEBTOR_RATE" as "TrendRate" 
 		key generate local "GEN_ID" 
 		aggregates always 
 		parameters via entity;
+	
+	// Trend - Outstanding Revenue	
+	"models.apps.trend::CV_OUTSTANDING_REVENUE" as "Trend" 
+		key generate local "GEN_ID" 
+		aggregates always 
+		parameters via entity;
+		
 	// Trend - Top Events for reacted customers
 //	"models.apps.customer::CV_CHURNED_LAST_N_MONTHS" as "TopEvents" 
 	"models.apps.customer::CV_TOP_EVENTS" as "TopEvents" 
