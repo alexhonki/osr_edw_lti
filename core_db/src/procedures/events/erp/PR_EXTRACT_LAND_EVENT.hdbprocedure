@@ -35,23 +35,23 @@ BEGIN
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_LAND_ACQUIRED);
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_LAND_LOST);
 	
-	SELECT OUT_MAX_SEQ_ID into LV_LAND_ACQ_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_LAND_ACQUIRED);
-	SELECT OUT_MAX_SEQ_ID into LV_LAND_LOST_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_LAND_LOST);
+	SELECT OUT_MAX_SEQ_ID into LV_LAND_ACQ_MAX_SEQ_ID FROM "functions::TF_GET_MAX_SEQID_EVENT"(:LV_LAND_ACQUIRED);
+	SELECT OUT_MAX_SEQ_ID into LV_LAND_LOST_MAX_SEQ_ID FROM "functions::TF_GET_MAX_SEQID_EVENT"(:LV_LAND_LOST);
 	IF :LV_LAND_ACQ_MAX_SEQ_ID IS NULL THEN 
 		SELECT 0 INTO LV_LAND_ACQ_MAX_SEQ_ID FROM "synonyms::dummy";
 	END IF;
 	IF :LV_LAND_LOST_MAX_SEQ_ID IS NULL THEN 
 		SELECT 0 INTO LV_LAND_LOST_MAX_SEQ_ID FROM "synonyms::dummy";
 	END IF;
-	LT_CUST_EDITED_LAND_ACQ = SELECT DISTINCT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" inner join
-							"db::app.Customer" on EXT_ID = PARTNER WHERE 
+	LT_CUST_EDITED_LAND_ACQ = SELECT DISTINCT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL"  INNER JOIN 
+							"db::app.Customer" ON EXT_ID = PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAND_ACQ_MAX_SEQ_ID;
-	LT_CUST_ID_EDITED_LAND_ACQ = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_LAND_ACQ;
+	LT_CUST_ID_EDITED_LAND_ACQ = SELECT  TO_INT (PARTNER) AS "CUST_ID" FROM :LT_CUST_EDITED_LAND_ACQ;
 	
-	LT_CUST_EDITED_LAND_LOST = SELECT DISTINCT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" inner join
-							"db::app.Customer" on EXT_ID = PARTNER WHERE 
+	LT_CUST_EDITED_LAND_LOST = SELECT DISTINCT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL"  INNER JOIN 
+							"db::app.Customer" ON EXT_ID = PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAND_LOST_MAX_SEQ_ID;
-	LT_CUST_ID_EDITED_LAND_LOST = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_LAND_LOST;
+LT_CUST_ID_EDITED_LAND_LOST = SELECT  TO_INT (PARTNER) AS "CUST_ID" FROM :LT_CUST_EDITED_LAND_LOST;
 	
 	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 		IV_EVENT_NAME=>:LV_LAND_ACQUIRED,
@@ -61,71 +61,72 @@ BEGIN
 		IV_EVENT_NAME=>:LV_LAND_LOST,
 		IT_CUST=>:LT_CUST_ID_EDITED_LAND_LOST
    );
-   LT_CUST_ID = SELECT PARTNER as CUST_ID FROM :LT_CUST_EDITED_LAND_ACQ UNION SELECT PARTNER as CUST_ID FROM :LT_CUST_EDITED_LAND_LOST;
+   LT_CUST_ID = SELECT PARTNER AS CUST_ID FROM :LT_CUST_EDITED_LAND_ACQ UNION SELECT PARTNER AS CUST_ID FROM :LT_CUST_EDITED_LAND_LOST;
 	/*
-	LEAD - Will get the Next Value in the list as Partitioned by PARTNER , INTRENO and order By VALIDFROM
-	LAG - Will get previous value in the list as Partitioned by PARTNER , INTRENO and Order by VALIDFROM
+	LEAD - Will get the Next Value in the list AS Partitioned by PARTNER , INTRENO and order By VALIDFROM
+	LAG - Will get previous value in the list AS Partitioned by PARTNER , INTRENO and Order by VALIDFROM
 	*/
-   	V_VIBPOBJREL = 
+   	LT_VIBPOBJREL = 
    	SELECT *
-   	, DAYS_BETWEEN(VALIDTO,LEAD(VALIDFROM) OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)) as DAYDIFF_LEAD
-   	, DAYS_BETWEEN(LAG(VALIDTO)  OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC) , VALIDFROM) as DAYDIFF_LAG
+   	, DAYS_BETWEEN(VALIDTO,LEAD(VALIDFROM) OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)) AS DAYDIFF_LEAD
+   	, DAYS_BETWEEN(LAG(VALIDTO)  OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC) , VALIDFROM) AS DAYDIFF_LAG
    	FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" AS a
-   	INNER JOIN :LT_CUST_ID as delt ON a.PARTNER = delt.CUST_ID
+   	INNER JOIN :LT_CUST_ID AS delt ON a.PARTNER = delt.CUST_ID
    	WHERE ROLE='TR0800';
 
 	/*Acquired Land*/
 	/*=========================================================================================================================
-	   	If a Land is acquired then it will always have Valid From entry (Only Entry For Customer/Parcel )- Straight Forward scenario - DAYDIFF_LAG will be null
+	   	If a Land is acquired then it will always have Valid From entry (Only Entry For Customer/Parcel )- Straight Forward scenario - DAYDIFF_LAG will be NULL
     		as there will not be any preceeding entry for that Customer/Parcel.
-    	If a land is being Owned by multiple Owners on Share Percent basis.
+    	If a land is being Owned by multiple Owners ON Share Percent basis.
     			Then we need to check For Per Customer Per Parcel, if ValidFrom of current entry and ValidTo of Previous entry is same or not 
     				If Yes, then land acquisition hasn't happened.
     				If No, then Land acquisition has happened again - DAYDIFF_LAG > 0
 	=========================================================================================================================*/
    	INSERT INTO "db::app.CustomerEvents"
-	select
-	c.CUST_ID as CUST_ID,
-	null as EVENT_ID,
-	:LV_LAND_ACQUIRED_GRP as EVENT_GROUP,
-	:LV_LAND_ACQUIRED as EVENT_NAME,
-	(CASE WHEN a.VALIDFROM<=0 THEN CAST(DERF as date) 
-	ELSE CAST(a.VALIDFROM as date) END) as INIT_DATE,
-	NULL as END_DATE,
-	1 as EVENT_VALUE,
-	:LV_LAND_ACQUIRED as DESCRIPTION,
+	
+	(select
+	c.CUST_ID AS CUST_ID,
+	NULL AS EVENT_ID,
+	:LV_LAND_ACQUIRED_GRP AS EVENT_GROUP,
+	:LV_LAND_ACQUIRED AS EVENT_NAME,
+	(CASE WHEN a.VALIDFROM<=0 THEN CAST(DERF AS date) 
+	ELSE CAST(a.VALIDFROM AS date) END) AS INIT_DATE,
+	NULL AS END_DATE,
+	1 AS EVENT_VALUE,
+	:LV_LAND_ACQUIRED AS DESCRIPTION,
 	(CASE WHEN a.VALIDFROM<=0 THEN LEFT(DERF,6) 
-	ELSE LEFT(a.VALIDFROM,6) END) as INIT_TS,
-	NULL  as END_TS
-	from :V_VIBPOBJREL a
-	INNER JOIN "db::app.Customer" c on c.EXT_ID = a.PARTNER
-	LEFT JOIN "osr.edw.staging.md.rms.proxy.synonym::CV_VILMPL" b on a.INTRENO=b.INTRENO
-	WHERE (DAYDIFF_LAG IS NULL OR DAYDIFF_LAG> 1);
+	ELSE LEFT(a.VALIDFROM,6) END) AS INIT_TS,
+	NULL  AS END_TS
+	from :LT_VIBPOBJREL a
+	INNER JOIN "db::app.Customer" c ON c.EXT_ID = a.PARTNER
+	LEFT JOIN "osr.edw.staging.md.rms.proxy.synonym::CV_VILMPL" b ON a.INTRENO=b.INTRENO
+	WHERE (DAYDIFF_LAG IS NULL OR DAYDIFF_LAG> 1))
 	
 	/*Disposed Land*/
 	/*=========================================================================================================================
-	   	If a Land is Lost then it will always have Valid To entry ( Entry For Customer/Parcel )- Straight Forward scenario - DAYDIFF_LEAD will be null
+	   	If a Land is Lost then it will always have Valid To entry ( Entry For Customer/Parcel )- Straight Forward scenario - DAYDIFF_LEAD will be NULL
     		as there will not be any succeeding entry for that Customer/Parcel.
-    	If a land is being Owned by multiple Owners on Share Percent basis.
+    	If a land is being Owned by multiple Owners ON Share Percent basis.
     			Then we need to check For Per Customer Per Parcel, if VALIDTO of current entry and VALIDFROM of next entry is same or not 
     				If Yes, then land wasn't lost
     				If No, then Land was lost(sold) - DAYDIFF_LEAD > 0 OR DAYDIFF_LEAD is NULL and also VALIDTO shouldn't be equal to '99991231'
 	=========================================================================================================================*/
-	INSERT INTO "db::app.CustomerEvents"
-	select DISTINCT
-	c.CUST_ID as CUST_ID,
-	null as EVENT_ID,
-	:LV_LAND_LOST_GRP as EVENT_GROUP,
-	:LV_LAND_LOST as EVENT_NAME,
-	CAST(a.VALIDTO as date)  as INIT_DATE,
-	NULL as END_DATE,
-	1 as EVENT_VALUE,
-	:LV_LAND_LOST as DESCRIPTION,
-	LEFT(a.VALIDTO ,6) as INIT_TS,
-	NULL  as END_TS
-	from :V_VIBPOBJREL  a 
-	INNER JOIN "db::app.Customer" c on c.EXT_ID = a.PARTNER
-	WHERE ( DAYDIFF_LEAD>1 OR DAYDIFF_LEAD IS NULL ) and (a.VALIDTO != '99991231');
+	UNION ALL
+	(select DISTINCT
+	c.CUST_ID AS CUST_ID,
+	NULL AS EVENT_ID,
+	:LV_LAND_LOST_GRP AS EVENT_GROUP,
+	:LV_LAND_LOST AS EVENT_NAME,
+	CAST(a.VALIDTO AS date)  AS INIT_DATE,
+	NULL AS END_DATE,
+	1 AS EVENT_VALUE,
+	:LV_LAND_LOST AS DESCRIPTION,
+	LEFT(a.VALIDTO ,6) AS INIT_TS,
+	NULL  AS END_TS
+	from :LT_VIBPOBJREL  a 
+	INNER JOIN "db::app.Customer" c ON c.EXT_ID = a.PARTNER
+	WHERE ( DAYDIFF_LEAD>1 OR DAYDIFF_LEAD IS NULL ) and (a.VALIDTO != '99991231'));
    
    	-- Generate event ID
     CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	
@@ -133,12 +134,12 @@ BEGIN
    	SELECT MAX(Z_RUN_SEQ_ID) INTO LV_MAX_NEW_SEQ_ID FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL";
 	
 	UPDATE "db::adm.config.event.name" 
-		SET "ICON" = LV_EVENT_ICON, "PRIORITY" = null, "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEW_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
+		SET "ICON" = LV_EVENT_ICON, "PRIORITY" = NULL, "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEW_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
 		WHERE UPPER("EVENT_NAME") = UPPER(LV_LAND_ACQUIRED)
 		AND UPPER("CATEGORY_NAME") = UPPER(LV_LAND_ACQUIRED_GRP);
 	
 	UPDATE "db::adm.config.event.name" 
-		SET "ICON" = LV_EVENT_ICON, "PRIORITY" = null, "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEW_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
+		SET "ICON" = LV_EVENT_ICON, "PRIORITY" = NULL, "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEW_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
 		WHERE UPPER("EVENT_NAME") = UPPER(LV_LAND_LOST)
 		AND UPPER("CATEGORY_NAME") = UPPER(LV_LAND_LOST_GRP);
 END
