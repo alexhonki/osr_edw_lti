@@ -26,6 +26,9 @@
   <DataSource id="models.apps.customer::CV_CUSTOMER_INCOME_LOSS">
     <resourceUri>models.apps.customer::CV_CUSTOMER_INCOME_LOSS</resourceUri>
   </DataSource>
+  <DataSource id="models.apps.customer::CV_CUSTOMER_ATTRIBUTES">
+    <resourceUri>models.apps.customer::CV_CUSTOMER_ATTRIBUTES</resourceUri>
+  </DataSource>
 </dataSources>
 <calculationViews>
   <calculationView xsi:type="Calculation:ProjectionView" id="AT_RISK">
@@ -222,58 +225,178 @@
     </input>
     <joinAttribute name="CUST_ID"/>
   </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="ATTRIBUTES" filterExpressionLanguage="COLUMN_ENGINE">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_VALUE">
+        <descriptions defaultDescription="Attribute Value"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_INIT_TS">
+        <descriptions defaultDescription="Initial Calendar Month YYYYMM"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_ID">
+        <descriptions defaultDescription="ATTRIBUTE_ID_ID"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="models.apps.customer::CV_CUSTOMER_ATTRIBUTES">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_INIT_TS" source="ATTR_INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
+    </input>
+    <filter>&quot;ATTRIBUTE_ID&quot;=2</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:RankView" id="Rank_1">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_VALUE">
+        <descriptions defaultDescription="Attribute Value"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="Initial Calendar Month YYYYMM"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="ATTRIBUTES">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_INIT_TS" source="ATTR_INIT_TS"/>
+    </input>
+    <windowFunction dynamicPartitionAttributes="false">
+      <partitionViewAttributeName>CUST_ID</partitionViewAttributeName>
+      <order byViewAttributeName="ATTR_INIT_TS" direction="DESC"/>
+      <rankThreshold>
+        <value>1</value>
+      </rankThreshold>
+    </windowFunction>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_3" cardinality="C1_1" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="ATTRIBUTE_VALUE">
+        <descriptions defaultDescription="Attribute Value"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="Initial Calendar Month YYYYMM"/>
+      </viewAttribute>
+      <viewAttribute id="ACTUAL_DTR" aggregationType="sum">
+        <descriptions defaultDescription="ACTUAL_DTR"/>
+      </viewAttribute>
+      <viewAttribute id="INFLUENCE" aggregationType="sum">
+        <descriptions defaultDescription="INFLUENCE"/>
+      </viewAttribute>
+      <viewAttribute id="IMPACT" aggregationType="sum">
+        <descriptions defaultDescription="IMPACT"/>
+      </viewAttribute>
+      <viewAttribute id="DAYS_TO_REACT" aggregationType="sum">
+        <descriptions defaultDescription="DAYS_TO_REACT"/>
+      </viewAttribute>
+      <viewAttribute id="PREDICTED_REACTION_DATE">
+        <descriptions defaultDescription="PREDICTED_REACTION_DATE"/>
+      </viewAttribute>
+      <viewAttribute id="EXT_ID">
+        <descriptions defaultDescription="Identifiable External ID"/>
+      </viewAttribute>
+      <viewAttribute id="FULLNAME">
+        <descriptions defaultDescription="Customer Name"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="Customer ID"/>
+      </viewAttribute>
+      <viewAttribute id="INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CURRENCY_DESC">
+        <descriptions defaultDescription="DESCRIPTION"/>
+      </viewAttribute>
+      <viewAttribute id="CURRENCY">
+        <descriptions defaultDescription="STR_VALUE"/>
+      </viewAttribute>
+      <viewAttribute id="CC_INCOME_LOSS" aggregationType="sum">
+        <descriptions defaultDescription="CC_INCOME_LOSS"/>
+      </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$CUST_ID$CUST_ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Rank_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_INIT_TS" source="ATTR_INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CUST_ID$CUST_ID" source="CUST_ID"/>
+    </input>
+    <input node="Join_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ACTUAL_DTR" source="ACTUAL_DTR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INFLUENCE" source="INFLUENCE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IMPACT" source="IMPACT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DAYS_TO_REACT" source="DAYS_TO_REACT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREDICTED_REACTION_DATE" source="PREDICTED_REACTION_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="EXT_ID" source="EXT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="FULLNAME" source="FULLNAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INCOME_LOSS" source="INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY_DESC" source="CURRENCY_DESC"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CC_INCOME_LOSS" source="CC_INCOME_LOSS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CUST_ID$CUST_ID" source="CUST_ID"/>
+    </input>
+    <joinAttribute name="JOIN$CUST_ID$CUST_ID"/>
+  </calculationView>
 </calculationViews>
-<logicalModel id="Join_2">
+<logicalModel id="Join_3">
   <attributes>
-    <attribute id="ACTUAL_DTR" order="1" displayAttribute="false" attributeHierarchyActive="false">
-      <descriptions defaultDescription="Actual Days To React"/>
-      <keyMapping columnObjectName="Join_2" columnName="ACTUAL_DTR"/>
+    <attribute id="ANNUAL_LIABILITY" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Attribute Value"/>
+      <keyMapping columnObjectName="Join_3" columnName="ATTRIBUTE_VALUE"/>
     </attribute>
-    <attribute id="INFLUENCE" order="2" displayAttribute="false" attributeHierarchyActive="false">
-      <descriptions defaultDescription="Influence"/>
-      <keyMapping columnObjectName="Join_2" columnName="INFLUENCE"/>
+    <attribute id="ACTUAL_DTR" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ACTUAL_DTR"/>
+      <keyMapping columnObjectName="Join_3" columnName="ACTUAL_DTR"/>
     </attribute>
-    <attribute id="IMPACT" order="3" displayAttribute="false" attributeHierarchyActive="false">
+    <attribute id="INFLUENCE" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="INFLUENCE"/>
+      <keyMapping columnObjectName="Join_3" columnName="INFLUENCE"/>
+    </attribute>
+    <attribute id="IMPACT" order="4" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="IMPACT"/>
-      <keyMapping columnObjectName="Join_2" columnName="IMPACT"/>
+      <keyMapping columnObjectName="Join_3" columnName="IMPACT"/>
     </attribute>
-    <attribute id="DAYS_TO_REACT" order="4" displayAttribute="false" attributeHierarchyActive="false">
+    <attribute id="DAYS_TO_REACT" order="5" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="DAYS_TO_REACT"/>
-      <keyMapping columnObjectName="Join_2" columnName="DAYS_TO_REACT"/>
+      <keyMapping columnObjectName="Join_3" columnName="DAYS_TO_REACT"/>
     </attribute>
-    <attribute id="PREDICTED_REACTION_DATE" order="5" displayAttribute="false" attributeHierarchyActive="false">
+    <attribute id="PREDICTED_REACTION_DATE" order="6" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="PREDICTED_REACTION_DATE"/>
-      <keyMapping columnObjectName="Join_2" columnName="PREDICTED_REACTION_DATE"/>
+      <keyMapping columnObjectName="Join_3" columnName="PREDICTED_REACTION_DATE"/>
     </attribute>
-    <attribute id="EXT_ID" order="6" displayAttribute="false" attributeHierarchyActive="false">
+    <attribute id="EXT_ID" order="7" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="Identifiable External ID"/>
-      <keyMapping columnObjectName="Join_2" columnName="EXT_ID"/>
+      <keyMapping columnObjectName="Join_3" columnName="EXT_ID"/>
     </attribute>
-    <attribute id="NAME" order="7" displayAttribute="false" attributeHierarchyActive="false">
+    <attribute id="NAME" order="8" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="Customer Name"/>
-      <keyMapping columnObjectName="Join_2" columnName="FULLNAME"/>
+      <keyMapping columnObjectName="Join_3" columnName="FULLNAME"/>
     </attribute>
-  
-    <attribute id="CUST_ID" order="8" displayAttribute="false" attributeHierarchyActive="false">
+    <attribute id="CUST_ID" order="9" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="Customer ID"/>
-  
-      <keyMapping columnObjectName="Join_2" columnName="CUST_ID"/>
-  
-    </attribute>
-  
-    <attribute id="INCOME_LOSS" order="9" displayAttribute="false" attributeHierarchyActive="false">
-      <descriptions defaultDescription="VALUE"/>
-  
-      <keyMapping columnObjectName="Join_2" columnName="CC_INCOME_LOSS"/>
-  
+      <keyMapping columnObjectName="Join_3" columnName="CUST_ID"/>
     </attribute>
     <attribute id="CURRENCY_DESC" order="10" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="DESCRIPTION"/>
-      <keyMapping columnObjectName="Join_2" columnName="CURRENCY_DESC"/>
+      <keyMapping columnObjectName="Join_3" columnName="CURRENCY_DESC"/>
     </attribute>
     <attribute id="CURRENCY" order="11" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="STR_VALUE"/>
-      <keyMapping columnObjectName="Join_2" columnName="CURRENCY"/>
+      <keyMapping columnObjectName="Join_3" columnName="CURRENCY"/>
+    </attribute>
+    <attribute id="INCOME_LOSS" order="12" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CC_INCOME_LOSS"/>
+      <keyMapping columnObjectName="Join_3" columnName="CC_INCOME_LOSS"/>
     </attribute>
   </attributes>
   <calculatedAttributes/>
@@ -284,21 +407,21 @@
 <layout>
   <shapes>
     <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
-      <upperLeftCorner x="306" y="112"/>
+      <upperLeftCorner x="350.34823320625526" y="112"/>
     
       <rectangleSize width="140"/>
     </shape>
   
     <shape expanded="true" modelObjectName="AT_RISK" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="92" y="496"/>
+      <upperLeftCorner x="194.34283974582047" y="636.9999964237213"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape expanded="true" modelObjectName="CUSTOMER" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="282" y="496"/>
+      <upperLeftCorner x="384.3428397458204" y="636.9999964237213"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="115" y="356"/>
+      <upperLeftCorner x="296.8571546452241" y="496.9999976158142"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape modelObjectName="AT_RISK" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
@@ -310,13 +433,13 @@
       <rectangleSize width="250"/>
     </shape>
     <shape expanded="true" modelObjectName="INCOME" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="366" y="356"/>
+      <upperLeftCorner x="486.8571546452242" y="496.9999976158142"/>
       <rectangleSize height="30" width="140"/>
     </shape>
   
   
     <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="306" y="217"/>
+      <upperLeftCorner x="377.6334079551998" y="356.9999988079071"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape modelObjectName="Join_1" modelObjectNameSpace="Join_2" modelObjectType="JoinNodeInput">
@@ -324,6 +447,28 @@
       <rectangleSize width="250"/>
     </shape>
     <shape modelObjectName="INCOME" modelObjectNameSpace="Join_2" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="ATTRIBUTES" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="94.99999999999991" y="496.9999976158142"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Rank_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="91.99999999999991" y="364.4999988079071"/>
+      <rectangleSize height="30" width="146"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Join_3" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="350.34823320625526" y="217"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="Rank_1" modelObjectNameSpace="Join_3" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="Join_2" modelObjectNameSpace="Join_3" modelObjectType="JoinNodeInput">
       <upperLeftCorner x="320" y="30"/>
       <rectangleSize width="250"/>
     </shape>

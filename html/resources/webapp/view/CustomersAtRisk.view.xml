@@ -79,6 +79,9 @@
                                 <Column demandPopin="true" minScreenWidth="900px" popinDisplay="Block"
                                 <Text text="{i18n>CustomerList.Journey}" />
                                 </Column-->
+                                <Column width="9rem">
+                                    <Text text="{i18n>CustomersAtRisk.SuggestedCustomersColumnAnnualLiability}" />
+                                </Column>
                                 <Column width="4rem">
                                     <Text text="{i18n>CustomersAtRisk.SuggestedCustomersColumnDetails}" />
                                 </Column>
@@ -120,6 +123,7 @@
                                                     maxValue="120"
                                             />
                                         </VBox>-->
+                                        <Text text="{CRI>ANNUAL_LIABILITY}" class="sapUiMediumMarginTopBottom" />
                                         <HBox alignItems="Center">
                                             <Button icon="sap-icon://navigation-right-arrow" type="Transparent" press="showCustomerPulse"/>
                                         </HBox>
@@ -187,6 +191,12 @@
                                         <Text text="{CRI>DAYS_TO_REACT}"/>
                                     </table:template>
                                 </table:Column>-->
+                                <table:Column>
+                                    <Label text="{i18n>CustomersAtRisk.CustomerListColumnAnnualLiability}"/>
+                                    <table:template>
+                                        <Text text="{CRI>ANNUAL_LIABILITY}"/>
+                                    </table:template>
+                                </table:Column>
                                 <table:Column width="7rem" hAlign="Center">
                                     <Label text="{i18n>CustomersAtRisk.CustomerListColumnDetails}"/>
                                     <table:template>
