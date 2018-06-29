@@ -222,7 +222,14 @@ BEGIN
 				GROUP BY PRGPA
 				ORDER BY PRGPA;
 	
-	
+	LT_EXP_PROM_TO_PAY = 	SELECT A.PPKEY,B.PRDAT,A.PRGPA, C.AMOUNT_PAID ,B.EXPECT_TO_DATE,LAG(PAID_TO_DATE) OVER (PARTITION BY A.PPKEY ORDER BY b.PRDAT) AS LAST_PAID_TO
+							FROM :LT_PROMPAY A
+							JOIN :LT_EXPECTED B
+							ON A.PPKEY = B.PPKEY
+							LEFT JOIN :LT_PAID C
+							ON A.PPKEY = C.PPKEY
+							AND B.PRDAT = C.VALUT
+							ORDER BY A.PRGPA, B.PRDAT;
 	/*************************************
   	Calculate the number of instalments missed by PRGPA for PPKEY
   	LAST_PAID_TO is the sum of total amount paid untill the previous PRDAT at a particular PRDAT
@@ -239,50 +246,45 @@ BEGIN
   		- The Last Payment done is less than the expected payment to be done by the taxpayer
   
   	***************************************/
+  	LT_EXP_PROM_TO_PAY_STATUS = 	SELECT
+							        CASE 
+										WHEN (AMOUNT_PAID IS NULL) AND (LAST_PAID_TO < EXPECT_TO_DATE)
+											THEN 'FAILED'
+										WHEN (AMOUNT_PAID IS NULL) AND (LAST_PAID_TO > EXPECT_TO_DATE)
+											THEN 'PASSED'
+										WHEN (AMOUNT_PAID IS NULL)
+											THEN 'FAILED'
+										ELSE 'PASSED'
+									END AS STATUS,
+									*
+									FROM :LT_EXP_PROM_TO_PAY;
+	LT_EXP_PROM_TO_PAY_FAILED = 	SELECT PRGPA, COUNT(PRGPA) AS NUM_MISSED_INSTALL, MAX(PRDAT) AS INIT_DATE
+									FROM :LT_EXP_PROM_TO_PAY_STATUS
+									WHERE STATUS = 'FAILED'
+									GROUP BY PRGPA
+									ORDER BY PRGPA;
 	LT_TEMP = SELECT 
 					C.CUST_ID,
 					B.PRGPA,
 					A.INIT_DATE,
 					NUM_PLANS,
-					IFNULL(NUM_MISSED_INSTALL, 0) NUM_MISSED_PAYMENT
-				FROM (
-					SELECT PRGPA, COUNT(PRGPA) NUM_MISSED_INSTALL, MAX(PRDAT) AS INIT_DATE
-					FROM (
-						SELECT
-							CASE 
-								WHEN (AMOUNT_PAID IS NULL) AND (LAST_PAID_TO < EXPECT_TO_DATE)
-									THEN 'FAILED'
-								WHEN (AMOUNT_PAID IS NULL) AND (LAST_PAID_TO > EXPECT_TO_DATE)
-									THEN 'PASSED'
-								WHEN (AMOUNT_PAID IS NULL)
-									THEN 'FAILED'
-								ELSE 'PASSED'
-							END AS STATUS,
-							*
-						FROM (		
-							SELECT *, LAG(PAID_TO_DATE) OVER (PARTITION BY A.PPKEY ORDER BY PRDAT) AS LAST_PAID_TO
-							FROM :LT_PROMPAY A
-							JOIN :LT_EXPECTED B
-							ON A.PPKEY = B.PPKEY
-							LEFT JOIN :LT_PAID C
-							ON A.PPKEY = C.PPKEY
-							AND B.PRDAT = C.VALUT
-							ORDER BY A.PRGPA, B.PRDAT
-						)
-					)
-					WHERE STATUS = 'FAILED'
-					GROUP BY PRGPA
-					ORDER BY PRGPA
-				) A
+					IFNULL(NUM_MISSED_INSTALL, 0) AS NUM_MISSED_PAYMENT
+				FROM :LT_EXP_PROM_TO_PAY_FAILED A
 				RIGHT JOIN :LT_PLANS B
 				ON A.PRGPA = B.PRGPA
 				JOIN "db::app.Customer" C
 				ON B.PRGPA = C.EXT_ID
-				WHERE A.INIT_DATE < 20170000;			
+				WHERE A.INIT_DATE < 20170000;	
+				
+	LT_EXP_PROM_TO_PAY_FAILED_PMT_ARR = 	SELECT PRGPA,  PRDAT AS INIT_DATE
+											FROM :LT_EXP_PROM_TO_PAY_STATUS
+											WHERE STATUS = 'FAILED'
+											ORDER BY PRGPA;
 
 	 /*Missed Instalment - Number of missed instalment*/
 	 INSERT INTO "db::app.CustomerEvents" 
-	 	SELECT
+	 (	
+	 SELECT
 			CUST_ID,
 			NULL,
 			:LV_EVENT_GROUP	EVENT_GROUP,
@@ -305,63 +307,28 @@ BEGIN
 			END	AS DESCRIPTION,
 			YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
 			YEAR(TO_TIMESTAMP('9999-12-31'))*100 + MONTH(TO_TIMESTAMP('9999-12-31')) END_TS			
-		FROM :LT_TEMP;	
-		
-		
-	/*Missed instalment event*/
-	INSERT INTO "db::app.CustomerEvents" 
-	 	SELECT
-			CUST_ID,
+		FROM :LT_TEMP
+		)	
+ UNION ALL
+	 
+	 (	SELECT
+			C.CUST_ID AS "CUST_ID",
 			NULL,
 			:LV_EVENT_GROUP EVENT_GROUP,
 			:LV_MI AS EVENT_NAME,
-			INIT_DATE, 
+			A.INIT_DATE, 
 			TO_TIMESTAMP('9999-12-31') END_DATE, 
 			1 EVENT_VALUE, 
 			:LV_MI AS DESCRIPTION,
-			YEAR(INIT_DATE)*100 + MONTH(INIT_DATE) INIT_TS,
+			YEAR(A.INIT_DATE)*100 + MONTH(A.INIT_DATE) INIT_TS,
 			YEAR(TO_TIMESTAMP('9999-12-31'))*100 + MONTH(TO_TIMESTAMP('9999-12-31')) END_TS			
-		FROM 
-		(
-					SELECT 
-					C.CUST_ID,
-					B.PRGPA,
-					A.INIT_DATE
-				FROM (
-					SELECT PRGPA,  PRDAT AS INIT_DATE
-					FROM (
-						SELECT
-							CASE 
-								WHEN (AMOUNT_PAID IS NULL) AND (LAST_PAID_TO < EXPECT_TO_DATE)
-									THEN 'FAILED'
-								WHEN (AMOUNT_PAID IS NULL) AND (LAST_PAID_TO > EXPECT_TO_DATE)
-									THEN 'PASSED'
-								WHEN (AMOUNT_PAID IS NULL)
-									THEN 'FAILED'
-								ELSE 'PASSED'
-							END AS STATUS,
-							*
-						FROM (		
-							SELECT *, LAG(PAID_TO_DATE) OVER (PARTITION BY A.PPKEY ORDER BY PRDAT) AS LAST_PAID_TO
-							FROM :LT_PROMPAY A
-							JOIN :LT_EXPECTED B
-							ON A.PPKEY = B.PPKEY
-							LEFT JOIN :LT_PAID C
-							ON A.PPKEY = C.PPKEY
-							AND B.PRDAT = C.VALUT
-							ORDER BY A.PRGPA, B.PRDAT
-						)
-					)
-					WHERE STATUS = 'FAILED'
-					--GROUP BY PRGPA
-					ORDER BY PRGPA
-				) A
-				RIGHT JOIN :LT_PLANS B
-				ON A.PRGPA = B.PRGPA
-				JOIN "db::app.Customer" C
-				ON B.PRGPA = C.EXT_ID
-				WHERE A.INIT_DATE < 20170000			
-		);	
+			FROM :LT_EXP_PROM_TO_PAY_FAILED_PMT_ARR A
+			RIGHT JOIN :LT_PLANS B
+			ON A.PRGPA = B.PRGPA
+			JOIN "db::app.Customer" C
+			ON B.PRGPA = C.EXT_ID
+			WHERE A.INIT_DATE < 20170000 
+			);	
 		
 	    select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP";
 	    select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID_1 from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP";
