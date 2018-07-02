@@ -8,7 +8,7 @@
         xmlns="sap.m"
         displayBlock="true"
         height="100%">
-    <Page id="idCustomerDetailsPage" showHeader="false" enableScrolling="true">
+    <Page id="idCustomerDetailsPage" showHeader="true" enableScrolling="true" title="{i18n>CustomerPulse.Title}">
         <VBox width="100%" height="100%">
             <VBox>
                 <HeaderContainer backgroundDesign="Solid">

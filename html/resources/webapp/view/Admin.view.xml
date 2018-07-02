@@ -5,7 +5,7 @@
         xmlns="sap.m">
     <SplitApp id="adminPanel" initialMaster="pageList">
         <masterPages>
-            <Page id="pageList">
+            <Page id="pageList" title="{i18n>Admin.title}">
                 <content>
                     <List>
                         <items>

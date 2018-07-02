@@ -5,7 +5,7 @@
     xmlns:core="sap.ui.core"
     displayBlock="true"
     height="100%">
-    <Page id="idSearchPage" showHeader="false" >
+    <Page id="idSearchPage" showHeader="false" title="{i18n>CustomerSearch.title}">
         <headerContent>
         </headerContent>
         <content>
