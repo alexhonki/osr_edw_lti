@@ -9,7 +9,7 @@
         xmlns:commons="sap.suite.ui.commons"
         displayBlock="true"
         height="100%">
-    <Page id="idEventOverviewPage" showHeader="false" enableScrolling="true">
+    <Page id="idEventOverviewPage" showHeader="true" enableScrolling="true" title="{i18n>EventOverview.title}">
         <headerContent>
         </headerContent>
         <content>

@@ -42,7 +42,8 @@ modules:
           url: '~{url}'
           forwardAuthToken: true
       - name: OSR_LTI-uaa
-
+    properties:
+      PRESERVE_FRAGMENT: true
 resources:
   - name: OSR_LTI-Container
     type: com.sap.xs.hdi-container
@@ -57,7 +58,6 @@ resources:
   - name: edw-ext-access-grantor
     type: org.cloudfoundry.existing-service
     description: edw-ext-access-grantor
-
   - name: sapui5-provider
     type: configuration
     parameters:

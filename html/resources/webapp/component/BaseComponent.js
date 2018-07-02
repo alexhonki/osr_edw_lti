@@ -35,7 +35,7 @@ sap.ui.define([
 
             this.videoButton = videoButton;
 
-            RendererExtensions.addOptionsActionSheetButton(videoButton,RendererExtensions.LaunchpadState.App);
+            // RendererExtensions.addOptionsActionSheetButton(videoButton,RendererExtensions.LaunchpadState.App);
 
             this.helpHeadItem = new sap.ui.unified.ShellHeadItem({
                 tooltip: "Help",
@@ -44,7 +44,7 @@ sap.ui.define([
                     userAssistanceService.showUserAssistance(sContext);
                 }
             });
-            RendererExtensions.addHeaderEndItem(this.helpHeadItem);
+            // RendererExtensions.addHeaderEndItem(this.helpHeadItem);
 
             var helpButton = new sap.m.Button();
             helpButton.setText("Help");
@@ -54,7 +54,7 @@ sap.ui.define([
             });
             this.helpButton = helpButton;
 
-            RendererExtensions.addOptionsActionSheetButton(helpButton,RendererExtensions.LaunchpadState.App);
+            // RendererExtensions.addOptionsActionSheetButton(helpButton,RendererExtensions.LaunchpadState.App);
 
 
         },

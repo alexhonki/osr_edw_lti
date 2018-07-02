@@ -5,7 +5,7 @@
     		"target": "/http/odata/services.xsodata/$1",
 			"destination": "backend",
 			"authenticationType": "xsuaa",
-			"csrfProtection": false,
+			"csrfProtection": true,
 		
 			"scope": ["$XSAPPNAME.TrendAnalysis","$XSAPPNAME.EventOverview","$XSAPPNAME.CustomersAtRisk","$XSAPPNAME.CustomerSearch","$XSAPPNAME.CustomerDetails","$XSAPPNAME.Admin"]
 		  },
@@ -18,7 +18,7 @@
                 "pathSuffixes": [
                     "index.html"
                 	],
-                "vars": ["ui5liburl"]
+                "vars": ["sapui5url"]
             	}
         	}
         ]
