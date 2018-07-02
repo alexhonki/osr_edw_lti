@@ -15,7 +15,7 @@ BEGIN
 		TVORG - Sub Transactions ('190'  - Land Tax Comm REASSESSMENT)
 		AUGRD - Clearing Reason(04 - Write-Off, 14 - Mass Write-Off, 05 - Reversal, 99- Mass process )
 		
-		Get sum of BETRH(Due Amount), Per Customer per Posting Date per Form Bundle number For Subtransaction type 190 , and Clearing reason other than 04, 14, 05, 99
+		Get sum of BETRH(Due Amount), Per Customer per Posting Date per Form Bundle number For Subtransaction type 190 , AND Clearing reason other than 04, 14, 05, 99
 		
 		If Reassessment Value is higher than the Initial Assessment then there will be Entries(Subtrans - 190) with +ve Value
 		If Reassessment value is lower than the initial Assessment then there wil be entries with -Ve Values
@@ -38,24 +38,24 @@ BEGIN
 	SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_REASSESS_HIGH);
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_REASSESS_LOW);
-	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_REASSESS_HIGH from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_REASSESS_HIGH);
-	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_REASSESS_LOW from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_REASSESS_LOW);
-	--LV_MAX_SEQ_ID = SELECT OUT_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_CHRG_REG_DUNN);
+	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_REASSESS_HIGH FROM "functions::TF_GET_MAX_SEQID_EVENT"(:LV_REASSESS_HIGH);
+	SELECT OUT_MAX_SEQ_ID into LV_MAX_LASTSEQ_ID_REASSESS_LOW FROM "functions::TF_GET_MAX_SEQID_EVENT"(:LV_REASSESS_LOW);
+	--LV_MAX_SEQ_ID = SELECT OUT_MAX_SEQ_ID FROM "functions::TF_GET_MAX_SEQID_EVENT"(:LV_CHRG_REG_DUNN);
 	IF :LV_MAX_LASTSEQ_ID_REASSESS_HIGH IS NULL THEN
 		LV_MAX_LASTSEQ_ID_REASSESS_HIGH = 0;
 	END IF;
 	IF :LV_MAX_LASTSEQ_ID_REASSESS_LOW IS NULL THEN
 		LV_MAX_LASTSEQ_ID_REASSESS_LOW = 0;
 	END IF;
-	LT_CUST_EDITED_REASSESS_HIGH = SELECT distinct GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
-							"db::app.Customer" on EXT_ID = GPART WHERE 
+	LT_CUST_EDITED_REASSESS_HIGH = SELECT DISTINCT  GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" INNER JOIN
+							"db::app.Customer" ON EXT_ID = GPART WHERE 
 						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_REASSESS_HIGH;
-	LT_CUST_ID_EDITED_REASSESS_HIGH = select to_int(GPART) as "CUST_ID" from :LT_CUST_EDITED_REASSESS_HIGH;
+	LT_CUST_ID_EDITED_REASSESS_HIGH = SELECT  TO_INT(GPART) AS "CUST_ID" FROM :LT_CUST_EDITED_REASSESS_HIGH;
 	
-	LT_CUST_EDITED_REASSESS_LOW = SELECT distinct GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" inner join
-							"db::app.Customer" on EXT_ID = GPART WHERE 
+	LT_CUST_EDITED_REASSESS_LOW = SELECT DISTINCT  GPART FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" INNER JOIN
+							"db::app.Customer" ON EXT_ID = GPART WHERE 
 						"Z_RUN_SEQ_ID">:LV_MAX_LASTSEQ_ID_REASSESS_LOW;
-	LT_CUST_ID_EDITED_REASSESS_LOW = select to_int(GPART) as "CUST_ID" from :LT_CUST_EDITED_REASSESS_LOW;
+	LT_CUST_ID_EDITED_REASSESS_LOW = SELECT  TO_INT(GPART) AS "CUST_ID" FROM :LT_CUST_EDITED_REASSESS_LOW;
 
 	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 		IV_EVENT_NAME=>:LV_REASSESS_HIGH,
@@ -66,63 +66,53 @@ BEGIN
 		IT_CUST=>:LT_CUST_ID_EDITED_REASSESS_LOW
 	);
 	LT_CUST_ID = SELECT GPART FROM :LT_CUST_EDITED_REASSESS_HIGH UNION SELECT GPART FROM :LT_CUST_EDITED_REASSESS_LOW;
+	LT_REASSESS_VAL = 	SELECT DFKKOP.GPART,BUDAT, SUM(BETRH) AS REASSESS_AMOUNT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" DFKKOP
+							INNER JOIN :LT_CUST_ID DELT ON DELT.GPART =  DFKKOP.GPART
+						WHERE HVORG='4000' AND TVORG='0190'  AND KOFIZ='LT'
+					GROUP BY DFKKOP.GPART,BUDAT,FBNUM;
 
   INSERT INTO "db::app.CustomerEvents" 
   /* ===================================================================
        Reassessment Value is Higher than Initial Assessment
     =====================================================================*/  
-  select * from( 
-	   select  
-			SAP.CUST_ID as CUST_ID,
-			NULL as EVENT_ID,
-			:LV_REASSESS_GROUP as EVENT_GROUP,
-			:LV_REASSESS_HIGH as EVENT_NAME ,
-			CAST(BUDAT as date) as INIT_DATE,
-			NULL as END_DATE,
-			1 as EVENT_VALUE,
-			:LV_REASSESS_HIGH as DESCRIPTION,
-			LEFT(BUDAT,6)  as INIT_TS,
-			NULL  as END_TS
-	FROM (
-			SELECT DFKKOP.GPART,BUDAT, SUM(BETRH) FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" DFKKOP
-			INNER JOIN :LT_CUST_ID DELT ON DELT.GPART =  DFKKOP.GPART
-			WHERE HVORG='4000' and TVORG='0190'  AND KOFIZ='LT'
-			GROUP BY DFKKOP.GPART,BUDAT,FBNUM
-			HAVING SUM(BETRH)>0
-		) a
-	INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART
+
+(	   SELECT   
+			SAP.CUST_ID AS CUST_ID,
+			NULL AS EVENT_ID,
+			:LV_REASSESS_GROUP AS EVENT_GROUP,
+			:LV_REASSESS_HIGH AS EVENT_NAME ,
+			CAST(BUDAT AS date) AS INIT_DATE,
+			NULL AS END_DATE,
+			1 AS EVENT_VALUE,
+			:LV_REASSESS_HIGH AS DESCRIPTION,
+			LEFT(BUDAT,6)  AS INIT_TS,
+			NULL  AS END_TS
+	FROM  :LT_REASSESS_VAL a
+	INNER JOIN "db::app.Customer" AS SAP ON SAP.EXT_ID=a.GPART WHERE REASSESS_AMOUNT > 0 )
 
 
 UNION ALL 
   /* ===================================================================
        Reassessment Value is Lower than Initial Assessment
     =====================================================================*/  
-	select  
-			SAP.CUST_ID as CUST_ID,
-			NULL as EVENT_ID,
-			:LV_REASSESS_GROUP as EVENT_GROUP,
-			:LV_REASSESS_LOW as EVENT_NAME ,
-			CAST(BUDAT as date) as INIT_DATE,
-			NULL as END_DATE,
-			1 as EVENT_VALUE,
-			:LV_REASSESS_LOW as DESCRIPTION,
-			LEFT(BUDAT,6)  as INIT_TS,
-			NULL  as END_TS
-	FROM (
-			SELECT DFKKOP.GPART,BUDAT, SUM(BETRH) FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" DFKKOP
-			INNER JOIN :LT_CUST_ID DELT ON DELT.GPART =  DFKKOP.GPART
-			WHERE HVORG='4000' and TVORG='0190'  AND KOFIZ='LT' 
-			GROUP BY DFKKOP.GPART,BUDAT,FBNUM
-			HAVING SUM(BETRH)<0
-		) a
-	INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART
-
-
-	);
+(	SELECT  
+			SAP.CUST_ID AS CUST_ID,
+			NULL AS EVENT_ID,
+			:LV_REASSESS_GROUP AS EVENT_GROUP,
+			:LV_REASSESS_LOW AS EVENT_NAME ,
+			CAST(BUDAT AS date) AS INIT_DATE,
+			NULL AS END_DATE,
+			1 AS EVENT_VALUE,
+			:LV_REASSESS_LOW AS DESCRIPTION,
+			LEFT(BUDAT,6)  AS INIT_TS,
+			NULL  AS END_TS
+	FROM :LT_REASSESS_VAL a
+	INNER JOIN "db::app.Customer" AS SAP ON SAP.EXT_ID=a.GPART WHERE REASSESS_AMOUNT < 0
+);
 	-- Generate event ID
     CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	
     
-	select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID_REASSESS_HIGH from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP";
+	select max(Z_RUN_SEQ_ID) INTO LV_MAX_NEWSEQ_ID_REASSESS_HIGH FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP";
 
 	UPDATE "db::adm.config.event.name" 
 		SET "ICON" = LV_EVENT_ICON, "PRIORITY" = 20, "LATEST_EXTRACTED_SEQUENCE" = LV_MAX_NEWSEQ_ID_REASSESS_HIGH, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP

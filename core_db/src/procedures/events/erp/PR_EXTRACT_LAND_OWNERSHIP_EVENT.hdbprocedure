@@ -13,16 +13,16 @@ BEGIN
     VIBPOBJREL - 
     	ROLE -      'TR0800' - Owner of land
     	
-    LT_TEMP - Get all the Dead(DEATHDT > 0) buisness partner From BUT000 Joining with VIBOBJREL with Role as Owner(TR0800)
+    LT_TEMP - Get all the Dead(DEATHDT > 0) buisness partner From BUT000 Joining with VIBOBJREL with Role AS Owner(TR0800)
     	    	This will give us all the Dead BP's Parcel(INTRENO) details with ValidFrom, ValidTo, and DeathDate 
     	
-    There would be a self Join on table VIBPOBJREL for INTRENO(Parcel No of Dead business Partner) For partner Excluding Dead ones.
+    There would be a self Join ON table VIBPOBJREL for INTRENO(Parcel No of Dead business Partner) For partner Excluding Dead ones.
     Only need to consider those entries for Which ValidFrom <=  DeathDate(MAX VALIDTO of Parcel would be the DeathDate) of Business Partner
     	As we only need to Check if ownership was increased due to Death or new parcel gain happened Due to Death.
     	
     If it's a new Parcel gain scenario then by  Death Date, there will be only one entry in VIBPOBJREL for that parcel, customer combination
     
-    If it's increase in ownership then by death date, there will be multiple entries in VIBPOBJREL for that parcel, customer combination
+    If it's increase in ownership then by death DATE , there will be multiple entries in VIBPOBJREL for that parcel, customer combination
     
    *************************************/
    
@@ -49,9 +49,9 @@ BEGIN
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_LAND_OWN_2);
 	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(IV_MODE=>:IV_MODE, IV_EVENT_NAME=>:LV_LAND_OWN_3);
 	
-	SELECT OUT_MAX_SEQ_ID into LV_LAND_OWN_1_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_LAND_OWN_1);
-	SELECT OUT_MAX_SEQ_ID into LV_LAND_OWN_2_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_LAND_OWN_2);
-	SELECT OUT_MAX_SEQ_ID into LV_LAND_OWN_3_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_LAND_OWN_3);
+	SELECT OUT_MAX_SEQ_ID into LV_LAND_OWN_1_MAX_SEQ_ID FROM "functions::TF_GET_MAX_SEQID_EVENT"(:LV_LAND_OWN_1);
+	SELECT OUT_MAX_SEQ_ID into LV_LAND_OWN_2_MAX_SEQ_ID FROM "functions::TF_GET_MAX_SEQID_EVENT"(:LV_LAND_OWN_2);
+	SELECT OUT_MAX_SEQ_ID into LV_LAND_OWN_3_MAX_SEQ_ID FROM "functions::TF_GET_MAX_SEQID_EVENT"(:LV_LAND_OWN_3);
 	IF :LV_LAND_OWN_1_MAX_SEQ_ID IS NULL THEN 
 		LV_LAND_OWN_1_MAX_SEQ_ID = 0;
 	END IF;
@@ -61,20 +61,20 @@ BEGIN
 	IF :LV_LAND_OWN_3_MAX_SEQ_ID IS NULL THEN 
 		LV_LAND_OWN_3_MAX_SEQ_ID = 0;
 	END IF;
-	LT_CUST_EDITED_LAND_OWN_1 = SELECT DISTINCT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" inner join
-							"db::app.Customer" on EXT_ID = PARTNER WHERE 
+	LT_CUST_EDITED_LAND_OWN_1 = SELECT DISTINCT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" INNER JOIN 
+							"db::app.Customer" ON EXT_ID = PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAND_OWN_1_MAX_SEQ_ID;
-	LT_CUST_ID_EDITED_LAND_OWN_1 = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_LAND_OWN_1;
+	LT_CUST_ID_EDITED_LAND_OWN_1 = SELECT TO_INT(PARTNER) AS "CUST_ID" FROM :LT_CUST_EDITED_LAND_OWN_1;
 	
-	LT_CUST_EDITED_LAND_OWN_2 = SELECT DISTINCT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" inner join
-							"db::app.Customer" on EXT_ID = PARTNER WHERE 
+	LT_CUST_EDITED_LAND_OWN_2 = SELECT DISTINCT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" INNER JOIN 
+							"db::app.Customer" ON EXT_ID = PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAND_OWN_2_MAX_SEQ_ID;
-	LT_CUST_ID_EDITED_LAND_OWN_2 = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_LAND_OWN_2;
+	LT_CUST_ID_EDITED_LAND_OWN_2 = SELECT TO_INT(PARTNER) AS "CUST_ID" FROM :LT_CUST_EDITED_LAND_OWN_2;
 	
-	LT_CUST_EDITED_LAND_OWN_3 = SELECT DISTINCT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" inner join
-							"db::app.Customer" on EXT_ID = PARTNER WHERE 
+	LT_CUST_EDITED_LAND_OWN_3 = SELECT DISTINCT PARTNER FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" INNER JOIN 
+							"db::app.Customer" ON EXT_ID = PARTNER WHERE 
 						"Z_RUN_SEQ_ID">:LV_LAND_OWN_3_MAX_SEQ_ID;
-	LT_CUST_ID_EDITED_LAND_OWN_3 = select to_int(PARTNER) as "CUST_ID" from :LT_CUST_EDITED_LAND_OWN_3;
+	LT_CUST_ID_EDITED_LAND_OWN_3 = SELECT TO_INT(PARTNER) AS "CUST_ID" FROM :LT_CUST_EDITED_LAND_OWN_3;
 	
 	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 		IV_EVENT_NAME=>:LV_LAND_OWN_3,
@@ -89,8 +89,8 @@ BEGIN
 		IT_CUST=>:LT_CUST_ID_EDITED_LAND_OWN_1
    );
    LT_CUST_ID = SELECT PARTNER FROM :LT_CUST_EDITED_LAND_OWN_1 UNION SELECT PARTNER FROM :LT_CUST_EDITED_LAND_OWN_2 UNION SELECT PARTNER FROM :LT_CUST_EDITED_LAND_OWN_3;
-	 LT_TEMP = select B1.PARTNER, VALIDFROM, VALIDTO, B1.INTRENO AS INTRENO, DEATHDT FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT000" AS a1 inner join
-          "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" AS b1 on a1.PARTNER = b1.PARTNER 
+	 LT_TEMP = SELECT B1.PARTNER, VALIDFROM, VALIDTO, B1.INTRENO AS INTRENO, DEATHDT FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT000" AS a1 INNER JOIN 
+          "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" AS b1 ON a1.PARTNER = b1.PARTNER 
         where a1.DEATHDT > 0 and ROLE='TR0800';
  
  
@@ -101,75 +101,75 @@ BEGIN
 	/*'Increased Ownership Due to Death'*/
 	
 	SELECT SAP.CUST_ID AS CUST_ID, 
-			null as EVENT_ID,
-			:LV_LAND_OWN_3_GRP as EVENT_GROUP,
-			:LV_LAND_OWN_3 as EVENT_NAME,
-			CAST(VALID_TO as date) AS INIT_DATE, 
+			null AS EVENT_ID,
+			:LV_LAND_OWN_3_GRP AS EVENT_GROUP,
+			:LV_LAND_OWN_3 AS EVENT_NAME,
+			CAST(VALID_TO AS DATE ) AS INIT_DATE, 
 			NULL AS END_DATE, 
 			1 AS EVENT_VALUE, 
 			:LV_LAND_OWN_3 AS DESCRIPTION, 
-			LEFT(VALID_TO,6)  as INIT_TS,
+			LEFT(VALID_TO,6)  AS INIT_TS,
 			NULL AS END_TS
 		FROM (   
-				SELECT PARTNER, count(INTRENO) as "PARCEL_ENTRY_COUNT", max(VALIDTO) as "VALID_TO" FROM(
-					SELECT a.partner ,a.intreno, A.VALIDFROM, B.DEATHDT AS VALIDTO  from "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" a 
-					INNER JOIN :LT_CUST_ID as delt ON a.PARTNER = delt.PARTNER
+				SELECT PARTNER, count(INTRENO) AS "PARCEL_ENTRY_COUNT", max(VALIDTO) AS "VALID_TO" FROM(
+					SELECT a.partner ,a.intreno, A.VALIDFROM, B.DEATHDT AS VALIDTO  FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" a 
+					INNER JOIN :LT_CUST_ID AS delt ON a.PARTNER = delt.PARTNER
 						INNER JOIN
 					(SELECT INTRENO, MAX(VALIDTO) AS DEATHDT FROM :LT_TEMP GROUP BY INTRENO) b 
 						ON a.INTRENO = b.INTRENO
 						WHERE a.PARTNER NOT IN (SELECT PARTNER FROM :LT_TEMP) AND A.VALIDFROM<=B.DEATHDT
 				) GROUP BY PARTNER, INTRENO
-			) as A inner JOIN  "db::app.Customer" as SAP on SAP.EXT_ID=A.PARTNER WHERE PARCEL_ENTRY_COUNT > 1
+			) AS A inner JOIN  "db::app.Customer" AS SAP ON SAP.EXT_ID=A.PARTNER WHERE PARCEL_ENTRY_COUNT > 1
  UNION ALL
 	
 	--'Decreased interest in land holdings'
 	SELECT SAP.CUST_ID AS CUST_ID, 
-		null as EVENT_ID,
-		:LV_LAND_OWN_2_GRP as EVENT_GROUP,
-		:LV_LAND_OWN_2 as EVENT_NAME,
-		CAST(VALIDFROM as date) AS INIT_DATE, 
+		null AS EVENT_ID,
+		:LV_LAND_OWN_2_GRP AS EVENT_GROUP,
+		:LV_LAND_OWN_2 AS EVENT_NAME,
+		CAST(VALIDFROM AS DATE ) AS INIT_DATE, 
 		NULL AS END_DATE, 
 		1 AS EVENT_VALUE, 
 		:LV_LAND_OWN_2 AS DESCRIPTION, 
-		LEFT(VALIDFROM,6)  as INIT_TS,
+		LEFT(VALIDFROM,6)  AS INIT_TS,
 		NULL AS END_TS
 		FROM (   			
 	SELECT CURRENT_SHARE, (LAG_BRUTEIL/LAG_RFAKT) AS PREVIOUS_SHARE, VALIDFROM, VALIDTO, PARTNER FROM
 	(SELECT (BRUTEIL/RFAKT) AS CURRENT_SHARE, PARTNER, VALIDFROM, VALIDTO
-   	 ,LAG(BRUTEIL)  OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)  as LAG_BRUTEIL,
+   	 ,LAG(BRUTEIL)  OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)  AS LAG_BRUTEIL,
    	  LAG(RFAKT) OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)  AS LAG_RFAKT
    	 FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" WHERE ROLE='TR0800' AND RFAKT != 0 AND PARTNER IN (SELECT PARTNER FROM :LT_CUST_ID)--AND (BRUTEIL/RFAKT) <= 1
    	 ) 
    	WHERE (LAG_BRUTEIL/LAG_RFAKT) > 0
-   	) A inner JOIN  "db::app.Customer" as SAP on SAP.EXT_ID=A.PARTNER WHERE A.PREVIOUS_SHARE > A.CURRENT_SHARE
+   	) A inner JOIN  "db::app.Customer" AS SAP ON SAP.EXT_ID=A.PARTNER WHERE A.PREVIOUS_SHARE > A.CURRENT_SHARE
    	
    	UNION ALL
    	
    	--'Increased interest in land holdings'
    	SELECT SAP.CUST_ID AS CUST_ID, 
-		null as EVENT_ID,
-		:LV_LAND_OWN_1_GRP as EVENT_GROUP,
-		:LV_LAND_OWN_1 as EVENT_NAME,
-		CAST(VALIDFROM as date) AS INIT_DATE, 
+		null AS EVENT_ID,
+		:LV_LAND_OWN_1_GRP AS EVENT_GROUP,
+		:LV_LAND_OWN_1 AS EVENT_NAME,
+		CAST(VALIDFROM AS DATE ) AS INIT_DATE, 
 		NULL AS END_DATE, 
 		1 AS EVENT_VALUE, 
 		:LV_LAND_OWN_1 AS DESCRIPTION, 
-		LEFT(VALIDFROM,6)  as INIT_TS,
+		LEFT(VALIDFROM,6)  AS INIT_TS,
 		NULL AS END_TS
 		FROM (   			
 	SELECT CURRENT_SHARE, (LAG_BRUTEIL/LAG_RFAKT) AS PREVIOUS_SHARE, VALIDFROM, VALIDTO, PARTNER FROM
 	(SELECT (BRUTEIL/RFAKT) AS CURRENT_SHARE, PARTNER, VALIDFROM, VALIDTO
-   	 ,LAG(BRUTEIL)  OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)  as LAG_BRUTEIL,
+   	 ,LAG(BRUTEIL)  OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)  AS LAG_BRUTEIL,
    	  LAG(RFAKT) OVER(PARTITION BY PARTNER,INTRENO ORDER BY VALIDFROM ASC)  AS LAG_RFAKT
    	 FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL" WHERE ROLE='TR0800' AND RFAKT != 0 AND PARTNER IN (SELECT PARTNER FROM :LT_CUST_ID)--AND (BRUTEIL/RFAKT) <= 1
    	 ) 
    	WHERE (LAG_BRUTEIL/LAG_RFAKT) > 0
-   	) A inner JOIN  "db::app.Customer" as SAP on SAP.EXT_ID=A.PARTNER WHERE A.PREVIOUS_SHARE < A.CURRENT_SHARE;
+   	) A inner JOIN  "db::app.Customer" AS SAP ON SAP.EXT_ID=A.PARTNER WHERE A.PREVIOUS_SHARE < A.CURRENT_SHARE;
    	
    	-- Generate event ID
     CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	
     
-   	select max(Z_RUN_SEQ_ID) INTO LV_LAND_OWN_NEW_MAX_SEQ_ID FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL";
+   	SELECT max(Z_RUN_SEQ_ID) INTO LV_LAND_OWN_NEW_MAX_SEQ_ID FROM "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL";
 	
 	UPDATE "db::adm.config.event.name" 
 		SET "ICON" = NULL, "PRIORITY" = null, "LATEST_EXTRACTED_SEQUENCE" = LV_LAND_OWN_NEW_MAX_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP

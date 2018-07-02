@@ -91,12 +91,19 @@ BEGIN
 						  FROM :LT_RESV_CUSTOMERS
 						  GROUP BY CUST_ID,TOTBPRELVNTVAL;*/
 	
-	LT_BP_TAX_TEMP = SELECT CUST_ID, 
-						  MIN(TO_DATE(INIT_DATE)) AS "INIT_DATE",
-						  MAX(TO_DATE(END_DATE)) AS "END_DATE",
-						  TAXAMOUNT
-						  FROM :LT_RESV_CUSTOMERS
-						  GROUP BY CUST_ID,TAXAMOUNT;					  
+	LT_BP_TAX_TEMP =	SELECT	CUST_ID, 
+								"INIT_DATE",
+								"END_DATE",
+								TAXAMOUNT FROM
+									(SELECT *,  ROW_NUMBER() OVER(PARTITION BY CUST_ID ORDER BY END_DATE DESC) AS RN FROM
+										(SELECT CUST_ID, 
+											  MIN(TO_DATE(INIT_DATE)) AS "INIT_DATE",
+											  MAX(TO_DATE(END_DATE)) AS "END_DATE",
+											  TAXAMOUNT
+											  FROM :LT_RESV_CUSTOMERS
+											  GROUP BY CUST_ID,TAXAMOUNT)
+										)
+								 WHERE RN=1 ;					  
     
     --Age Group Attribute
     --End Date from Customer table or it should be Current Time Stamp??
