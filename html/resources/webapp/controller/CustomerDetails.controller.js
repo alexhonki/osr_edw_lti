@@ -464,6 +464,7 @@ sap.ui.define([
                         var categories = [{
                             key: this.AllCategoriesKey,
                             icon: "sap-icon://multiselect-all"}];
+                        var aCategories = [this.AllCategoriesKey];   
                         for (var i = 0; i < pulse.length; i++) {
                             var d = pulse[i];
 
@@ -486,6 +487,7 @@ sap.ui.define([
                             })) 
                             {
                                 oCategory.key = d.EVENT_GROUP;
+                                aCategories.push(d.EVENT_GROUP);
                                 oCategory.icon = d.ICON !== null ? "sap-icon://" + d.ICON : "";
                                 categories.push(oCategory);
                             }
@@ -495,8 +497,11 @@ sap.ui.define([
 
                         this.getView().getModel().setProperty("/CustomerEvents", mappedData);
                         this.getView().getModel().setProperty("/CustomerEventCategories", categories);
+                        //default All Categories is checked along with all in the list
+                        this.getView().byId("idComboBoxEventCategoryFilter").setSelectedKeys(aCategories);
+                        this.getView().byId("idEventCategoryFilter").setSelectedKeys(aCategories);
 
-                        this.showFilteredEvents();
+                        this.showFilteredEvents(null);
                     } catch (oError) {
                         ErrorService.raiseGenericError(oError);
                     } finally {
@@ -517,15 +522,60 @@ sap.ui.define([
                 sSelectedCategory = oEvent.getParameter("selectedItem").getProperty("key");
             }
             this.getView().getModel().setProperty("/EventCategoryFilter", sSelectedCategory);
-            this.showFilteredEvents();
+            this.showFilteredEvents(oEvent.getSource());
+        },
+        
+        onCategoriesSelection: function(oEvent){
+        	var sSelectedCategory, aSelectedKeys, oMultiComboBox, oMultiComboBoxEvent, oMultiComboBoxPulse;
+        	var iTotalCategories, iIndex;
+        	var isSelected = oEvent.getParameter("selected");
+        	oMultiComboBox = oEvent.getSource();
+        	oMultiComboBoxEvent = this.getView().byId("idEventCategoryFilter");
+        	oMultiComboBoxPulse = this.getView().byId("idComboBoxEventCategoryFilter");
+        	aSelectedKeys = oMultiComboBox.getSelectedKeys();
+        	iTotalCategories = aSelectedKeys.length;          
+        	if(oEvent.getParameter("changedItem")){
+        		sSelectedCategory = oEvent.getParameter("changedItem").getKey();
+        	}
+        	if(sSelectedCategory !== this.AllCategoriesKey){
+        		//when all selected and any category is unchecked then uncheck All Category
+        		iIndex = aSelectedKeys.indexOf(this.AllCategoriesKey);
+        		if( iIndex > -1){
+        			aSelectedKeys.splice(iIndex,1);	
+        			oMultiComboBox.setSelectedKeys(aSelectedKeys);
+        		}
+        		//check All Categories if all other are selected
+        		if(isSelected){
+        			//when all but All Categories is selected
+        			if(oMultiComboBox.getSelectedKeys().length === oMultiComboBox.getSelectableItems().length - 1 ){
+        				oMultiComboBox.setSelectedKeys(oMultiComboBox.getSelectableItems().map(obj=>(obj.getKey())));
+        			}
+        		}
+        	} else {
+        		//check/uncheck every other categories
+        		if(isSelected){
+        			oMultiComboBox.setSelectedKeys(oMultiComboBox.getSelectableItems().map(obj=>(obj.getKey())));	
+        		} else{
+        			oMultiComboBox.setSelectedKeys([]);
+        		}
+        		
+        	}
+        	//this.getView().getModel().setProperty("/EventCategoryFilter", sSelectedCategory);
+        	if(oEvent.getSource() === oMultiComboBoxEvent){
+        		oMultiComboBoxPulse.setSelectedKeys(oMultiComboBoxEvent.getSelectedKeys());	
+        	} else {
+        		oMultiComboBoxEvent.setSelectedKeys(oMultiComboBox.getSelectedKeys());
+        	}
+            this.showFilteredEvents(oMultiComboBox);
         },
 
-        showFilteredEvents: function () {
+        showFilteredEvents: function (oEventSource) {
             var categoryfilter = this.getView().getModel().getProperty("/EventCategoryFilter");
+            var aSelectedCategories = oEventSource !== null ? oEventSource.getSelectedKeys() : this.getView().byId("idComboBoxEventCategoryFilter").getSelectedKeys();
             var eventList = this.getView().getModel().getProperty("/CustomerEvents");
 			var aDeepCopyEvents = jQuery.extend(true,[],eventList);
             var filteredList = [],filteredTableData, groupedTableData;
-            if (categoryfilter != this.AllCategoriesKey) {
+            if (aSelectedCategories.indexOf(this.AllCategoriesKey) < 0) {
              /*   eventList.forEach(function (event) {
                     if (event.EventGroup == categoryfilter) {
                         event.Visible = true;
@@ -535,10 +585,12 @@ sap.ui.define([
                     	//filteredList.push(event);
                     }
                 });*/
-                
+                // show selected categories events in pulse
                filteredList = aDeepCopyEvents.map(function(oEvent){
                	var oNewEvent = jQuery.extend(false,{},oEvent);
-               	oNewEvent.Visible = !!(oNewEvent.EventGroup === categoryfilter);
+               	var iMatchedEventGroup = aSelectedCategories.filter(obj => (obj === oNewEvent.EventGroup)).length;
+               	//oNewEvent.Visible = !!(oNewEvent.EventGroup === categoryfilter);
+               	oNewEvent.Visible = iMatchedEventGroup > 0 ? true : false;
                	return oNewEvent;
                }); 
                 

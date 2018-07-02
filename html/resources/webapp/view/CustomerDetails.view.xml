@@ -43,16 +43,17 @@
                                         change="onTimeSelection">
                                     <core:Item key="{key}" text="{text}"/>
                                 </Select>
-                                <MenuButton id="idPulseChartEventCategoryFilter" text="{/EventCategoryFilter}" buttonMode="Split">
-                                    <menu>
-                                        <Menu itemSelected="onCategorySelection" items="{/CustomerEventCategories}">
-                                            <items>
-                                                <MenuItem text="{key}" icon="{icon}"
-                                                />
-                                            </items>
-                                        </Menu>
-                                    </menu>
-                                </MenuButton>
+                                <MultiComboBox
+									selectionChange="onCategoriesSelection"
+									selectionFinish="handleSelectionFinish"
+									maxWidth="75%"
+									id="idComboBoxEventCategoryFilter"
+									items="{
+										path: '/CustomerEventCategories',
+										sorter: { path: 'key' }
+									}">
+									<core:Item key="{key}" text="{key}" />
+								</MultiComboBox>
                             </HBox>
                             <FlexBox>
                                 <cri:PulseChart id="idPulseChart" showNoData="true" yAxisLabel="Risk" thresholdLowValue="{/Thresholds/MEDIUM_RISK}" thresholdHighValue="{/Thresholds/HIGH_RISK}" items="{path:'/FilteredCustomerEvents', factory:'.pulseChartItemsFactory'}" reactions="{path: '/Reactions', factory: '.reactionItemFactory'}" itemSelect="onItemSelect" height="100%" width="100%" />
@@ -141,11 +142,22 @@
                                             items="{viewModel>/EventViewTypes}">
                                         <core:Item key="{viewModel>key}" text="{viewModel>value}"/>
                                     </Select>
-                                    <Select id="idEventCategoryFilter"
+                                    <!--<Select id="idEventCategoryFilter"
                                             selectedKey="{/EventCategoryFilter}" items="{/CustomerEventCategories}"
                                             change="onCategorySelection">
                                         <core:Item key="{key}" text="{key}"/>
-                                    </Select>
+                                    </Select>-->
+                                    <MultiComboBox
+									selectionChange="onCategoriesSelection"
+									selectionFinish="handleSelectionFinish"
+									maxWidth="75%"
+									id="idEventCategoryFilter"
+									items="{
+										path: '/CustomerEventCategories',
+										sorter: { path: 'key' }
+									}">
+									<core:Item key="{key}" text="{key}" />
+								</MultiComboBox>
                                 </HBox>
                                <HBox alignItems="Center" justifyContent="End">
                                 <SearchField
