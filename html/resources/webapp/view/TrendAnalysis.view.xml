@@ -9,7 +9,7 @@
         xmlns:filterbar="sap.ui.comp.filterbar"
         displayBlock="true"
         height="100%">
-    <Page id="idTrendAnalysisPage" class="trendAnalysis" showHeader="true" enableScrolling="true" backgroundDesign="Transparent" preserveHeaderStateOnScroll="false" title="{TrendAnalysis.title}">
+    <Page id="idTrendAnalysisPage" class="trendAnalysis" showHeader="true" enableScrolling="true" backgroundDesign="Transparent" preserveHeaderStateOnScroll="false" title="{i18n>TrendAnalysis.title}">
         <content>
             <cri:FilterBar
                     id="idFilterBar"
