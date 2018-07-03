@@ -46,7 +46,7 @@
                                 <MultiComboBox
 									selectionChange="onCategoriesSelection"
 									selectionFinish="handleSelectionFinish"
-									maxWidth="75%"
+									width="500px"
 									id="idComboBoxEventCategoryFilter"
 									items="{
 										path: '/CustomerEventCategories',
@@ -150,7 +150,7 @@
                                     <MultiComboBox
 									selectionChange="onCategoriesSelection"
 									selectionFinish="handleSelectionFinish"
-									maxWidth="75%"
+									width="500px"
 									id="idEventCategoryFilter"
 									items="{
 										path: '/CustomerEventCategories',
