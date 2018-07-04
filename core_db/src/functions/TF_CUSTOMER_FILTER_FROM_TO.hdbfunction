@@ -20,7 +20,7 @@ BEGIN
 	DECLARE LV_TO	  INTEGER := TO_INT(:IM_TO);
  	
  	LT_CUSTOMERS = SELECT a.cust_id --a."INIT_TS"
-				FROM "db::app.Customer" a
+				FROM "models.apps.customer::CV_ACTIVE_CUSTOMER" a
 				WHERE	
 						A."STATUS" = 0
 				AND 	A."INIT_TS" <= :LV_TO
