@@ -144,5 +144,6 @@ Payment,Payment Declined,dishonour,63,0,simple-payment
 Legal - Crown Law,Legal - Crown Law,crown,6,0,compare-2
 Legal - Claim,Legal - Claim,statutory%claim%court,7,0,compare-2
 Legal - Judgment,Legal - Judgment,judgment,8,0,compare-2
+Legal - Judgment,Legal - Judgment,judgement,8,0,compare-2
 Legal - Warrant,Legal - Warrant,warrant,9,0,compare-2
 CRM Undefined,CRM Undefined, ,1001,0,sys-help
