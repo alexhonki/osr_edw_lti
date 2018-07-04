@@ -26,8 +26,8 @@
   <DataSource id="models.apps.customer::CV_CUSTOMER_INCOME_LOSS">
     <resourceUri>models.apps.customer::CV_CUSTOMER_INCOME_LOSS</resourceUri>
   </DataSource>
-  <DataSource id="models.apps.customer::CV_CUSTOMER_ATTRIBUTES">
-    <resourceUri>models.apps.customer::CV_CUSTOMER_ATTRIBUTES</resourceUri>
+  <DataSource id="models.apps.customer::CV_CUSTOMER_ATTRIBUTES_SHOW">
+    <resourceUri>models.apps.customer::CV_CUSTOMER_ATTRIBUTES_SHOW</resourceUri>
   </DataSource>
 </dataSources>
 <calculationViews>
@@ -239,14 +239,20 @@
       <viewAttribute id="ATTRIBUTE_ID">
         <descriptions defaultDescription="ATTRIBUTE_ID_ID"/>
       </viewAttribute>
+    
+      <viewAttribute id="IS_SHOW_DETAILS">
+        <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
-    <input node="models.apps.customer::CV_CUSTOMER_ATTRIBUTES">
+    <input node="models.apps.customer::CV_CUSTOMER_ATTRIBUTES_SHOW">
       <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_INIT_TS" source="ATTR_INIT_TS"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SHOW_DETAILS" source="IS_SHOW_DETAILS"/>
     </input>
     <filter>&quot;ATTRIBUTE_ID&quot;=2</filter>
   </calculationView>
@@ -261,6 +267,10 @@
       <viewAttribute id="ATTR_INIT_TS" aggregationType="sum">
         <descriptions defaultDescription="Initial Calendar Month YYYYMM"/>
       </viewAttribute>
+    
+      <viewAttribute id="IS_SHOW_DETAILS" aggregationType="sum">
+        <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
@@ -268,6 +278,8 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_INIT_TS" source="ATTR_INIT_TS"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SHOW_DETAILS" source="IS_SHOW_DETAILS"/>
     </input>
     <windowFunction dynamicPartitionAttributes="false">
       <partitionViewAttributeName>CUST_ID</partitionViewAttributeName>
@@ -321,6 +333,9 @@
       <viewAttribute id="CC_INCOME_LOSS" aggregationType="sum">
         <descriptions defaultDescription="CC_INCOME_LOSS"/>
       </viewAttribute>
+      <viewAttribute id="IS_SHOW_DETAILS" aggregationType="sum">
+        <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      </viewAttribute>
       <viewAttribute hidden="true" id="JOIN$CUST_ID$CUST_ID"/>
     </viewAttributes>
     <calculatedViewAttributes/>
@@ -328,6 +343,7 @@
     <input node="Rank_1">
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_INIT_TS" source="ATTR_INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SHOW_DETAILS" source="IS_SHOW_DETAILS"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CUST_ID$CUST_ID" source="CUST_ID"/>
     </input>
     <input node="Join_2">
@@ -398,6 +414,11 @@
       <descriptions defaultDescription="CC_INCOME_LOSS"/>
       <keyMapping columnObjectName="Join_3" columnName="CC_INCOME_LOSS"/>
     </attribute>
+  
+    <attribute id="IS_SHOW_DETAILS" order="13" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      <keyMapping columnObjectName="Join_3" columnName="IS_SHOW_DETAILS"/>
+    </attribute>
   </attributes>
   <calculatedAttributes/>
   <baseMeasures/>
@@ -407,21 +428,21 @@
 <layout>
   <shapes>
     <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
-      <upperLeftCorner x="350.34823320625526" y="112"/>
+      <upperLeftCorner x="350" y="112"/>
     
       <rectangleSize width="140"/>
     </shape>
   
     <shape expanded="true" modelObjectName="AT_RISK" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="194.34283974582047" y="636.9999964237213"/>
+      <upperLeftCorner x="194" y="636"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape expanded="true" modelObjectName="CUSTOMER" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="384.3428397458204" y="636.9999964237213"/>
+      <upperLeftCorner x="384" y="636"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="296.8571546452241" y="496.9999976158142"/>
+      <upperLeftCorner x="296" y="496"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape modelObjectName="AT_RISK" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
@@ -433,13 +454,13 @@
       <rectangleSize width="250"/>
     </shape>
     <shape expanded="true" modelObjectName="INCOME" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="486.8571546452242" y="496.9999976158142"/>
+      <upperLeftCorner x="486" y="496"/>
       <rectangleSize height="30" width="140"/>
     </shape>
   
   
     <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="377.6334079551998" y="356.9999988079071"/>
+      <upperLeftCorner x="377" y="356"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape modelObjectName="Join_1" modelObjectNameSpace="Join_2" modelObjectType="JoinNodeInput">
@@ -452,16 +473,16 @@
     </shape>
   
     <shape expanded="true" modelObjectName="ATTRIBUTES" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="94.99999999999991" y="496.9999976158142"/>
+      <upperLeftCorner x="94" y="496"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape expanded="true" modelObjectName="Rank_1" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="91.99999999999991" y="364.4999988079071"/>
+      <upperLeftCorner x="91" y="364"/>
       <rectangleSize height="30" width="146"/>
     </shape>
   
     <shape expanded="true" modelObjectName="Join_3" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="350.34823320625526" y="217"/>
+      <upperLeftCorner x="350" y="217"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape modelObjectName="Rank_1" modelObjectNameSpace="Join_3" modelObjectType="JoinNodeInput">

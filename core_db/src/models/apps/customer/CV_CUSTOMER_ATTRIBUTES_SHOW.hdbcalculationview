@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="models.apps.customer::CV_CUSTOMER_ATTRIBUTES_SHOW" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="CV_CUSTOMER_ATTRIBUTES_SHOW"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="db::app.CustomerAttributes">
+    <resourceUri>db::app.CustomerAttributes</resourceUri>
+  </DataSource>
+  <DataSource id="db::app.AttributeTypes">
+    <resourceUri>db::app.AttributeTypes</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="CustAttr">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_ID" aggregationType="sum">
+        <descriptions defaultDescription="ATTRIBUTE_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_VALUE">
+        <descriptions defaultDescription="Attribute Value"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_DATE">
+        <descriptions defaultDescription="Initial Date Time"/>
+      </viewAttribute>
+      <viewAttribute id="END_DATE">
+        <descriptions defaultDescription="End Date Time"/>
+      </viewAttribute>
+      <viewAttribute id="INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="Initial Calendar Month YYYYMM"/>
+      </viewAttribute>
+      <viewAttribute id="END_TS" aggregationType="sum">
+        <descriptions defaultDescription="End Calendar Month YYYYMM"/>
+      </viewAttribute>
+    
+      <viewAttribute id="ATTRIBUTE_SORT_ORDER" aggregationType="sum">
+        <descriptions defaultDescription="Sort Order for Attribute"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="NEW_END_TS" datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+        <formula>if(isNull(&quot;END_TS&quot;), 999912, &quot;END_TS&quot;)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="db::app.CustomerAttributes">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="END_DATE" source="END_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="INIT_TS" source="INIT_TIME_SEGMENT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="END_TS" source="END_TIME_SEGMENT"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_SORT_ORDER" source="ATTRIBUTE_SORT_ORDER"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="AttrTy" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="ATTRIBUTE_ID" aggregationType="sum">
+        <descriptions defaultDescription="Attribute ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_NAME">
+        <descriptions defaultDescription="Attribute Name"/>
+      </viewAttribute>
+      <viewAttribute id="DESCRIPTION">
+        <descriptions defaultDescription="Description"/>
+      </viewAttribute>
+      <viewAttribute id="IS_FILTER" aggregationType="sum">
+        <descriptions defaultDescription="Filter Flag"/>
+      </viewAttribute>
+    
+      <viewAttribute id="IS_SHOW_DETAILS" aggregationType="sum">
+        <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="db::app.AttributeTypes">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_NAME" source="ATTRIBUTE_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_FILTER" source="IS_FILTER"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SHOW_DETAILS" source="IS_SHOW_DETAILS"/>
+    </input></calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="J_CustAttrTy" cardinality="CN_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_ID" aggregationType="sum">
+        <descriptions defaultDescription="ATTRIBUTE_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_VALUE">
+        <descriptions defaultDescription="Attribute Value"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_INIT_DATE">
+        <descriptions defaultDescription="Initial Date Time"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_END_DATE">
+        <descriptions defaultDescription="End Date Time"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="Initial Calendar Month YYYYMM"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_END_TS" aggregationType="sum">
+        <descriptions defaultDescription="End Calendar Month YYYYMM"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTES_NAME">
+        <descriptions defaultDescription="Attribute Name"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_DESCRIPTION">
+        <descriptions defaultDescription="Description"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_SORT_ORDER" aggregationType="sum">
+        <descriptions defaultDescription="Sort Order for Attribute"/>
+      </viewAttribute>
+      <viewAttribute id="IS_SHOW_DETAILS" aggregationType="sum">
+        <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      </viewAttribute>
+      <viewAttribute hidden="true" id="JOIN$ATTRIBUTE_ID$ATTRIBUTE_ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="ATTR_KEY" datatype="VARCHAR" length="100" expressionLanguage="COLUMN_ENGINE">
+        <formula>&quot;ATTRIBUTES_NAME&quot;+':'+&quot;ATTRIBUTE_VALUE&quot;</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="AttrTy">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTES_NAME" source="ATTRIBUTE_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_DESCRIPTION" source="DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SHOW_DETAILS" source="IS_SHOW_DETAILS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$ATTRIBUTE_ID$ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
+    </input>
+    <input node="CustAttr">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_INIT_DATE" source="INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_END_DATE" source="END_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_INIT_TS" source="INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_END_TS" source="END_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_SORT_ORDER" source="ATTRIBUTE_SORT_ORDER"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$ATTRIBUTE_ID$ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
+    </input>
+    <joinAttribute name="JOIN$ATTRIBUTE_ID$ATTRIBUTE_ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="ATTR_KEY">
+        <descriptions defaultDescription="ATTR_KEY"/>
+      </viewAttribute>
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_ID" aggregationType="sum">
+        <descriptions defaultDescription="ATTRIBUTE_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_VALUE">
+        <descriptions defaultDescription="Attribute Value"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTES_NAME">
+        <descriptions defaultDescription="Attribute Name"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_DESCRIPTION">
+        <descriptions defaultDescription="Description"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_INIT_DATE">
+        <descriptions defaultDescription="Initial Date Time"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_END_DATE">
+        <descriptions defaultDescription="End Date Time"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_INIT_TS" aggregationType="sum">
+        <descriptions defaultDescription="Initial Calendar Month YYYYMM"/>
+      </viewAttribute>
+      <viewAttribute id="ATTR_END_TS" aggregationType="sum">
+        <descriptions defaultDescription="End Calendar Month YYYYMM"/>
+      </viewAttribute>
+    
+      <viewAttribute id="ATTRIBUTE_SORT_ORDER" aggregationType="sum">
+        <descriptions defaultDescription="Sort Order for Attribute"/>
+      </viewAttribute>
+    
+      <viewAttribute id="ATTR_END_DATE_1">
+        <descriptions defaultDescription="End Date Time"/>
+      </viewAttribute>
+      <viewAttribute id="IS_SHOW_DETAILS" aggregationType="sum">
+        <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      </viewAttribute>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="J_CustAttrTy">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_KEY" source="ATTR_KEY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTES_NAME" source="ATTRIBUTES_NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_DESCRIPTION" source="ATTR_DESCRIPTION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_INIT_DATE" source="ATTR_INIT_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_END_DATE" source="ATTR_END_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_INIT_TS" source="ATTR_INIT_TS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_END_TS" source="ATTR_END_TS"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_SORT_ORDER" source="ATTRIBUTE_SORT_ORDER"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTR_END_DATE_1" source="ATTR_END_DATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="IS_SHOW_DETAILS" source="IS_SHOW_DETAILS"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Projection_1">
+  <attributes>
+    <attribute id="ATTR_KEY" key="true" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ATTR_KEY"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ATTR_KEY"/>
+    </attribute>
+    <attribute id="CUST_ID" key="true" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CUST_ID_ID"/>
+      <keyMapping columnObjectName="Projection_1" columnName="CUST_ID"/>
+    </attribute>
+    <attribute id="ATTRIBUTE_ID" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ATTRIBUTE_ID_ID"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ATTRIBUTE_ID"/>
+    </attribute>
+    <attribute id="ATTRIBUTE_VALUE" key="true" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Attribute Value"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ATTRIBUTE_VALUE"/>
+    </attribute>
+    <attribute id="ATTRIBUTES_NAME" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Attribute Name"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ATTRIBUTES_NAME"/>
+    </attribute>
+    <attribute id="ATTR_DESCRIPTION" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Description"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ATTR_DESCRIPTION"/>
+    </attribute>
+    <attribute id="ATTR_INIT_DATE" key="true" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Initial Date Time"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ATTR_INIT_DATE"/>
+    </attribute>
+    <attribute id="ATTR_END_DATE" key="true" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="End Date Time"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ATTR_END_DATE"/>
+    </attribute>
+    <attribute id="ATTR_INIT_TS" order="9" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Initial Calendar Month YYYYMM"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ATTR_INIT_TS"/>
+    </attribute>
+    <attribute id="ATTR_END_TS" order="10" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="End Calendar Month YYYYMM"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ATTR_END_TS"/>
+    </attribute>
+  
+    <attribute id="ATTRIBUTE_SORT_ORDER" order="11" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Sort Order for Attribute"/>
+  
+      <keyMapping columnObjectName="Projection_1" columnName="ATTRIBUTE_SORT_ORDER"/>
+  
+    </attribute>
+  
+    <attribute id="IS_SHOW_DETAILS" order="12" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      <keyMapping columnObjectName="Projection_1" columnName="IS_SHOW_DETAILS"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="CustAttr" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="9" y="410"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="AttrTy" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="217" y="410"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape expanded="true" modelObjectName="J_CustAttrTy" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="108" y="298"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+    <shape modelObjectName="AttrTy" modelObjectNameSpace="J_CustAttrTy" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="CustAttr" modelObjectNameSpace="J_CustAttrTy" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="197"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>
