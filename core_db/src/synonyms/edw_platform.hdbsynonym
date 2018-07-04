@@ -4,7 +4,6 @@
   "osr.edw.staging.md.rms.proxy.synonym::CV_BUT000": {},
   "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS": {},
   "osr.edw.staging.md.rms.proxy.synonym::CV_LTCNEXMD": {},
-  "osr.edw.staging.md.rms.proxy.synonym::CV_VIBDMEAS": {},
   "osr.edw.staging.md.rms.proxy.synonym::CV_VIBPOBJREL": {},
   "osr.edw.staging.md.rms.proxy.synonym::CV_VILMPL": {},
   "osr.edw.staging.md.rms.proxy.synonym::CV_ZBUT0000HJCXO9": {},
@@ -12,17 +11,12 @@
   "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP": {},
   "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP": {},
   "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD": {},
-  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPI": {},
   "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP": {},
   "osr.edw.staging.td.rms.proxy.synonym::CV_FKKMAKO": {},
   "osr.edw.staging.td.rms.proxy.synonym::CV_LTAXASFB": {},
   "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV": {},
-  "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESX": {},
-  "osr.edw.staging.td.rms.proxy.synonym::CV_LTNAPLVL": {},
-  "osr.edw.staging.td.rms.proxy.synonym::CV_VIBPADDRREL": {},
   "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNAVAL": {},
   "osr.edw.staging.td.rms.proxy.synonym::CV_VILMNA": {},
   "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP_HIS":{},
-  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKRAPT": {},
-  "osr.edw.staging.td.rms.proxy.synonym::CV_LTCRES": {}
+  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKRAPT": {}
 }

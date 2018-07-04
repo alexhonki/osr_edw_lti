@@ -5,12 +5,6 @@
       "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
     }
   },
-	"osr.edw.staging.td.rms.proxy.synonym::CV_LTCRES": {
-    "target": {
-      "object": "osr.edw.staging.td.rms.proxy::CV_LTCRES",
-      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
-    }
-  },
   "osr.edw.integration.ti.ltax.synonym::CV_LT_CRM_INTERACTION": {
     "target": {
       "object": "osr.edw.integration.ti.ltax::CV_LT_CRM_INTERACTION",
@@ -42,13 +36,6 @@
   "osr.edw.staging.md.rms.proxy.synonym::CV_LTCNEXMD": {
     "target": {
       "object": "osr.edw.staging.md.rms.proxy::CV_LTCNEXMD",
-      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
-    }
-  },
-  
-  "osr.edw.staging.md.rms.proxy.synonym::CV_VIBDMEAS": {
-    "target": {
-      "object": "osr.edw.staging.md.rms.proxy::CV_VIBDMEAS",
       "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
     }
   },
@@ -102,13 +89,6 @@
     }
   },
   
-  "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPI": {
-    "target": {
-      "object": "osr.edw.staging.td.rms.proxy::CV_DFKKPPI",
-      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
-    }
-  },
-  
   "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP": {
     "target": {
       "object": "osr.edw.staging.td.rms.proxy::CV_DFKKPPP",
@@ -133,27 +113,6 @@
   "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV": {
     "target": {
       "object": "osr.edw.staging.td.rms.proxy::CV_LTCNRESV",
-      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
-    }
-  },
-  
-  "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESX": {
-    "target": {
-      "object": "osr.edw.staging.td.rms.proxy::CV_LTCNRESX",
-      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
-    }
-  },
-  
-  "osr.edw.staging.td.rms.proxy.synonym::CV_LTNAPLVL": {
-    "target": {
-      "object": "osr.edw.staging.td.rms.proxy::CV_LTNAPLVL",
-      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
-    }
-  },
-  
-  "osr.edw.staging.td.rms.proxy.synonym::CV_VIBPADDRREL": {
-    "target": {
-      "object": "osr.edw.staging.td.rms.proxy::CV_VIBPADDRREL",
       "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
     }
   },
