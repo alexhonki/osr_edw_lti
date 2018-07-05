@@ -17,6 +17,10 @@ Complaint,Complaint,complaint,73,0,message-popup
 EPO,EPO,epo,39,0,batch-payments
 Debt Management,Debt Management - S62,final%demand%mortgagee,42,0,capital-projects
 Debt Management,Debt Management - S62,s62,42,0,capital-projects
+Debt Management,Debt Management - S62,s.62,42,0,capital-projects
+Debt Management,Debt Management - S62,section 62,42,0,capital-projects
+Debt Management,Debt Management - S62,section62,42,0,capital-projects
+Debt Management,Debt Management - S62,s 62,42,0,capital-projects
 Debt Management,Debt Management - S62,final%demand%cba,42,0,capital-projects
 Debt Management,Debt Management - S62,final%demand%bank,42,0,capital-projects
 Debt Management,Debt Management - S62,statutory%compliance,42,0,capital-projects
@@ -50,13 +54,16 @@ Financial Consideration,Financial Consideration,disaster,1,0,accidental-leave
 Dispute Assessment,Dispute Assessment,change%land%val,75,0,inspection
 Debt Management,Debt Management - Block,dunning%interest%block,45,0,sales-order
 Debt Management,Debt Management - Remove,block%removed,44,0,sales-order
+Debt Management,Debt Management - Reverse,revers%dunning,46,0,sales-order
 Debt Management,Debt Management - Reverse,dunning%revers,46,0,sales-order
 Debt Management,Debt Management - Block,dunning%block,45,0,sales-order
 Debt Management,Debt Management - Reverse,collection%steps%reversed,46,0,sales-order
 Debt Management,Debt Management - Reverse,reset%dunning%steps,46,0,sales-order
 Debt Management,Debt Management - Block,exemption%LT12%dunning%block,45,0,sales-order
+Debt Management,Debt Management - Charge,register%charge,43,0,sales-order
 Debt Management,Debt Management - Charge,charge%release,43,0,sales-order
-Debt Management,Debt Management - Charge,removal%charge,43,0,sales-order
+Debt Management,Debt Management - Charge,remov%charge,43,0,sales-order
+Debt Management,Debt Management - Charge,charge%fee,43,0,sales-order
 Debt Management,Debt Management - Charge,statutory%charge,43,0,sales-order
 Debt Management,Debt Management - Charge,stat%charge,43,0,sales-order
 Debt Management,Debt Management - Charge,charge%remov,43,0,sales-order
@@ -112,6 +119,7 @@ Campaign,Campaign,campaign,108,0,target-group
 Assessment,Assessment,noia,25,0,add-document
 Payment,Payment Refund,refund,65,0,simple-payment
 Payment,Payment Credit,credit,66,0,simple-payment
+Payment,Payment,payment,98,0,simple-payment
 Payment,Payment,chequ,98,0,simple-payment
 Payment,Payment,chq,98,0,simple-payment
 Payment,Payment,remit,98,0,simple-payment
