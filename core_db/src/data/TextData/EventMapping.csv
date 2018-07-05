@@ -68,7 +68,7 @@ Debt Management,Debt Management - Charge,statutory%charge,43,0,sales-order
 Debt Management,Debt Management - Charge,stat%charge,43,0,sales-order
 Debt Management,Debt Management - Charge,charge%remov,43,0,sales-order
 Debt Management,Debt Management - Garnishee,garn,41,0,sales-order
-Debt Management,Debt Management - Garnishee,GN,41,0,sales-order
+Debt Management,Debt Management - Garnishee, GN,41,0,sales-order
 Debt Management,Debt Management - Garnishee,G/N,41,0,sales-order
 Debt Management,Debt Management,dun%letter,48,0,sales-order
 Debt Management,Debt Management,remit,48,0,sales-order
