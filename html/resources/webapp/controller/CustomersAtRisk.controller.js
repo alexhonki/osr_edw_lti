@@ -275,6 +275,9 @@ sap.ui.define([
                 if (!this.fnSuggestedCustomerTableBindingDataReceived) {
                     this.fnSuggestedCustomerTableBindingDataReceived = function fnCustomerTableBindingDataReceived(oEvent) {
                         if (oEvent.getParameters().data) {
+                        	if(oEvent.getParameters().data.results && oEvent.getParameters().data.results.length >0){
+                        		this.getView().getModel('viewModel').setProperty("/Annual_liability_show",oEvent.getParameters().data.results[0].IS_SHOW_DETAILS );
+                        	}
                             customerTable.setBusy(false);
                             customerTable.setShowNoData(true);
                         }
@@ -297,6 +300,9 @@ sap.ui.define([
                 if (!this.fnCustomerTableBindingDataReceived) {
                     this.fnCustomerTableBindingDataReceived = function fnCustomerTableBindingDataReceived(oEvent) {
                         if (oEvent.getParameters().data) {
+                        	if(oEvent.getParameters().data.results && oEvent.getParameters().data.results.length >0){
+                        		this.getView().getModel('viewModel').setProperty("/Annual_liability_show",oEvent.getParameters().data.results[0].IS_SHOW_DETAILS );
+                        	}
                             customerTable.setBusy(false);
                             customerTable.setShowNoData(true);
                         }
