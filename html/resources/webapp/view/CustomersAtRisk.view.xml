@@ -69,7 +69,7 @@
                                 <Column demandPopin="true" minScreenWidth="800px" popinDisplay="Block" hAlign="Left">
                                     <Text text="{i18n>CustomersAtRisk.SuggestedCustomersColumnRisk}" class="sapSuiteBMCContent"/>
                                 </Column>
-                                <Column width="9rem">
+                                <Column width="9rem" visible="{=${viewModel>/Annual_liability_show} === 0 ? false : true}">
                                     <Text text="{i18n>CustomersAtRisk.SuggestedCustomersColumnAnnualLiability}" />
                                 </Column>
                                 <Column demandPopin="true" minScreenWidth="Tablet"
@@ -163,7 +163,7 @@
                                         <Text text="{CRI>EXT_ID}"/>
                                     </table:template>
                                 </table:Column>
-                                <table:Column sortProperty="NAME">
+                                <table:Column sortProperty="NAME" >
                                     <Label text="{i18n>CustomersAtRisk.CustomerListColumnName}"/>
                                     <table:template>
                                         <Text text="{CRI>NAME}"/>
@@ -175,7 +175,7 @@
                                         <Text text="{CRI>INFLUENCE}%"/>
                                     </table:template>
                                 </table:Column>
-                                <table:Column>
+                                <table:Column visible="{=${viewModel>/Annual_liability_show} === 0 ? false : true}">
                                     <Label text="{i18n>CustomersAtRisk.CustomerListColumnAnnualLiability}"/>
                                     <table:template>
                                         <Text text="{CRI>ANNUAL_LIABILITY}"/>
