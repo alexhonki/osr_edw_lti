@@ -113,7 +113,7 @@ LT_CUST_ID_EDITED_LAND_LOST = SELECT  TO_INT (PARTNER) AS "CUST_ID" FROM :LT_CUS
     				If No, then Land was lost(sold) - DAYDIFF_LEAD > 0 OR DAYDIFF_LEAD is NULL and also VALIDTO shouldn't be equal to '99991231'
 	=========================================================================================================================*/
 	UNION ALL
-	(select DISTINCT
+	(select 
 	c.CUST_ID AS CUST_ID,
 	NULL AS EVENT_ID,
 	:LV_LAND_LOST_GRP AS EVENT_GROUP,
