@@ -548,13 +548,19 @@ sap.ui.define([
         		if(isSelected){
         			//when all but All Categories is selected
         			if(oMultiComboBox.getSelectedKeys().length === oMultiComboBox.getSelectableItems().length - 1 ){
-        				oMultiComboBox.setSelectedKeys(oMultiComboBox.getSelectableItems().map(obj=>(obj.getKey())));
+        				oMultiComboBox.setSelectedKeys(oMultiComboBox.getSelectableItems().map(function(obj){
+        						return obj.getKey();
+        					}));
+        					
         			}
         		}
         	} else {
         		//check/uncheck every other categories
         		if(isSelected){
-        			oMultiComboBox.setSelectedKeys(oMultiComboBox.getSelectableItems().map(obj=>(obj.getKey())));	
+        			oMultiComboBox.setSelectedKeys(oMultiComboBox.getSelectableItems().map(function(obj){
+        						return obj.getKey();
+        					}));
+        					
         		} else{
         			oMultiComboBox.setSelectedKeys([]);
         		}
@@ -588,7 +594,10 @@ sap.ui.define([
                 // show selected categories events in pulse
                filteredList = aDeepCopyEvents.map(function(oEvent){
                	var oNewEvent = jQuery.extend(false,{},oEvent);
-               	var iMatchedEventGroup = aSelectedCategories.filter(obj => (obj === oNewEvent.EventGroup)).length;
+               	var iMatchedEventGroup = aSelectedCategories.filter(function(obj){
+               			return obj === oNewEvent.EventGroup ;
+               		}).length;
+               		
                	//oNewEvent.Visible = !!(oNewEvent.EventGroup === categoryfilter);
                	oNewEvent.Visible = iMatchedEventGroup > 0 ? true : false;
                	return oNewEvent;
