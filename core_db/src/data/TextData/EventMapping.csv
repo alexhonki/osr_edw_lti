@@ -62,6 +62,7 @@ Debt Management,Debt Management - Reverse,collection%steps%reversed,46,0,sales-o
 Debt Management,Debt Management - Reverse,reset%dunning%steps,46,0,sales-order
 Debt Management,Debt Management - Block,exemption%LT12%dunning%block,45,0,sales-order
 Debt Management,Debt Management - Charge,register%charge,43,0,sales-order
+Debt Management,Debt Management - Charge,release%charge,43,0,sales-order
 Debt Management,Debt Management - Charge,charge%release,43,0,sales-order
 Debt Management,Debt Management - Charge,remov%charge,43,0,sales-order
 Debt Management,Debt Management - Charge,charge%fee,43,0,sales-order
