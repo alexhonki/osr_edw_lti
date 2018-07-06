@@ -78,6 +78,10 @@ Debt Management,Debt Management,waive,48,0,sales-order
 Debt Management,Debt Management,interest,48,0,sales-order
 Debt Management,Debt Management,lpi,48,0,sales-order
 Debt Management,Debt Management,final%demand,48,0,sales-order
+Exemption,Exemption,lt1,70,0,insurance-life
+Exemption,Exemption,lt 1,70,0,insurance-life
+Exemption,Exemption,lt2,70,0,insurance-life
+Exemption,Exemption,lt 2,70,0,insurance-life
 Exemption,Exemption,lt12,70,0,insurance-life
 Payment Extension,Payment Extension,defer%interest%block,64,0,time-overtime
 Payment Extension,Payment Extension,dunning%hold,64,0,time-overtime
