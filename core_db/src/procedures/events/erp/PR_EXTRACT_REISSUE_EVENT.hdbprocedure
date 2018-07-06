@@ -35,7 +35,7 @@ BEGIN
 	LT_CUST_EDITED_REISSUE = SELECT DISTINCT c.CUST_ID, a.REISSUE_DATE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTAXASFB" a 
 																		LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" b ON b.FBNUM=a.ASSESS_FBNUM
 																		INNER JOIN "db::app.Customer" c ON c.EXT_ID = b.GPART
-																		WHERE a.REISSUE_DATE>0 AND a.Z_RUN_SEQ_ID > LV_MAX_SEQ_ID;
+																		WHERE a.REISSUE_DATE>0 AND a.Z_RUN_SEQ_ID > LV_MAX_SEQ_ID ;
 																		
 	LT_CUST_ID_EDITED_REISSUE = SELECT CUST_ID from :LT_CUST_EDITED_REISSUE;
 	CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
@@ -43,22 +43,22 @@ BEGIN
 		IT_CUST=>:LT_CUST_EDITED_REISSUE
 	);
    	INSERT INTO "db::app.CustomerEvents"
-		SELECT DISTINCT
+		SELECT 
 			c.CUST_ID AS CUST_ID,
 			NULL AS EVENT_ID,
 			:LV_REISSUE_GROUP AS EVENT_GROUP,
 			:LV_REISSUE AS EVENT_NAME,
-			CAST(a.REISSUE_DATE AS date) AS INIT_DATE,
+			CAST(MAX(a.REISSUE_DATE) AS date) AS INIT_DATE,
 			NULL AS END_DATE,
 			1 AS EVENT_VALUE,
-			:LV_REISSUE AS DESCRIPTION,
-			LEFT(a.REISSUE_DATE,6)  AS INIT_TS,
+			CONCAT(CONCAT(:LV_REISSUE,' - '), ASSESS_FBNUM) AS DESCRIPTION,
+			LEFT(MAX(a.REISSUE_DATE),6)  AS INIT_TS,
 			NULL AS END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTAXASFB" a 
 			LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" b ON b.FBNUM=a.ASSESS_FBNUM
 			INNER JOIN "db::app.Customer" c ON c.EXT_ID = b.GPART
 			INNER JOIN :LT_CUST_EDITED_REISSUE delt ON b.GPART = delt.CUST_ID
-			WHERE a.REISSUE_DATE>0;
+			WHERE a.REISSUE_DATE>0 GROUP BY c.CUST_ID, ASSESS_FBNUM;
 
 	-- Generate event ID
     CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	
