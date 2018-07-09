@@ -228,7 +228,7 @@ sap.ui.define([
                     });
 
                     var saveButton = new Button({icon: "sap-icon://accept", type: ButtonType.Transparent});
-					if(item.updatePath.includes('SEARCH_SCORE_THRESHOLD')){
+					if(item.updatePath.indexOf('SEARCH_SCORE_THRESHOLD') >= 0){
 						var inputWithSave = new HBox({
 	                        visible: false,
 	                        alignItems: "Center",
@@ -347,7 +347,7 @@ sap.ui.define([
                    group.items.forEach(function (item) {
                    	var controls = item.control.getAggregation("items");
 	                       controls.forEach(function (control) {
-	                       	if(control.getBindingContext().getObject().updatePath.includes("SEARCH_SCORE_THRESHOLD")){
+	                       	if(control.getBindingContext().getObject().updatePath.indexOf("SEARCH_SCORE_THRESHOLD") >= 0){
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = 0;
 	                               var max = 101;
@@ -358,8 +358,8 @@ sap.ui.define([
 	                                   control.setValueState("Error");
 	                               }
 	                           }
-	                       	} else if(control.getBindingContext().getObject().updatePath.includes("CUSTOMER_RISK") 
-	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=1")) {
+	                       	} else if(control.getBindingContext().getObject().updatePath.indexOf("CUSTOMER_RISK") >= 0
+	                       	&& control.getBindingContext().getObject().updatePath.indexOf("SEQ=1") >= 0) {
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = oMinMaxLowRisk.min;
 	                               var max = oMinMaxLowRisk.max;
@@ -370,8 +370,8 @@ sap.ui.define([
 	                                   control.setValueState("Error");
 	                               }
 	                           }
-	                       	}else if(control.getBindingContext().getObject().updatePath.includes("CUSTOMER_RISK") 
-	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=2")) {
+	                       	}else if(control.getBindingContext().getObject().updatePath.indexOf("CUSTOMER_RISK") >= 0 
+	                       	&& control.getBindingContext().getObject().updatePath.indexOf("SEQ=2") >= 0) {
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = oMinMaxMedRisk.min;
 	                               var max = oMinMaxMedRisk.max;
@@ -382,8 +382,8 @@ sap.ui.define([
 	                                   control.setValueState("Error");
 	                               }
 	                           }
-	                       	}else if(control.getBindingContext().getObject().updatePath.includes("CUSTOMER_RISK") 
-	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=3")) {
+	                       	}else if(control.getBindingContext().getObject().updatePath.indexOf("CUSTOMER_RISK") >= 0 
+	                       	&& control.getBindingContext().getObject().updatePath.indexOf("SEQ=3") >= 0) {
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = oMinMaxHighRisk.min;
 	                               var max = oMinMaxHighRisk.max;
@@ -394,9 +394,9 @@ sap.ui.define([
 	                                   control.setValueState("Error");
 	                               }
 	                           }
-	                       	}else if(control.getBindingContext().getObject().updatePath.includes("IMPACT") 
-	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=1")
-	                       	&& !control.getBindingContext().getObject().updatePath.includes("IMPACT_")) {
+	                       	}else if(control.getBindingContext().getObject().updatePath.indexOf("IMPACT") >= 0 
+	                       	&& control.getBindingContext().getObject().updatePath.indexOf("SEQ=1") >= 0
+	                       	&& !control.getBindingContext().getObject().updatePath.indexOf("IMPACT_") >= 0) {
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = oMinMaxLowImpact.min;
 	                               var max = oMinMaxLowImpact.max;
@@ -407,9 +407,9 @@ sap.ui.define([
 	                                   control.setValueState("Error");
 	                               }
 	                           }
-	                       	}else if(control.getBindingContext().getObject().updatePath.includes("IMPACT") 
-	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=2")
-	                       	&& !control.getBindingContext().getObject().updatePath.includes("IMPACT_")) {
+	                       	}else if(control.getBindingContext().getObject().updatePath.indexOf("IMPACT") >= 0 
+	                       	&& control.getBindingContext().getObject().updatePath.indexOf("SEQ=2") >= 0
+	                       	&& !control.getBindingContext().getObject().updatePath.indexOf("IMPACT_") >= 0) {
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = oMinMaxMedImpact.min;
 	                               var max = oMinMaxMedImpact.max;
@@ -420,9 +420,9 @@ sap.ui.define([
 	                                   control.setValueState("Error");
 	                               }
 	                           }
-	                       	}else if(control.getBindingContext().getObject().updatePath.includes("IMPACT") 
-	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=3")
-	                       	&& !control.getBindingContext().getObject().updatePath.includes("IMPACT_")) {
+	                       	}else if(control.getBindingContext().getObject().updatePath.indexOf("IMPACT") >= 0 
+	                       	&& control.getBindingContext().getObject().updatePath.indexOf("SEQ=3") >= 0
+	                       	&& !control.getBindingContext().getObject().updatePath.indexOf("IMPACT_") >= 0) {
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = oMinMaxHighImpact.min;
 	                               //var max = oMinMaxHighImpact.max;
@@ -433,8 +433,8 @@ sap.ui.define([
 	                                   control.setValueState("Error");
 	                               }
 	                           }
-	                       	}else if(control.getBindingContext().getObject().updatePath.includes("INCOME_LOSS") 
-	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=1")) {
+	                       	}else if(control.getBindingContext().getObject().updatePath.indexOf("INCOME_LOSS") >= 0 
+	                       	&& control.getBindingContext().getObject().updatePath.indexOf("SEQ=1") >= 0) {
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = oMinMaxLowIncomeLoss.min;
 	                               var max = oMinMaxLowIncomeLoss.max;
@@ -445,8 +445,8 @@ sap.ui.define([
 	                                   control.setValueState("Error");
 	                               }
 	                           }
-	                       	}else if(control.getBindingContext().getObject().updatePath.includes("INCOME_LOSS") 
-	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=2")) {
+	                       	}else if(control.getBindingContext().getObject().updatePath.indexOf("INCOME_LOSS") >= 0 
+	                       	&& control.getBindingContext().getObject().updatePath.indexOf("SEQ=2") >= 0) {
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = oMinMaxMedIncomeLoss.min;
 	                               var max = oMinMaxMedIncomeLoss.max;
@@ -457,8 +457,8 @@ sap.ui.define([
 	                                   control.setValueState("Error");
 	                               }
 	                           }
-	                       	}else if(control.getBindingContext().getObject().updatePath.includes("INCOME_LOSS") 
-	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=3")) {
+	                       	}else if(control.getBindingContext().getObject().updatePath.indexOf("INCOME_LOSS") >= 0 
+	                       	&& control.getBindingContext().getObject().updatePath.indexOf("SEQ=3") >= 0) {
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = oMinMaxHighIncomeLoss.min;
 	                               //var max = oMinMaxHighImpact.max;
@@ -469,8 +469,8 @@ sap.ui.define([
 	                                   control.setValueState("Error");
 	                               }
 	                           }
-	                       	}else if(control.getBindingContext().getObject().updatePath.includes("INFLUENCE") 
-	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=1")) {
+	                       	}else if(control.getBindingContext().getObject().updatePath.indexOf("INFLUENCE") >= 0 
+	                       	&& control.getBindingContext().getObject().updatePath.indexOf("SEQ=1") >= 0) {
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = oMinMaxLowInfluence.min;
 	                               var max = oMinMaxLowInfluence.max;
@@ -481,8 +481,8 @@ sap.ui.define([
 	                                   control.setValueState("Error");
 	                               }
 	                           }
-	                       	}else if(control.getBindingContext().getObject().updatePath.includes("INFLUENCE") 
-	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=2")) {
+	                       	}else if(control.getBindingContext().getObject().updatePath.indexOf("INFLUENCE") >= 0 
+	                       	&& control.getBindingContext().getObject().updatePath.indexOf("SEQ=2") >= 0) {
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = oMinMaxMedInfluence.min;
 	                               var max = oMinMaxMedInfluence.max;
@@ -493,8 +493,8 @@ sap.ui.define([
 	                                   control.setValueState("Error");
 	                               }
 	                           }
-	                       	}else if(control.getBindingContext().getObject().updatePath.includes("INFLUENCE") 
-	                       	&& control.getBindingContext().getObject().updatePath.includes("SEQ=3")) {
+	                       	}else if(control.getBindingContext().getObject().updatePath.indexOf("INFLUENCE") >= 0 
+	                       	&& control.getBindingContext().getObject().updatePath.indexOf("SEQ=3") >= 0) {
 	                       		if (control.getMetadata().getName() == "sap.m.StepInput") {
 	                               var min = oMinMaxHighInfluence.min;
 	                               var max = oMinMaxHighImpact.max;
