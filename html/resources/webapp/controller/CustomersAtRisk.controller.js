@@ -445,7 +445,8 @@ sap.ui.define([
                         OperatingIncome: data.INCOME_LOSS,
                         Churned: data.CHURNED_FLAG ? "Yes" : "No",
                         Currency: data.CURRENCY,
-                        Risk : data.INFLUENCE
+                        Risk : data.INFLUENCE,
+                        AnnualLiability: data.ANNUAL_LIABILITY
                     });
                 });
                 this.getOwnerComponent().exportDialog.open(this.getView(), exportCustomers,false);
@@ -483,7 +484,8 @@ sap.ui.define([
                                     OperatingIncome: data.INCOME_LOSS,
                                     Churned: data.CHURNED_FLAG ? "Yes" : "No",
                                     Currency: data.CURRENCY,
-                                    Risk : data.INFLUENCE
+                                    Risk : data.INFLUENCE,
+                                    AnnualLiability: data.ANNUAL_LIABILITY
                                 });
                             });
 

@@ -46,6 +46,7 @@ sap.ui.define([
             this._view = oView;
             oDialog.getModel().setProperty("/customerList", customerList);
             oDialog.getModel().setProperty("/sourceEvent", bSourceEvent);
+            oDialog.getModel().setProperty("/showAnnualLiability", oView.getModel("viewModel").getProperty("/Annual_liability_show") === 0 ? false : true);
             oDialog.open();
         },
         exportEMail: function () {
@@ -57,8 +58,10 @@ sap.ui.define([
         },
         exportCSV: function () {
             var bSourceEvent = this._getDialog().getModel().getProperty("/sourceEvent");
+            var bShowAnnLiability = this._getDialog().getModel().getProperty("/showAnnualLiability");
 			var i18nModel = this._view.getModel("i18n").getResourceBundle();
-            var arrayOfData = [];
+            var arrayOfData = [],
+            aHeader;
             if(bSourceEvent){
             	arrayOfData = [
                 [i18nModel.getText("EventOverview.CustomerListColumnId"), 
@@ -69,12 +72,16 @@ sap.ui.define([
                 i18nModel.getText("EventOverview.CustomerListColumnReactedDate")]
             ];
             } else{
-            	arrayOfData = [
-                [i18nModel.getText("CustomersAtRisk.CustomerListColumnId"), 
+            
+                aHeader = [i18nModel.getText("CustomersAtRisk.CustomerListColumnId"), 
                 i18nModel.getText("CustomersAtRisk.CustomerListColumnName"),
                 i18nModel.getText("CustomersAtRisk.CustomerListColumnOperatingIncomeLoss"),
-                i18nModel.getText("CustomersAtRisk.AllCustomersTableColumnRisk")]
-            ];
+                i18nModel.getText("CustomersAtRisk.AllCustomersTableColumnRisk")];
+            
+            	if(bShowAnnLiability){
+            	aHeader.push(i18nModel.getText("CustomersAtRisk.CustomerListColumnAnnualLiability"));
+            	}
+            	arrayOfData = [aHeader];
             }
            
             var customers = this._getDialog().getModel().getProperty("/customerList");
@@ -89,12 +96,23 @@ sap.ui.define([
                     entry.INIT_DATE        
                 	]);
                 } else {
-                	arrayOfData.push([
-                    entry.OriginId,
-                    entry.CustomerName,
-                    entry.OperatingIncome,
-                    entry.Risk        
-                ]);
+                		if(bShowAnnLiability){
+                			arrayOfData.push([
+		                    entry.OriginId,
+		                    entry.CustomerName,
+		                    entry.OperatingIncome,
+		                    entry.Risk ,
+		                    entry.AnnualLiability
+		                	]);
+                		} else {
+                			arrayOfData.push([
+		                    entry.OriginId,
+		                    entry.CustomerName,
+		                    entry.OperatingIncome,
+		                    entry.Risk        
+		                	]);	
+                		}
+                
                 }
                 
             });
