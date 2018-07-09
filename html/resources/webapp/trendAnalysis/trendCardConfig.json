@@ -142,7 +142,7 @@
                         "style": {
                             "fontWeight": "normal"
                         },
-                        "text": "Clients by Debtor Ranking",
+                        "text": "",
                         "visible": true
                     }
                 }
