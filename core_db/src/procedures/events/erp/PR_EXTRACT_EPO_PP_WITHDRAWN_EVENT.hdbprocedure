@@ -58,17 +58,16 @@ BEGIN
 		NULL as EVENT_ID,
 		:LV_EVENT_GRP as EVENT_GROUP,
 		:LV_EPO_WITHDRAWN as EVENT_NAME,
-		CAST(AEDAT as date) as INIT_DATE,
+		CAST(CHDAT as date) as INIT_DATE,
 		NULL as END_DATE,
 		1 as EVENT_VALUE,
 		:LV_EPO_WITHDRAWN as DESCRIPTION,
-		LEFT(AEDAT,6)  as INIT_TS,
+		LEFT(CHDAT,6)  as INIT_TS,
 		NULL  as END_TS
 		from(
-			SELECT a.GPART,b.AEDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a
+			SELECT a.GPART,a.CHDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a
 			INNER JOIN :LT_CUST_ID as delt ON a.GPART = delt.GPART
-			INNER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP_HIS" b ON a.PPKEY=b.PPKEY
-			WHERE COMMT='Promise to Pay Withdrawn' AND PPCAT='Z7' 
+			WHERE  PPCAT='Z7' AND PPSTA IN ('3','4','5') 
 			) a
 		INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART;
 
@@ -83,16 +82,16 @@ BEGIN
 		NULL as EVENT_ID,
 		:LV_EVENT_GRP as EVENT_GROUP,
 		:LV_PP_WITHDRAWN as EVENT_NAME,
-		CAST(AEDAT as date) as INIT_DATE,
+		CAST(CHDAT as date) as INIT_DATE,
 		NULL as END_DATE,
 		1 as EVENT_VALUE,
 		:LV_PP_WITHDRAWN as DESCRIPTION,
-		LEFT(AEDAT,6)  as INIT_TS,
+		LEFT(CHDAT,6)  as INIT_TS,
 		NULL  as END_TS
 		from(
-			SELECT a.GPART,b.AEDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a
-			INNER JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP_HIS" b ON a.PPKEY=b.PPKEY
-			WHERE COMMT='Promise to Pay Withdrawn'  AND PPCAT!='Z7' AND GPART IN (SELECT GPART FROM :LT_CUST_ID)
+				SELECT a.GPART,a.CHDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a
+			INNER JOIN :LT_CUST_ID as delt ON a.GPART = delt.GPART
+			WHERE  PPCAT !='Z7' AND PPSTA IN ('3','4','5') 
 			) a
 		INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART;
 
