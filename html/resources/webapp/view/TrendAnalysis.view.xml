@@ -17,7 +17,7 @@
                     filterChange="onFilterChanged"
                     clearFilters="onClearFilters"
             />
-            <Panel width="auto" backgroundDesign="Transparent">
+            <Panel width="auto" backgroundDesign="Translucent">
             <l:Grid id="idCardContainer" defaultSpan="XL3 L4 M6 S12" class="sapUiResponsiveMargin"> <!--content="{path:'cardModel>/Cards', factory:'.cardFactory'}"-->
 
             </l:Grid>
