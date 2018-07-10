@@ -73,7 +73,7 @@ service namespace "com.odata.v2.sap.cr" {
     
    // Customer By Event
 	"models.apps.customer::CV_CUSTOMER_BY_EVENT" as "CustomerByEvent"
-		keys("CUST_ID","EVENT_YEAR")
+		keys("CUST_ID","EVENT_YEAR","INIT_DATE")
 		//navigates ( "CustomerByEvents_KeyValues"	as "KeyValues")
 	parameters via key and entity;
 	
