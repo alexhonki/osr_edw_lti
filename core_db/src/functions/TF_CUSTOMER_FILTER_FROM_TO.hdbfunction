@@ -16,8 +16,10 @@ BEGIN
 	-------------------------------------------------------------------------------
 	DECLARE LV_MATCH  INTEGER := 0;
 	DECLARE LV_POSTCODE_MATCH  INTEGER := 0;
+	DECLARE LV_VAL_MATCH  INTEGER := 0;
 	DECLARE LV_FROM	  INTEGER := TO_INT(:IM_FROM);
 	DECLARE LV_TO	  INTEGER := TO_INT(:IM_TO);
+	DECLARE LV_FILTER NVARCHAR(5000);
  	
  	LT_CUSTOMERS = SELECT a.cust_id --a."INIT_TS"
 				FROM "models.apps.customer::CV_ACTIVE_CUSTOMER" a
@@ -50,32 +52,63 @@ BEGIN
 	 		
 			SELECT OCCURRENCES_REGEXPR('(POSTCODE)' IN :IM_FILTER) as "MATCH"  INTO LV_POSTCODE_MATCH FROM "synonyms::dummy";
 		END;
+		BEGIN
+	 		DECLARE EXIT HANDLER FOR SQL_ERROR_CODE 1299 LV_VAL_MATCH := 0;
+	 		
+			SELECT OCCURRENCES_REGEXPR('(OUTSTANDING_REVENUE)' IN :IM_FILTER) as "MATCH"  INTO LV_VAL_MATCH FROM "synonyms::dummy";
+			SELECT REPLACE_REGEXPR('(OUTSTANDING_REVENUE)' IN :IM_FILTER WITH 'OPERATING_INCOME_AMOUNT' ) INTO LV_FILTER  FROM "synonyms::dummy";
+		END;
 		
 		IF LV_POSTCODE_MATCH > 0 THEN
 			LV_MATCH := :LV_MATCH - :LV_POSTCODE_MATCH + 1;
 		END IF;
 		
+		IF LV_VAL_MATCH > 0 THEN
+			LV_MATCH := :LV_MATCH - :LV_VAL_MATCH;
+		END IF;
+		
 		LT_FILTER = SELECT b.attribute_id, c.attr_value, c.attr_key 
 					FROM "db::app.AttributeTypes" b   
-					INNER JOIN "functions::TF_STRING_TO_ROW"(:IM_FILTER) c 
+					INNER JOIN "functions::TF_STRING_TO_ROW"(:LV_FILTER) c 
 					ON b.attribute_name = c.attr_name  
 					WHERE b.is_filter = 1;
+					
+		LT_VAL_FILTER = SELECT b.value_id, c.attr_value, c.attr_key 
+						FROM "db::app.ValueTypes" b   
+						INNER JOIN "functions::TF_STRING_TO_ROW"(:LV_FILTER) c 
+						ON b.value_name = c.attr_name;
 		
 		-- Output list of IDs that match criteria
-		RETURN select CUST_ID FROM
-				( SELECT a."CUST_ID" as "CUST_ID", b.attr_key --a."INIT_TS"
-					FROM :LT_CUSTOMERS e 
-					INNER JOIN "db::app.CustomerAttributes" a ON e."CUST_ID" = a."CUST_ID"
-					INNER JOIN :LT_FILTER b ON a."ATTRIBUTE_ID" = b."ATTRIBUTE_ID" AND a.attribute_value = b.attr_value
-					-- Filter For Valid data
-					WHERE   A.INIT_TIME_SEGMENT <= :LV_TO
-	  	  			AND	    A.END_TIME_SEGMENT >= :LV_FROM
-	  	  			) 
-	  	  			
-	  	  			GROUP BY CUST_ID
-	  	  			HAVING COUNT(distinct attr_key) >= :LV_MATCH; 
-	  	  			
-	 	   	
+		LT_ATTR_FILTER =	SELECT CUST_ID FROM
+								( SELECT a."CUST_ID" as "CUST_ID", b.attr_key --a."INIT_TS"
+									FROM :LT_CUSTOMERS e 
+									INNER JOIN "db::app.CustomerAttributes" a ON e."CUST_ID" = a."CUST_ID"
+									INNER JOIN :LT_FILTER b ON a."ATTRIBUTE_ID" = b."ATTRIBUTE_ID" AND a.attribute_value = b.attr_value
+									-- Filter For Valid data
+									WHERE   A.INIT_TIME_SEGMENT <= :LV_TO
+					  	  			AND	    A.END_TIME_SEGMENT >= :LV_FROM
+					  	  			) 
+				  	  			GROUP BY CUST_ID
+				  	  			HAVING COUNT(distinct attr_key) >= :LV_MATCH; 
+		
+		-- Output list of IDs that match criteria				  	  			
+	 	RETURN	SELECT CUST_ID FROM 
+	 				( SELECT cv."CUST_ID" as "CUST_ID", cv.VALUE_ID,
+	 						CASE WHEN (sum(value)<=100 ) THEN 'Under $100' 
+							    WHEN (sum(value)>100 and sum(value)<=1000 ) THEN '$100 to $1000'
+							    WHEN (sum(value)>1000 and sum(value)<=10000 ) THEN '$1000 to $10000'
+							    WHEN (sum(value)>10000 ) THEN 'Over $10000'
+							    END AS "TOTAL_VALUE"
+	 					FROM "db::app.CustomerValues" cv
+	 					INNER JOIN :LT_ATTR_FILTER ca ON cv."CUST_ID" = ca."CUST_ID"
+ 						-- Filter For Valid data
+						WHERE  cv.INIT_TIME_SEGMENT <= :LV_TO
+		  	  			AND	   cv.INIT_TIME_SEGMENT >= :LV_FROM
+		  	  			AND cv.VALUE_ID in (select value_id from :LT_VAL_FILTER)
+		  	  			GROUP BY cv.CUST_ID,  cv.VALUE_ID
+		  	  			) tv
+  	  			INNER JOIN :LT_VAL_FILTER  cf ON tv."VALUE_ID" = cf."VALUE_ID" AND tv."TOTAL_VALUE" = cf.attr_value;
+
 	END IF;
 	  
 END;
