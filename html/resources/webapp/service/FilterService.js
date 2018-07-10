@@ -247,13 +247,28 @@ sap.ui.define([
         },
         
         setDefaultToDate: function (sToDate) {
-        	var oConfig = this.getFilterConfig();
+        	var oConfig = this.getFilterConfig(), oFilter = {}, oSessionFilterData = {}, oNewFilter = {};
         	if(this.getFilterData()[oConfig.filterKeys.toDate] === "" || this.getFilterData()[oConfig.filterKeys.toDate] === sToDate) {
         		oConfig.filters.toDate = sToDate;
         		oConfig.filters.fromDate = this.getFilterData()[oConfig.filterKeys.toDate].length > 0 ? this.getFilterData()[oConfig.filterKeys.fromDate] : "";
-				var oFilter = this.buildDefaultFilters();
+				oFilter = this.buildDefaultFilters();	
+				oSessionFilterData = this.getFilterData();
 				this._defaultFilters = oFilter;
-        		this.setFilterData(oFilter);
+				oNewFilter = jQuery.extend(true, {}, oFilter);
+				for(var filterProp in oSessionFilterData){
+					if(filterProp === "IP_FROM" || filterProp === "IP_TO"){
+						continue;
+					} else{
+						oNewFilter[filterProp] = oSessionFilterData[filterProp];
+					}
+				}
+				/*if(!oConfig.filters.fromDate){
+					 oFilter = this.buildDefaultFilters();	
+				} else{
+					oFilter = this.getFilterData();	
+				}*/
+				
+        		this.setFilterData(oNewFilter);
         	}	               
         }
     };
