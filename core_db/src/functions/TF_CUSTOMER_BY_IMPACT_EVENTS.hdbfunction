@@ -58,7 +58,7 @@ BEGIN
 					max(ce.init_date) AS event_date
 				FROM (
 					SELECT cd.cust_id, 
-							cd.to_ts, 
+							year(cd.to_due_date) * 100 + month(cd.to_due_date) as to_ts, 
 							CASE
 								WHEN add_months(cd.to_due_date,-18) <= cd.from_due_date 
 									THEN year(cd.from_due_date) * 100 + month(cd.from_due_date)
@@ -68,24 +68,30 @@ BEGIN
 							cd.to_due_date as due_date,
 							cd.due_amount
 						FROM (
-								SELECT cv2.cust_id, 
-									cv2.init_date AS to_due_date, 
-									IFNULL(cr."REACTION_VALUE",0) AS reaction_value, 
-									IFNULL((SELECT max(cv1.init_date)
-											FROM "db::app.CustomerValues" AS cv1
-											WHERE cv1.init_time_segment < cv2.init_time_segment
-												AND cv1.cust_id = cv2.cust_id),ADD_MONTHS(cv2.init_date, -18)
-									) AS from_due_date, 
-									cv2.init_time_segment AS to_ts,
-									cv2.value AS due_amount
-								FROM "db::app.CustomerValues" AS cv2
-								INNER JOIN "functions::TF_CUSTOMER_FILTER_FROM_TO"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS) AS cf
-									ON cv2.cust_id = cf.cust_id
-								LEFT OUTER JOIN "db::app.CustomerReactions" AS cr
-									ON cv2.cust_id = cr.cust_id
-										AND cv2.init_date = cr.init_date
-								WHERE cv2.init_time_segment >= TO_INT(:LV_FROM_TS)
-								AND cv2.init_time_segment <= TO_INT(:LV_TO_TS)
+								SELECT cv.cust_id, cv.to_due_date,cv.from_due_date,cv.due_amount, IFNULL(cr."REACTION_VALUE",0) AS reaction_value 
+									from ( Select cv.cust_id, 
+												cv.init_date AS to_due_date, 
+												lag(cv.init_date,1, add_months(cv.init_date,-18)) over (partition by cv.cust_id order by cv.init_date) as from_due_date,
+												cv.value AS due_amount
+											FROM "db::app.CustomerValues" AS cv
+											INNER JOIN "functions::TF_CUSTOMER_FILTER_FROM_TO"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS) AS cf
+												ON cv.cust_id = cf.cust_id
+											WHERE cv.init_time_segment >= TO_INT(:LV_FROM_TS)
+											AND cv.init_time_segment <= TO_INT(:LV_TO_TS)
+											union
+											select cv.cust_id, 
+												to_date(31129999,'ddmmyyyy') AS to_due_date,
+												max(cv.init_date) over (partition by cv.cust_id order by cv.init_date) as from_due_date,
+												0 AS due_amount
+											FROM "db::app.CustomerValues" AS cv
+											INNER JOIN "functions::TF_CUSTOMER_FILTER_FROM_TO"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS) AS cf
+												ON cv.cust_id = cf.cust_id
+											WHERE cv.init_time_segment >= TO_INT(:LV_FROM_TS)
+											AND cv.init_time_segment <= TO_INT(:LV_TO_TS)
+									) AS cv
+									LEFT OUTER JOIN "db::app.CustomerReactions" AS cr
+										ON cv.cust_id = cr.cust_id
+											AND cv.to_due_date = cr.init_date
 							) AS cd
 					) AS cdd
 				INNER JOIN "db::app.CustomerEvents" AS ce
@@ -105,8 +111,8 @@ BEGIN
 					ce."EVENT_ID.ID" AS event_id,
 					max(ce.init_date) AS event_date
 				FROM (
-					SELECT cd.cust_id, 
-							cd.to_ts, 
+					SELECT cd.cust_id,
+							year(cd.to_due_date) * 100 + month(cd.to_due_date) as to_ts,
 							CASE
 								WHEN add_months(cd.to_due_date,-18) <= cd.from_due_date 
 									THEN year(cd.from_due_date) * 100 + month(cd.from_due_date)
@@ -116,24 +122,30 @@ BEGIN
 							cd.to_due_date as due_date,
 							cd.due_amount
 						FROM (
-								SELECT cv2.cust_id, 
-									cv2.init_date AS to_due_date, 
-									IFNULL(cr."REACTION_VALUE",0) AS reaction_value, 
-									IFNULL((SELECT max(cv1.init_date)
-											FROM "db::app.CustomerValues" AS cv1
-											WHERE cv1.init_time_segment < cv2.init_time_segment
-												AND cv1.cust_id = cv2.cust_id),ADD_MONTHS(cv2.init_date, -18)
-									) AS from_due_date, 
-									cv2.init_time_segment AS to_ts,
-									cv2.value AS due_amount
-								FROM "db::app.CustomerValues" AS cv2
-								INNER JOIN "functions::TF_CUSTOMER_FILTER_FROM_TO"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS) AS cf
-									ON cv2.cust_id = cf.cust_id
-								LEFT OUTER JOIN "db::app.CustomerReactions" AS cr
-									ON cv2.cust_id = cr.cust_id
-										AND cv2.init_date = cr.init_date
-								WHERE cv2.init_time_segment >= TO_INT(:LV_FROM_TS)
-								AND cv2.init_time_segment <= TO_INT(:LV_TO_TS)
+								SELECT cv.cust_id, cv.to_due_date,cv.from_due_date,cv.due_amount, IFNULL(cr."REACTION_VALUE",0) AS reaction_value 
+									from ( Select cv.cust_id, 
+												cv.init_date AS to_due_date, 
+												lag(cv.init_date,1, add_months(cv.init_date,-18)) over (partition by cv.cust_id order by cv.init_date) as from_due_date,
+												cv.value AS due_amount
+											FROM "db::app.CustomerValues" AS cv
+											INNER JOIN "functions::TF_CUSTOMER_FILTER_FROM_TO"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS) AS cf
+												ON cv.cust_id = cf.cust_id
+											WHERE cv.init_time_segment >= TO_INT(:LV_FROM_TS)
+											AND cv.init_time_segment <= TO_INT(:LV_TO_TS)
+											union
+											select cv.cust_id, 
+												to_date(31129999,'ddmmyyyy') AS to_due_date,
+												max(cv.init_date) over (partition by cv.cust_id order by cv.init_date) as from_due_date,
+												0 AS due_amount
+											FROM "db::app.CustomerValues" AS cv
+											INNER JOIN "functions::TF_CUSTOMER_FILTER_FROM_TO"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS) AS cf
+												ON cv.cust_id = cf.cust_id
+											WHERE cv.init_time_segment >= TO_INT(:LV_FROM_TS)
+											AND cv.init_time_segment <= TO_INT(:LV_TO_TS)
+									) AS cv
+									LEFT OUTER JOIN "db::app.CustomerReactions" AS cr
+										ON cv.cust_id = cr.cust_id
+											AND cv.to_due_date = cr.init_date
 							) AS cd
 					) AS cdd
 				INNER JOIN "db::app.CustomerEvents" AS ce
