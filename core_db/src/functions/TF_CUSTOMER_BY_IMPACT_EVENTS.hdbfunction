@@ -79,9 +79,9 @@ BEGIN
 											WHERE cv.init_time_segment >= TO_INT(:LV_FROM_TS)
 											AND cv.init_time_segment <= TO_INT(:LV_TO_TS)
 											union
-											select cv.cust_id, 
+											select distinct cv.cust_id, 
 												to_date(31129999,'ddmmyyyy') AS to_due_date,
-												max(cv.init_date) over (partition by cv.cust_id order by cv.init_date) as from_due_date,
+												max(cv.init_date) over (partition by cv.cust_id) as from_due_date,
 												0 AS due_amount
 											FROM "db::app.CustomerValues" AS cv
 											INNER JOIN "functions::TF_CUSTOMER_FILTER_FROM_TO"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS) AS cf
@@ -133,9 +133,9 @@ BEGIN
 											WHERE cv.init_time_segment >= TO_INT(:LV_FROM_TS)
 											AND cv.init_time_segment <= TO_INT(:LV_TO_TS)
 											union
-											select cv.cust_id, 
+											select distinct cv.cust_id, 
 												to_date(31129999,'ddmmyyyy') AS to_due_date,
-												max(cv.init_date) over (partition by cv.cust_id order by cv.init_date) as from_due_date,
+												max(cv.init_date) over (partition by cv.cust_id) as from_due_date,
 												0 AS due_amount
 											FROM "db::app.CustomerValues" AS cv
 											INNER JOIN "functions::TF_CUSTOMER_FILTER_FROM_TO"(:IM_FILTER,:LV_FROM_TS,:LV_TO_TS) AS cf
