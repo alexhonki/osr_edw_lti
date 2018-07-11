@@ -1,5 +1,5 @@
 {
-    "xsappname": "OSR_LTI",
+    "xsappname": "OSR-LTI",
     "authorities": ["$ACCEPT_GRANTED_AUTHORITIES"],
     "scopes": [
         {
