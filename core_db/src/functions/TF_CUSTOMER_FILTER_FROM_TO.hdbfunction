@@ -77,7 +77,7 @@ BEGIN
 						FROM "db::app.ValueTypes" b   
 						INNER JOIN "functions::TF_STRING_TO_ROW"(:LV_FILTER) c 
 						ON b.value_name = c.attr_name;
-		
+	
 		-- Output list of IDs that match criteria
 		LT_ATTR_FILTER =	SELECT CUST_ID FROM
 								( SELECT a."CUST_ID" as "CUST_ID", b.attr_key --a."INIT_TS"
@@ -90,7 +90,14 @@ BEGIN
 					  	  			) 
 				  	  			GROUP BY CUST_ID
 				  	  			HAVING COUNT(distinct attr_key) >= :LV_MATCH; 
-		
+	   IF IS_EMPTY(:LT_FILTER) THEN
+			LT_ATTR_FILTER = SELECT * FROM :LT_CUSTOMERS;
+	   END IF;
+	   IF IS_EMPTY(:LT_VAL_FILTER) THEN
+	   
+			RETURN SELECT * FROM :LT_ATTR_FILTER;
+			
+		ELSE
 		-- Output list of IDs that match criteria				  	  			
 	 	RETURN	SELECT CUST_ID FROM 
 	 				( SELECT cv."CUST_ID" as "CUST_ID", cv.VALUE_ID,
@@ -108,7 +115,7 @@ BEGIN
 		  	  			GROUP BY cv.CUST_ID,  cv.VALUE_ID
 		  	  			) tv
   	  			INNER JOIN :LT_VAL_FILTER  cf ON tv."VALUE_ID" = cf."VALUE_ID" AND tv."TOTAL_VALUE" = cf.attr_value;
-
+		END IF;
 	END IF;
 	  
 END;
