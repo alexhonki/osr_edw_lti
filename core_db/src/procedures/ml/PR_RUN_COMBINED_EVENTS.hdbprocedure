@@ -113,145 +113,89 @@ BEGIN
 	-- Get Valid Reactions for time period
 	--------------------------------------------------------------------------------------------------------
 	-- GET CUSTOMER WITH ONE EVENT_ID (MAX DATE)
-	TRUNCATE TABLE "db::ml.combined.rawEvents";
-	INSERT INTO "db::ml.combined.rawEvents"
-	(
-		"CUST_ID",
-		EVENT_ID,
-		INIT_DATE,
-		REACTION_DATE
-	)
-	(
-		SELECT  
-			A."CUST_ID" "CUST_ID", 
-			A."EVENT_ID.ID" "EVENT_ID", 
-			MAX(A.INIT_DATE) 	AS INIT_DATE, 
-			B.INIT_DATE 		AS REACTION_DATE
-		FROM "db::app.CustomerEvents" A 
-		INNER JOIN "db::app.CustomerReactions" B
-		ON A."CUST_ID" = B."CUST_ID"
-		WHERE A."EVENT_ID.ID" IN (SELECT "ID" FROM :LT_EVENT_NAME) 
-		  AND A."EVENT_GROUP" != 'Combined Event'
-		  AND A."INIT_DATE" BETWEEN ADD_MONTHS(B.INIT_DATE, -I_WINDOW_PERIOD) AND B.INIT_DATE
-		  AND B.REACTION_TYPE = :I_REACTION_TYPE
-		  AND B.INIT_TS BETWEEN :LV_FROM AND :LV_TO
-		GROUP BY A."CUST_ID", B.INIT_DATE, A."EVENT_ID.ID"
-	);
-
 	--
-	
-	LV_EVENTS = SELECT 	CAST(CONCAT(CUST_ID, CONCAT('_', DENSE_RANK)) AS VARCHAR(100)) 	AS TRANS, 
-						CAST("EVENT_ID" AS VARCHAR(200))		 						AS ITEM
-				FROM 
-				(
-						SELECT CAST("CUST_ID" AS VARCHAR(100)) AS "CUST_ID", "EVENT_ID", REACTION_DATE, 
-							DENSE_RANK() OVER (ORDER BY "CUST_ID", REACTION_DATE) AS DENSE_RANK
-						FROM "db::ml.combined.rawEvents"
-				);
-	
-	
-	
-	LV_REACT_EVENTS = 
-		SELECT TRANS, ITEM FROM 
-		(
-				 SELECT TRANS, ITEM FROM :LV_EVENTS
-				 UNION
-				 SELECT TRANS, '00' AS ITEM FROM :LV_EVENTS
-		) GROUP BY TRANS, ITEM;
-	
-	------------------------------------------------------------------------------------
-	-- INCREASE THE INFLUENCE LEVEL OF REACTED EVENTS
-	------------------------------------------------------------------------------------
-	CREATE LOCAL TEMPORARY COLUMN TABLE #TBL_REACTED_EVENTS (
-		TRANS VARCHAR(100),
-		ITEM VARCHAR(200)
-	);
-		
-	FOR V_INDEX IN 0 .. :I_INFLUENCE_FACTOR DO
-		INSERT INTO #TBL_REACTED_EVENTS (
-			SELECT CONCAT(TRANS, CONCAT('_', V_INDEX)) AS TRANS, ITEM
-			FROM :LV_REACT_EVENTS
-		);
-	END FOR;
-	
-	-----------------------------------------------------------------------------------	
-	-- GET NON-REACTED EVENTS
-	-----------------------------------------------------------------------------------
-	CREATE LOCAL TEMPORARY COLUMN TABLE #TBL_NON_REACTED_EVENTS (
-		TRANS VARCHAR(100),
-		ITEM VARCHAR(200)
-	);
-
-	WHILE (YEAR(ADD_MONTHS(:LV_INDEX, -I_WINDOW_PERIOD)) * 100 + MONTH(ADD_MONTHS(:LV_INDEX, -I_WINDOW_PERIOD))) >= :LV_FROM
-	DO
-	
-		-- get past events for those customers not reacted for the past x months from a specific date.
-		LV_NON_REACT_EVENTS =	SELECT "CUST_ID" "CUST_ID", "EVENT_ID.ID" "EVENT_ID", MAX(INIT_DATE) AS INIT_DATE
-								FROM "db::app.CustomerEvents"
-								WHERE "CUST_ID" NOT IN (	
-									SELECT DISTINCT "CUST_ID" "CUST_ID" 
-									FROM  "db::app.CustomerReactions"
-									WHERE INIT_TS BETWEEN (YEAR(ADD_MONTHS(:LV_INDEX, -I_WINDOW_PERIOD)) * 100 + MONTH(ADD_MONTHS(:LV_INDEX, -I_WINDOW_PERIOD))) 
-									AND (YEAR(:LV_INDEX) * 100 + MONTH(:LV_INDEX))
-								)
-								AND "EVENT_ID.ID" IN (SELECT "ID" FROM :LT_EVENT_NAME) 
-								AND "EVENT_GROUP" != 'Combined Event'
-								AND "INIT_DATE" BETWEEN ADD_MONTHS(:LV_INDEX, -I_WINDOW_PERIOD) AND :LV_INDEX
-								GROUP BY "CUST_ID", "EVENT_ID.ID";
-		
-		
-			INSERT INTO #TBL_NON_REACTED_EVENTS 
-
-			(
-				SELECT CONCAT(CUST_ID, CONCAT('_', CAST(YEAR(:LV_INDEX)*100 + MONTH(:LV_INDEX) AS VARCHAR(100)))) AS TRANS,  CAST("EVENT_ID" AS VARCHAR(200)) AS ITEM
-				FROM(
-					SELECT CAST(CUST_ID AS VARCHAR(100)) AS CUST_ID, EVENT_ID
-					FROM :LV_NON_REACT_EVENTS
-				)
-			);
-			
-		-- INSERT RECORDS INTO RAW EVENTS TABLE		
-		INSERT INTO "db::ml.combined.rawEvents" 
-		(
-			"CUST_ID",
-			EVENT_ID,
-			INIT_DATE,
-			GROUP_NO
-		)		
-		(
-			SELECT CUST_ID, EVENT_ID, INIT_DATE, :I_GROUP_NO AS GROUP_NO FROM :LV_NON_REACT_EVENTS
-		);
-			
-		LV_INDEX := ADD_MONTHS(:LV_INDEX, -I_WINDOW_PERIOD);
-		I_GROUP_NO := :I_GROUP_NO + 1;
-	END WHILE;
 
 	--------------------------------------------------------------------------------------------------------
 	-- Prepare Input Data
 	--------------------------------------------------------------------------------------------------------
-	CREATE LOCAL TEMPORARY COLUMN TABLE #PAL_FPGROWTH_DATA_TBL(
-		"TRANS" VARCHAR(100),
-		"ITEM" VARCHAR(200)
-	);
+	------ AJ START
+	-- table function to fetch the data
+	/*********************************
+	LT_CUSTOMERS_BY_IMPACT = 
+	CUST_ID
+	FROM_TS
+	TO_TS
+	DUE_AMOUNT
+	DUE_DATE
+	REACTION_VALUE
+	EVENT_ID
+	EVENT_DATE
+	*********************************/
+	LT_CUSTOMERS_BY_IMPACT = SELECT CBI.* 
+								FROM "functions::TF_CUSTOMER_BY_IMPACT_EVENTS"(''/*IM_FILTER <NVARCHAR(5000)>*/,
+                                                                                        :LV_FROM/*IM_FROM <VARCHAR(6)>*/,
+                                                                                        :LV_TO/*IM_TO <VARCHAR(6)>*/,
+                                                                                        ''/*IM_REACTION_TYPE <VARCHAR(200)>*/,
+                                                                                        NULL/*IM_EVENT_ID <INTEGER>*/) as CBI
+								INNER JOIN "db::adm.config.event.name" CEN ON CBI.EVENT_ID = CEN.ID
+								AND CEN.SOURCE <> 'COMBINED';
 
-    INSERT INTO  #PAL_FPGROWTH_DATA_TBL
-    (TRANS, ITEM)
-		SELECT TRANS, ITEM FROM 
+	TRUNCATE TABLE "db::ml.combined.rawEvents";
+	INSERT INTO "db::ml.combined.rawEvents"(
+		"CUST_ID",
+		EVENT_ID,
+		INIT_DATE,
+		REACTION_DATE,
+		GROUP_NO
+		)
 		(
-				 SELECT TRANS, ITEM FROM #TBL_REACTED_EVENTS
-				 UNION
-				 SELECT TRANS, ITEM FROM #TBL_NON_REACTED_EVENTS
-		) GROUP BY TRANS, ITEM	 
-	;	
-	
+		SELECT  
+		"CUST_ID",
+		"EVENT_ID",
+		"EVENT_DATE",
+		CASE WHEN "REACTION_VALUE" = 1 THEN "DUE_DATE" ELSE NULL END AS "REACTION_DATE",
+		CASE WHEN "REACTION_VALUE" = 1 THEN NULL ELSE 1 END AS "GROUP_NO"
+		FROM :LT_CUSTOMERS_BY_IMPACT 
+		);
+
+
+	--	Prepare input data for FPGROWTH method
+	-- 	"TRANS" : Unique transaction/bucket ID
+	-- 	"ITEM" 	: Event ID in transaction 
+
+	-- Prepare Data with Events happened
+	LT_DATA_FROM_EVENTS = SELECT CONCAT("CUST_ID", "TO_TS") AS TRANS, "EVENT_ID" AS ITEM
+				FROM :LT_CUSTOMERS_BY_IMPACT;
+
+	-- Unique "CUST_ID", "FROM_TS" and "TO_TS" combinations where customer is reacted
+	LT_TMP = SELECT DISTINCT "CUST_ID", "FROM_TS", "TO_TS"
+				FROM :LT_CUSTOMERS_BY_IMPACT --
+				WHERE "REACTION_VALUE" = 1
+				ORDER BY "CUST_ID";
+
+	-- Insert event '00' in data for transactions for which Customer is reacted
+	LT_DATA_IN =SELECT * FROM :LT_DATA_FROM_EVENTS
+				UNION
+				SELECT CONCAT(A."CUST_ID", A."TO_TS") AS TRANS, '00' AS ITEM
+					FROM :LT_TMP A;
+	/*
+	LT_DATA_IN =SELECT * FROM :LT_DATA_FROM_EVENTS
+				UNION
+				SELECT CONCAT(A."CUST_ID", A."TO_TS") AS TRANS, '00' AS ITEM
+					FROM :LT_TMP A
+					JOIN "db::app.CustomerReactions" B
+					ON A."CUST_ID" = B."CUST_ID"
+					WHERE B."INIT_TS" BETWEEN A."FROM_TS" AND A."TO_TS";
+	*/
+	------ AJ END
+
 	--------------------------------------------------------------------------------------------------------
 	-- Run FP-GROWTH Algorithm
 	--------------------------------------------------------------------------------------------------------
-	LT_DATA_IN = select * from #PAL_FPGROWTH_DATA_TBL;
+	-- LT_DATA_IN = select * from #PAL_FPGROWTH_DATA_TBL;
 
-	CALL "procedures.ml::PR_PAL_FPGROWTH" (:LT_DATA_IN, :LT_CONTROL, RESULT_TABLE);	
-
-	DROP TABLE #TBL_NON_REACTED_EVENTS;
-	DROP TABLE #TBL_REACTED_EVENTS;
-	DROP TABLE #PAL_FPGROWTH_DATA_TBL;
+	CALL "procedures.ml::PR_PAL_FPGROWTH" (:LT_DATA_IN, :LT_CONTROL, RESULT_TABLE);
+--	DROP TABLE #TBL_NON_REACTED_EVENTS;
+--	DROP TABLE #TBL_REACTED_EVENTS;
+--	DROP TABLE #PAL_FPGROWTH_DATA_TBL;
 END

@@ -16,13 +16,13 @@ NN_LEARNING_RATE,The learning rate used by NN model in learning data pattern,1,0
 NN_MOMENTUM_FACTOR,Momentum factor for gradient descent,1,0,0.9,
 NN_HIDDEN_LAYER_SIZE,Number of hidden layers and nodes per layer used in NN,1,0,0,"10,10"
 FPG_COMB_EVT2_THREAD_NUMBER,Thread number,1,10,,
-FPG_COMB_EVT2_MIN_SUPPORT,Minimum Support,1,,0.105,
-FPG_COMB_EVT2_MIN_CONFIDENCE,Minimum Confidence,1,,0.90,
+FPG_COMB_EVT2_MIN_SUPPORT,Minimum Support,1,,0.05,
+FPG_COMB_EVT2_MIN_CONFIDENCE,Minimum Confidence,1,,0.70,
 FPG_COMB_EVT2_MIN_LIFT,Minimum Lift,1,,0.1,
 FPG_COMB_EVT2_MAXITEMLENGTH,Maximum Length,1,1000,,
 FPG_COMB_EVT2_MAX_CONSEQUENT,Max Consequent,1,2,,
 FPG_COMB_EVT2_TIMEOUT,Timeout,1,172800,,
-FPG_COMB_EVT2_RHS_RESTRICT,RHS,1,,,00
+FPG_COMB_EVT2_RHS_RESTRICT,RHS,1,,,0
 FPG_COMB_EVT2_LHS_IS_COMPLEMENTARY_RHS,LHS_IS_COMPLEMENTARY_RHS,1,1,,
 FPG_COMB_EVT_PARAM_INFLUENCE_FACTOR,Factor rate for increasing the influence of reacted customer events,1,2,,
 FPG_COMB_EVT_PARAM_WINDOW_PERIOD,The period of window for generating features,1,12,,
