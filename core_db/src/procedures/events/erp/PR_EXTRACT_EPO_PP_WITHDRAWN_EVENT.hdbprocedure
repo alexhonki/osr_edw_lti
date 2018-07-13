@@ -65,9 +65,14 @@ BEGIN
 		LEFT(CHDAT,6)  as INIT_TS,
 		NULL  as END_TS
 		from(
-			SELECT a.GPART,a.CHDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a
-			INNER JOIN :LT_CUST_ID as delt ON a.GPART = delt.GPART
-			WHERE  PPCAT='Z7' AND PPSTA IN ('3','4','5') 
+			SELECT DFKKPP.GPART,DFKKPP.CHDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" DFKKPP
+					LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" DFKKPPD
+			ON DFKKPP.PPKEY=DFKKPPD.PPKEY
+			LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" DFKKPPP 
+			ON DFKKPP.PPKEY=DFKKPPP.PPKEY
+			INNER JOIN :LT_CUST_ID as delt ON DFKKPP.GPART = delt.GPART
+			WHERE  DFKKPPP.OPBEL IN (SELECT OPBEL FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE BLART='AB' and KOFIZ='LT')
+			AND  PPCAT='Z7' AND PPSTA IN ('3','4','5') 
 			) a
 		INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART;
 
@@ -89,9 +94,14 @@ BEGIN
 		LEFT(CHDAT,6)  as INIT_TS,
 		NULL  as END_TS
 		from(
-				SELECT a.GPART,a.CHDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" a
-			INNER JOIN :LT_CUST_ID as delt ON a.GPART = delt.GPART
-			WHERE  PPCAT !='Z7' AND PPSTA IN ('3','4','5') 
+				SELECT DFKKPP.GPART,DFKKPP.CHDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" DFKKPP
+				LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" DFKKPPD
+			ON DFKKPP.PPKEY=DFKKPPD.PPKEY
+			LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" DFKKPPP 
+			ON DFKKPP.PPKEY=DFKKPPP.PPKEY
+			INNER JOIN :LT_CUST_ID as delt ON DFKKPP.GPART = delt.GPART
+			WHERE  DFKKPPP.OPBEL IN (SELECT OPBEL FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE BLART='AB' and KOFIZ='LT')
+			AND PPCAT !='Z7' AND PPSTA IN ('3','4','5') 
 			) a
 		INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART;
 
