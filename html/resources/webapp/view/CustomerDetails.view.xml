@@ -37,7 +37,7 @@
             <IconTabBar id="idIconTabBar" stretchContentHeight="true">
                 <items>
                     <IconTabFilter id="idPulseTab" text="{i18n>CustomerPulse.Pulse.Title}">
-                        <VBox height="100%" width="100%">
+                        <VBox height="97%" width="100%">
                             <HBox>
                                 <Select id="idPulseChartTimeFilter" class="sapUiSmallMarginEnd" selectedKey="{/TimeRangeFilter}" items="{/TimeRangeFilters}"
                                         change="onTimeSelection">
@@ -56,12 +56,12 @@
 								</MultiComboBox>
                             </HBox>
                             <FlexBox>
-                                <cri:PulseChart id="idPulseChart" showNoData="true" yAxisLabel="Risk" thresholdLowValue="{/Thresholds/MEDIUM_RISK}" thresholdHighValue="{/Thresholds/HIGH_RISK}" items="{path:'/FilteredCustomerEvents', factory:'.pulseChartItemsFactory'}" reactions="{path: '/Reactions', factory: '.reactionItemFactory'}" itemSelect="onItemSelect" height="100%" width="100%" />
+                                <cri:PulseChart id="idPulseChart" showNoData="true" yAxisLabel="Risk" thresholdLowValue="{/Thresholds/MEDIUM_RISK}" thresholdHighValue="{/Thresholds/HIGH_RISK}" items="{path:'/FilteredCustomerEvents', factory:'.pulseChartItemsFactory'}" reactions="{path: '/Reactions', factory: '.reactionItemFactory'}" itemSelect="onItemSelect" height="100%" width="100%" showLegend="true" />
                                 <layoutData>
                                     <FlexItemData growFactor="1"/>
                                 </layoutData>
                             </FlexBox>
-                            <FlexBox height="0px">
+                           <FlexBox height="0px">
                                 <Table
                                         class="sapUiMediumMarginTopBottom"
                                         id="idDayEventList"
@@ -75,8 +75,7 @@
                                         <Toolbar>
                                             <Title id="idDayEventsListTitle" text="{i18n>CustomerPulse.Events.Title} {=${/daySelected} ? '- ' + ${/daySelected} : ''}" level="H2"/>
                                             <ToolbarSpacer></ToolbarSpacer>
-                                            <!--Button tooltip="View Settings" icon="sap-icon://drop-down-list" press="handleViewSettingsDialogButtonPressed" /-->
-                                        </Toolbar>
+                                            </Toolbar>
                                     </headerToolbar>
                                     <columns>
                                         <Column>

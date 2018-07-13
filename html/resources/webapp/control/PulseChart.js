@@ -71,6 +71,10 @@ sap.ui.define([
 					"showSimplePulse": {
 						type: "boolean",
 						defaultValue: false
+					},
+					"showLegend": {
+						type: "boolean",
+						defaultValue: false
 					}
 				},
 				aggregations: {
@@ -134,16 +138,15 @@ sap.ui.define([
 			renderer: function(oRenderManager, oControl) {
 				var oLayout = oControl.createChartLayoutContainer();
 
-				// if($('#legend').length == 0 ){
-				// 	oRenderManager.write("<div class='legend' id='legend' style='float: right; overflow: auto;height: 600px; width: 240px;'></div>");
-				// }
 				oRenderManager.write("<div");
 				oRenderManager.writeControlData(oControl);
 				oRenderManager.writeClasses();
 				oRenderManager.write(">");
 				oRenderManager.renderControl(oLayout);
 				oRenderManager.write("</div>");
-
+				if($("#legendDiv").length === 0 ){
+					oRenderManager.write("<div class='legendDiv' width='100%' id='legendDiv' style='overflow: auto;'></div>");
+				}
 			},
 
 			/**
@@ -163,12 +166,13 @@ sap.ui.define([
 					right: 20
 				};
 				var padding = 40;
-
+				var deltaHeight = 0, deltaWidth = 0;
 				var thresholdLowValue = this.getThresholdLowValue() || 5;
 				var thresholdHighValue = this.getThresholdHighValue() || 15;
 				var actionRequiredValue = this.getActionRequiredValue() || 25;
 
 				var oParentControl = this.getParent().$(); // Retrieve jQuery object from parent control.
+				var bShowLegend = this.getShowLegend();
 
 				var width = this.getWidth().replace("px", "") || 300;
 				var height = this.getHeight().replace("px", "") || 300;
@@ -201,10 +205,17 @@ sap.ui.define([
 
 				//width = (width > 0 ? width : 100);
 				//height = (height > 0 ? height : 100);
+				
+				//change height & width when showing legend
+			
+				if(bShowLegend){
+					deltaHeight = 0;
+					deltaWidth = 0;
+				}
 
 				// Setup scales
-				var xScale = d3.time.scale().range([padding, width - padding * 2]);
-				var yScale = d3.scale.linear().range([height - padding, padding]);
+				var xScale = d3.time.scale().range([padding, width - deltaHeight - padding * 2]);
+				var yScale = d3.scale.linear().range([height - deltaHeight - padding, padding]);
 				var green = "#61a656";
 				var orange = "#f8ac29"; //"yellow"//"#e17b24";
 				var red = "#d32030";
@@ -277,7 +288,8 @@ sap.ui.define([
 
 				this.rootSvg = eVis.append("svg")
 					.attr("width", width + margin.left + margin.right)
-					.attr("height", height + margin.top + margin.bottom);
+					.attr("height", height + margin.top + margin.bottom)
+					.attr("preserveAspectRatio", "xMinYMin meet");
 
 				this.svg = this.rootSvg.append("g")
 					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -285,7 +297,7 @@ sap.ui.define([
 				if (this.getItems().length == 0) {
 					if (this.getShowNoData()) {
 						this.svg.append("text")
-							.attr("transform", "translate(" + (((width + margin.left + margin.right) / 2) - margin.left) + "," + ((height + margin.top +
+							.attr("transform", "translate(" + (((width - deltaHeight + margin.left + margin.right) / 2) - margin.left) + "," + ((height - deltaHeight + margin.top +
 								margin.bottom) / 2) + ")")
 							.style("text-anchor", "middle")
 							.text("No Data");
@@ -367,17 +379,17 @@ sap.ui.define([
 				//X Axis
 				var xAxisGroup = this.svg.append("g")
 					.attr("class", "x axis")
-					.attr("transform", "translate(0," + height + ")")
+					.attr("transform", "translate(0," + parseInt(height - deltaHeight) + ")")
 					.call(xAxis);
-
+	
 				// Y Axis
 				this.svg.append("g")
 					.attr("class", "y axis")
 					.call(yAxis)
 					.append("text")
 					.attr("transform", "rotate(-90)")
-					.attr("y", -40)
-					.attr("x", -height / 2)
+					.attr("y", -40)             
+					.attr("x", -parseInt(height - deltaHeight) / 2)
 					.style("text-anchor", "middle")
 					.text(this.getYAxisLabel());
 
@@ -801,48 +813,7 @@ sap.ui.define([
 						})[0].icon).content;
 					});
 
-				/*	function wrapText(text, width) {
-					text.each(function() {
-						var textEl = d3.select(this),
-							words = textEl.text().split(/\s+/).reverse(),
-							word,
-							wrappedNext = false,
-							line = [],
-							linenumber = 0,
-							lineHeight = 1.1, // ems
-							y = textEl.attr('y'),
-							dx = parseFloat(textEl.attr('dx') || 0),
-							dy = parseFloat(textEl.attr('dy') || 0),
-							tspan;
-						if (JSON.parse(this.getAttribute("data-legend-wrap"))) {
-							y = parseInt(y) + 10;
-							if (this.nextSibling) {
-								var nextY = parseInt(this.nextSibling.getAttribute("y"));
-								this.nextSibling.setAttribute("y", y + 12);
-								this.nextSibling.setAttribute("data-legend-wrap", true);
-								wrappedNext = true;
-							}
-						}
-						tspan = textEl.text(null).append('tspan').attr('x', 0).attr('y', y).attr('dy', dy + 'em');
-
-						while (word = words.pop()) {
-							line.push(word);
-							tspan.text(line.join(' '));
-							if (tspan.node().getComputedTextLength() > width) {
-								if (this.nextSibling) {
-									var nextY = parseInt(this.nextSibling.getAttribute("y"));
-									this.nextSibling.setAttribute("y", nextY + 12);
-									this.nextSibling.setAttribute("data-legend-wrap", true);
-								}
-								line.pop();
-								tspan.text(line.join(' '));
-								line = [word];
-								tspan = textEl.append('tspan').attr('x', 25).attr('y', y).attr('dx', dx).attr('dy', ++linenumber * lineHeight + dy + 'em').text(
-									word);
-							}
-						}
-					});
-				}
+					
 			//extract distinct icons for legend from array of icons
 				var aDistinctIcons = filteredData.map(function(item) {
 					var obj = {};
@@ -850,88 +821,74 @@ sap.ui.define([
 					obj.event = item.item.getProperty("data").EventGroup;
 					obj.name = item.item.getProperty("data").EventName;
 					return obj;
+				})
+				.filter(function(value, index, self){
+					return index === self.indexOf(self.filter(function(t){
+						return t.icon === value.icon && t.event === value.event;
+					})[0]);
+				})
+				.filter(function(value){
+					return value.icon !== null;
 				});
-				// var aDistinctIcons = filteredData.map(item => {
-				// 	var obj = {}; 
-				// 	obj.icon = item.icon; 
-				// 	obj.event = item.item.getProperty("data").EventGroup; 
-				// 	obj.name = item.item.getProperty("data").EventName;               
-				// 	return obj;
-				// 	}).filter((value, index, self) => index === self.indexOf(self.filter((t) => (
-				// 		 t.icon == value.icon && t.event == value.event))[0]
-				// 	)).filter((value) => value.icon !== null);
-
-				//add legends
-				var svg2 = d3.select("#legend")
+	
+				//add default legends
+				aDistinctIcons.push({
+					icon: "alert",
+					event: "Overdue Assessment"
+				},
+				{
+					icon: "circle-task",
+					event: "Single Event"
+				},
+				{
+					icon: "circle-task-2",
+					event: "Multiple Events"
+				});
+				
+				var sLegendText = aDistinctIcons.reduce(function(acc,currVal){
+					var sEvent = currVal.event.toLowerCase().indexOf("crm") >= 0 ? currVal.name.split(" - ").join(" ") : currVal.event;
+					return acc.length > 0 ? acc + "  " + sap.ui.core.IconPool.getIconInfo(currVal.icon).content + " " + sEvent
+										  : sap.ui.core.IconPool.getIconInfo(currVal.icon).content + " " + sEvent;
+				},"");
+			
+				//Legend
+				var iLegendWidth = width;
+				if(bShowLegend && $(".legend").length < 1){
+					var svg2 = d3.select(".legendDiv")
 					.append("svg")
-					.attr("width", 225)
-					.attr("height", 22 * aDistinctIcons.length / 2 + 40 * aDistinctIcons.length / 2);
-
-				var legend2 = svg2.append("g")
-					.attr('transform', 'translate(5,40)')
-					.attr("width", 225);
-
-				legend2.selectAll("text")
-					.data(aDistinctIcons)
-					.enter()
+					.attr("id","idLegendSVG")
+					.attr("width", "100%")
+					.attr("height", "18px");
+				var legend = svg2.append("g")
+					//this.svg.append("g")
+					.attr("class", "legend")
+					//.attr("transform", "translate(0," + parseInt(height + 10) + ")")
+					.attr('transform', 'translate(0,10)')
 					.append("text")
-					.attr("x", 33)
-					.attr("y", function(d, i) {
-						return (i - 1) * 20;
-					})
-
-				.text(function(d) {
-						d.event = d.event.toLowerCase().indexOf("crm") >= 0 ? d.name : d.event;
-						return sap.ui.core.IconPool.getIconInfo(d.icon).content + " " + d.event;
-
-					})
-					.style("font-size", "16px")
+					.attr("transform", "translate(0,2)")
+					.text(sLegendText)
+					.style("font-size", "13px")
+					.style("white-space","pre")
 					.style("fill", "gray")
-					.style("font-family", "SAP-icons")
-					.call(wrapText, 220);
-				var n = aDistinctIcons.length / 2;
-				var legend = this.svg.selectAll(".legend")
-					//.append("g")
-
-				.data(aDistinctIcons)
-					.enter()
-					.append("g")
-					.attr("transform", function(d, i) {
-						return "translate(" + i % n * 80 + "," + Math.floor(i / n) * 18 + ")";
-					})
-
-				// .attr("transform", "translate(5,5)");
-
-				legend.selectAll("circle")
-					.data(pointLabels)
-					.enter()
-					.append("circle")
-					.attr("cx", width - 50)
-					.attr("cy", function(d, i) {
-						return i * 20;
-					})
-					.attr("r", 1)
-					.style("fill", function(d) {
-						return "white";
-					});
-
-				legend.selectAll("text")
-					.data(aDistinctIcons)
-					.enter()
-					.append("text")
-					.attr("x", width - 50)
-					.attr("y", function(d, i) {
-						return i * 20;
-					})
-
-				.text(function(d) {
-						d.event = d.event.toLowerCase().indexOf("crm") >= 0 ? d.name : d.event;
-						return sap.ui.core.IconPool.getIconInfo(d.icon).content + " " + d.event;
-
-					})
-					.style("font-size", "16px")
-					.style("fill", "gray")
-					.style("font-family", "SAP-icons");*/
+					.style("font-family", "SAP-icons");
+					
+				 
+				 if(d3.select(".legend")[0][0]) {
+				 	iLegendWidth = d3.select(".legend")[0][0].getBBox().width;
+				 }
+				 //if legend width less than div width then 100%
+				var iTextWidth = iLegendWidth < $(".legendDiv").width() ? 100 : parseInt(iLegendWidth/$(".legendDiv").width()*101);
+				$("#idLegendSVG").attr("width", iTextWidth+"%");
+			
+				} else if($(".legend").length > 0) {
+					//resize legend svg width
+					if(d3.select(".legend")[0][0]) {
+					 	iLegendWidth = d3.select(".legend")[0][0].getBBox().width;
+					}
+					//if legend width less than div width then 100%
+					var iTextWidth = iLegendWidth < $(".legendDiv").width() ? 100 : parseInt(iLegendWidth/$(".legendDiv").width()*101);
+					$("#idLegendSVG").attr("width", iTextWidth+"%");
+				}
 
 				this.svg.selectAll(".axis path")
 					.style("fill", "none")
@@ -1151,12 +1108,14 @@ sap.ui.define([
 					.attr("class", "reference-line medium")
 					.attr("x1", x1 + referenceLabelPadding).attr("y1", y)
 					.attr("x2", x2).attr("y2", y)
-					.style("strokeWidth", 1);
+					.style("strokeWidth", 1)
+					.style("visibility", y < 0 ? "hidden" : "visible");
 
 				referenceLineGroup.append("text")
 					.attr("class", "reference-label")
 					.attr("transform", "translate(" + (x1 + referenceLabelPadding) + "," + (y - referenceLabelPadding) + ")")
-					.text(label);
+					.text(label)
+					.style("visibility", y < 0 ? "hidden" : "visible");
 			},
 
 			/**
