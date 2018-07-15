@@ -42,7 +42,7 @@ BEGIN
 								((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
 								((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS
 							FROM (SELECT ZZ_PARTNER,
-									MIN(TO_DATE("TAXYRSTARTDT")) AS "INIT_DATE", MAX(TO_DATE('99991231')) AS "END_DATE", --MAX(TO_DATE("TAXYRENDDT")) AS "END_DATE", 
+									MIN(TO_DATE("TAXYRSTARTDT")) AS "INIT_DATE", MAX(TO_DATE("TAXYRENDDT")) AS "END_DATE", --MAX(TO_DATE('99991231')) AS "END_DATE",
 									max(to_timestamp(concat(concat(to_varchar(to_date(CHDATE)),' '),to_varchar(to_time(CHTIME))))) AS "CREATED.DATE"
 							      FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" AS A 
 							      WHERE  A.TAXAMOUNT > 0 AND ZZ_PARTNER IN (SELECT ZZ_PARTNER FROM :LT_CUST_EDITED)
