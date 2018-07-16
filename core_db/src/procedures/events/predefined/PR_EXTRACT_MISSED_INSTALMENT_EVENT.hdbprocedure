@@ -182,6 +182,7 @@ BEGIN
 	   
 	LT_ACTUAL = SELECT PPKEY, SUM(BETRZ) AS AMOUNT_PAID, VALUT
 				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP"
+				WHERE  OPBEL IN (SELECT OPBEL FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE BLART='AB' and KOFIZ='LT')
 				GROUP BY PPKEY, VALUT
 				ORDER BY PPKEY, VALUT;
 
@@ -209,7 +210,12 @@ BEGIN
 	                FROM(
 	                    SELECT X.PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
 	                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" X
-	                    INNER JOIN :LT_CUST_ID as delt ON X.PRGPA = delt.PRGPA
+	                    	LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" DFKKPPD
+							ON X.PPKEY=DFKKPPD.PPKEY
+							LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" DFKKPPP 
+							ON X.PPKEY=DFKKPPP.PPKEY
+							 INNER JOIN :LT_CUST_ID as delt ON X.PRGPA = delt.PRGPA
+						WHERE  DFKKPPP.OPBEL IN (SELECT OPBEL FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE BLART='AB' and KOFIZ='LT')
 	                    GROUP BY X.PRGPA, SUBSTRING(ERDAT, 0,4)
 	                ) A
 	                JOIN(
