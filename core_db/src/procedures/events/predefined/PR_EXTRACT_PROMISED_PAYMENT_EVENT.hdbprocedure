@@ -143,7 +143,12 @@ BEGIN
 					FROM (
 						SELECT X.PRGPA as PRGPA, MAX(ERDAT) AS MAX_DATE, SUBSTRING(ERDAT, 0,4) AS YEAR_
 						FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" X
+							LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" DFKKPPD
+							ON X.PPKEY=DFKKPPD.PPKEY
+							LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" DFKKPPP 
+							ON X.PPKEY=DFKKPPP.PPKEY
 						INNER JOIN :LT_CUST_1 delt ON X.PRGPA = delt.PRGPA
+						WHERE  DFKKPPP.OPBEL IN (SELECT OPBEL FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE BLART='AB' and KOFIZ='LT')
 						GROUP BY X.PRGPA, SUBSTRING(ERDAT, 0,4)
 					) A
 					LEFT JOIN (
@@ -190,13 +195,23 @@ BEGIN
 		                FROM(
 		                    SELECT X.PRGPA as PRGPA, MAX(ERDAT) MAX_DATE, SUBSTRING(ERDAT, 0,4) YEAR_
 		                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" X
+		                    LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" DFKKPPD
+							ON X.PPKEY=DFKKPPD.PPKEY
+							LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" DFKKPPP 
+							ON X.PPKEY=DFKKPPP.PPKEY
 		                    INNER JOIN :LT_CUST_2 delt ON X.PRGPA = delt.PRGPA
+		                    WHERE  DFKKPPP.OPBEL IN (SELECT OPBEL FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE BLART='AB' and KOFIZ='LT')
 		                    GROUP BY X.PRGPA, SUBSTRING(ERDAT, 0,4)
 		                ) A
 		                JOIN(
-		                    SELECT X.PRGPA as PRGPA, ERDAT, PPKEY
+		                    SELECT X.PRGPA as PRGPA, ERDAT, X.PPKEY
 		                    FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP"X
+		                    LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" DFKKPPD
+							ON X.PPKEY=DFKKPPD.PPKEY
+							LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" DFKKPPP 
+							ON X.PPKEY=DFKKPPP.PPKEY
 		                    INNER JOIN :LT_CUST_2 delt ON X.PRGPA = delt.PRGPA
+		                    WHERE  DFKKPPP.OPBEL IN (SELECT OPBEL FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE BLART='AB' and KOFIZ='LT')
 		                ) B
 		                ON A.PRGPA = B.PRGPA AND A.MAX_DATE = B.ERDAT
 		                ORDER BY A.PRGPA
@@ -254,6 +269,7 @@ BEGIN
 			-- get the total payment made and its total payment number
 			select PPKEY, VALUT, SUM(BETRZ) as PAYMENT_VALUE, COUNT(BETRZ)
 			from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" -- installment actually paid
+			WHERE  OPBEL IN (SELECT OPBEL FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" WHERE BLART='AB' and KOFIZ='LT')
 			group by PPKEY, VALUT
 			order by PPKEY, VALUT
 		) B
