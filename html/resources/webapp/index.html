@@ -40,7 +40,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>OSR LTI</title>
+    <title>LTI Insights</title>
 
     <!-- Bootstrap the unified shell in sandbox mode for standalone usage.
 
@@ -437,7 +437,13 @@
             window['sap-ui-config'] = {
                 "xx-bootTask": bootstrap
             };
-
+			/*document.onload = function(){
+                	console.log(document.getElementsByTagName("h2")[0].innerText);
+                };
+            window.onload = function(){
+                	console.log(document.getElementsByTagName("h2")[0].innerText);
+                	
+                };*/
             //Attach private functions which should be testable to the public namespace
             //to make them available outside for testing.
             sap.ushell.__sandbox__ = sap.ushell.__sandbox__ || {};
@@ -459,6 +465,7 @@
             data-sap-ui-resourceroots='{
                 "sap.fiori.cri": "../"
             }'> // NON-SECURE setting for testing environment
+            
     </script>
 
     <script>
@@ -474,9 +481,26 @@
                 renderer.hideHeaderItem("meAreaHeaderButton", false, ["home", "app"]);
                 // renderer.hideHeaderItem("sf", false, ["home", "app"]);
                 renderer.hideHeaderEndItem("sf", false, ["home", "app"]);
+                renderer.setHeaderTitle("Land Tax Insights");
                 renderer.onAfterRendering(function(){
                 	console.log(document.getElementsByTagName("h2")[0].innerText);
                 }.bind(this));
+               /* document.onload = function(){
+                	console.log(document.getElementsByTagName("h2")[0].innerText);
+                };*/
+                /*window.onload = function(){
+                	console.log(document.getElementsByTagName("h2")[0].innerText);
+                	document.getElementsByTagName("h2")[0].innerText = "Land Tax Insights";
+                	// document.getElementsByTagName("h1")[0].innerText = "Land Tax Insights";
+                	document.getElementsByTagName("title")[0].innerText = "Land Tax Insights";
+                };
+                window.onhashchange = function() {
+				    if(window.hasher.getHash() === "Shell-home"){
+				    	document.getElementsByTagName("h2")[0].innerText = "Land Tax Insights";
+	                	// document.getElementsByTagName("h1")[0].innerText = "Land Tax Insights";
+	                	document.getElementsByTagName("title")[0].innerText = "Land Tax Insights";
+				    }
+				}*/
                 // document.getElementsByTagName("h2")[0].innerText = "Land Tax Insights";
                 /*var renderer = sap.ushell.Container.getRenderer();
             	renderer.hideHeaderItem("sf", false, ["home", "app"]);

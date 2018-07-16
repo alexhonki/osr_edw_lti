@@ -5,10 +5,9 @@ var xsjs  = require("@sap/xsjs");
 var xsenv = require("@sap/xsenv");
 var port  = process.env.PORT || 3000;
 
-
 var options = {
 	anonymous : true, // remove to authenticate calls
-	redirectUrl : "/http/odata/services.xsodata"
+	redirectUrl : "/index.xsjs"
 };
 
 // configure HANA
@@ -24,12 +23,13 @@ try {
 } catch (err) {
 	console.log("[WARN]", err.message);
 }
+
+// configure job scheduler
 try {
        options = Object.assign(options, xsenv.getServices({ jobs: {tag: "jobscheduler"} }));
 } catch (err) {
        console.log("[WARN]", err.message);
 }
-
 // start server
 xsjs(options).listen(port);
 
