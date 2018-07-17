@@ -54,9 +54,15 @@ BEGIN
 
 		-- SET PREDICT START DATE
 		
-		IF RUN_DAY IS NULL THEN
-			RUN_DAY := CURRENT_UTCDATE;
-		END IF;
+		    IF :RUN_DAY IS NULL THEN            -- Get Run Day/Prediction End Date as set on UI
+                SELECT TO_DATE(TO_DATE) INTO RUN_DAY
+                FROM "functions::TF_CONF_GET_PREDICTION_DATES" ( )
+                WHERE IS_ENABLED = 1;
+            END IF;
+		
+	--	IF RUN_DAY IS NULL THEN
+	--		RUN_DAY := CURRENT_UTCDATE;
+	--	END IF;
 		
 		IF MONTH(RUN_DAY) < :LV_CUTOFF_MONTH THEN
 			LV_PREDICT_START_TS = (YEAR(RUN_DAY) - 1) * 100 + :LV_CUTOFF_MONTH;
