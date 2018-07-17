@@ -12,7 +12,7 @@
         },
         "dataSources": {
             "CRI": {
-                "uri": "/odata",
+                "uri": "/searchodata",
                 "type": "OData",
                 "settings": {
                     "localUri": "localService/CRI/metadata.xml"

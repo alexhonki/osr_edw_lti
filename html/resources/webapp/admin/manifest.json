@@ -12,7 +12,7 @@
         },
         "dataSources": {
             "CRI": {
-                "uri": "/odata",
+                "uri": "/adminodata",
                 "type": "OData"
             }
         }

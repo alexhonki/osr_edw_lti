@@ -1,0 +1,95 @@
+service namespace "com.odata.v2.sap.cr" {
+		
+	//-------------------------------
+	// S E A R C H
+	//-------------------------------	
+	// Consolidated search
+    "models.apps.search::CV_SEARCH" as "Search"
+		keys ("RECORD_ID","SOURCE") 
+	//	navigates ( "ConsolidatedSearch_Customer" as "Customer")
+		parameters via key and entity;
+	
+	//-----------------------------------
+	// C U S T O M E R - D E T A I L S
+	//-----------------------------------
+
+ 	// Key values
+ 	"models.apps.customer::CV_CUSTOMER_KEY_VALUES" as "CustomerkeyValues"
+		keys ("CUST_ID");
+	
+	// Customer Pulse
+	"models.apps.customer::CV_CUSTOMER_PULSE" as "CustPulse" 
+		key generate local "GEN_ID";
+	
+	// Customer details
+	"models.apps.customer::CV_CUSTOMER_DETAILS" as "CustomerDetails" key generate local "GEN_ID";
+	
+	// Customer Reactions
+	"models.apps.customer::CV_CUSTOMER_REACTION" as "CustomerReactions"
+		keys("CUST_ID","REACTION_TYPE");
+	
+	// Customer
+    "models.apps.customer::CV_CUSTOMER_LIST" as "Customer"
+		keys("CUST_ID")
+		navigates(
+			"Customer_KeyValues"	as "KeyValues",
+			"Customer_Pulse"		as "Pulse",
+			"Customer_Details"		as "Details",
+			"Customer_Reactions"	as "Reactions"
+			)
+		create forbidden
+		update using "exits:Customer.xsjslib::updateCustomer";
+	
+	association "Customer_KeyValues" 
+		principal "Customer"("CUST_ID") multiplicity "1"
+		dependent "CustomerkeyValues"("CUST_ID") multiplicity "*";	
+	
+	association "Customer_Pulse" 
+		principal "Customer"("CUST_ID") multiplicity "1"
+		dependent "CustPulse"("CUST_ID") multiplicity "*";
+		
+	association "Customer_Details" 
+		principal "Customer"("CUST_ID") multiplicity "1"
+		dependent "CustomerDetails"("CUST_ID") multiplicity "*"; 
+	
+	 association "Customer_Reactions" 
+		principal "Customer"("CUST_ID") multiplicity "1"
+		dependent "CustomerReactions"("CUST_ID") multiplicity "*";
+	
+		// Use Case (Reaction Type) Config
+	"models.adm::CV_CONFIG" as "UseCaseSettings"
+		key ("BUCKET_ID", "SEQ", "REACTION_TYPE") 
+		concurrencytoken  ("CHANGED_ON")
+		update using "exits:Config.xsjslib::updateConfig";
+	
+		// Use Case Sub Config
+	"models.adm::CV_REACTION_TYPE" as "UseCaseConfig"
+		key ("REACTION_TYPE") 
+		concurrencytoken  ("CHANGED_ON")
+		navigates ("ConfigReactionType_Config" as "Config",
+		           "ConfigReactionType_LabelDefinition"  as "LabelDefinition")
+		// create using "exits:Config.xsjslib::createConfigReactionType"          
+		update using "exits:Config.xsjslib::updateConfigReactionType";
+
+    association "ConfigReactionType_Config" 
+        principal "UseCaseConfig"("REACTION_TYPE") multiplicity "1" 
+        dependent "UseCaseSettings"("REACTION_TYPE") multiplicity "*";
+    
+    association "ConfigReactionType_LabelDefinition" 
+        principal "UseCaseConfig"("REACTION_TYPE") multiplicity "1" 
+        dependent "UILabelDefinition"("REACTION_TYPE") multiplicity "*";
+        
+    "models.ui::CV_LABEL_DEFINITION"	as "UILabelDefinition"
+		keys ("REACTION_TYPE","PAGE","COMPONENT","LANGUAGE")
+		concurrencytoken  ("CHANGED_ON")
+		create using "exits:UI.xsjslib::createLabelDefinitions"
+		update using "exits:UI.xsjslib::updateLabelDefinitions";
+}
+
+annotations {
+   enable OData4SAP;
+}
+
+settings {
+  support null;
+}

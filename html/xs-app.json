@@ -10,6 +10,24 @@
 			"scope": ["$XSAPPNAME.TrendAnalysis","$XSAPPNAME.EventOverview","$XSAPPNAME.CustomersAtRisk","$XSAPPNAME.CustomerSearch","$XSAPPNAME.CustomerDetails","$XSAPPNAME.Admin"]
 		  },
 		  {
+			"source": "^/adminodata/(.*)$",
+    		"target": "/http/odata/adminServices.xsodata/$1",
+			"destination": "backend",
+			"authenticationType": "xsuaa",
+			"csrfProtection": true,
+		
+			"scope": ["$XSAPPNAME.TrendAnalysis","$XSAPPNAME.EventOverview","$XSAPPNAME.CustomersAtRisk","$XSAPPNAME.CustomerSearch","$XSAPPNAME.CustomerDetails","$XSAPPNAME.Admin"]
+		  },
+		  {
+			"source": "^/searchodata/(.*)$",
+    		"target": "/http/odata/searchServices.xsodata/$1",
+			"destination": "backend",
+			"authenticationType": "xsuaa",
+			"csrfProtection": true,
+		
+			"scope": ["$XSAPPNAME.TrendAnalysis","$XSAPPNAME.EventOverview","$XSAPPNAME.CustomersAtRisk","$XSAPPNAME.CustomerSearch","$XSAPPNAME.CustomerDetails","$XSAPPNAME.Admin"]
+		  },
+		  {
             "source": "^/(.*)$",
             "localDir": "resources/webapp",
             "cacheControl": "public, max-age=1000,must-revalidate",

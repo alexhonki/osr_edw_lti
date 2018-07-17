@@ -24,10 +24,6 @@ service namespace "com.odata.v2.sap.cr" {
  	// T R E N D S
  	//------------------------------- 
 	
-	//"models.apps.trend::CV_DASHBOARD_TREND" as "Trend" 
-	//	key generate local "GEN_ID" 
-	//	aggregates always 
-	//	parameters via entity;
 	// Trend - Debtor rate	
 	"models.apps.trend::CV_DEBTOR_RATE" as "TrendRate" 
 		key generate local "GEN_ID" 
@@ -41,21 +37,18 @@ service namespace "com.odata.v2.sap.cr" {
 		parameters via entity;
 		
 	// Trend - Top Events for reacted customers
-//	"models.apps.customer::CV_CHURNED_LAST_N_MONTHS" as "TopEvents" 
 	"models.apps.customer::CV_TOP_EVENTS" as "TopEvents" 
-       	//keys ("EVENT_GROUP","EVENT_NAME") TBC
        	key generate local "GEN_ID" 
         aggregates always
-        //parameters via key and entity;TBC
         parameters via entity;
         
 	// Trend - At risk customers
 	"models.apps.customer::CV_AT_RISK_BUCKET" as "AtRiskCustomersTrend"
  		key generate local "GEN_ID"
- 		//keys ("BUCKET_ID","BUCKET_SEQ")
  		aggregates always
 		parameters via entity;
-	    // Customer Changes Dashboard Trend    
+	
+	// Customer Changes Dashboard Trend    
     "models.apps.trend::CV_CUSTOMER_CHANGES" as "TrendCustomerChanges"  
     	key ("TIME_SEGMENT")
     	//parameters via key and entity;TBC
@@ -68,14 +61,13 @@ service namespace "com.odata.v2.sap.cr" {
  	// Event Overview
 	"models.apps.event::CV_EVENT_OVERVIEW" as "EventOverview"
  		keys ("EVENT_GROUP","EVENT_NAME","EVENT_ID")
- 		navigates ( "EventOverview_Customer" as "Customer")//, "EventOverview_EventManagement" as "EventInfo" ) TBC, needs redesign not supported in XSA
+ 		navigates ( "EventOverview_Customer" as "Customer")
 		parameters via key and entity;
     
    // Customer By Event
 	"models.apps.customer::CV_CUSTOMER_BY_EVENT" as "CustomerByEvent"
 		keys("CUST_ID","EVENT_YEAR","INIT_DATE")
-		//navigates ( "CustomerByEvents_KeyValues"	as "KeyValues")
-	parameters via key and entity;
+		parameters via key and entity;
 	
 	// Event => Customer
     association via parameters "EventOverview_Customer" 
@@ -93,76 +85,9 @@ service namespace "com.odata.v2.sap.cr" {
 	// At Risk Visual Filter	
 	"models.apps.customer::CV_AT_RISK_BUCKET" as "AtRiskCustomerBuckets"
  		key generate local "GEN_ID"
- 		//keys ("BUCKET_ID","BUCKET_SEQ")TBC
  		aggregates always
-		//parameters via key and entity;TBC
 		parameters via entity;
-
-	//-----------------------------------
-	// C U S T O M E R - D E T A I L S
-	//-----------------------------------
-
- 	// Key values
- 	"models.apps.customer::CV_CUSTOMER_KEY_VALUES" as "CustomerkeyValues"
-		keys ("CUST_ID");
-	
-	// Customer Pulse
-	"models.apps.customer::CV_CUSTOMER_PULSE" as "CustPulse" 
-		key generate local "GEN_ID";
-	
-	// Customer details
-	"models.apps.customer::CV_CUSTOMER_DETAILS" as "CustomerDetails" key generate local "GEN_ID";
-	
-	// Customer Reactions
-	"models.apps.customer::CV_CUSTOMER_REACTION" as "CustomerReactions"
-		keys("CUST_ID","REACTION_TYPE");
-	
-	// Customer
-    "models.apps.customer::CV_CUSTOMER_LIST" as "Customer"
-		keys("CUST_ID")
-		navigates(
-			"Customer_KeyValues"	as "KeyValues",
-			"Customer_Pulse"		as "Pulse",
-			"Customer_Details"		as "Details",
-			"Customer_Reactions"	as "Reactions"
-			)
-		create forbidden
-		update using "exits:Customer.xsjslib::updateCustomer";
-	
-	association "Customer_KeyValues" 
-		principal "Customer"("CUST_ID") multiplicity "1"
-		dependent "CustomerkeyValues"("CUST_ID") multiplicity "*";	
-	
-	association "Customer_Pulse" 
-		principal "Customer"("CUST_ID") multiplicity "1"
-		dependent "CustPulse"("CUST_ID") multiplicity "*";
-		
-	association "Customer_Details" 
-		principal "Customer"("CUST_ID") multiplicity "1"
-		dependent "CustomerDetails"("CUST_ID") multiplicity "*"; 
-	
-	 association "Customer_Reactions" 
-		principal "Customer"("CUST_ID") multiplicity "1"
-		dependent "CustomerReactions"("CUST_ID") multiplicity "*"; 
 			
-	//-------------------------------
-	// S E A R C H
-	//-------------------------------	
-	// Consolidated search
-    "models.apps.search::CV_SEARCH" as "Search"
-		keys ("RECORD_ID","SOURCE") 
-	//	navigates ( "ConsolidatedSearch_Customer" as "Customer")
-		parameters via key and entity;
-	
-  /*  association "ConsolidatedSearch_Customer" 
-		principal "Search" ("CUST_ID") multiplicity "1"
-		dependent "Customer" ("CUST_ID") multiplicity "1";
-*/
-	//-------------------------------
-	// S T A T U S
-	//-------------------------------
-	"models.adm::CV_STATUS_LANG"  as "Status" keys ("ID");
-
 	//-------------------------------
  	// U S E R  I N T E R F A C E (UI)
  	//-------------------------------
@@ -175,32 +100,12 @@ service namespace "com.odata.v2.sap.cr" {
 	//-------------------------------
  	// CONFIG
  	//-------------------------------
- 	// Attribute Type Configureation
- 	"models.adm::CV_ATTRIBUTE_TYPES" as "ConfigAttributeTypes"
- 		keys ("ATTRIBUTE_ID")
- 		update using "exits:Config.xsjslib::updateAttributeTypes";
  	
 	// Prediction Date
 	"models.adm::CV_PREDICTION_DATE" as "ConfigPredictionDate"
 		keys ("SEQ")
 		concurrencytoken  ("CHANGED_ON")
 		update using "exits:Config.xsjslib::updatePredictionDate";
-	
-	// Training Date
-	"models.adm::CV_TRAINING_DATE" as "ConfigTrainingDate"
-		keys ("SEQ")
-		concurrencytoken  ("CHANGED_ON")
-		update using "exits:Config.xsjslib::updateTrainingDate";
-	// Combined Event Training Date
-	"models.adm::CV_COMBINED_EVENTS_TRAINING_DATE" as "ConfigCombinedEventTrainDate"
-		keys ("SEQ")
-		concurrencytoken  ("CHANGED_ON")
-		update using "exits:Config.xsjslib::updateCombinedEventTrainingDate";
-	// Configuration Screen
-	"models.adm::CV_BUCKET_CONFIG" as "Config"
-		key ("BUCKET_ID", "SEQ") 
-		concurrencytoken  ("CHANGED_ON")
-		update using "exits:Config.xsjslib::updateConfig";
 	
 	// Use Case (Reaction Type) Config
 	"models.adm::CV_CONFIG" as "UseCaseSettings"
@@ -214,7 +119,6 @@ service namespace "com.odata.v2.sap.cr" {
 		concurrencytoken  ("CHANGED_ON")
 		navigates ("ConfigReactionType_Config" as "Config",
 		           "ConfigReactionType_LabelDefinition"  as "LabelDefinition")
-		// create using "exits:Config.xsjslib::createConfigReactionType"          
 		update using "exits:Config.xsjslib::updateConfigReactionType";
 
     association "ConfigReactionType_Config" 
@@ -225,31 +129,6 @@ service namespace "com.odata.v2.sap.cr" {
         principal "UseCaseConfig"("REACTION_TYPE") multiplicity "1" 
         dependent "UILabelDefinition"("REACTION_TYPE") multiplicity "*";
     
-    // Pre-defined Events Config
-	"models.apps.event::CV_PREDEFINED_EVENTS_TEMPLATE" as "PredefinedEventsTemplate"
-	    keys ("TEMPLATE_ID")
-	    navigates ("PredefinedEventsConfig_Template" as "DerivedEvents" from dependent);
-	    
-	"models.apps.event::CV_PREDEFINED_EVENTS_CONFIG" as "PredefinedEventsConfig"
-		keys ("ID")
-		navigates ("PredefinedEventsConfig_Template" as "Template")
-		create using "exits:PredefinedEvents.xsjslib::createDerivedEvent"          
-		update using "exits:PredefinedEvents.xsjslib::updateDerivedEvent"
-		delete forbidden;
-		
-    association "PredefinedEventsConfig_Template" 
-        principal "PredefinedEventsConfig"("TEMPLATE_ID") multiplicity "*" 
-        dependent "PredefinedEventsTemplate"("TEMPLATE_ID") multiplicity "1";
-    
-    // Event Management Entity    
-    "models.apps.event::CV_EVENT_MANAGEMENT"  as "EventManagement"
-    	keys ("ID")
-    	update using "exits:Config.xsjslib::updateEventManagement";
-   	
-   	// Audit Log Screen
-	"models.adm::CV_ADMIN_AUDIT_LOG" as "AuditLog"
-		key generate local "GEN_ID"
-		aggregates always;
 }
 
 annotations {
