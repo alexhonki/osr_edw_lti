@@ -94,12 +94,13 @@ BEGIN
 	-- Get active customers for period
 	-----------------------------------
 	LT_ACTIVE_CUSTOMERS = 
-		SELECT "CUST_ID"
+		SELECT CUST_ID FROM "models.apps.customer::CV_ACTIVE_CUSTOMER" WHERE :RUN_DAY BETWEEN INIT_DATE AND END_DATE;
+	/*	SELECT "CUST_ID"
 		FROM "db::app.Customer"
 		WHERE :RUN_DAY BETWEEN INIT_DATE AND END_DATE
 		AND "CUST_ID" NOT IN 
 			(SELECT CUST_ID FROM "db::app.Customer" -- Customers are not in 'BLOCKED' OR DELETED state
-			WHERE STATUS != 0);
+			WHERE STATUS != 0);*/
 
 	-----------------------------------
 	-- EXTRACT NON-REACTED CUSTOMERS
