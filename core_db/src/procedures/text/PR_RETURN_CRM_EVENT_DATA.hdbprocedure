@@ -53,18 +53,23 @@ BEGIN
 	IDX = 1;
 
 	FOR CURR_ROW AS C_CRM_FILTER_CONFIG DO 
-		IF :IDX = 1 THEN 
-			LV_FILTER_QUERY = CONCAT(CONCAT('description like ''%', lower(CURR_ROW.SEARCH_STRING)), '%''');
-		ELSE 
-			LV_FILTER_QUERY = CONCAT(CONCAT(CONCAT(CONCAT(LV_FILTER_QUERY, ' OR '), 'description like ''%'), lower(CURR_ROW.SEARCH_STRING)), '%''');
+		IF curr_row.exclusion = 0 THEN
+			IF :IDX = 1 THEN 
+				LV_FILTER_QUERY = CONCAT(CONCAT('description like ''%', lower(CURR_ROW.SEARCH_STRING)), '%''');
+			ELSE 
+				LV_FILTER_QUERY = CONCAT(CONCAT(CONCAT(CONCAT(LV_FILTER_QUERY, ' OR '), 'description like ''%'), lower(CURR_ROW.SEARCH_STRING)), '%''');
+			END IF;
 		END IF;
-		
-		if curr_row.exclusion != 0
-			then 
-				LV_FILTER_QUERY = CONCAT(CONCAT(CONCAT(CONCAT(LV_FILTER_QUERY, ' OR '), 'description not like ''%'), lower(CURR_ROW.SEARCH_STRING)), '%''');
+		if curr_row.exclusion != 0	then 
+			IF :IDX = 1 THEN 
+				LV_FILTER_QUERY = CONCAT(CONCAT('description not like ''%', lower(CURR_ROW.SEARCH_STRING)), '%''');
+			ELSE
+				LV_FILTER_QUERY = CONCAT(CONCAT(CONCAT(CONCAT(LV_FILTER_QUERY, ' AND '), 'description not like ''%'), lower(CURR_ROW.SEARCH_STRING)), '%''');
+			END IF;
 		end if;
 		IDX = IDX + 1;
 	END FOR;
+	
    	LT_TEMP = SELECT CUST_ID,
 					OBJECT_ID,
 					lower("DESCRIPTION") as DESCRIPTION,
