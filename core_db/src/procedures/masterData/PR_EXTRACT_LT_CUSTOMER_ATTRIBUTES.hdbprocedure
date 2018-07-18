@@ -228,7 +228,8 @@ BEGIN
 									CUST_ID,INIT_DATE,END_DATE,
     								((YEAR("INIT_DATE")*100) + MONTH("INIT_DATE")) AS INIT_TS,
     								((YEAR("END_DATE")*100) + MONTH("END_DATE")) AS END_TS,
-    								CASE WHEN (PARCELCNT>=1 and PARCELCNT<=2) THEN '01 to 02' 
+    								CASE  WHEN (PARCELCNT=0) THEN '0'
+    									 WHEN (PARCELCNT>=1 and PARCELCNT<=2) THEN '01 to 02' 
     									 WHEN (PARCELCNT>=3 and PARCELCNT<=5) THEN '03 to 05' 
     									 WHEN (PARCELCNT>=6 and PARCELCNT<=15) THEN '06 to 15'
     									 WHEN (PARCELCNT>=16 and PARCELCNT<=55) THEN '16 to 55'
