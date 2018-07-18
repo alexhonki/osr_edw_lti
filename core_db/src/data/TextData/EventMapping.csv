@@ -133,7 +133,6 @@ Payment,Payment,chequ,98,0,simple-payment
 Payment,Payment,chq,98,0,simple-payment
 Payment,Payment,remit,98,0,simple-payment
 Payment,Payment,credit%card,98,0,simple-payment
-Payment,Payment,p'ment,98,0,simple-payment
 Payment,Payment,money,98,0,simple-payment
 Objection,Objection,objection,81,0,message-popup
 Debt Management,Debt Management,bankrupt,48,0,sales-order
