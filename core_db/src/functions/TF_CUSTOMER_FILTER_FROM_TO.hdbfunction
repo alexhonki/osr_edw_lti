@@ -112,7 +112,7 @@ BEGIN
  						-- Filter For Valid data
 						WHERE  cv.INIT_TIME_SEGMENT <= :LV_TO
 		  	  			AND	   cv.INIT_TIME_SEGMENT >= :LV_FROM
-		  	  			AND    cv.END_TIME_SEGMENT >= :LV_TO
+		  	  			--AND    cv.END_TIME_SEGMENT >= :LV_TO
 		  	  			AND cv.VALUE_ID in (select value_id from :LT_VAL_FILTER)
 		  	  			GROUP BY cv.CUST_ID,  cv.VALUE_ID
 		  	  			) tv
