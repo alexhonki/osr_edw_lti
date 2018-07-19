@@ -33,7 +33,8 @@ BEGIN
 	ELSE
 
 
-		RETURN  SELECT 
+		RETURN   SELECT INIT_TS AS TIME_SEGMENT, CASE WHEN RATE IS NULL THEN 0 ELSE RATE END AS RATE FROM (
+				SELECT B.INIT_TS,
 					"TIME_SEGMENT",
 					("TOTAL_REACT_CUSTOMERS"/"TOTAL_DUE_CUSTOMERS")*100 AS "RATE"
 					FROM
@@ -55,6 +56,9 @@ BEGIN
 									GROUP BY "INIT_TIME_SEGMENT"
 								) 
 							GROUP BY "TIME_SEGMENT" 
-						);
+					)	 A RIGHT OUTER JOIN 
+				   (
+					SELECT CALMONTH AS INIT_TS FROM "synonyms::mtimedimensionmonth" where calmonth >= TO_INT(:IM_FROM) and calmonth <= TO_INT(:IM_TO)
+			    	) B ON A.TIME_SEGMENT = B.INIT_TS );
 	END IF;
 END;

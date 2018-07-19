@@ -408,6 +408,26 @@ BEGIN
 						  INNER JOIN "db::app.AttributeTypes" AS B
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
 						  
+						   UNION
+						  
+						  -- UNION for CustomerAttributes for year where there were no entry in RESV table
+						   -- Age Group would be Not Applicable where  there is no entry in RESV
+						   (SELECT 
+						    CUST_ID, 
+					        ATTRIBUTE_ID,
+						   'Not Applicable' AS "ATTRIBUTE_VALUE",
+							TO_TIMESTAMP(CONCAT(YEAR_LAG, '0701')) AS INIT_DATE,
+							TO_TIMESTAMP(CONCAT(YEAR_CURR,'0630')) AS END_DATE,
+							YEAR_LAG*100 + 07  AS INIT_TS,
+							YEAR_CURR*100 + 06 AS END_TS,
+							NULL AS ATTRIBUTE_SORT_ORDER
+						     FROM (
+									SELECT A.* ,B.*, LAG(YEAR(END_DATE)) OVER(PARTITION BY CUST_ID ORDER BY INIT_DATE) YEAR_LAG,
+									YEAR(INIT_DATE) YEAR_CURR FROM :LT_CUSTOMER_AGE_GROUP A
+				    				INNER JOIN "db::app.AttributeTypes" AS B
+									ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME
+								) WHERE YEAR_LAG != YEAR_CURR AND YEAR_LAG< YEAR_CURR)
+						  
 						  UNION
 						  
 						  ( SELECT CUST_ID,
@@ -437,8 +457,29 @@ BEGIN
 						  INNER JOIN "db::app.AttributeTypes" AS B
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME WHERE RN = 1 
 						  )
+						  
 						  UNION
 						  
+						  -- UNION for CustomerAttributes for year where there were no entry in RESV table
+						   -- Partner type would be the last type which was there in RESV
+						   (SELECT 
+						    CUST_ID, 
+					        ATTRIBUTE_ID,
+						    VALUE_LAG AS ATTRIBUTE_VALUE,
+							TO_TIMESTAMP(CONCAT(YEAR_LAG, '0701')) AS INIT_DATE,
+							TO_TIMESTAMP(CONCAT(YEAR_CURR,'0630')) AS END_DATE,
+							YEAR_LAG*100 + 07  AS INIT_TS,
+							YEAR_CURR*100 + 06 AS END_TS,
+							NULL AS ATTRIBUTE_SORT_ORDER
+						     FROM (
+									SELECT A.* ,B.*, LAG(YEAR(END_DATE)) OVER(PARTITION BY CUST_ID ORDER BY INIT_DATE) YEAR_LAG,
+									LAG(ATTRIBUTE_VALUE) OVER(PARTITION BY CUST_ID ORDER BY INIT_DATE) VALUE_LAG,
+									YEAR(INIT_DATE) YEAR_CURR FROM :LT_PARTNER_TYPE A
+				    				INNER JOIN "db::app.AttributeTypes" AS B
+									ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME
+								) WHERE YEAR_LAG != YEAR_CURR AND YEAR_LAG< YEAR_CURR)
+							
+						  UNION 
 						  ( SELECT CUST_ID,
 						  B.ATTRIBUTE_ID AS "ATTRIBUTE_ID",
 						  ATTRIBUTE_VALUE,
@@ -469,7 +510,25 @@ BEGIN
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
 						  
 						  UNION
-						  
+						  -- UNION for CustomerAttributes for year where there were no entry in RESV table
+						   -- Annual LIability  for those years would be 0 (Under $500)
+						   (SELECT 
+						    CUST_ID, 
+					        ATTRIBUTE_ID,
+						    'Under $500' AS ATTRIBUTE_VALUE,
+							TO_TIMESTAMP(CONCAT(YEAR_LAG, '0701')) AS INIT_DATE,
+							TO_TIMESTAMP(CONCAT(YEAR_CURR,'0630')) AS END_DATE,
+							YEAR_LAG*100 + 07  AS INIT_TS,
+							YEAR_CURR*100 + 06 AS END_TS,
+							NULL AS ATTRIBUTE_SORT_ORDER
+						     FROM (
+									SELECT A.* ,B.*, LAG(YEAR(END_DATE)) OVER(PARTITION BY CUST_ID ORDER BY INIT_DATE) YEAR_LAG, 
+									YEAR(INIT_DATE) YEAR_CURR FROM :LT_BP_TAX A
+				    				INNER JOIN "db::app.AttributeTypes" AS B
+									ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME
+								) WHERE YEAR_LAG != YEAR_CURR AND YEAR_LAG< YEAR_CURR)
+							
+						  UNION 
 						  
 						  ( SELECT CUST_ID,
 						  B.ATTRIBUTE_ID AS "ATTRIBUTE_ID",
@@ -497,8 +556,28 @@ BEGIN
 						  FROM :LT_PARCEL_COUNT AS A
 						  INNER JOIN "db::app.AttributeTypes" AS B
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
-						   UNION
 						  
+						   UNION
+						   -- UNION for CustomerAttributes for year where there were no entry in RESV table
+						   -- Parcel count for those years would be 0
+						   (SELECT 
+						    CUST_ID, 
+					        ATTRIBUTE_ID,
+						    '0' AS ATTRIBUTE_VALUE,
+							TO_TIMESTAMP(CONCAT(YEAR_LAG, '0701')) AS INIT_DATE,
+							TO_TIMESTAMP(CONCAT(YEAR_CURR,'0630')) AS END_DATE,
+							YEAR_LAG*100 + 07  AS INIT_TS,
+							YEAR_CURR*100 + 06 AS END_TS,
+							NULL AS ATTRIBUTE_SORT_ORDER
+						     FROM (
+									SELECT A.* ,B.*, LAG(YEAR(END_DATE)) OVER(PARTITION BY CUST_ID ORDER BY INIT_DATE) YEAR_LAG, 
+									YEAR(INIT_DATE) YEAR_CURR FROM :LT_PARCEL_COUNT A
+				    				INNER JOIN "db::app.AttributeTypes" AS B
+									ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME
+								) WHERE YEAR_LAG != YEAR_CURR AND YEAR_LAG< YEAR_CURR)
+							
+							UNION 
+							
 						  ( SELECT CUST_ID,
 						  B.ATTRIBUTE_ID AS "ATTRIBUTE_ID",
 						  ATTRIBUTE_VALUE,
@@ -539,8 +618,27 @@ BEGIN
 						  FROM :LT_FIRST_TIME_TP AS A
 						  INNER JOIN "db::app.AttributeTypes" AS B
 						  ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME )
-						   UNION
 						  
+						   UNION
+						   -- UNION for CustomerAttributes for year where there were no entry in RESV table
+						   -- First time TP for those year would be No
+						   (SELECT 
+						    CUST_ID, 
+					        ATTRIBUTE_ID,
+						    'No' AS "ATTRIBUTE_VALUE",
+							TO_TIMESTAMP(CONCAT(YEAR_LAG, '0701')) AS INIT_DATE,
+							TO_TIMESTAMP(CONCAT(YEAR_CURR,'0630')) AS END_DATE,
+							YEAR_LAG*100 + 07  AS INIT_TS,
+							YEAR_CURR*100 + 06 AS END_TS,
+							NULL AS ATTRIBUTE_SORT_ORDER
+						     FROM (
+									SELECT A.* ,B.*, LAG(YEAR(END_DATE)) OVER(PARTITION BY CUST_ID ORDER BY INIT_DATE) YEAR_LAG, 
+									YEAR(INIT_DATE) YEAR_CURR FROM :LT_FIRST_TIME_TP A
+				    				INNER JOIN "db::app.AttributeTypes" AS B
+									ON A."ATTRIBUTE_NAME" = B.ATTRIBUTE_NAME
+								) WHERE YEAR_LAG != YEAR_CURR AND YEAR_LAG< YEAR_CURR)
+							
+							UNION 
 						  ( SELECT CUST_ID,
 						  B.ATTRIBUTE_ID AS "ATTRIBUTE_ID",
 						  ATTRIBUTE_VALUE,
