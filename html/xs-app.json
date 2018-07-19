@@ -7,7 +7,7 @@
 			"authenticationType": "xsuaa",
 			"csrfProtection": true,
 		
-			"scope": ["$XSAPPNAME.TrendAnalysis","$XSAPPNAME.EventOverview","$XSAPPNAME.CustomersAtRisk","$XSAPPNAME.CustomerSearch","$XSAPPNAME.CustomerDetails","$XSAPPNAME.Admin"]
+			"scope": ["$XSAPPNAME.TrendAnalysis","$XSAPPNAME.EventOverview","$XSAPPNAME.CustomersAtRisk"]
 		  },
 		  {
 			"source": "^/adminodata/(.*)$",
@@ -16,7 +16,7 @@
 			"authenticationType": "xsuaa",
 			"csrfProtection": true,
 		
-			"scope": ["$XSAPPNAME.TrendAnalysis","$XSAPPNAME.EventOverview","$XSAPPNAME.CustomersAtRisk","$XSAPPNAME.CustomerSearch","$XSAPPNAME.CustomerDetails","$XSAPPNAME.Admin"]
+			"scope": ["$XSAPPNAME.Admin"]
 		  },
 		  {
 			"source": "^/searchodata/(.*)$",
@@ -25,7 +25,7 @@
 			"authenticationType": "xsuaa",
 			"csrfProtection": true,
 		
-			"scope": ["$XSAPPNAME.TrendAnalysis","$XSAPPNAME.EventOverview","$XSAPPNAME.CustomersAtRisk","$XSAPPNAME.CustomerSearch","$XSAPPNAME.CustomerDetails","$XSAPPNAME.Admin"]
+			"scope": ["$XSAPPNAME.CustomerSearch","$XSAPPNAME.CustomerDetails"]
 		  },
 		  {
             "source": "^/(.*)$",

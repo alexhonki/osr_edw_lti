@@ -4,8 +4,8 @@
 <localVariables/>
 <variableMappings/>
 <dataSources>
-  <DataSource id="db::app.CustomerAttributes">
-    <resourceUri>db::app.CustomerAttributes</resourceUri>
+  <DataSource id="functions::TF_CUSTOMER_ATTRIBUTES" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_CUSTOMER_ATTRIBUTES</resourceUri>
   </DataSource>
   <DataSource id="db::app.AttributeTypes">
     <resourceUri>db::app.AttributeTypes</resourceUri>
@@ -35,7 +35,7 @@
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
-    <input node="db::app.CustomerAttributes">
+    <input node="functions::TF_CUSTOMER_ATTRIBUTES">
       <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID_ID" source="CUST_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID_ID" source="ATTRIBUTE_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
@@ -130,38 +130,6 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID_ID" source="CUST_ID"/>
     </input>
   </calculationView>
-  <calculationView xsi:type="Calculation:RankView" id="LastAttribute">
-    <viewAttributes>
-      <viewAttribute id="CUST_ID_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
-      <viewAttribute id="ATTRIBUTE_ID_ID" aggregationType="sum">
-        <descriptions defaultDescription="ATTRIBUTE_ID_ID"/>
-      </viewAttribute>
-      <viewAttribute id="ATTRIBUTE_VALUE">
-        <descriptions defaultDescription="Attribute Value"/>
-      </viewAttribute>
-      <viewAttribute id="END_DATE">
-        <descriptions defaultDescription="End Date Time"/>
-      </viewAttribute>
-    </viewAttributes>
-    <calculatedViewAttributes/>
-    <restrictedViewAttributes/>
-    <input node="Attributes">
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID_ID" source="CUST_ID_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID_ID" source="ATTRIBUTE_ID_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="END_DATE" source="END_DATE"/>
-    </input>
-    <windowFunction dynamicPartitionAttributes="false">
-      <partitionViewAttributeName>ATTRIBUTE_ID_ID</partitionViewAttributeName>
-      <partitionViewAttributeName>CUST_ID_ID</partitionViewAttributeName>
-      <order byViewAttributeName="END_DATE" direction="DESC"/>
-      <rankThreshold>
-        <value>1</value>
-      </rankThreshold>
-    </windowFunction>
-  </calculationView>
   <calculationView xsi:type="Calculation:RankView" id="LastValue">
     <viewAttributes>
       <viewAttribute id="VALUE_ID" aggregationType="sum">
@@ -194,7 +162,7 @@
       </rankThreshold>
     </windowFunction>
   </calculationView>
-  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="C1_N" joinType="inner">
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="C1_1" joinType="inner">
     <viewAttributes>
       <viewAttribute id="ATTRIBUTE_ID" aggregationType="sum">
         <descriptions defaultDescription="Attribute ID"/>
@@ -204,12 +172,6 @@
       </viewAttribute>
       <viewAttribute id="DESCRIPTION">
         <descriptions defaultDescription="Description"/>
-      </viewAttribute>
-      <viewAttribute id="CUST_ID_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
-      <viewAttribute id="ATTRIBUTE_VALUE">
-        <descriptions defaultDescription="Attribute Value"/>
       </viewAttribute>
     
       <viewAttribute id="IS_SENSITIVE" aggregationType="sum">
@@ -222,6 +184,13 @@
     
       <viewAttribute id="IS_SHOW_DETAILS" aggregationType="sum">
         <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+      </viewAttribute>
+    
+      <viewAttribute id="CUST_ID_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_VALUE">
+        <descriptions defaultDescription="Attribute Value"/>
       </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
@@ -237,7 +206,7 @@
     
       <mapping xsi:type="Calculation:AttributeMapping" target="IS_SHOW_DETAILS" source="IS_SHOW_DETAILS"/>
     </input>
-    <input node="LastAttribute">
+    <input node="Attributes">
       <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID_ID" source="CUST_ID_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID" source="ATTRIBUTE_ID_ID"/>
@@ -297,12 +266,6 @@
       <viewAttribute id="DESCRIPTION">
         <descriptions defaultDescription="Description"/>
       </viewAttribute>
-      <viewAttribute id="CUST_ID" aggregationType="sum">
-        <descriptions defaultDescription="CUST_ID_ID"/>
-      </viewAttribute>
-      <viewAttribute id="ATTRIBUTE_VALUE">
-        <descriptions defaultDescription="Attribute Value"/>
-      </viewAttribute>
       <viewAttribute id="VALUE" aggregationType="sum">
         <descriptions defaultDescription="VALUE"/>
       </viewAttribute>
@@ -318,6 +281,13 @@
       <viewAttribute id="IS_SHOW_DETAILS" aggregationType="sum">
         <descriptions defaultDescription="Show Data in Customer Details Flag"/>
       </viewAttribute>
+    
+      <viewAttribute id="CUST_ID" aggregationType="sum">
+        <descriptions defaultDescription="CUST_ID_ID"/>
+      </viewAttribute>
+      <viewAttribute id="ATTRIBUTE_VALUE">
+        <descriptions defaultDescription="Attribute Value"/>
+      </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes>
       <calculatedViewAttribute datatype="VARCHAR" id="TYPE" length="13" expressionLanguage="COLUMN_ENGINE">
@@ -329,8 +299,6 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="DETAIL_ID" source="ATTRIBUTE_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="DETAIL_NAME" source="ATTRIBUTE_NAME"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID_ID"/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
       <mapping xsi:type="Calculation:ConstantAttributeMapping" target="VALUE" null="true" value=""/>
     
       <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
@@ -338,13 +306,14 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="IS_FILTER" source="IS_FILTER"/>
     
       <mapping xsi:type="Calculation:AttributeMapping" target="IS_SHOW_DETAILS" source="IS_SHOW_DETAILS"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
     </input>
     <input emptyUnionBehavior="NO_ROW" node="Join_2">
       <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DETAIL_ID" null="true" value=""/>
       <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DETAIL_NAME" null="true" value=""/>
       <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
-      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CUST_ID" null="true" value=""/>
-      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="VALUE_STR"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="VALUE" source="VALUE"/>
     
       <mapping xsi:type="Calculation:AttributeMapping" target="IS_SENSITIVE" source="IS_SENSITIVE"/>
@@ -352,6 +321,9 @@
       <mapping xsi:type="Calculation:ConstantAttributeMapping" target="IS_FILTER" null="true" value=""/>
     
       <mapping xsi:type="Calculation:ConstantAttributeMapping" target="IS_SHOW_DETAILS" null="true" value=""/>
+    
+      <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CUST_ID" null="true" value=""/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="VALUE_STR"/>
     </input>
   </calculationView>
 </calculationViews>
@@ -369,29 +341,32 @@
       <descriptions defaultDescription="Description"/>
       <keyMapping columnObjectName="Details" columnName="DESCRIPTION"/>
     </attribute>
-    <attribute id="CUST_ID" order="4" attributeHierarchyActive="false" displayAttribute="false">
-      <descriptions defaultDescription="Customer ID"/>
-      <keyMapping columnObjectName="Details" columnName="CUST_ID"/>
-    </attribute>
-    <attribute id="FIELD_VALUE" order="5" attributeHierarchyActive="false" descriptionColumnName="FIELD_DESCRIPTION" displayAttribute="false">
-      <descriptions defaultDescription="Attribute Value"/>
-      <keyMapping columnObjectName="Details" columnName="ATTRIBUTE_VALUE"/>
-    </attribute>
-    <attribute id="IS_SENSITIVE" order="6" attributeHierarchyActive="false" displayAttribute="false">
+    <attribute id="IS_SENSITIVE" order="4" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="Data Sensitivity Flag"/>
       <keyMapping columnObjectName="Details" columnName="IS_SENSITIVE"/>
     </attribute>
   
-    <attribute id="IS_FILTER" order="7" attributeHierarchyActive="false" displayAttribute="false">
+    <attribute id="IS_FILTER" order="5" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="Filter Flag"/>
   
       <keyMapping columnObjectName="Details" columnName="IS_FILTER"/>
   
     </attribute>
   
-    <attribute id="IS_SHOW_DETAILS" order="8" attributeHierarchyActive="false" displayAttribute="false">
+    <attribute id="IS_SHOW_DETAILS" order="6" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+  
       <keyMapping columnObjectName="Details" columnName="IS_SHOW_DETAILS"/>
+  
+    </attribute>
+  
+    <attribute id="CUST_ID" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CUST_ID_ID"/>
+      <keyMapping columnObjectName="Details" columnName="CUST_ID"/>
+    </attribute>
+    <attribute id="FIELD_VALUE" order="8" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Attribute Value"/>
+      <keyMapping columnObjectName="Details" columnName="ATTRIBUTE_VALUE"/>
     </attribute>
   </attributes>
   <calculatedAttributes/>
@@ -408,7 +383,7 @@
     </shape>
   
     <shape expanded="true" modelObjectName="Attributes" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="309" y="621"/>
+      <upperLeftCorner x="301" y="507"/>
       <rectangleSize height="30" width="140"/>
     </shape>
     <shape expanded="true" modelObjectName="AttributeInfo" modelObjectNameSpace="CalculationView">
@@ -423,10 +398,6 @@
       <upperLeftCorner x="676" y="621"/>
       <rectangleSize height="30" width="140"/>
     </shape>
-    <shape expanded="true" modelObjectName="LastAttribute" modelObjectNameSpace="CalculationView">
-      <upperLeftCorner x="309" y="496"/>
-      <rectangleSize height="30" width="140"/>
-    </shape>
     <shape expanded="true" modelObjectName="LastValue" modelObjectNameSpace="CalculationView">
       <upperLeftCorner x="689" y="496"/>
       <rectangleSize height="30" width="140"/>
@@ -439,8 +410,8 @@
       <upperLeftCorner x="20" y="30"/>
       <rectangleSize width="250"/>
     </shape>
-    <shape modelObjectName="LastAttribute" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
-      <upperLeftCorner x="320" y="30"/>
+    <shape modelObjectName="Attributes" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="408" y="33"/>
       <rectangleSize width="250"/>
     </shape>
     <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">

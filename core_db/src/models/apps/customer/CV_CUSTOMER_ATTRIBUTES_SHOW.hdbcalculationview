@@ -4,8 +4,8 @@
 <localVariables/>
 <variableMappings/>
 <dataSources>
-  <DataSource id="db::app.CustomerAttributes">
-    <resourceUri>db::app.CustomerAttributes</resourceUri>
+  <DataSource id="functions::TF_CUSTOMER_ATTRIBUTES" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_CUSTOMER_ATTRIBUTES</resourceUri>
   </DataSource>
   <DataSource id="db::app.AttributeTypes">
     <resourceUri>db::app.AttributeTypes</resourceUri>
@@ -46,7 +46,7 @@
       </calculatedViewAttribute>
     </calculatedViewAttributes>
     <restrictedViewAttributes/>
-    <input node="db::app.CustomerAttributes">
+    <input node="functions::TF_CUSTOMER_ATTRIBUTES">
       <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID" source="CUST_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID" source="ATTRIBUTE_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
@@ -58,7 +58,7 @@
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_SORT_ORDER" source="ATTRIBUTE_SORT_ORDER"/>
     </input>
   </calculationView>
-  <calculationView xsi:type="Calculation:ProjectionView" id="AttrTy" filterExpressionLanguage="SQL">
+  <calculationView xsi:type="Calculation:ProjectionView" id="AttrTy">
     <viewAttributes>
       <viewAttribute id="ATTRIBUTE_ID" aggregationType="sum">
         <descriptions defaultDescription="Attribute ID"/>
@@ -266,7 +266,9 @@
   
     <attribute id="IS_SHOW_DETAILS" order="12" displayAttribute="false" attributeHierarchyActive="false">
       <descriptions defaultDescription="Show Data in Customer Details Flag"/>
+  
       <keyMapping columnObjectName="Projection_1" columnName="IS_SHOW_DETAILS"/>
+  
     </attribute>
   </attributes>
   <calculatedAttributes/>
