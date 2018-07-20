@@ -510,7 +510,7 @@ sap.ui.define([
                 var formatNumber = NumberFormat.getFloatInstance({
                     style : 'short',
                     minFractionDigits: 0,
-                    maxFractionDigits: 1
+                    maxFractionDigits: 2
                 });
 
                 var number = Number(value);
