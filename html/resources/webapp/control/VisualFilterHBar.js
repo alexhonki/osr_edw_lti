@@ -238,7 +238,7 @@ sap.ui.define([
                             var format = NumberFormat.getFloatInstance({
                             style:"short",
                             minFractionDigits: 0,
-                            maxFractionDigits: 1
+                            maxFractionDigits: 2
                         });
                         var value = format.format(d.value);
                         return value;
