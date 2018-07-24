@@ -3,13 +3,13 @@
 	"action": "procedures.events.erp::PR_EXTRACT_LAND_EVENT",
 	"schedules": [{
 		"description": "Land Event with schedule frequency: Initial Load", 
-		"xscron": "2016 6 17 * 13 40 01",
+		"xscron": "2018 7 25 * 7 0 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Land Event with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "2016 * * sun 17 40 01",
+		"description": "Land Event with schedule frequency: Delta Load every * * * * 11 10 0", 
+		"xscron": "* * * * 11 10 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

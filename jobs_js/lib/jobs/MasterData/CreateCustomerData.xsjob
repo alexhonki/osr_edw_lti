@@ -3,13 +3,13 @@
 	"action": "procedures.masterData::PR_EXTRACT_LT_CUSTOMERS",
 	"schedules": [{
 		"description": "Create Customer Data with schedule frequency: Initial Load", 
-		"xscron": "2016 6 17 * 00 00 01",
+		"xscron": "2018 7 25 * 6 0 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Create Customer Data with schedule frequency: Delta Load every * * * sun 04 20 01", 
-		"xscron": "2016 * * sun 04 20 01",
+		"description": "Create Customer Data with schedule frequency: Delta Load every * * * * 9 0 0", 
+		"xscron": "* * * * 9 0 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

@@ -3,13 +3,13 @@
 	"action": "procedures.events.erp::PR_EXTRACT_FINANCIAL_CONSIDERATION_EVENT",
 	"schedules": [{
 		"description": "Financial Consideration Event with schedule frequency: Initial Load", 
-		"xscron": "2016 6 17 * 13 30 01",
+		"xscron": "2018 7 25 * 6 55 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Financial Consideration Event with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "2016 * * sun 17 30 01",
+		"description": "Financial Consideration Event with schedule frequency: Delta Load every * * * * 11 0 0", 
+		"xscron": "* * * * 11 0 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

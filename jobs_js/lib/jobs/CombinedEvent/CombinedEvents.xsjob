@@ -3,13 +3,13 @@
 	"action": "procedures.ml::PR_RUN_COMBINED_EVENTS_WRAPPER",
 	"schedules": [{
 		"description": "Combined Events with schedule frequency: Initial Load", 
-		"xscron": "2016 6 17 * 15 00 01",
+		"xscron": "2018 7 25 * 8 30 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Combined Events with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "2016 * * sun 19 00 01",
+		"description": "Combined Events with schedule frequency: Delta Load every * * * * 13 50 0",
+		"xscron": "* * * * 13 50 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

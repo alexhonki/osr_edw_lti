@@ -4,13 +4,13 @@
 	
 	"schedules": [{
 		"description": "Land Value Event with schedule frequency: Initial Load", 
-		"xscron": "2016 6 17 * 02 20 01",
+		"xscron": "2018 7 25 * 7 45 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Land Value Event with schedule frequency: Delta Load every * * * sun 05 40 01", 
-		"xscron": "2016 * * sun 05 40 01",
+		"description": "Land Value Event with schedule frequency: Delta Load every * * * * 12 40 0",
+		"xscron": "* * * * 12 40 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

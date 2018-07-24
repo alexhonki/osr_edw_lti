@@ -3,13 +3,13 @@
 	"action": "procedures.events.erp::PR_EXTRACT_DUNNING_EVENT",
 	"schedules": [{
 		"description": "Dunning Event with schedule frequency: Initial Load", 
-		"xscron": "2016 6 17 * 13 10 01",
+		"xscron": "2018 7 25 * 6 45 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Dunning Event with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "2016 * * sun 17 10 01",
+		"description": "Dunning Event with schedule frequency: Delta Load every * * * * 10 40 0", 
+		"xscron": "* * * * 10 30 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

@@ -3,13 +3,13 @@
 	"action": "procedures.events.erp::PR_EXTRACT_REASSESSMENT_VALUE_EVENT",
 	"schedules": [{
 		"description": "Reassessment Value Event with schedule frequency: Initial Load", 
-		"xscron": "2016 6 17 * 14 30 01",
+		"xscron": "2018 7 25 * 7 20 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Reassessment Value Event with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "2016 * * sun 18 30 01",
+		"description": "Reassessment Value Event with schedule frequency: Delta Load every * * * * 11 50 0",
+		"xscron": "* * * * 11 50 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

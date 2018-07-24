@@ -3,13 +3,13 @@
 	"action": "procedures.text::PR_CRM_EVENT_CREATE_MAIN",
 	"schedules": [{
 		"description": "CRM Event with schedule frequency: Initial Load", 
-		"xscron": "2016 6 17 * 12 50 01",
+		"xscron": "2018 7 25 * 6 35 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "CRM Event with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "2016 * * sun 16 50 01",
+		"description": "CRM Event with schedule frequency: Delta Load every * * * * 10 10 0", 
+		"xscron": "* * * * 10 10 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

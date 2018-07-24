@@ -3,13 +3,13 @@
 	"action": "procedures.events.erp::PR_EXTRACT_CHANGE_OF_DETAILS_EVENT",
 	"schedules": [{
 		"description": "Change of Details Event with schedule frequency: Initial Load", 
-		"xscron": "2016 6 17 * 12 30 01",
+		"xscron": "2018 7 25 * 6 25 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Change of Details Event with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "2016 * * sun 16 30 01",
+		"description": "Change of Details Event with schedule frequency: Delta Load every * * * * 9 50 0", 
+		"xscron": "* * * * 9 50 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

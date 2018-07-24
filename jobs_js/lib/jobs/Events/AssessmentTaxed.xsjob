@@ -3,13 +3,13 @@
 	"action": "procedures.events.erp::PR_EXTRACT_ASSESSMENT_TAXED_EVENT",
 	"schedules": [{
 		"description": "Assessment Taxed Event with schedule frequency: Initial Load", 
-		"xscron": "2016 6 17 * 12 20 01",
+		"xscron": "2018 7 25 * 6 20 0",
 		"parameter": {
 			"IV_MODE": 0
 		} 
 	}, {
-		"description": "Assessment Taxed Event with schedule frequency: Delta Load every * * * * 21 10 0", 
-		"xscron": "2016 * * sun 16 20 01",
+		"description": "Assessment Taxed Event with schedule frequency: Delta Load every * * * * 9 40 0", 
+		"xscron": "* * * * 9 40 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 
