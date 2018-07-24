@@ -135,10 +135,19 @@ Payment,Payment,remit,98,0,simple-payment
 Payment,Payment,p'ment,98,0,simple-payment
 Payment,Payment,credit%card,98,0,simple-payment
 Payment,Payment,money,98,0,simple-payment
+Payment,Payment,duplicate%payment,98,0,simple-payment
 Objection,Objection,objection,81,0,message-popup
 Debt Management,Debt Management,bankrupt,48,0,sales-order
 Debt Management,Debt Management,receivers,48,0,sales-order
 Debt Management,Debt Management,insolvency,48,0,sales-order
+Debt Management,Debt Management,debt%recovery,48,0,sales-order
+Debt Management,Debt Management,proof%of%debt,48,0,sales-order
+Debt Management,Debt Management,debt%letter,48,0,sales-order
+Debt Management,Debt Management,remission,48,0,sales-order
+Debt Management,Debt Management,write%off,48,0,sales-order
+Debt Management,Debt Management,write-off,48,0,sales-order
+Debt Management,Debt Management,W/O,48,0,sales-order
+Debt Management,Debt Management,administration,48,0,sales-order
 Deceased,Deceased,deceased,100,0,employee-rejections
 Deceased,Deceased,death,100,0,employee-rejections
 Deceased,Deceased,estate%settlement,100,0,employee-rejections
@@ -153,6 +162,7 @@ Dispute Assessment,Dispute Assessment,valuation,75,0,inspection
 Dispute Assessment,Dispute Assessment,share%interest,75,0,inspection
 Account Enquiry,Account Enquiry,balance,120,0,sales-notification
 Account Enquiry,Account Enquiry,account,120,0,sales-notification
+Account Enquiry,Account Enquiry,debt%outstanding,120,0,sales-notification
 Reassessment,Reassessment,dunning%reassessment,20,0,add-product
 Debt Management,Debt Management,charge%fee%notification,48,0,sales-order
 Debt Management,Debt Management,legal%letter,48,0,sales-order
