@@ -3,7 +3,7 @@ Account Enquiry,Account Enquiry,pay%enquiry,120,0,sales-notification
 Account Enquiry,Account Enquiry,eft%form,120,0,sales-notification
 Account Enquiry,Account Enquiry,extra%payment,120,0,sales-notification
 Account Enquiry,Account Enquiry,liability%amount,120,0,sales-notification
-Account Enquiry,Account Enquiry,liability%amt,120,0,sales-notification
+Account Enquiry,Account Enquiry,liability,120,0,sales-notification
 Account Enquiry,Account Enquiry,extra%pymnt,120,0,sales-notification
 Account Enquiry,Account Enquiry,bank%acct,120,0,sales-notification
 Account Enquiry,Account Enquiry,pay%arrear,120,0,sales-notification
@@ -67,6 +67,7 @@ Debt Management,Debt Management - Charge,release%charge,43,0,sales-order
 Debt Management,Debt Management - Charge,charge%release,43,0,sales-order
 Debt Management,Debt Management - Charge,remov%charge,43,0,sales-order
 Debt Management,Debt Management - Charge,charge%fee,43,0,sales-order
+Debt Management,Debt Management - Charge,charge%reg,43,0,sales-order
 Debt Management,Debt Management - Charge,statutory%charge,43,0,sales-order
 Debt Management,Debt Management - Charge,stat%charge,43,0,sales-order
 Debt Management,Debt Management - Charge,charge%remov,43,0,sales-order
@@ -80,11 +81,14 @@ Debt Management,Debt Management,interest,48,0,sales-order
 Debt Management,Debt Management,lpi,48,0,sales-order
 Debt Management,Debt Management,demand%letter,48,0,sales-order
 Debt Management,Debt Management,final%demand,48,0,sales-order
+Debt Management,Debt Management,liquidator,48,0,sales-order
+Debt Management,Debt Management,mip,48,0,sales-order
 Exemption,Exemption,lt1,70,0,insurance-life
 Exemption,Exemption,lt 1,70,0,insurance-life
 Exemption,Exemption,lt2,70,0,insurance-life
 Exemption,Exemption,lt 2,70,0,insurance-life
 Exemption,Exemption,lt12,70,0,insurance-life
+Exemption,Exemption,ppe,70,0,insurance-life
 Payment Extension,Payment Extension,defer%interest%block,64,0,time-overtime
 Payment Extension,Payment Extension,dunning%hold,64,0,time-overtime
 Payment Extension,Payment Extension,payment%extension,64,0,time-overtime
@@ -102,6 +106,8 @@ Debt Management,Debt Management,dunn,48,0,sales-order
 Payment arrangement,Payment arrangement,pay%plan,39,0,monitor-payments
 Payment arrangement,Payment arrangement,arrang,39,0,monitor-payments
 Payment arrangement,Payment arrangement,p2p,39,0,monitor-payments
+Payment arrangement,Payment arrangement,p/plan,39,0,monitor-payments
+Payment arrangement,Payment arrangement,PA%declined,39,0,monitor-payments
 Payment Extension,Payment Extension,ext,64,0,time-overtime
 Reassessment,Reassessment,reass,20,0,add-product
 Exemption,Exemption,exempt,70,0,insurance-life
@@ -110,6 +116,8 @@ Debt Management,Debt Management - Block,block,45,0,sales-order
 Change of details,Change of details,coa,90,0,key-user-settings
 Change of details,Change of details,change%of,90,0,key-user-settings
 Change of details,Change of details,addr,90,0,key-user-settings
+Change of details,Change of details,change%of%name,90,0,key-user-settings
+Change of details,Change of details,name%change,90,0,key-user-settings
 Change of details,RTS,return%sender,91,0,inbox
 Change of details,RTS,rts,91,0,inbox
 Dispute Assessment,Dispute Assessment,dispute,75,0,inspection
@@ -147,6 +155,7 @@ Debt Management,Debt Management,remission,48,0,sales-order
 Debt Management,Debt Management,write%off,48,0,sales-order
 Debt Management,Debt Management,W/O,48,0,sales-order
 Debt Management,Debt Management,administration,48,0,sales-order
+Debt Management,Debt Management,rec&man,48,0,sales-order
 Deceased,Deceased,deceased,100,0,employee-rejections
 Deceased,Deceased,death,100,0,employee-rejections
 Deceased,Deceased,estate%settlement,100,0,employee-rejections
@@ -162,6 +171,11 @@ Dispute Assessment,Dispute Assessment,share%interest,75,0,inspection
 Account Enquiry,Account Enquiry,balance,120,0,sales-notification
 Account Enquiry,Account Enquiry,account,120,0,sales-notification
 Account Enquiry,Account Enquiry,debt%outstanding,120,0,sales-notification
+Account Enquiry,Account Enquiry,payout,120,0,sales-notification
+Account Enquiry,Account Enquiry,pay-out,120,0,sales-notification
+Account Enquiry,Account Enquiry,oustand,120,0,sales-notification
+Account Enquiry,Account Enquiry,bank%details,120,0,sales-notification
+Account Enquiry,Account Enquiry,receipt,120,0,sales-notification
 Reassessment,Reassessment,dunning%reassessment,20,0,add-product
 Debt Management,Debt Management,charge%fee%notification,48,0,sales-order
 Debt Management,Debt Management,legal%letter,48,0,sales-order
