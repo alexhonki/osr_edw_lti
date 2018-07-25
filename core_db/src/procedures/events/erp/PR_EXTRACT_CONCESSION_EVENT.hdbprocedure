@@ -63,7 +63,7 @@ BEGIN
 		from "osr.edw.staging.md.rms.proxy.synonym::CV_LTCNEXMD" AS A
 		inner join :LT_CUST_ID AS delt ON A.BPARTNER = delt.BPARTNER -- and CAST(A.VALIDFROM AS date) = init_date
 		INNER JOIN  "db::app.Customer" AS SAP ON SAP.EXT_ID=A.BPARTNER
-		 WHERE INVALID_EXMD=''  AND 	SAP.INIT_DATE <= CAST(VALIDFROM AS date) )
+		 WHERE INVALID_EXMD=''  )--AND 	SAP.INIT_DATE <= CAST(VALIDFROM AS date) )
 	UNION ALL
 		/*Removed Exemption*/
 		 SELECT
@@ -86,7 +86,7 @@ BEGIN
 		from "osr.edw.staging.md.rms.proxy.synonym::CV_LTCNEXMD" AS A
 		inner join :LT_CUST_ID_REM AS delt ON A.BPARTNER = delt.BPARTNER -- and CAST(A.VALIDTO AS date) = init_date
 		INNER JOIN  "db::app.Customer" AS SAP ON SAP.EXT_ID=A.BPARTNER
-		 WHERE CAST(VALIDTO AS DATE)<cast(NOW() AS date) and  INVALID_EXMD='' AND 	SAP.INIT_DATE <= CAST(VALIDFROM AS date) 
+		 WHERE CAST(VALIDTO AS DATE)<cast(NOW() AS date) and  INVALID_EXMD='' --AND 	SAP.INIT_DATE <= CAST(VALIDFROM AS date) 
 		UNION ALL
 		/*SubDivider Exemption - Received*/
 	(	 SELECT
