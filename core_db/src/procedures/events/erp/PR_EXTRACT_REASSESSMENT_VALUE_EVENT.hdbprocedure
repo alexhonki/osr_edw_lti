@@ -21,8 +21,8 @@ BEGIN
 		If Reassessment value is lower than the initial Assessment then there wil be entries with -Ve Values
    *************************************************************************************************************************/
   
-	DECLARE LV_REASSESS_HIGH CONSTANT NVARCHAR(500) := 'Re-Assessment Value Higher than Initial Assessment';
-	DECLARE LV_REASSESS_LOW CONSTANT NVARCHAR(500) := 'Re-Assessment Value Lower than Initial Assessment';
+	DECLARE LV_REASSESS_HIGH CONSTANT NVARCHAR(500) := 'Reassessment Value Higher than Initial Assessment';
+	DECLARE LV_REASSESS_LOW CONSTANT NVARCHAR(500) := 'Reassessment Value Lower than Initial Assessment';
 	DECLARE LV_REASSESS_GROUP CONSTANT NVARCHAR(500) := 'Reassessment';
 	DECLARE LV_EVENT_ICON CONSTANT NVARCHAR(500) := 'add-product';
   
