@@ -132,7 +132,7 @@ DFKKOP - Item table for Contract Account Document
 		INNER JOIN "osr.edw.staging.md.rms.proxy.synonym::CV_BUT000" AS B ON A.EXT_ID = B.PARTNER;
 	
 	
-	
+   truncate table "db::app.CustomerValues";
    UPSERT "db::app.CustomerValues" (
 	"CUST_ID",
 	"VALUE_ID",
