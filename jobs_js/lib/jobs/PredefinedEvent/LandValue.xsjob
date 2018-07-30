@@ -2,13 +2,7 @@
 	"description": "Extract Land Value Event Data",
 	"action": "procedures.events.predefined::PR_EXTRACT_LAND_VALUE_EVENT",
 	
-	"schedules": [{
-		"description": "Land Value Event with schedule frequency: Initial Load", 
-		"xscron": "2018 7 25 * 7 45 0",
-		"parameter": {
-			"IV_MODE": 0
-		} 
-	}, {
+	"schedules": [ {
 		"description": "Land Value Event with schedule frequency: Delta Load every * * * * 12 40 0",
 		"xscron": "* * * * 12 40 0",
 		"parameter": {

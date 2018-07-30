@@ -2,12 +2,6 @@
 	"description": "Extract EPO PP withdrawn Event Data",
 	"action": "procedures.events.erp::PR_EXTRACT_EPO_PP_WITHDRAWN_EVENT",
 	"schedules": [{
-		"description": "EPO PP withdrawn Event with schedule frequency: Initial Load", 
-		"xscron": "2018 7 25 * 6 50 0",
-		"parameter": {
-			"IV_MODE": 0
-		} 
-	}, {
 		"description": "EPO PP withdrawn Event with schedule frequency: Delta Load every * * * * 10 50 0", 
 		"xscron": "* * * * 10 50 0",
 		"parameter": {

@@ -3,12 +3,6 @@
 	"action": "procedures.events.predefined::PR_EXTRACT_TAX_AMOUNT_EVENT",
 	
 	"schedules": [{
-		"description": "Tax Amount Event with schedule frequency: Initial Load", 
-		"xscron": "2018 7 25 * 8 0 0",
-		"parameter": {
-			"IV_MODE": 0
-		} 
-	}, {
 		"description": "Tax Amount Event with schedule frequency: Delta Load every * * * * 13 10 0",
 		"xscron": "* * * * 13 10 0",
 		"parameter": {

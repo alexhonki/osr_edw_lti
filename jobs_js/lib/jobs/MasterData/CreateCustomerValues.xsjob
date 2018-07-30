@@ -3,7 +3,7 @@
 	"action": "procedures.masterData::PR_EXTRACT_LT_CUSTOMER_VALUES",
 	"schedules": [{
 		"description": "Create Customer Values Data with schedule frequency: Initial Load", 
-		"xscron": "* * * * * */1 40",
+		"xscron": "* * * * 9 15 0",
 		"parameter": {} 
 	}]
 }

@@ -3,12 +3,6 @@
 	"action": "procedures.events.erp::PR_EXTRACT_ASSESSMENT_EVENT",
 	
 	"schedules": [{
-		"description": "Assessment event with schedule frequency: Initial Load", 
-		"xscron": "2018 7 25 * 6 15 0",
-		"parameter": {
-			"IV_MODE": 0
-		} 
-	}, {
 		"description": "Assessment event with schedule frequency: Delta Load every * * * * 9 30 0", 
 		"xscron": "* * * * 9 30 0",
 		"parameter": {

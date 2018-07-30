@@ -2,12 +2,6 @@
 	"description": "Extract AB Document Event Data",
 	"action": "procedures.events.erp::PR_EXTRACT_AB_DOC_PAYMENT_EVENT",
 	"schedules": [{
-		"description": "AB Document Event with schedule frequency: Initial Load", 
-		"xscron": "2018 7 25 * 6 10 0",
-		"parameter": {
-			"IV_MODE": 0
-		} 
-	}, {
 		"description": "AB Document Event with schedule frequency: Delta Load every * * * * 9 20 0", 
 		"xscron": "* * * * 9 20 0",
 		"parameter": {

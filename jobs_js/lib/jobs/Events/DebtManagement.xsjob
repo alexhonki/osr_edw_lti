@@ -1,13 +1,7 @@
 {
 	"description": "Extract Debt Management Event Data",
 	"action": "procedures.events.erp::PR_EXTRACT_DEBT_MANAGEMENT_EVENT",
-	"schedules": [{
-		"description": "Debt Management Event with schedule frequency: Initial Load", 
-		"xscron": "2018 7 25 * 6 40 0",
-		"parameter": {
-			"IV_MODE": 0
-		} 
-	}, {
+	"schedules": [ {
 		"description": "Debt Management Event with schedule frequency: Delta Load every * * * * 10 20 0", 
 		"xscron": "* * * * 10 20 0",
 		"parameter": {

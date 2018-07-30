@@ -2,12 +2,6 @@
 	"description": "Extract Land Event Data",
 	"action": "procedures.events.erp::PR_EXTRACT_LAND_EVENT",
 	"schedules": [{
-		"description": "Land Event with schedule frequency: Initial Load", 
-		"xscron": "2018 7 25 * 7 0 0",
-		"parameter": {
-			"IV_MODE": 0
-		} 
-	}, {
 		"description": "Land Event with schedule frequency: Delta Load every * * * * 11 10 0", 
 		"xscron": "* * * * 11 10 0",
 		"parameter": {
