@@ -32,7 +32,7 @@ BEGIN
 		LV_MAX_SEQ_ID = 0;
 	END IF;
 	
-	LT_CUST_EDITED_REISSUE = SELECT DISTINCT c.CUST_ID, a.REISSUE_DATE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTAXASFB" a 
+	LT_CUST_EDITED_REISSUE = SELECT DISTINCT b.GPART as CUST_ID, a.REISSUE_DATE FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTAXASFB" a 
 																		LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" b ON b.FBNUM=a.ASSESS_FBNUM
 																		INNER JOIN "db::app.Customer" c ON c.EXT_ID = b.GPART
 																		WHERE a.REISSUE_DATE>0 AND a.Z_RUN_SEQ_ID > LV_MAX_SEQ_ID ;
