@@ -1,4 +1,4 @@
-PROCEDURE "procedures.ml::PR_ML_EVALUATE" ( )
+PROCEDURE "procedures.ml::PR_ML_EVALUATE" ( in IV_TH_SCORE DOUBLE DEFAULT 0.5 )
    LANGUAGE SQLSCRIPT
    SQL SECURITY INVOKER
    --DEFAULT SCHEMA <default_schema_name>
@@ -38,7 +38,7 @@ BEGIN
    
    -- Threshold on Score to devide Debtor
    DECLARE TH_SCORE DOUBLE;
-   TH_SCORE := 0.5;
+   TH_SCORE := :IV_TH_SCORE;
    
    -- Temporary table to store actual values and prediction of the model
    CREATE LOCAL TEMPORARY TABLE #LT_TEMP_EVAL (
