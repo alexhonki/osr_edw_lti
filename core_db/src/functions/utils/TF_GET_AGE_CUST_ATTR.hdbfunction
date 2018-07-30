@@ -34,6 +34,8 @@ BEGIN
 								AGEGROUP =  '61-75'; 
 							ELSEIF   AGE>75 THEN 
 								AGEGROUP =  '75 PLUS'; 
+							ELSE
+								AGEGROUP = 'Not Applicable';
 							END IF;
 					    ELSE 
 					    	AGEGROUP = 'Not Applicable';
