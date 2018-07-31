@@ -60,11 +60,18 @@ BEGIN
 				LV_FILTER_QUERY = CONCAT(CONCAT(CONCAT(CONCAT(LV_FILTER_QUERY, ' OR '), 'description like ''%'), lower(CURR_ROW.SEARCH_STRING)), '%''');
 			END IF;
 		END IF;
-		if curr_row.exclusion != 0	then 
+		if curr_row.exclusion = 1	then 
 			IF :IDX = 1 THEN 
 				LV_FILTER_QUERY = CONCAT(CONCAT('description not like ''%', lower(CURR_ROW.SEARCH_STRING)), '%''');
 			ELSE
 				LV_FILTER_QUERY = CONCAT(CONCAT(CONCAT(CONCAT(LV_FILTER_QUERY, ' AND '), 'description not like ''%'), lower(CURR_ROW.SEARCH_STRING)), '%''');
+			END IF;
+		end if;
+		if curr_row.exclusion = 2	then 
+			IF :IDX = 1 THEN 
+				LV_FILTER_QUERY = CONCAT(CONCAT('description like''' , lower(CURR_ROW.SEARCH_STRING)), '''');
+			ELSE
+				LV_FILTER_QUERY = CONCAT(CONCAT(CONCAT(CONCAT(LV_FILTER_QUERY, ' OR '), 'description like '''), lower(CURR_ROW.SEARCH_STRING)), '''');
 			END IF;
 		end if;
 		IDX = IDX + 1;
