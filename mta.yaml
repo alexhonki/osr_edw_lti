@@ -23,6 +23,7 @@ modules:
       - name: OSR_LTI-uaa
     provides:
       - name: ti_core_api
+        public: true
         properties:
           url: '${default-url}'
     properties:
