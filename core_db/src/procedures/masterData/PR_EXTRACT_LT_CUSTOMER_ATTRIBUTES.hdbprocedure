@@ -60,12 +60,13 @@ BEGIN
 						  FROM :LT_ALL_RESV_ALL_CUSTOMER;
 	
 	--OUTSTANDING AMOUNT					  
-	LT_OA_TEMP = SELECT CUST_ID, 
-					MIN(TO_DATE(init_date)) AS "INIT_DATE",
-					MAX(TO_DATE(end_date)) AS "END_DATE",
-					SUM(VALUE) AS "VALUE"
-					FROM "db::app.CustomerValues" -- where cust_id = '1280402' 
-					GROUP BY cust_id;
+	LT_OA_TEMP = SELECT A.CUST_ID, 
+					MIN(TO_DATE(A.init_date)) AS "INIT_DATE",
+					MAX(TO_DATE(A.end_date)) AS "END_DATE",
+					SUM(A.VALUE) AS "VALUE"
+					FROM "db::app.CustomerValues" as A -- where cust_id = '1280402'
+					inner join :LT_RESV_CUSTOMERS as B on A.CUST_ID = B.CUST_ID
+					GROUP BY A.cust_id;
 						  
 	/*LT_BP_VALUE_TEMP = SELECT CUST_ID, 
 						  MIN(TO_DATE(TAXYRSTARTDT)) AS "INIT_DATE",
@@ -323,7 +324,7 @@ BEGIN
 									  LEFT(VALID_TO,8) = '21212030' THEN TO_TIMESTAMP(CAST('20100701' AS DATE))
 								 ELSE TO_TIMESTAMP(cast(LEFT(VALID_TO,8) as date)) END AS  VALID_TO
 						FROM "osr.edw.staging.md.rms.proxy.synonym::CV_BUT021FS" inner join
-						"db::app.Customer" ON EXT_ID = PARTNER
+						"db::app.Customer" AS B ON B.EXT_ID = PARTNER
 						WHERE ADR_KIND IN ('LTX_ADD', 'LTX_AD2', 'XXDEFAULT');
 	
 	ADR_PRIORITY =		 SELECT A.PARTNER, A.ADDRNUMBER, A.VALID_FROM, A.VALID_TO, valid_to_prev,a.ADR_PRIORITY
@@ -654,7 +655,8 @@ BEGIN
 						  
 
 	--Delete any existing records from the table before extracting and populating the Customer Attributes
-	TRUNCATE TABLE "db::app.CustomerAttributes";
+	--TRUNCATE TABLE "db::app.CustomerAttributes";
+	delete from "db::app.CustomerAttributes" where ATTRIBUTE_ID IN (select attribute_id from "db::app.AttributeTypes" where ATTRIBUTE_NAME = 'PPR_POSTCODE');
 
 	UPSERT "db::app.CustomerAttributes"
 	("CUST_ID",
