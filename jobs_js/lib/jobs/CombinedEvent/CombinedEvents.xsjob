@@ -4,8 +4,6 @@
 	"schedules": [{
 		"description": "Combined Events with schedule frequency: Delta Load every * * * * 13 50 0",
 		"xscron": "* * * * 13 50 0",
-		"parameter": {
-			"IV_MODE": 1
-		} 
+		"parameter": {} 
 	}]
 }
