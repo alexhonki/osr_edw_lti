@@ -22,10 +22,10 @@
                         <Label text="{i18n>CustomerDetails.KeyInfoId}:"/>
                         <ObjectAttribute id="idKeyInfoId" text="{/ExternalCustomerId}"/>
                     </l:VerticalLayout>
-                    <l:VerticalLayout class="sapUiMediumMarginBeginEnd" visible="{=${/CustomerRisk} !== null ? true : false}">
+                    <!--<l:VerticalLayout class="sapUiMediumMarginBeginEnd" visible="{=${/CustomerRisk} !== null ? true : false}">
                         <Label text="{i18n>CustomerDetails.KeyInfoRisk}:"/>
                         <ObjectAttribute text="{/CustomerRisk}"/>
-                    </l:VerticalLayout>
+                    </l:VerticalLayout>-->
                     <l:VerticalLayout class="sapUiMediumMarginBeginEnd" visible="{=${/CustomerOIL} !== null ? true : false}">
                         <Label text="{i18n>CustomerDetails.KeyInfoOperatingIncomeLoss}:"/>
                         <ObjectAttribute text="{parts:[{path:'/CustomerOIL'},{path:'/Currency'}],

@@ -400,8 +400,8 @@ sap.ui.define([
 				if (!bShowSimplePulse) {
 					var x1 = xScale(xExtents[0]) - padding;
 					var x2 = xScale(xExtents[1]) + padding;
-					this.addReferenceLine(referenceLines, padding - margin.left / 2, x2, yScale(thresholdLowValue), "Medium Risk Factor");
-					this.addReferenceLine(referenceLines, padding - margin.left / 2, x2, yScale(thresholdHighValue), "High Risk Factor");
+					this.addReferenceLine(referenceLines, padding - margin.left / 2, x2, yScale(thresholdLowValue), "Medium Influence Factor");
+					this.addReferenceLine(referenceLines, padding - margin.left / 2, x2, yScale(thresholdHighValue), "High Influence Factor");
 					// this.addReferenceLine(referenceLines, x1, x2, yScale(actionRequiredValue), "Action Required");
 				}
 

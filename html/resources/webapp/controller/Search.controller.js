@@ -345,10 +345,10 @@ sap.ui.define([
                                 ]})];
 				if (isCustomer) {
 				aCustomerListItemInfo.push(
-                                new VBox({width: "15%", items: [
+                                /*new VBox({width: "15%", items: [
                                     new Text({text: sItemRiskInfluenceLabel}).addStyleClass("sapUiMediumMarginBeginEnd sapUiSmallMarginTop labelHeading"),
                                     new Text({text: iItemRiskInfluence}).addStyleClass("sapUiMediumMarginBeginEnd sapUiSmallMarginBottom" + sItemRiskInfluenceClass)
-                                ]}).addStyleClass("sapUiMediumMarginEnd"),
+                                ]}).addStyleClass("sapUiMediumMarginEnd"),*/
                                 new VBox({width: "20%", items: [
                                     new Text({text: sItemImpactIncomeLossLabel}).addStyleClass("sapUiMediumMarginBeginEnd sapUiSmallMarginTop labelHeading"),
                                     oItemImpactIncomeLoss
