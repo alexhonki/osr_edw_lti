@@ -1,0 +1,11 @@
+{
+	"description": "Extract Land Evaluation Event Data",
+	"action": "procedures.events.erp::PR_EXTRACT_LAND_EVALUATION_EVENT",
+	"schedules": [{
+		"description": "Land Evaluation Event with schedule frequency: Delta Load every * * * * 3 16 0", 
+		"xscron": "* * * * 3 16 0",
+		"parameter": {
+			"IV_MODE": 1
+		} 
+	}]
+}

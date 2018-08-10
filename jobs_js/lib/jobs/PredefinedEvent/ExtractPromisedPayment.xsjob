@@ -1,0 +1,12 @@
+{
+	"description": "Extract Tax Amount Event Data",
+	"action": "procedures.events.predefined::PR_EXTRACT_TAX_AMOUNT_EVENT",
+	
+	"schedules": [{
+		"description": "Tax Amount Event with schedule frequency: Delta Load every * * * * 3 23 0",
+		"xscron": "* * * * 3 23 0",
+		"parameter": {
+			"IV_MODE": 1
+		} 
+	}]
+}

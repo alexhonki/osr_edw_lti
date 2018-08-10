@@ -2,8 +2,8 @@
 	"description": "Extract Land Ownership Event Data",
 	"action": "procedures.events.erp::PR_EXTRACT_LAND_OWNERSHIP_EVENT",
 	"schedules": [{
-		"description": "Land Ownership Event with schedule frequency: Delta Load every * * * * 11 20 0", 
-		"xscron": "* * * * 11 20 0",
+		"description": "Land Ownership Event with schedule frequency: Delta Load every * * * * 3 17 0", 
+		"xscron": "* * * * 3 17 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

@@ -2,8 +2,8 @@
 	"description": "Extract Assessment Taxed Event Data",
 	"action": "procedures.events.erp::PR_EXTRACT_ASSESSMENT_TAXED_EVENT",
 	"schedules": [{
-		"description": "Assessment Taxed Event with schedule frequency: Delta Load every * * * * 9 40 0", 
-		"xscron": "* * * * 9 40 0",
+		"description": "Assessment Taxed Event with schedule frequency: Delta Load every * * * * 3 7 0", 
+		"xscron": "* * * * 3 7 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

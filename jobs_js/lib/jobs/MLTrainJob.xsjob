@@ -3,7 +3,7 @@
 	"action": "procedures.ml::PR_RUN_TRAIN_PREDICT_WRAPPER",
 	"schedules": [{
 		"description": "Perform Machine Learning Training and Prediction", 
-		"xscron": "2016 * * sat 15 0 0",
+		"xscron": "* 1 7 * 4 30 0",
 		"parameter": { "REACTION_TYPE": "DEBTOR_INITIAL_ASSESSMENT", "PREVIOUS_WINDOWS": 1 }
 	}]
 }

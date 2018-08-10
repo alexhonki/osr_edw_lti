@@ -2,8 +2,8 @@
 	"description": "Extract Financial Consideration Event Data",
 	"action": "procedures.events.erp::PR_EXTRACT_FINANCIAL_CONSIDERATION_EVENT",
 	"schedules": [ {
-		"description": "Financial Consideration Event with schedule frequency: Delta Load every * * * * 11 0 0", 
-		"xscron": "* * * * 11 0 0",
+		"description": "Financial Consideration Event with schedule frequency: Delta Load every * * * * 3 14 0", 
+		"xscron": "* * * * 3 14 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

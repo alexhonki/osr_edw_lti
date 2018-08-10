@@ -3,8 +3,8 @@
 	"action": "procedures.events.predefined::PR_EXTRACT_DEBT_TIME_IN_YEAR",
 	
 	"schedules": [ {
-		"description": "Debt Time in Year Event with schedule frequency: Delta Load every * * * * 13 20 0",
-		"xscron": "* * * * 13 20 0",
+		"description": "Debt Time in Year Event with schedule frequency: Delta Load every * * * * 3 30 0",
+		"xscron": "* * * * 3 30 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

@@ -2,8 +2,8 @@
 	"description": "Extract Change of Details Event Data",
 	"action": "procedures.events.erp::PR_EXTRACT_CHANGE_OF_DETAILS_EVENT",
 	"schedules": [{
-		"description": "Change of Details Event with schedule frequency: Delta Load every * * * * 9 50 0", 
-		"xscron": "* * * * 9 50 0",
+		"description": "Change of Details Event with schedule frequency: Delta Load every * * * * 3 8 0", 
+		"xscron": "* * * * 3 8 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

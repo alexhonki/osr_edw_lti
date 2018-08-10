@@ -2,8 +2,8 @@
 	"description": "Extract Dunning Event Data",
 	"action": "procedures.events.erp::PR_EXTRACT_DUNNING_EVENT",
 	"schedules": [ {
-		"description": "Dunning Event with schedule frequency: Delta Load every * * * * 10 40 0", 
-		"xscron": "* * * * 10 30 0",
+		"description": "Dunning Event with schedule frequency: Delta Load every * * * * 3 12 0", 
+		"xscron": "* * * * 3 12 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

@@ -2,8 +2,8 @@
 	"description": "Extract Payment Fulfilment Event Data",
 	"action": "procedures.events.erp::PR_EXTRACT_PAYMENT_FULLFILLMENT_EVENT",
 	"schedules": [{
-		"description": "Payment Fulfilment Event with schedule frequency: Delta Load every * * * * 11 30 0", 
-		"xscron": "* * * * 11 30 0",
+		"description": "Payment Fulfilment Event with schedule frequency: Delta Load every * * * * 3 18 0", 
+		"xscron": "* * * * 3 18 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 
