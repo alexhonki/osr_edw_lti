@@ -3,7 +3,7 @@
 	"action": "procedures.ml::PR_RUN_COMBINED_EVENTS_WRAPPER",
 	"schedules": [{
 		"description": "Combined Events with schedule frequency: Delta Load every * * * * 3 32 0",
-		"xscron": "* * * * 3 32 0",
+		"xscron": "2016 * * * 3 32 0",
 		"parameter": {} 
 	}]
 }
