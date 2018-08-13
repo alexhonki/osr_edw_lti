@@ -13,6 +13,9 @@ BEGIN
 	DECLARE I_INFLUENCE_FACTOR INT;
 	DECLARE I_WINDOW_PERIOD INT;
 	DECLARE LV_COUNT_ENTRY INT;
+	DECLARE LV_TO INT;
+	DECLARE LV_FROM INT;
+	DECLARE LV_INDEX TIMESTAMP;
 
 	--------------------------------------------------------------------------------------------------------
 	-- Set Control Parameters
@@ -59,17 +62,22 @@ BEGIN
 		------------------------------------------------------------------------------------------------------------
 		-- DELETE ALL COMBINED EVENTS IN CUST EVENTS TABLE WITHIN THE PERIOD
 		------------------------------------------------------------------------------------------------------------
+		SELECT TO_DATE INTO LV_INDEX FROM "functions::TF_CONF_COMBINED_EVENTS_TRAINING_DATE"();
+	
+		LV_TO = YEAR(:LV_INDEX)*100 + MONTH(:LV_INDEX);
+		LV_FROM = YEAR(ADD_MONTHS(:LV_INDEX, -60))*100 + MONTH(ADD_MONTHS(:LV_INDEX, -60)) + 1;	
+		LT_TOP_RESULT = SELECT TOP 10 PRERULE,SUPPORT,CONFIDENCE,LIFT FROM :LT_RESULT ORDER BY LENGTH(PRERULE) DESC;
 		LV_PAST_COMB_EVENTS = SELECT RECORD_ID, "EVENT_ID.ID" "EVENT_ID"	-- combined events within range
 								FROM "db::app.CustomerEvents"
 								WHERE EVENT_GROUP = 'Combined Event'
-								AND INIT_TS BETWEEN :I_FROM AND :I_TO
+								AND INIT_TS BETWEEN :LV_FROM AND :LV_TO
 							 UNION
 							SELECT RECORD_ID, ce."EVENT_ID.ID" "EVENT_ID"								-- reacted events within range
 								FROM "db::app.CustomerEvents" ce
 								INNER JOIN "db::ml.combined.rawEvents" re
 								ON ce."INIT_DATE" = re."INIT_DATE"
 								WHERE ce.EVENT_GROUP = 'Combined Event'
-								AND year(re.REACTION_DATE)*100+month(re.REACTION_DATE)  BETWEEN :I_FROM AND :I_TO;
+								AND year(re.REACTION_DATE)*100+month(re.REACTION_DATE)  BETWEEN :LV_FROM AND :LV_TO;
 		
 		DELETE FROM "db::app.CustomerEvents"
 		WHERE RECORD_ID IN 
@@ -109,7 +117,8 @@ BEGIN
 		    DECLARE LV_EVT_NAME_INDEX		INT;
 			
 			-- For each combined events row
-			DECLARE CURSOR c_cursor1  FOR SELECT TOP 10 PRERULE,SUPPORT,CONFIDENCE,LIFT FROM :LT_RESULT ORDER BY LENGTH(PRERULE) DESC;
+		
+			DECLARE CURSOR c_cursor1  FOR SELECT TOP 10 PRERULE,SUPPORT,CONFIDENCE,LIFT FROM :LT_TOP_RESULT;
 			FOR cur_row AS c_cursor1
 			DO
 				------------------------------------------------------------------------------------------------
@@ -218,7 +227,10 @@ BEGIN
 					DESC AS DESC,
 					YEAR(INIT_DATE) * 100 + MONTH(INIT_DATE) AS INIT_TS,
 					NULL AS END_TS
-				FROM #TBL_FINAL_COMB_EVENTS);	
+				FROM  #TBL_FINAL_COMB_EVENTS );
+		--	( SELECT CUST_ID , EVENT_NAME , INIT_DATE, DESC FROM #TBL_FINAL_COMB_EVENTS  MINUS 
+		--			SELECT CUST_ID , EVENT_NAME , INIT_DATE, DESCRIPTION FROM "db::app.CustomerEvents" WHERE EVENT_GROUP = 'Combined Event'
+		--		));	
 		
 			-- Drop the temporary table
 		DROP TABLE #TBL_FINAL_COMB_EVENTS;
