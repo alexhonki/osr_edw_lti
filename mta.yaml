@@ -44,6 +44,36 @@ modules:
       - name: OSR_LTI-uaa
     properties:
       PRESERVE_FRAGMENT: true
+      
+  #- name: OSR_LTI-Site
+  #  type: siteentry
+  #  path: Site
+  #  parameters:
+  #     memory: 64M
+  #  requires:
+  #   - name: sap-portal-services-host-OSR_LTI
+  #   - name: OSR_LTI-uaa
+  #   - name: sapui5-provider
+  #     properties:
+  #        sapui5url: ~{url}
+  # # - name: cr_event_api
+  #   - name: ti_core_api
+  #     group: destinations
+  #     properties:
+  #        name: backend
+  #        url: '~{url}'
+  #        forwardAuthToken: true
+
+
+  #- name: OSR_LTI-Site-Content
+  #  type: sitecontent
+  #  path: Site-Content
+  #  parameters:
+  #     memory: 32M
+  #  requires:
+  #   - name: sap-portal-services-client-OSR_LTI
+  #   - name: OSR_LTI-uaa
+     
   - name: OSR_LTI-JobServices
     type: nodejs
     path: jobs_js
@@ -54,10 +84,20 @@ modules:
     requires:
      - name: OSR_LTI-Container
      - name: OSR_LTI-uaa
-     - name: OSR_LTI-JobScheduler
+    # - name: OSR_LTI-JobScheduler
     properties:
       SAP_JWT_TRUST_ACL: '[{"clientid":"*", "identityzone":"*"}]'
 resources:
+  #- name: sap-portal-services-host-OSR_LTI
+  #  parameters:
+  #     config:
+  #        siteId: OSR_LTI
+  #  type: com.sap.portal.site-host
+  #- name: sap-portal-services-client-OSR_LTI
+  #  parameters:
+  #     config:
+  #        siteId: OSR_LTI
+  #  type: com.sap.portal.site-content
   - name: OSR_LTI-Container
     type: com.sap.xs.hdi-container
     properties:

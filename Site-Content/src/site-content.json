@@ -1,0 +1,189 @@
+{
+	"_version": "1.0.0",
+	"site": {
+		"_version": "1.1",
+		"identification": {
+			"id": "499c36e2-687e-11e6-8b77-86f30ca893d3",
+			"namespace": "",
+			"entityType": "site",
+			"description": "",
+			"i18n": "",
+			"title": "Fiori Launchpad Sample"
+		},
+		"payload": {
+			"groupsOrder": [
+				"5acadc20-687e-11e6-8b77-86f30ca893d3"
+			],
+			"config": {
+
+			},
+			"sap.cloud.portal": {
+				"_version": "1.2.0",
+				"config": {
+					"theme.id": "sap_belize",
+					"theme.active": "[\"sap_hcb\",\"sap_belize_plus\",\"sap_belize\"]"
+				}
+			}
+		}
+	},
+	"catalogs": {
+		"07889260-3021-4ef6-ba85-edd311738f9a": {
+			"_version": "1.1",
+			"identification": {
+				"id": "07889260-3021-4ef6-ba85-edd311738f9a",
+				"namespace": "",
+				"title": "{{sample_catalog_title}}",
+				"description": "{{sample_catalog_description}}",
+				"entityType": "catalog",
+				"i18n": "i18n/i18n.properties"
+			},
+			"payload": {
+				"appDescriptors": [{
+					"namespace": "",
+					"id": "sap.fiori.cri.search"
+				},{
+					"namespace": "",
+					"id": "sap.fiori.cri.admin"
+				}, {
+					"namespace": "",
+					"id": "sap.fiori.cri.customerDetails"
+				}, {
+					"namespace": "",
+					"id": "sap.fiori.cri.customerAtRisk"
+				}, {
+					"namespace": "",
+					"id": "sap.fiori.cri.eventOverview"
+				},  {
+					"namespace": "",
+					"id": "sap.fiori.cri.trendAnalysis"
+				},{
+					"namespace": "",
+					"id": "app1"
+				}]
+			}
+		}
+	},
+	"roles": {
+		"Everyone": {
+			"_version": "1.0",
+			"identification": {
+				"id": "Everyone",
+				"title": "Everyone",
+				"entityType": "role"
+			},
+			"payload": {
+				"catalogs": [
+
+				],
+				"groups": [{
+					"id": "5acadc20-687e-11e6-8b77-86f30ca893d3"
+				}]
+			}
+		}
+	},
+	"applications": {
+
+	},
+	"groups": {
+		"5acadc20-687e-11e6-8b77-86f30ca893d3": {
+			"identification": {
+				"id": "5acadc20-687e-11e6-8b77-86f30ca893d3",
+				"i18n": "i18n/i18n.properties",
+				"namespace": "",
+				"title": "OSR Land Tax Insights"
+			},
+			"payload": {
+				"tiles": [ {
+					"id": "sap.fiori.cri.search",
+					"title": "Customer Search",
+					"subTitle": "",
+					"icon": "sap-icon://employee-lookup",
+					"target": {
+						"semanticObject": "Search",
+						"action": "display",
+						"parameters": [
+
+						]
+					}
+				},{
+					"id": "sap.fiori.cri.admin",
+					"title": "Admin",
+					"subTitle": "",
+					"icon": "sap-icon://key-user-settings",
+					"target": {
+						"semanticObject": "Admin",
+						"action": "display",
+						"parameters": [
+
+						]
+					}
+				}, {
+					"id": "sap.fiori.cri.customersAtRisk",
+					"title": "Customers At Risk",
+					"subTitle": "",
+					"icon": "sap-icon://business-objects-experience",
+					"target": {
+						"semanticObject": "CustomersAtRisk",
+						"action": "display",
+						"parameters": [
+
+						]
+					}
+				}, {
+					"id": "sap.fiori.cri.eventOverview",
+					"title": "Event Overview",
+					"subTitle": "",
+					"icon": "sap-icon://overview-chart",
+					"target": {
+						"semanticObject": "EventOverview",
+						"action": "display",
+						"parameters": [
+
+						]
+					}
+				},  {
+					"id": "sap.fiori.cri.trendAnalysis",
+					"title": "Trend Analysis",
+					"subTitle": "",
+					"icon": "sap-icon://manager-insight",
+					"target": {
+						"semanticObject": "TrendAnalysis",
+						"action": "display",
+						"parameters": [
+
+						]
+					}
+				}, {
+					"id": "app1",
+					"title": "{{app1_title}}",
+					"subTitle": "{{app1_app_sub_title}}",
+					"icon": "sap-icon://world",
+					"target": {
+						"semanticObject": "app1",
+						"action": "show",
+						"parameters": [
+
+						]
+					}
+				}]
+			}
+		}
+	},
+	"siteThemes": {
+		"sap_hcb": {
+			"description": "SAP High Contrast Black",
+			"name": "sap_hcb",
+			"path": "sap_hcb"
+		},
+		"sap_belize_plus": {
+			"description": "SAP Belize Plus",
+			"name": "sap_belize_plus",
+			"path": "sap_belize_plus"
+		},
+		"sap_belize": {
+			"description": "SAP Belize",
+			"name": "sap_belize",
+			"path": "sap_belize"
+		}
+	}
+}

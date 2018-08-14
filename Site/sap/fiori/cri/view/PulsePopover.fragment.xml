@@ -1,0 +1,41 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <Popover
+        title="{path:'/dataPoint/date', formatter:'.formatter.dateWithDayMonthYear'}"
+        class="sapUiContentPadding"
+        placement="VerticalPreferedTop">
+        <VBox>
+            <List
+                  items="{
+                            path: '/dataPoint/items',
+                            sorter: { path: 'value', descending: true},
+                            length: 4
+                        }"
+            >
+               <CustomListItem>
+                   <HBox justifyContent="SpaceBetween">
+                       <Label design="Bold" text="{label}"/>
+                       <HBox width="2rem"/>
+                       <Label text="{=${value}.toFixed(0)}%"/>
+                       <layoutData>
+                           <FlexItemData maxWidth="300px" growFactor="1" alignSelf="End"/>
+                       </layoutData>
+                       <HBox width="2rem"/>
+                       <core:Icon src="sap-icon://{group}" color="Default"/>
+                       <layoutData>
+                           <FlexItemData growFactor="1" />
+                       </layoutData>
+                   </HBox>
+               </CustomListItem>
+            </List>
+            <Label text="{=${/dataPoint/items}.length - 4} more event(s)" class="sapUiTinyMarginTop" visible="{=${/dataPoint/items}.length > 4}"/>
+            <Label text="{i18n>PulsePopoverFragment.LabelClickForDetails}" class="sapUiSmallMarginTop">
+                <layoutData>
+                    <FlexItemData alignSelf="Center"/>
+                </layoutData>
+            </Label>
+        </VBox>
+    </Popover>
+</core:FragmentDefinition>

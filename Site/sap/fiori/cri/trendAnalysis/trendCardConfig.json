@@ -1,0 +1,158 @@
+{
+    "Cards":[
+        {
+            "id": "TopEvents",
+            "title": "Top Events",
+            "entity": "TopEventsParameters",
+            "sorters":[{"path":"CUST_COUNT", "descending":true}],
+            "top":5,
+            "subtitle": {
+                "string":"Last 3 Months"
+            },
+            "list": {
+                "categoryPath":"EVENT_NAME",
+                "categoryLabel":"Events",
+                "valuePath":"CUST_COUNT",
+                "valueLabel":"Impact"
+            },
+            "actions": [{
+                "label":"Show More",
+                "semanticObject":"EventOverview",
+                "action":"display"
+
+            }]
+        },
+        {
+            "id": "CustomerChanges",
+            "title": "Assessment Trend",
+            "entity": "TrendCustomerChangesParameters",
+            "sorters":[{"path":"TIME_SEGMENT"}],
+            "subtitle": {
+                "prefix": "Net Change ",
+                "path": "TIME_SEGMENT"
+            },
+            "kpi": {
+                "valuePath": "TOTAL_DIFF",
+                "direction": "Maximize"
+            },
+            "chart": {
+                "type": "column",
+                "categoryPath":"TIME_SEGMENT",
+                "categoryLabel":"Year",
+                "categoryPathDateFormat":"yyyyMM",
+                "categoryPathDisplayFormat":"MMM yyyy",
+                "valueLabel": "Assessment",
+                "valuePath":"TOTAL_NEW_CUSTOMERS",
+                "value2Label": "Defaulted",
+                "value2Path":"TOTAL_REACT_CUSTOMERS",
+                "vizProperties": {
+                    "plotArea": {
+                        "colorPalette": ["#49AAE2", "#BB0000", "#EFCC2C", "#F77E80"]
+                    }
+                }
+            }
+        },
+        {
+            "id": "ReactionRate",
+            "title": "Overdue Customer Rate",
+            "entity": "TrendRateParameters",
+            "sorters":[{"path":"TIME_SEGMENT"}],
+            "subtitle": {
+            	"prefix": "Overall Rate",
+                "path": "TIME_SEGMENT"
+            },
+            "kpi": {
+                "valuePath": "RATE",
+                "unit": "%",
+                "direction": "Minimize"
+            },
+            "comparison": {
+                "label": "MoM",
+                "valuePath": "RATE"
+            },
+            "chart": {
+                "type": "timeseries_line",
+                "timePath":"TIME_SEGMENT",
+                "timeLabel":"Month",
+                "timePathDateFormat":"yyyyMM",
+                "timePathDisplayFormat":"MMM yyyy",
+                "valuePath":"RATE"
+                
+            }
+        },
+        {
+            "id": "IncomeLoss",
+            "title": "Revenue at Risk",
+            "entity": "TrendParameters",
+            "sorters":[{"path":"TIME_SEGMENT"}],
+            "subtitle": {
+            	"prefix": "Cumulative Outstanding Revenue",
+                "path": "TIME_SEGMENT"
+            },
+            "kpi": {
+                "valuePath": "INCOME_LOSS",
+                "unitPath": "CURRENCY",
+                "direction": "Minimize"
+            },
+            "comparison": {
+                "label": "MoM",
+                "valuePath": "INCOME_LOSS"
+            },
+            "chart": {
+                "type": "timeseries_line",
+                "timePath":"TIME_SEGMENT",
+                "timeLabel":"Month",
+                "timePathDateFormat":"yyyyMM",
+                "timePathDisplayFormat":"MMM yyyy",
+                "valuePath":"INCOME_LOSS"
+            }
+        },
+        {
+            "id": "ChurnForecast",
+            "title": "Customers At Risk",
+            "entity": "AtRiskCustomersTrendParameters",
+            "inputParameters": ["IP_FILTER"],
+            "filters":[{"path":"BUCKET_ID", "value":"CUSTOMER_RISK"}],
+            "sorters":[{"path":"FROM_VALUE", "descending": true}],
+            "subtitle": {
+                "path": "BUCKET",
+                "suffix": " Customers"
+            },
+            "kpi": {
+                "valuePath": "CUSTOMER_COUNT",
+                "ascending": true,
+                "direction": "Minimize"
+            },
+            "chart": {
+                "type": "donut",
+                "categoryPath":"BUCKET",
+                "categoryLabel":"Period",
+                "toolTip": true,
+                "valuePath":"CUSTOMER_COUNT",
+                "vizProperties": {
+                    "plotArea": {
+                        "colorPalette": ["#BB0000", "#E78C07", "#49AAE2"],
+                        "dataLabel": {
+                            "type": "percentage",
+                            "visible": true
+                        }
+                    },
+                    "title": {
+                        "alignment": "left",
+                        "style": {
+                            "fontWeight": "normal"
+                        },
+                        "text": "",
+                        "visible": true
+                    }
+                }
+            },
+            "actions": [{
+                "label":"Show More",
+                "semanticObject":"CustomersAtRisk",
+                "action":"display"
+
+            }]
+        }
+    ]
+}

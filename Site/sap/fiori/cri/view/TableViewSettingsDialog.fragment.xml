@@ -1,0 +1,14 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <ViewSettingsDialog
+            id="idViewSettings"
+            confirm="handleConfirm"
+            sortDescending="{/SortDescending}"
+            sortItems="{/SortItems}"
+    >
+        <sortItems>
+            <ViewSettingsItem text="{Text}" key="{Key}" selected="{Selected}" />
+        </sortItems>
+    </ViewSettingsDialog>
+</core:FragmentDefinition>

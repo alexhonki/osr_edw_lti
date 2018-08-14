@@ -1,0 +1,161 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:l="sap.ui.layout"
+        xmlns:cri="sap.fiori.cri.control"
+        xmlns:uxap="sap.uxap"
+        xmlns:table="sap.ui.table">
+    <Dialog id="chartContainer" title="{i18n>CustomerPulse.Title}" contentWidth="90%" horizontalScrolling="false" verticalScrolling="false" contentHeight="90%"  resizable="true">
+        <VBox width="100%" height="100%">
+            <VBox>
+                <uxap:ObjectPageHeader objectTitle="{/CustomerName}" objectSubtitle="{/CustomerId}"/>
+            </VBox>
+            <IconTabBar stretchContentHeight="true">
+                <items>
+                    <IconTabFilter text="{i18n>CustomerPulse.Pulse.Title}">
+                        <VBox height="100%" width="100%">
+                            <Select selectedKey="{/EventCategoryFilter}" items="{/CustomerEventCategories}"
+                                    change="onEventCategorySelection">
+                                <core:Item key="{}" text="{}"/>
+                            </Select>
+                            <FlexBox>
+                                <cri:PulseChart id="idPulseChart" yAxisLabel="Risk" thresholdLowValue="{/Thresholds/LOW_RISK}" thresholdHighValue="{/Thresholds/HIGH_RISK}" actionRequiredValue="{/Thresholds/ACTION_REQUIRED}" items="{path:'/CustomerEvents', factory:'.pulseChartItemsFactory'}" itemSelect="onItemSelect" height="100%" width="100%" />
+                                <layoutData>
+                                    <FlexItemData growFactor="1"/>
+                                </layoutData>
+                            </FlexBox>
+                            <FlexBox height="{=${/dayEventList}.length > 0 ? '300px' : '0px'}">
+                                <table:Table
+                                        class="sapUiSmallMarginTopBottom"
+                                        id="dayEventList"
+                                        selectionMode="None"
+                                        rows="{
+                                            path: '/dayEventList',
+                                            sorter: {path: 'Influence', descending: true}
+                                        }"
+                                        rowHeight="34"
+                                        width="100%"
+                                        noData="{i18n>CustomerPulse.NoDaySelected}"
+                                        visibleRowCountMode="Auto">
+                                    <table:columns>
+                                        <table:Column sortProperty="EVENT_NAME">
+                                            <Label text="{i18n>CustomerPulse.Event.EventName}"/>
+                                            <table:template>
+                                                <Text text="{EventName}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column sortProperty="EVENT_GROUP">
+                                            <Label text="{i18n>CustomerPulse.Event.EventGroup}"/>
+                                            <table:template>
+                                                <Text text="{EventGroup}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="5rem" hAlign="Right" sortProperty="INFLUENCE">
+                                            <Label text="{i18n>CustomerPulse.Event.Risk}"/>
+                                            <table:template>
+                                                <Text text="{path: 'Influence', formatter: '.formatter.percentage'}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="10rem" hAlign="Center" sortProperty="Date" sortOrder="Descending" sorted="true">
+                                            <Label text="{i18n>CustomerPulse.Event.Date}"/>
+                                            <table:template>
+                                                <Text text="{
+                                                                    path: 'Date',
+                                                                    type: 'sap.ui.model.type.Date',
+                                                                    formatOptions: {
+                                                                        pattern: 'dd MMM yyyy'
+                                                                    }
+                                                                }" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                    </table:columns>
+                                </table:Table>
+                            </FlexBox>
+                        </VBox>
+                    </IconTabFilter>
+                    <IconTabFilter text="{i18n>CustomerPulse.CustomerAttributes.Title}">
+                        <ScrollContainer id="attributesContainer" vertical="true">
+                            <Toolbar>
+                                <core:Icon src="sap-icon://customer-briefing"/>
+                                <Title id="idCustomerAttributesTitle" text="Customer Details" level="H4" titleStyle="H4"/>
+                            </Toolbar>
+                            <l:Grid id="attributeGrid" defaultSpan="L2 M4 S6" content="{/CustomerAttributes}">
+                                <l:content>
+                                    <VBox class="sapUiSmallMarginTop">
+                                        <Title text="{label}" titleStyle="H5"/>
+                                        <Text text="{text}"/>
+                                    </VBox>
+                                </l:content>
+                            </l:Grid>
+                        </ScrollContainer>
+                    </IconTabFilter>
+                    <IconTabFilter text="{i18n>CustomerPulse.Events.Title}">
+                        <VBox width="100%" height="100%">
+                            <FlexBox>
+                                <table:Table
+                                        id="idCustomerEventsTable"
+                                        selectionBehavior="RowOnly"
+                                        selectionMode="Single"
+                                        rows="{ path: '/CustomerEvents' }"
+                                        rowHeight="34"
+                                        visibleRowCountMode="Auto">
+                                    <table:toolbar>
+                                        <Toolbar>
+                                            <Select selectedKey="{/EventCategoryFilter}" items="{/CustomerEventCategories}"
+                                                    change="onEventCategorySelection">
+                                                <core:Item key="{}" text="{}"/>
+                                            </Select>
+                                            <ToolbarSpacer/>
+                                            <Button text="{i18n>CustomerPulse.ExportEvents}" press="exportEventList"/>
+                                        </Toolbar>
+                                    </table:toolbar>
+                                    <table:columns>
+                                        <table:Column sortProperty="EventName">
+                                            <Label text="{i18n>CustomerPulse.Event.EventName}"/>
+                                            <table:template>
+                                                <Text text="{EventName}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column sortProperty="EventGroup">
+                                            <Label text="{i18n>CustomerPulse.Event.EventGroup}"/>
+                                            <table:template>
+                                                <Text text="{EventGroup}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="5rem" hAlign="Right" sortProperty="Influence">
+                                            <Label text="{i18n>CustomerPulse.Event.Risk}"/>
+                                            <table:template>
+                                                <Text text="{path: 'Influence', formatter: '.formatter.percentage'}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="10rem" hAlign="Center" sortProperty="Date" sortOrder="Descending" sorted="true">
+                                            <Label text="{i18n>CustomerPulse.Event.Date}"/>
+                                            <table:template>
+                                                <Text text="{
+                                                                    path: 'Date',
+                                                                    type: 'sap.ui.model.type.Date',
+                                                                    formatOptions: {
+                                                                        pattern: 'dd MMM yyyy'
+                                                                    }
+                                                                }" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                    </table:columns>
+                                </table:Table>
+                                <layoutData>
+                                    <FlexItemData growFactor="1"/>
+                                </layoutData>
+                            </FlexBox>
+                        </VBox>
+                    </IconTabFilter>
+                </items>
+                <layoutData>
+                    <FlexItemData growFactor="1"/>
+                </layoutData>
+            </IconTabBar>
+        </VBox>
+        <endButton>
+            <Button text="Close" press="onCloseDialog"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

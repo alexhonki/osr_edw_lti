@@ -1,0 +1,40 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:table="sap.ui.table">
+    <Dialog title="{/ActionName} Customers" contentWidth="1200px">
+        <Panel headerText="Customers to {/ActionName}" width="auto" height="300px">
+            <table:Table
+                    id="idCustomerListTable"
+                    selectionMode="None"
+                    rows="{path: '/Customers'}"
+                    rowHeight="34"
+                    visibleRowCount="5">
+                <table:columns>
+                    <table:Column width="15rem">
+                        <Label text="{i18n>CustomerList.Number}"/>
+                        <table:template>
+                            <Text text="{CustomerId}"/>
+                        </table:template>
+                    </table:Column>
+                    <table:Column>
+                        <Label text="{i18n>CustomerList.Name}"/>
+                        <table:template>
+                            <Text text="{CustomerName}"/>
+                        </table:template>
+                    </table:Column>
+                    <table:Column width="7rem">
+                        <Label text="{i18n>ModifyCustomersDialog.CustomerList.Status}"/>
+                        <table:template>
+                            <Text text="{path: 'Status', formatter: '.formatStatusLabel'}"/>
+                        </table:template>
+                    </table:Column>
+                </table:columns>
+            </table:Table>
+        </Panel>
+        <buttons>
+            <Button type="Reject" text="{/ActionName}" press="onSubmitAction"/>
+            <Button text="Close" press="onCloseDialog"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,140 @@
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+	<edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" m:DataServiceVersion="2.0">
+		<Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="CRIModel">
+			<EntityType Name="Customer">
+				<Key>
+					<PropertyRef Name="CustomerId"/>
+				</Key>
+				<Property Name="CustomerId" Type="Edm.String" Nullable="false"></Property>
+				<Property Name="Name" Type="Edm.String" Nullable="false"></Property>
+				<Property Name="Status" Type="Edm.String" Nullable="true"></Property>
+				<Property Name="Income" Type="Edm.Double" Nullable="true"></Property>
+				<Property Name="Impact" Type="Edm.Int32" Nullable="true"></Property>
+				<Property Name="Influence" Type="Edm.Single" Nullable="true"></Property>
+				<Property Name="DaysToChurn" Type="Edm.Int32" Nullable="true"></Property>
+				<NavigationProperty Name="CustomerEvent" Relationship="CRIModel.FK_Customer_CustomerEvent" FromRole="Customer" ToRole="CustomerEvent"></NavigationProperty>
+			</EntityType>
+			<EntityType Name="EventCategory">
+				<Key>
+					<PropertyRef  Name="CategoryId"/>
+				</Key>
+				<Property Name="CategoryId" Type="Edm.String" Nullable="false"></Property>
+				<Property Name="Name" Type="Edm.String" Nullable="true"></Property>
+				<Property Name="Impact" Type="Edm.Int32" Nullable="true"></Property>
+				<Property Name="Influence" Type="Edm.Single" Nullable="true"></Property>
+				<Property Name="DaysToChurn" Type="Edm.Int32" Nullable="true"></Property>
+				<NavigationProperty Name="Event" Relationship="CRIModel.FK_EventCategory_Event" FromRole="EventCategory" ToRole="Event"></NavigationProperty>
+			</EntityType>
+			<EntityType Name="CustomerEvent">
+				<Key>
+					<PropertyRef  Name="CustomerEventId"/>
+				</Key>
+				<Property Name="CustomerEventId" Type="Edm.String" Nullable="false"></Property>
+				<Property Name="CustomerId" Type="Edm.String" Nullable="false"></Property>
+				<Property Name="EventId" Type="Edm.String" Nullable="false"></Property>
+				<Property Name="Date" Type="Edm.DateTime" Nullable="false"></Property>
+				<Property Name="Text" Type="Edm.String" Nullable="true"></Property>
+				<NavigationProperty Name="Event" Relationship="CRIModel.FK_CustomerEvent_Event" FromRole="CustomerEvent" ToRole="Event"></NavigationProperty>
+				<NavigationProperty Name="Customer" Relationship="CRIModel.FK_CustomerEvent_Customer" FromRole="CustomerEvent" ToRole="Customer"></NavigationProperty>
+			</EntityType>
+			<EntityType Name="Event">
+				<Key>
+					<PropertyRef Name="EventId"/>
+				</Key>
+				<Property Name="EventId" Type="Edm.String" Nullable="false"></Property>
+				<Property Name="CategoryId" Type="Edm.String" Nullable="false"></Property>
+				<Property Name="Name" Type="Edm.String" Nullable="true"></Property>
+				<Property Name="Impact" Type="Edm.Int32" Nullable="true"></Property>
+				<Property Name="Influence" Type="Edm.Single" Nullable="true"></Property>
+				<Property Name="DaysToChurn" Type="Edm.Int32" Nullable="true"></Property>
+				<NavigationProperty Name="CustomerEvent" Relationship="CRIModel.FK_Event_CustomerEvent" FromRole="Event" ToRole="CustomerEvent"></NavigationProperty>
+			</EntityType>
+			<Association Name="FK_Customer_CustomerEvent">
+				<End Type="CRIModel.Customer" Role="Customer" Multiplicity="0..1"></End>
+				<End Type="CRIModel.CustomerEvent" Role="CustomerEvent" Multiplicity="*"></End>
+				<ReferentialConstraint>
+					<Principal Role="Customer">
+						<PropertyRef Name="CustomerId"/>
+					</Principal>
+					<Dependent Role="CustomerEvent">
+						<PropertyRef Name="CustomerId"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="FK_EventCategory_Event">
+				<End Type="CRIModel.EventCategory" Role="EventCategory" Multiplicity="0..1"></End>
+				<End Type="CRIModel.Event" Role="Event" Multiplicity="*"></End>
+				<ReferentialConstraint>
+					<Principal Role="EventCategory">
+						<PropertyRef Name="CategoryId"/>
+					</Principal>
+					<Dependent Role="Event">
+						<PropertyRef Name="CategoryId"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="FK_CustomerEvent_Event">
+				<End Type="CRIModel.CustomerEvent" Role="CustomerEvent" Multiplicity="1"></End>
+				<End Type="CRIModel.Event" Role="Event" Multiplicity="1"></End>
+				<ReferentialConstraint>
+					<Principal Role="Event">
+						<PropertyRef Name="EventId"/>
+					</Principal>
+					<Dependent Role="CustomerEvent">
+						<PropertyRef Name="EventId"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="FK_CustomerEvent_Customer">
+				<End Type="CRIModel.CustomerEvent" Role="CustomerEvent" Multiplicity="1"></End>
+				<End Type="CRIModel.Customer" Role="Customer" Multiplicity="1"></End>
+				<ReferentialConstraint>
+					<Principal Role="Customer">
+						<PropertyRef Name="CustomerId"/>
+					</Principal>
+					<Dependent Role="CustomerEvent">
+						<PropertyRef Name="CustomerId"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="FK_Event_CustomerEvent">
+				<End Type="CRIModel.Event" Role="Event" Multiplicity="0..1"></End>
+				<End Type="CRIModel.CustomerEvent" Role="CustomerEvent" Multiplicity="*"></End>
+				<ReferentialConstraint>
+					<Principal Role="Event">
+						<PropertyRef Name="EventId"/>
+					</Principal>
+					<Dependent Role="CustomerEvent">
+						<PropertyRef Name="EventId"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<EntityContainer Name="CRI" m:IsDefaultEntityContainer="true">
+				<EntitySet Name="EventCategory" EntityType="CRIModel.EventCategory"></EntitySet>
+				<EntitySet Name="Event" EntityType="CRIModel.Event"></EntitySet>
+				<EntitySet Name="Customer" EntityType="CRIModel.Customer"></EntitySet>
+				<EntitySet Name="CustomerEvent" EntityType="CRIModel.CustomerEvent"></EntitySet>
+				<AssociationSet Name="EC_to_E_AssocSet" Association="CRIModel.FK_EventCategory_Event">
+					<End Role="EventCategory" EntitySet="EventCategory" ></End>
+					<End Role="Event" EntitySet="Event"></End>
+				</AssociationSet>
+				<AssociationSet Name="E_to_CE_AssocSet" Association="CRIModel.FK_Event_CustomerEvent">
+					<End Role="Event" EntitySet="Event" ></End>
+					<End Role="CustomerEvent" EntitySet="CustomerEvent"></End>
+				</AssociationSet>
+				<AssociationSet Name="C_to_CE_AssocSet" Association="CRIModel.FK_Customer_CustomerEvent">
+					<End Role="Customer" EntitySet="Customer"></End>
+					<End Role="CustomerEvent" EntitySet="CustomerEvent" ></End>
+				</AssociationSet>
+				<AssociationSet Name="CE_to_E_AssocSet" Association="CRIModel.FK_CustomerEvent_Event">
+					<End Role="CustomerEvent" EntitySet="CustomerEvent" ></End>
+					<End Role="Event" EntitySet="Event"></End>
+				</AssociationSet>
+				<AssociationSet Name="CE_to_C_AssocSet" Association="CRIModel.FK_CustomerEvent_Customer">
+					<End Role="CustomerEvent" EntitySet="CustomerEvent" ></End>
+					<End Role="Customer" EntitySet="Customer"></End>
+				</AssociationSet>
+			</EntityContainer>
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>

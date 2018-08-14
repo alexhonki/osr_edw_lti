@@ -1,0 +1,11 @@
+<core:FragmentDefinition
+		xmlns="sap.ui.comp.filterbar"
+		xmlns:core="sap.ui.core"
+		xmlns:smartFilterBar="sap.ui.comp.smartfilterbar">
+	<smartFilterBar:SmartFilterBar id="idFilterBar"
+	filterBarExpanded="true" 
+	useToolbar="false"
+	liveMode="true"
+	showGoOnFB="true">
+	</smartFilterBar:SmartFilterBar>
+</core:FragmentDefinition>

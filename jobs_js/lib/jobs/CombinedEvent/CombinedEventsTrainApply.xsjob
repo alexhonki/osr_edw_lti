@@ -1,0 +1,11 @@
+{
+	"description": "Generate Combined Events",
+	"action": "procedures.ml::PR_RUN_COMBINED_EVENTS_WRAPPER",
+	"schedules": [{
+		"description": "Combined Events with schedule frequency: Delta Load every * * * * 3 32 0",
+		"xscron": "* 7 1 * 3 50 0",
+		"parameter": {
+			"I_MODE": 0
+		} 
+	}]
+}

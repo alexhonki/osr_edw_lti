@@ -1,0 +1,58 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:l="sap.ui.layout"
+        xmlns:table="sap.ui.table">
+    <Dialog title="{/Action} Predefined Event" contentWidth="1200px">
+        <Panel width="auto" height="600px">
+            <VBox class="sapUiSmallMarginBottom">
+                <Label text="Template"/>
+                <Select width="40rem" change="onTemplateSelect" items="{/Templates}">
+                    <core:Item key="{TemplateId}" text="{TemplateName}" />
+                </Select>
+            </VBox>
+            <VBox class="sapUiSmallMarginTopBottom">
+                <Label text="Event Category"/>
+                <Text width="100%" text="{/SelectedTemplate/Category}"/>
+            </VBox>
+            <VBox class="sapUiSmallMarginTopBottom">
+                <Label text="Description"/>
+                <Text width="100%" text="{/SelectedTemplate/Description}"/>
+            </VBox>
+            <table:Table selectionMode="None" rows="{/SelectedTemplate/Settings}"
+                         visibleRowCountMode="Auto"
+                         rowHeight="34">
+                <table:columns>
+                    <table:Column width="15rem">
+                        <Label text="Parameter Name"/>
+                        <table:template>
+                            <Text text="{Parameter}" maxLines="2"/>
+                        </table:template>
+                    </table:Column>
+                    <table:Column>
+                        <Label text="Description"/>
+                        <table:template>
+                            <Text text="{Description}"/>
+                        </table:template>
+                    </table:Column>
+                    <table:Column width="15rem">
+                        <Label text="Value"/>
+                        <table:template>
+                            <Input value="{Value}" type="{InputType}"/>
+                        </table:template>
+                    </table:Column>
+                    <table:Column width="8rem">
+                        <Label text="Type"/>
+                        <table:template>
+                            <Text text="{Type}"/>
+                        </table:template>
+                    </table:Column>
+                </table:columns>
+            </table:Table>
+        </Panel>
+        <buttons>
+            <Button type="Accept" text="{i18n>PredefinedEventsEditorDialog.AcceptButton}" press="onSave"/>
+            <Button text="{i18n>PredefinedEventsEditorDialog.CancelButton}" press="onCloseDialog"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

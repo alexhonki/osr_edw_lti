@@ -1,0 +1,99 @@
+{
+    "_version": "1.1.0",
+    "sap.fiori": {
+		"_version": "1.1.0",
+		"registrationIds": [],
+		"archeType": "transactional"
+    },
+    "sap.ui": {
+        "_version": "1.2.0",
+        "technology": "UI5",
+        "fullWidth": true,
+        "deviceTypes": {
+            "desktop": true
+        },
+        "supportedThemes": [
+            "sap_hcb",
+			"sap_bluecrystal"
+        ]
+    },
+    "sap.platform.runtime": {
+		"componentProperties": {
+			"url": "/sap/fiori/cri/search"
+		}
+	},
+    "sap.app": {
+        "_version": "1.2.0",
+        "id": "sap.fiori.cri.search",
+        "type": "application",
+        "i18n": "../i18n/i18n.properties",
+        "title": "{{Search.title}}",
+        "description": "",
+        "applicationVersion": {
+            "version": "1.0.0"
+        },
+        "dataSources": {
+            "CRI": {
+                "uri": "/searchodata",
+                "type": "OData"
+            }
+        },
+        "crossNavigation": {
+			"inbounds": {
+				"app1Show": {
+					"semanticObject": "Search",
+					"action": "display",
+					"deviceTypes": {
+						"desktop": true
+					}
+				}
+			},
+			"outbounds": {
+
+			}
+		}
+    },
+    
+    "sap.ui5": {
+        "_version": "1.1.0",
+        "componentName": "sap.fiori.cri.search",
+        "rootView": "sap.fiori.cri.view.Search",
+        "dependencies": {
+            "minUI5Version": "1.46.12",
+            "libs": {
+                "sap.m": {
+                    "minVersion": "1.46.12"
+                },
+                "sap.suite.ui.microchart": {
+                    "minVersion": "1.46.12"
+                }
+            }
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "sap.fiori.cri.i18n.i18n"
+                }
+            },
+            "CRI": {
+                "dataSource": "CRI",
+                "settings": {}
+            }
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "../css/search.css"
+                }
+            ]
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        }
+    },
+    "sap.platform.cf":{
+		"oAuthScopes": ["$XSAPPNAME.CustomerSearch"] 
+	}
+}

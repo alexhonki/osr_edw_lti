@@ -1,0 +1,125 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:trend="sap.fiori.cri.control.trend"
+        xmlns:commons="sap.suite.ui.commons"
+        xmlns:viz="sap.viz.ui5.controls"
+        xmlns:viz.data="sap.viz.ui5.data">
+
+        <VBox class="trendCard">
+
+            <!-- Title -->
+            <VBox class="cardTitle sapUiSmallMargin" justifyContent="SpaceBetween">
+                <Text class="title" text='{/title}'/>
+                <Text class="subtitle" text='{/subtitle}'/>
+            </VBox>
+
+            <!-- Header -->
+            <VBox class="cardHeader sapUiSmallMarginBeginEnd"
+                  justifyContent="End"
+                  visible="{=${/header/kpi} ? true : false}">
+                <HBox class="kpiSection"
+                      justifyContent="SpaceBetween"
+                      alignItems="Center">
+                    <HBox class="kpi" alignItems="Baseline" visible="{=${/header/kpi/value} === null ? false : true}">
+                        <FormattedText class="value" htmlText='&lt;span class="{/header/kpi/style}"&gt;{/header/kpi/formattedValue}&lt;/span&gt;'/>
+                        <Text class="unit sapUiTinyMarginBegin" text='{/header/kpi/unit}' visible="{=${/header/kpi/unit} === null ? false : true}"/>
+                    </HBox>
+                    <!--<VBox class="comparison" alignItems="End" justifyContent="Center" visible="{=${/header/comparison/value} === undefined ? false : true}">
+                        <Text class="label" text='{/header/comparison/label}'/>
+                        <Text class="value" text="{path:'/header/comparison/value', formatter:'.formatDeltaValue'}"/>
+                    </VBox>-->
+                </HBox>
+            </VBox>
+
+            <!-- Content -->
+            <VBox class="cardContent"
+                  height="{viewModel>/contentHeight}"
+                  busyIndicatorDelay="0"
+                  busy="{=${/loading} ? true : false}">
+
+                <!-- Chart -->
+                <VBox class="chartContent"
+                      visible="{=${/content/chart/data} ? true : false}">
+                    <commons:ChartContainer
+                            autoAdjustHeight="true"
+                            showZoom="false"
+                            visible="{=${/content/chart/data} ? true : false}">
+                        <commons:content>
+                            <commons:ChartContainerContent
+                                    icon="{path:'/content/chart/type', formatter:'.getIconForChartType'}"
+                                    title="Chart"
+                                    visible="{=${/content/chart/type} === 'stacked_column' ? false : true}">
+                                <commons:content>
+                                    <viz:VizFrame
+                                            height="{viewModel>/chartHeight}"
+                                            width="100%"
+                                            vizType="{/content/chart/type}"
+                                            vizProperties="{/content/chart/vizProperties}"
+                                            uiConfig="{applicationSet:'fiori'}"
+                                            feeds="{path:'/content/chart/feeds', factory:'.feedItemFactory'}">
+                                        <viz:dataset>
+                                            <viz.data:FlattenedDataset
+                                                    data="{/content/chart/data}"
+                                                    measures="{path:'/content/chart/measures', factory:'.measureFactory'}"
+                                                    dimensions="{path:'/content/chart/dimensions', factory:'.dimensionFactory'}"/>
+                                        </viz:dataset>
+                                    </viz:VizFrame>
+                                </commons:content>
+                            </commons:ChartContainerContent>
+                            <commons:ChartContainerContent
+                                    icon="{path:'/content/chart/type', formatter:'.getIconForChartType'}"
+                                    title="Chart"
+                                    visible="{=${/content/chart/type} === 'stacked_column' ? true : false}">
+                                <commons:content>
+                                    <viz:VizFrame
+                                            height="{viewModel>/chartHeight}"
+                                            width="100%"
+                                            vizType="{/content/chart/type}"
+                                            vizProperties="{/content/chart/vizProperties}"
+                                            uiConfig="{applicationSet:'fiori'}"
+                                            feeds="{path:'/content/chart/feeds', factory:'.feedItemFactory'}">
+                                        <viz:dataset>
+                                            <viz.data:FlattenedDataset
+                                                    data="{/content/chart/data}"
+                                                    measures="{path:'/content/chart/measures', factory:'.measureFactory'}"
+                                                    dimensions="{path:'/content/chart/dimensions', factory:'.dimensionFactory'}"/>
+                                        </viz:dataset>
+                                    </viz:VizFrame>
+                                </commons:content>
+                            </commons:ChartContainerContent>
+                            <commons:ChartContainerContent
+                                    icon = "sap-icon://table-view"
+                                    title = "Table">
+                                <commons:content>
+                                    <ScrollContainer vertical="true" horizontal="false" height="{viewModel>/chartHeight}">
+                                        <Table items="{path:'/content/chart/data', templateShareable:false, factory:'.tableItemFactory'}"
+                                           columns="{path:'/content/chart/columns', factory:'.columnFactory'}">
+                                        </Table>
+                                    </ScrollContainer>
+                                </commons:content>
+                            </commons:ChartContainerContent>
+                        </commons:content>
+                    </commons:ChartContainer>
+                </VBox>
+
+                <!-- List -->
+                <Table class="listContent"
+                       visible="{=${/content/list/data} ? true : false}"
+                       backgroundDesign="Transparent"
+                       items="{path:'/content/list/data', templateShareable:false, factory:'.listItemFactory'}"
+                       columns="{path:'/content/list/columns', factory:'.listColumnFactory'}"
+                       mode="None">
+                </Table>
+            </VBox>
+
+            <!-- Footer -->
+            <VBox class="cardFooter"
+                  visible="{=${/footer} ? true : false}"
+                  justifyContent="Center"
+                  alignItems="End">
+                <HBox class="sapUiTinyMarginEnd"
+                      items="{path:'/footer/actions', templateShareable:true, factory:'.actionItemFactory'}"/>
+            </VBox>
+        </VBox>
+</core:FragmentDefinition>

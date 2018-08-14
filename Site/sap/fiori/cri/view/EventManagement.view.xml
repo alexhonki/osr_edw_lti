@@ -1,0 +1,82 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.EventManagement"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:core="sap.ui.core"
+        xmlns:table="sap.ui.table"
+        displayBlock="true"
+        height="100%">
+    <Page showHeader="true" title="{i18n>EventManagement.Title}" enableScrolling="true">
+        <content>
+            <Panel width="auto" class="sapUiResponsiveContentPadding">
+                <table:Table
+                        id="idEventListTable"
+                        selectionMode="MultiToggle"
+                        enableSelectAll="false"
+                        rows="{CRI>/EventManagement}"
+                        enableCellFilter="true"
+                        rowHeight="44"
+                        noDataText="{i18n>EventManagement.EventList.NoData}"
+                        rowSelectionChange="onRowSelectionChange"
+                        enableBusyIndicator="true">
+                    <table:toolbar>
+                        <Toolbar>
+                            <Title text="{i18n>EventManagement.EventList.Title}"/>
+                            <ToolbarSpacer/>
+                            <SearchField
+                                    placeholder="Search"
+                                    value="{/eventFilterString}"
+                                    search="filterEvents"
+                                    width="15rem"/>
+                            <Button
+                                    icon="sap-icon://show"
+                                    text="{i18n>EventManagement.EventList.ActivateSelected} {= ${/SelectedActivateRowCount} > 0 ? '(' + ${/SelectedActivateRowCount} + ')' : ''}"
+                                    press="doActivate"
+                                    enabled="{= ${/SelectedActivateRowCount} > 0}"/>
+                            <Button
+                                    icon="sap-icon://hide"
+                                    text="{i18n>EventManagement.EventList.DeactivateSelected} {= ${/SelectedDeactivateRowCount} > 0 ? '(' + ${/SelectedDeactivateRowCount} + ')' : ''}"
+                                    press="doDeactivate"
+                                    enabled="{= ${/SelectedDeactivateRowCount} > 0}"/>
+                        </Toolbar>
+                    </table:toolbar>
+                    <table:columns>
+                        <table:Column width="15rem">
+                            <Label text="{i18n>EventManagement.EventList.Name}"/>
+                            <table:template>
+                                <Text text="{CRI>EVENT_NAME}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column width="15rem">
+                            <Label text="{i18n>EventManagement.EventList.Category}"/>
+                            <table:template>
+                                <Text text="{CRI>CATEGORY_NAME}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column>
+                            <Label text="{i18n>EventManagement.EventList.Description}"/>
+                            <table:template>
+                                <Text text="{CRI>DESCRIPTION}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column width="10rem" hAlign="Center">
+                            <Label text="{i18n>EventManagement.EventList.Status}"/>
+                            <table:template>
+                                <ObjectStatus
+                                        text="{path:'CRI>IS_ENABLED', formatter: '.formatStatusLabel'}"
+                                        state="{path:'CRI>IS_ENABLED', formatter:'.formatStatusState'}"
+                                        icon="{path:'CRI>IS_ENABLED', formatter:'.formatStatusIcon'}" />
+                            </table:template>
+                        </table:Column>
+                    </table:columns>
+                </table:Table>
+            </Panel>
+        </content>
+        <dependents>
+			<core:Fragment fragmentName="sap.fiori.cri.fragments.BusyDialog"
+				type="XML">
+			</core:Fragment>
+		</dependents>
+    </Page>
+</mvc:View>

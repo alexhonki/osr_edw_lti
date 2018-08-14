@@ -1,0 +1,346 @@
+<mvc:View controllerName="sap.fiori.cri.controller.CustomerPrediction"
+          class="sapUiSizeCompact"
+          xmlns="sap.m"
+          xmlns:mvc="sap.ui.core.mvc"
+          xmlns:cri="sap.fiori.cri"
+          xmlns:core="sap.ui.core"
+          xmlns:l="sap.ui.layout"
+          displayBlock="true"
+          height="100%">
+
+    <Page id="idCustomerPrediction"
+          class="customerPredictionPage"
+          showHeader="false"
+          enableScrolling="true">
+        <content>
+            <!-- Filter Bar -->
+            <cri:control.FilterBar id="idFilterBar"
+                                   searchFilterKey='CUSTOMER_NAME'
+                                   showDateRange='false'
+                                   filtersLoaded="onFiltersLoaded"
+                                   filterChange="onFilterChanged"
+                                   clearFilters="onClearFilters" />
+            <VBox id="idPageContent"
+                  height="100%"
+                  busyIndicatorDelay="0">
+
+                <IconTabBar id="idTabBar"
+                            expanded="true"
+                            expandable="false"
+                            select="onSelectTab"
+                            selectedKey="{viewModel>/SelectedTabKey}">
+                    <items>
+
+                        <!-- Customer Overview Tab -->
+                        <IconTabFilter id="idCustomerOverviewTab"
+                                       key="CustomerOverview"
+                                       text="{Labels>/CustomerOverviewTabTitle}">
+
+                            <!-- Overview Panel -->
+                            <Panel id="idCustomerOverviewSection"
+                                   class="sapUiMediumMarginBottom"
+                                   expandable="true"
+                                   expanded="true">
+
+                                <headerToolbar>
+                                    <Toolbar>
+                                        <core:Icon src="sap-icon://overview-chart"/>
+                                        <Title text="{Labels>/CustomerOverviewSectionTitle}"/>
+                                    </Toolbar>
+                                </headerToolbar>
+
+                                <HBox alignItems="Stretch">
+
+                                    <!-- Overview Graph -->
+                                    <VBox width="100%">
+                                        <cri:control.VisualFilterBubbleChart id="idCustomerOverviewBubbleChart"
+                                                                             busyIndicatorDelay="0"
+                                                                             visible="true"
+                                                                             select="onSelectVisualFilterBubbles"
+                                                                             xAxisLabel="{Labels>/BubbleChartXAxisLabel}"
+                                                                             yAxisLabel="{Labels>/BubbleChartYAxisLabel}"
+                                                                             nodeType="rect"
+                                                                             nodeSize="10"
+                                                                             nodeFilled="false"
+                                                                             items="{CRI>}"
+                                        >
+                                            <cri:items>
+                                                <cri:control.VisualFilterPlotItem
+                                                        id="idCustomerOverviewBubbleChartItemTemplate"
+                                                        label="{path:'CRI>GEN_ID'}"
+                                                        xValue="{path:'CRI>INCOME_LOSS', formatter:'.validateNumber'}"
+                                                        yValue="{path:'CRI>INFLUENCE', formatter:'.validateNumber'}"
+                                                />
+                                            </cri:items>
+                                        </cri:control.VisualFilterBubbleChart>
+                                        <layoutData>
+                                            <FlexItemData growFactor="1" shrinkFactor="1" minWidth="0"/>
+                                        </layoutData>
+                                    </VBox>
+
+                                    <!-- Overview Summary -->
+                                    <VBox id="idCustomerOverview" class="sapUiNoContentPadding sapUiNoMargin" width="400px" height="100%">
+                                        <l:BlockLayout id="BlockLayout" background="Dashboard" height="100%" width="100%">
+                                            <l:BlockLayoutRow accentCells="Accent1" rowColorSet="ColorSet2">
+
+                                                <!-- Selected Customers Overview -->
+                                                <l:BlockLayoutCell title="{Labels>/CustomerOverviewSelectedCustomersTitle}" width="1">
+                                                    <VBox class="sapUiNoContentPadding sapUiNoMargin">
+                                                        <Title level="H6" text="{Labels>/CustomerOverviewSelectedCustomersSubtitle}" titleStyle="H6"/>
+                                                        <HBox class="sapUiTinyMarginTop" justifyContent="SpaceBetween" alignItems="Baseline">
+                                                            <core:Icon src="sap-icon://group" size="40px"/>
+                                                            <NumericContent value="{viewModel>/SelectedCustomers/Count}"
+                                                                            formatterValue="true"
+                                                                            withMargin="false"
+                                                                            truncateValueTo="6"
+                                                            />
+                                                        </HBox>
+                                                    </VBox>
+                                                </l:BlockLayoutCell>
+
+                                            </l:BlockLayoutRow>
+                                            <l:BlockLayoutRow accentCells="Accent1" rowColorSet="ColorSet2">
+
+                                                <!-- Selected Customers Income Overview -->
+                                                <l:BlockLayoutCell title="{Labels>/CustomerOverviewIncomeTitle}" width="1">
+                                                    <VBox class="sapUiNoContentPadding sapUiNoMargin">
+                                                        <Title level="H6" text="{Labels>/CustomerOverviewIncomeSubtitle}" titleStyle="H6"/>
+                                                        <HBox class="sapUiTinyMarginTop" justifyContent="SpaceBetween" alignItems="End">
+                                                            <core:Icon src="sap-icon://lead" size="40px"/>
+                                                            <NumericContent value="{viewModel>/SelectedCustomers/Income}"
+                                                                            formatterValue="true"
+                                                                            withMargin="false"
+                                                                            truncateValueTo="6"
+                                                            />
+                                                        </HBox>
+                                                    </VBox>
+                                                </l:BlockLayoutCell>
+                                            </l:BlockLayoutRow>
+                                            <l:BlockLayoutRow accentCells="Accent1" rowColorSet="ColorSet2">
+
+                                                <!-- Selected Customers Risk Overview -->
+                                                <l:BlockLayoutCell title="{Labels>/CustomerOverviewRiskTitle}" width="1">
+                                                    <VBox class="sapUiNoContentPadding sapUiNoMargin">
+                                                        <Title level="H6" text="{Labels>/CustomerOverviewRiskSubtitle}" titleStyle="H6"/>
+                                                        <HBox class="sapUiTinyMarginTop" justifyContent="SpaceBetween" alignItems="End">
+                                                            <core:Icon src="sap-icon://physical-activity" size="40px"/>
+                                                            <NumericContent value="{viewModel>/SelectedCustomers/Risk}"
+                                                                            scale="{Labels>/CustomerRiskSymbol}"
+                                                                            withMargin="false"
+                                                                            truncateValueTo="6"
+                                                            />
+                                                        </HBox>
+                                                    </VBox>
+                                                </l:BlockLayoutCell>
+                                            </l:BlockLayoutRow>
+                                        </l:BlockLayout>
+                                        <layoutData>
+                                            <FlexItemData minWidth="400px" maxWidth="400px"/>
+                                        </layoutData>
+                                    </VBox>
+                                </HBox>
+                            </Panel>
+
+
+                            <!-- Selected Customers Panel -->
+                            <Panel id="idSelectedCustomersSection"
+                                   expandable="true"
+                                   expanded="true">
+                                <headerToolbar>
+                                    <Toolbar>
+                                        <core:Icon src="sap-icon://group"/>
+                                        <Title text="{Labels>/SuggestedCustomersListTitle}"/>
+                                        <ToolbarSpacer/>
+                                        <Button id="idExportSelectedCustomers"
+                                                icon="sap-icon://action"
+                                                text="{Labels>/CustomerPredictionExportButtonLabel}"
+                                                press="exportSelectedCustomerList"/>
+                                    </Toolbar>
+                                </headerToolbar>
+
+                                <!-- Selected Customer List -->
+                                <Table id="idSelectedCustomersList"
+                                       mode="MultiSelect"
+                                       growing="true"
+                                       growingThreshold="20"
+                                       growingTriggerText="More"
+                                       busyIndicatorDelay="0"
+                                       enableBusyIndicator="true"
+                                       noDataText="{Labels>/SelectedCustomersListNoDataText}"
+                                       backgroundDesign="Transparent"
+                                       items="{CRI>}" >
+                                    <columns>
+                                        <Column>
+                                            <Text text="{Labels>/SuggestedCustomersListColumnCustomerName}" />
+                                        </Column>
+                                        <Column hAlign="End"  width="20%">
+                                            <Text text="{Labels>/SuggestedCustomersListColumnIncome}" />
+                                        </Column>
+                                        <Column hAlign="Begin">
+                                            <Text text="{Labels>/SuggestedCustomersListColumnRisk}" />
+                                        </Column>
+                                        <Column hAlign="Begin">
+                                            <Text text="{Labels>/SuggestedCustomersListColumnDaysToReact}" />
+                                        </Column>
+                                        <Column hAlign="End" width="10em">
+                                            <Text text="{Labels>/SuggestedCustomersListColumnCustomerDetails}" />
+                                        </Column>
+                                        <Column hAlign="End" demandPopin="true" minScreenWidth="3000px" popinDisplay="WithoutHeader">
+                                            <Text text="Expandy"/>
+                                        </Column>
+                                    </columns>
+                                    <items>
+                                    <ColumnListItem  id="idSelectedCustomersItemTemplate"
+                                                     type="Active"
+                                                     press="onCustomerExpand"
+                                                     busyIndicatorDelay="0"
+                                    >
+                                        <VBox class="sapUiTinyMarginTop">
+                                            <ObjectIdentifier title="{CRI>NAME}"
+                                                              text="{Labels>/SuggestedCustomersListColumnCustomerID}: {CRI>EXT_ID}"/>
+                                        </VBox>
+                                        <VBox alignItems="End" justifyContent="Start">
+                                            <ObjectNumber textAlign="Right"
+                                                          number="{
+                                                               parts:[{path:'CRI>INCOME_LOSS'},{path:'CRI>/CURRENCY'}],
+                                                               type: 'sap.ui.model.type.Currency',
+                                                               formatOptions: {showMeasure: false}
+                                                              }"
+                                                          unit="{CRI>/CURRENCY}" />
+                                        </VBox>
+                                        <VBox class="sapUiNoContentPadding" alignItems="Start">
+                                            <cri:control.IndicatorBar
+                                                    padding="14px"
+                                                    scale="%"
+                                                    showValueLabel="true"
+                                                    height="40px"
+                                                    label=""
+                                                    color="{path:'CRI>INFLUENCE', formatter:'.formatRiskColor'}"
+                                                    value="{path:'CRI>INFLUENCE'}"
+                                                    maxValue="100"
+                                            />
+                                        </VBox>
+
+                                        <VBox class="sapUiNoContentPadding" alignItems="Start">
+                                            <cri:control.IndicatorBar
+                                                    padding="14px"
+                                                    scale="D"
+                                                    showValueLabel="true"
+                                                    height="40px"
+                                                    label=""
+                                                    color="{path:'CRI>DAYS_TO_REACT', formatter:'.formatDaysToChurnColor'}"
+                                                    value="{path:'CRI>DAYS_TO_REACT'}"
+                                                    maxValue="120"
+                                            />
+                                        </VBox>
+                                        <VBox alignItems="End" justifyContent="Start">
+                                            <Button icon="sap-icon://navigation-right-arrow" type="Transparent" press="showCustomerDetails"/>
+                                        </VBox>
+                                        <HBox id="idExpandedContent"
+                                              visible="false"
+                                              width="{viewModel>/SelectedCustomersListWidth}"
+                                              busyIndicatorDelay="0"
+                                        />
+                                    </ColumnListItem>
+                                    </items>
+                                </Table>
+
+                            </Panel>
+
+                        </IconTabFilter>
+
+                        <!-- All Customers Tab -->
+                        <IconTabFilter id="idAllCustomersTab"
+                                       key="AllCustomers"
+                                       text="{Labels>/AllCustomersTabTitle}">
+
+                            <Panel id="idAllCustomersSection"
+                                   expandable="false"
+                                   expanded="true"
+                                   visible="false">
+
+                                <headerToolbar>
+                                    <Toolbar>
+                                        <core:Icon src="sap-icon://group"/>
+                                        <Title text="{Labels>/AllCustomersListTitle}"/>
+                                        <ToolbarSpacer/>
+                                        <Button id="idExportAllCustomers"
+                                                icon="sap-icon://action"
+                                                text="{Labels>/CustomerPredictionExportButtonLabel}"
+                                                press="exportCustomerList"/>
+                                    </Toolbar>
+                                </headerToolbar>
+
+                                <!-- All Customers List -->
+                                <Table id="idAllCustomersList"
+                                       mode="MultiSelect"
+                                       inset="false"
+                                       growing="true"
+                                       growingThreshold="20"
+                                       growingTriggerText="More"
+                                       fixedLayout="false"
+                                       busyIndicatorDelay="0"
+                                       enableBusyIndicator="true"
+                                       items="{CRI>}"
+                                >
+                                    <columns>
+                                        <Column>
+                                            <Text text="{Labels>/AllCustomersListColumnCustomerName}" />
+                                        </Column>
+                                        <Column width="10%">
+                                            <Text text="{Labels>/AllCustomersListColumnCustomerID}" />
+                                        </Column>
+                                        <Column hAlign="End" width="5%">
+                                            <Text text="{Labels>/AllCustomersListColumnRisk}" />
+                                        </Column>
+                                        <Column hAlign="End"  width="20%">
+                                            <Text text="{Labels>/AllCustomersListColumnIncome}" />
+                                        </Column>
+                                        <Column hAlign="End" width="10%">
+                                            <Text text="{Labels>/AllCustomersListColumnDaysToReact}" />
+                                        </Column>
+                                        <Column hAlign="End" width="10em">
+                                            <Text text="{Labels>/AllCustomersListColumnCustomerDetails}" />
+                                        </Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem id="idAllCustomersItemTemplate">
+                                            <cells>
+                                                <VBox>
+                                                    <Text text="{CRI>NAME}"/>
+                                                </VBox>
+                                                <VBox>
+                                                    <Text text="{CRI>EXT_ID}"/>
+                                                </VBox>
+                                                <VBox alignItems="End">
+                                                    <Text text="{CRI>INFLUENCE}{Labels>/CustomerRiskSymbol}"/>
+                                                </VBox>
+                                                <VBox alignItems="End">
+                                                    <ObjectNumber textAlign="Right"
+                                                                  number="{
+                                                                   parts:[{path:'CRI>INCOME_LOSS'},{path:'CRI>/CURRENCY'}],
+								                                   type: 'sap.ui.model.type.Currency',
+								                                   formatOptions: {showMeasure: false}
+								                                  }"
+                                                                  unit="{CRI>/CURRENCY}" />
+                                                </VBox>
+                                                <VBox alignItems="End">
+                                                    <Text text="{CRI>DAYS_TO_REACT}"/>
+                                                </VBox>
+                                                <VBox alignItems="End">
+                                                    <Button icon="sap-icon://navigation-right-arrow" type="Transparent" press="showCustomerDetails"/>
+                                                </VBox>
+                                            </cells>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+
+                            </Panel>
+
+                        </IconTabFilter>
+                    </items>
+                </IconTabBar>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

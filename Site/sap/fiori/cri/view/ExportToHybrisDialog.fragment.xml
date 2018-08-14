@@ -1,0 +1,57 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:table="sap.ui.table">
+    <Dialog title="{i18n>ExportToHybrisFragment.Title}" contentWidth="800px">
+        <Panel headerText="{i18n>ExportToHybrisFragment.HeaderText}" width="auto" height="440px">
+            <VBox>
+                <VBox width="100%">
+                    <VBox>
+                        <Label text="{i18n>ExportToHybrisFragment.TargetGroupInputTitle}"/>
+                        <Input type="Text" value="{/TargetGroupName}" valueLiveUpdate="true" liveChange="validateGroupName" width="100%"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="{i18n>ExportToHybrisFragment.TargetGroupInputDescription}"/>
+                        <TextArea width="100%" value="{/TargetGroupDescription}" valueLiveUpdate="true"/>
+                    </VBox>
+                </VBox>
+                <VBox>
+                    <Label text="{i18n>ExportToHybrisFragment.SelectedCustomersTitle}"/>
+                    <table:Table
+                            id="idHybrisCustomerListTable"
+                            selectionMode="None"
+                            rows="{path: '/Customers'}"
+                            rowHeight="34"
+                            visibleRowCount="5">
+                        <table:columns>
+                            <table:Column width="15rem">
+                                <Label text="{i18n>CustomerList.Number}"/>
+                                <table:template>
+                                    <Text text="{OriginId}"/>
+                                </table:template>
+                            </table:Column>
+                            <table:Column>
+                                <Label text="{i18n>CustomerList.Name}"/>
+                                <table:template>
+                                    <Text text="{CustomerName}"/>
+                                </table:template>
+                            </table:Column>
+                            <table:Column width="12rem" hAlign="End">
+                                <Label text="{i18n>CustomerList.IncomeAtRisk}"/>
+                                <table:template>
+                                    <Text text="{parts:[{path:'OperatingIncome'},{path:'Currency'}],
+								                    type: 'sap.ui.model.type.Currency',
+								                    formatOptions: {showMeasure: false}}"/>
+                                </table:template>
+                            </table:Column>
+                        </table:columns>
+                    </table:Table>
+                </VBox>
+            </VBox>
+        </Panel>
+        <buttons>
+            <Button type="Accept" text="{i18n>ExportToHybrisFragment.SendButton}" enabled="{= ${/ValidTargetGroup} ? true : false }" press="onCreateTargetGroup"/>
+            <Button text="{i18n>ExportToHybrisFragment.CancelButton}" press="onCloseDialog"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

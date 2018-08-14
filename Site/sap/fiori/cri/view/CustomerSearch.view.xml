@@ -1,0 +1,126 @@
+<mvc:View
+        xmlns:mvc="sap.ui.core.mvc"
+        controllerName="sap.fiori.cri.controller.CustomerSearch"
+        xmlns="sap.m"
+        displayBlock="true"
+        height="100%">
+    <Page id="idCustomerSearchPage" showHeader="false">
+        <headerContent>
+        </headerContent>
+        <content>
+            <Panel id="idCustSearchPanel" width="auto" class="sapSuiteUiCommonsChartContainer sapUiResponsiveContentPadding">
+                <HBox alignItems="Center" justifyContent="Center" class="sapUiLargeMarginBeginEnd sapUiLargeMarginTopBottom">
+                    <SearchField
+                            id="idSearchInput"
+                            placeholder="Search"
+                            value="{viewModel>/SearchString}"
+                            search="filterCustomers"
+                            width="30rem"/>
+                </HBox>
+                <Table id="idCustomerListTable"
+                       inset="false"
+                       items="{path:'/CustomerListItems', factory:'.customerListItemFactory'}"
+                       growing="true"
+                       growingScrollToLoad="true"
+                       mode="None"
+                       busyIndicatorDelay="0">
+                    <headerToolbar>
+                        <Toolbar>
+                            <ToolbarSpacer></ToolbarSpacer>
+                            <Button id="idSortBtn" tooltip="View Settings" icon="sap-icon://sort" text="{Labels>/SortButton}" press="handleViewSettingsDialogButtonPressed" />
+                        </Toolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column>
+                            <Text text="{Labels>/CustomerListColumnName}" />
+                        </Column>
+                        <Column width="6rem" demandPopin="true" minScreenWidth="500px" popinDisplay="Inline">
+                            <Text text="{Labels>/CustomerListColumnId}" />
+                        </Column>
+                        <Column demandPopin="true" minScreenWidth="800px" popinDisplay="Block">
+                            <Text text="{Labels>/CustomerListColumnRisk}" />
+                        </Column>
+                        <Column demandPopin="true" minScreenWidth="Tablet"
+                                hAlign="Right" popinDisplay="Inline">
+                            <Text text="{Labels>/CustomerListColumnOperatingIncomeLoss}" />
+                        </Column>
+                        <Column demandPopin="true" minScreenWidth="800px" popinDisplay="Block">
+                            <Text text="{Labels>/CustomerListColumnDaysToReact}" class="sapUiSmallMarginBegin"/>
+                        </Column>
+                        <Column width="8rem" hAlign="End">
+                            <Text text="{Labels>/CustomerListColumnDetails}" textAlign="End" class="sapUiSmallMarginEnd"/>
+                        </Column>
+                    </columns>
+                    <!--items>
+                        <ColumnListItem id="idCustomerItemTemplate">
+                            <cells>
+                                <Text text="{NAME}" />
+                                <Text text="{EXT_ID}" />
+                                <VBox class="sapUiResponsiveContentPadding" alignItems="Start">
+                                    <micro:BulletMicroChart
+                                            visible="{= ${INFLUENCE} === null ? false : true}"
+                                            scale="%"
+                                            class="sapUiSmallMarginTopBottom"
+                                            isResponsive="true"
+                                            press="press"
+                                            minValue="0"
+                                            maxValue="100"
+                                            showValueMarker="false"
+                                            showTargetValue="false"
+                                            showActualValue="true">
+                                        <micro:actual>
+                                            <micro:BulletMicroChartData value="{INFLUENCE}" color="{path:'viewModel>INFLUENCE', formatter:'.formatRiskColor'}"/>
+                                        </micro:actual>
+                                    </micro:BulletMicroChart>
+                                    <Text visible="{= ${INFLUENCE} === null ? true : false}"
+                                          text="{Labels>/CustomerListItemNoRisk}"
+                                          textAlign="Begin"
+                                    />
+                                </VBox>
+                                <ObjectNumber
+                                        textAlign="Right"
+                                        number="{
+                                                    parts:[{path:'INCOME_LOSS'},{path:'CURRENCY'}],
+                                                    type: 'sap.ui.model.type.Currency',
+                                                    formatOptions: {showMeasure: false}
+                                                }"
+                                        unit="{CURRENCY}" />
+                                <VBox class="sapUiResponsiveContentPadding sapUiSmallMarginBegin" alignItems="Start">
+                                    <micro:BulletMicroChart
+                                            visible="{= ${DAYS_TO_REACT} === null ? false : true}"
+                                            scale="D"
+                                            class="sapUiSmallMarginTopBottom"
+                                            isResponsive="true"
+                                            press="press"
+                                            minValue="0"
+                                            maxValue="120"
+                                            showValueMarker="false"
+                                            showTargetValue="false"
+                                            showActualValue="true">
+                                        <micro:actual>
+                                            <micro:BulletMicroChartData value="{DAYS_TO_REACT}" color="{path:'DAYS_TO_REACT', formatter:'.formatDaysToChurnColor'}"/>
+                                        </micro:actual>
+                                    </micro:BulletMicroChart>
+                                    <Text visible="{= ${LOADING_REACTION} ? true : false}" text="Loading..."/>
+                                    <VBox visible="{= ${LOADING_REACTION} ? false : true}">
+                                        <Text visible="{= ${REACTION_DATE} ? true : false}"
+                                              text="{Labels>/CustomerListItemReacted} {REACTION_DATE}"
+                                              textAlign="Begin"
+                                        />
+                                        <Text visible="{= ${REACTION_DATE} === null ? true : false}"
+                                              text="N/A"
+                                              textAlign="Begin"
+                                        />
+                                    </VBox>
+                                </VBox>
+                                <HBox alignItems="Center" justifyContent="End">
+                                    <Button icon="sap-icon://navigation-right-arrow" type="Transparent" press="showCustomerDetails"/>
+                                </HBox>
+                            </cells>
+                        </ColumnListItem>
+                    </items-->
+                </Table>
+            </Panel>
+        </content>
+    </Page>
+</mvc:View>

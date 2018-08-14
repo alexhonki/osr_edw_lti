@@ -1,0 +1,340 @@
+<mvc:View
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:core="sap.ui.core"
+        xmlns:l="sap.ui.layout"
+        xmlns:cri="sap.fiori.cri.control"
+        xmlns:table="sap.ui.table"
+        controllerName="sap.fiori.cri.controller.CustomerDetails"
+        xmlns="sap.m"
+        displayBlock="true"
+        height="100%">
+    <Page id="idCustomerDetailsPage" showHeader="false" enableScrolling="true" title="{i18n>CustomerPulse.Title}">
+        <VBox width="100%" height="100%">
+            <VBox>
+                <HeaderContainer backgroundDesign="Solid">
+                    <content>
+                        <Title class="sapUiMediumMarginBeginEnd sapUiSmallMarginTopBottom" id="idTitle"
+                               titleStyle="H3" width="100%" text="{/CustomerName}"/>
+                    </content>
+                </HeaderContainer>
+                <HBox class="sapMHdrCntrBGSolid">
+                    <l:VerticalLayout class="sapUiMediumMarginBeginEnd">
+                        <Label text="{i18n>CustomerDetails.KeyInfoId}:"/>
+                        <ObjectAttribute id="idKeyInfoId" text="{/ExternalCustomerId}"/>
+                    </l:VerticalLayout>
+                    <!--<l:VerticalLayout class="sapUiMediumMarginBeginEnd" visible="{=${/CustomerRisk} !== null ? true : false}">
+                        <Label text="{i18n>CustomerDetails.KeyInfoRisk}:"/>
+                        <ObjectAttribute text="{/CustomerRisk}"/>
+                    </l:VerticalLayout>-->
+                    <l:VerticalLayout class="sapUiMediumMarginBeginEnd" visible="{=${/CustomerOIL} !== null ? true : false}">
+                        <Label text="{i18n>CustomerDetails.KeyInfoOperatingIncomeLoss}:"/>
+                        <ObjectAttribute text="{parts:[{path:'/CustomerOIL'},{path:'/Currency'}],
+								                    type: 'sap.ui.model.type.Currency',
+								                    formatOptions: {showMeasure: false}}"/>
+                    </l:VerticalLayout>
+                </HBox>
+            </VBox>
+            <IconTabBar id="idIconTabBar" stretchContentHeight="true">
+                <items>
+                    <IconTabFilter id="idPulseTab" text="{i18n>CustomerPulse.Pulse.Title}">
+                        <VBox height="97%" width="100%">
+                            <HBox>
+                                <Select id="idPulseChartTimeFilter" class="sapUiSmallMarginEnd" selectedKey="{/TimeRangeFilter}" items="{/TimeRangeFilters}"
+                                        change="onTimeSelection">
+                                    <core:Item key="{key}" text="{text}"/>
+                                </Select>
+                                <MultiComboBox
+									selectionChange="onCategoriesSelection"
+									selectionFinish="handleSelectionFinish"
+									width="500px"
+									id="idComboBoxEventCategoryFilter"
+									items="{
+										path: '/CustomerEventCategories',
+										sorter: { path: 'key' }
+									}">
+									<core:Item key="{key}" text="{key}" />
+								</MultiComboBox>
+                            </HBox>
+                            <FlexBox>
+                                <cri:PulseChart id="idPulseChart" showNoData="true" yAxisLabel="Risk" thresholdLowValue="{/Thresholds/MEDIUM_RISK}" thresholdHighValue="{/Thresholds/HIGH_RISK}" items="{path:'/FilteredCustomerEvents', factory:'.pulseChartItemsFactory'}" reactions="{path: '/Reactions', factory: '.reactionItemFactory'}" itemSelect="onItemSelect" height="100%" width="100%" showLegend="true" />
+                                <layoutData>
+                                    <FlexItemData growFactor="1"/>
+                                </layoutData>
+                            </FlexBox>
+                           <FlexBox height="0px">
+                                <Table
+                                        class="sapUiMediumMarginTopBottom"
+                                        id="idDayEventList"
+                                        items="{
+                                            path: '/dayEventList',
+                                            sorter: {path: 'Influence', descending: true}
+                                        }"
+                                        width="100%"
+                                        noDataText="{i18n>CustomerPulse.NoDaySelected}">
+                                    <headerToolbar>
+                                        <Toolbar>
+                                            <Title id="idDayEventsListTitle" text="{i18n>CustomerPulse.Events.Title} {=${/daySelected} ? '- ' + ${/daySelected} : ''}" level="H2"/>
+                                            <ToolbarSpacer></ToolbarSpacer>
+                                            </Toolbar>
+                                    </headerToolbar>
+                                    <columns>
+                                        <Column>
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnName}"/>
+                                        </Column>
+                                        <Column>
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnCategory}"/>
+                                        </Column>
+                                        <Column>
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnComment}"/>
+                                        </Column>
+                                        <Column hAlign="Right" width="6em">
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnRisk}"/>
+                                        </Column>
+                                        <Column width="6em">
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnDate}"/>
+                                        </Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem>
+                                            <Text text="{EventName}" maxLines="2"/>
+                                            <Text text="{EventGroup}" maxLines="2"/>
+                                            <Text text="{Comment}" maxLines="2"/>
+                                            <Text text="{path: 'Influence', formatter: '.formatter.percentage'}" maxLines="2"/>
+                                            <Text text="{
+                                                                    path: 'Date',
+                                                                    type: 'sap.ui.model.type.Date',
+                                                                    formatOptions: {
+                                                                        pattern: 'dd MMM yyyy'
+                                                                    }
+                                                                }" maxLines="2"/>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+                            </FlexBox>
+                        </VBox>
+                    </IconTabFilter>
+                    <IconTabFilter id="idCustomerInfoTab" text="{i18n>CustomerPulse.CustomerAttributes.Title}">
+                        <ScrollContainer id="attributesContainer" vertical="true">
+                            <Toolbar>
+                                <core:Icon src="sap-icon://customer-briefing"/>
+                                <Title id="idCustomerAttributesTitle" text="Customer Details" level="H4" titleStyle="H4"/>
+                            </Toolbar>
+                            <l:Grid id="attributeGrid" defaultSpan="L2 M4 S6" content="{/CustomerAttributes}">
+                                <l:content>
+                                    <VBox class="sapUiSmallMarginTop">
+                                        <Title text="{label}" titleStyle="H5"/>
+                                        <Text text="{text}"/>
+                                    </VBox>
+                                </l:content>
+                            </l:Grid>
+                        </ScrollContainer>
+                    </IconTabFilter>
+                    <IconTabFilter id="idEventsTab" text="{i18n>CustomerPulse.Events.Title}">
+                        <VBox width="100%" height="100%">
+                            <HBox class="sapUiSmallMarginBottom" alignItems="Center" width="100%" justifyContent="SpaceBetween">
+                                <HBox alignItems="Center">
+                                    <Text class="sapUiTinyMarginEnd" text="{i18n>CustomerDetails.EventTableViewTypeLabel}"/>
+
+                                    <Select id="idEventViewType"
+                                            class="sapUiTinyMarginEnd"
+                                            selectedKey="{viewModel>/SelectedEventViewType}"
+                                            items="{viewModel>/EventViewTypes}">
+                                        <core:Item key="{viewModel>key}" text="{viewModel>value}"/>
+                                    </Select>
+                                    <!--<Select id="idEventCategoryFilter"
+                                            selectedKey="{/EventCategoryFilter}" items="{/CustomerEventCategories}"
+                                            change="onCategorySelection">
+                                        <core:Item key="{key}" text="{key}"/>
+                                    </Select>-->
+                                    <MultiComboBox
+									selectionChange="onCategoriesSelection"
+									selectionFinish="handleSelectionFinish"
+									width="500px"
+									id="idEventCategoryFilter"
+									items="{
+										path: '/CustomerEventCategories',
+										sorter: { path: 'key' }
+									}">
+									<core:Item key="{key}" text="{key}" />
+								</MultiComboBox>
+                                </HBox>
+                               <HBox alignItems="Center" justifyContent="End">
+                                <SearchField
+                                    placeholder="Search"
+                                    value="{/eventFilterString}"
+                                    search="filterEvents"
+                                    width="15rem"/>
+                                
+                                <Button text="{i18n>CustomerPulse.ExportEvents}" press="exportEventList" type="Transparent"/>
+                                </HBox>
+                            </HBox>
+                            <FlexBox>
+                                <table:Table
+                                        id="idCustomerEventsTable"
+                                        visible="{= ${viewModel>/SelectedEventViewType} === 'History'}"
+                                        selectionBehavior="RowOnly"
+                                        selectionMode="Single"
+                                        rows="{ path: '/FilteredCustomerEventsTable' }"
+                                        rowHeight="34"
+                                        visibleRowCountMode="Auto">
+                                    <table:columns>
+                                        <table:Column id="idEventNameColumn" sortProperty="EventName">
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnName}"/>
+                                            <table:template>
+                                                <Text text="{EventName}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column id="idEventGroupColumn" sortProperty="EventGroup">
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnCategory}"/>
+                                            <table:template>
+                                                <Text id="idEventGroup" text="{EventGroup}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column id="idEventGroupDescription">
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnComment}"/>
+                                            <table:template>
+                                                <Text id="idEventDescription" text="{Comment}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="5rem" hAlign="Right" sortProperty="Influence">
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnRisk}"/>
+                                            <table:template>
+                                                <Text text="{path: 'Influence', formatter: '.formatter.percentage'}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="10rem" hAlign="End" sortProperty="Date" sortOrder="Descending" sorted="true">
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnDate}"/>
+                                            <table:template>
+                                                <Text text="{
+                                                                    path: 'Date',
+                                                                    type: 'sap.ui.model.type.Date',
+                                                                    formatOptions: {
+                                                                        pattern: 'dd MMM yyyy'
+                                                                    }
+                                                                }" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                    </table:columns>
+                                </table:Table>
+                                <table:Table
+                                        id="idDistinctCustomerEventsTable"
+                                        visible="{= ${viewModel>/SelectedEventViewType} === 'Distinct'}"
+                                        selectionBehavior="RowOnly"
+                                        selectionMode="Single"
+                                        rows="{ path: '/DistinctCustomerEvents' }"
+                                        rowSelectionChange="onSelectDistinctEvent"
+                                        rowHeight="34"
+                                        visibleRowCountMode="Auto">
+                                    <table:columns>
+                                        <table:Column sortProperty="EventName">
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnName}"/>
+                                            <table:template>
+                                                <Text text="{EventName}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column sortProperty="EventGroup">
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnCategory}"/>
+                                            <table:template>
+                                                <Text text="{EventGroup}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="5rem" hAlign="Right" sortProperty="Influence" sortOrder="Descending" sorted="true">
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnRisk}"/>
+                                            <table:template>
+                                                <Text text="{path: 'Influence', formatter: '.formatter.percentage'}" maxLines="2"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="10rem" hAlign="Right" sortProperty="EventCount">
+                                            <Label text="{i18n>CustomerDetails.EventTableColumnCount}"/>
+                                            <table:template>
+                                                <Text text="{EventCount}"/>
+                                            </table:template>
+                                        </table:Column>
+                                    </table:columns>
+                                </table:Table>
+                                <layoutData>
+                                    <FlexItemData growFactor="1"/>
+                                </layoutData>
+                            </FlexBox>
+                        </VBox>
+                    </IconTabFilter>
+                    <IconTabFilter visible="false" id="idSimilarCustomersTab" text="{i18n>CustomerPulse.SimilarCustomers.Title}">
+                        <VBox width="100%" height="100%">
+                            <HBox class="sapUiSmallMarginBottom" alignItems="Center" width="100%" justifyContent="SpaceBetween">
+                                <HBox alignItems="Center">
+                                    <Text class="sapUiTinyMarginEnd" text="{i18n>CustomerPulse.SimilarCustomers.SimilarCustomerTableTitle}"/>
+                                </HBox>
+                                <Button text="{i18n>CustomerPulse.ExportSimilarCustomers}" press="exportCustomerList" type="Transparent"/>
+                            </HBox>
+                            <FlexBox>
+                                <table:Table
+                                        id="idSimilarCustomersTable"
+                                        selectionMode="MultiToggle"
+                                        rows="{ path: '/SimilarCustomers' }"
+                                        rowHeight="34"
+                                        visibleRowCountMode="Auto">
+                                    <table:columns>
+                                        <table:Column  width="10rem" >
+                                            <Label text="{i18n>CustomerPulse.SimilarCustomers.Id}"/>
+                                            <table:template>
+                                                <Text text="{OriginId}"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column id="idSimilarCustomerName">
+                                            <Label text="{i18n>CustomerPulse.SimilarCustomers.NameColumn}"/>
+                                            <table:template>
+                                                <Text text="{Name}"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="13rem" hAlign="End">
+                                            <Label text="{i18n>CustomerPulse.SimilarCustomers.Risk}"/>
+                                            <table:template>
+                                                <Text text="{Risk}"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="13rem" hAlign="End">
+                                            <Label text="{i18n>CustomerPulse.SimilarCustomers.OperatingIncome}"/>
+                                            <table:template>
+                                                <ObjectNumber textAlign="Right"
+                                                              number="{
+								                    parts:[{path:'OperatingIncome'},{path:'Currency'}],
+								                    type: 'sap.ui.model.type.Currency',
+								                    formatOptions: {showMeasure: false}
+							                    }"
+                                                              unit="{Currency}" />
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="13rem" hAlign="End">
+                                            <Label text="{i18n>CustomerPulse.SimilarCustomers.DaysToChurn}"/>
+                                            <table:template>
+                                                <Text text="{DaysToChurn}"/>
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="13rem" hAlign="End">
+                                            <Label text="{i18n>CustomerPulse.SimilarCustomers.Similarity}"/>
+                                            <table:template>
+                                                <Text text="{Similarity}" />
+                                            </table:template>
+                                        </table:Column>
+                                        <table:Column width="7rem" hAlign="Center">
+                                            <Label text="{i18n>CustomerPulse.SimilarCustomers.DetailsLink}"/>
+                                            <table:template>
+                                                <Button icon="sap-icon://navigation-right-arrow" type="Transparent" press="showSimilarCustomer"/>
+                                            </table:template>
+                                        </table:Column>
+                                    </table:columns>
+                                </table:Table>
+                                <layoutData>
+                                    <FlexItemData growFactor="1"/>
+                                </layoutData>
+                            </FlexBox>
+                        </VBox>
+                    </IconTabFilter>
+                </items>
+                <layoutData>
+                    <FlexItemData growFactor="1"/>
+                </layoutData>
+            </IconTabBar>
+        </VBox>
+    </Page>
+</mvc:View>

@@ -1,0 +1,46 @@
+.customerIconBackground {
+  background-color: #91C8F6; }
+
+.expandHeading {
+  font-size: 12px;
+  font-weight: bold;
+  color: #333333; }
+
+.emptyList {
+  background-color: #EBEBEB; }
+
+.eventIconBackground {
+  background-color: #666666; }
+
+.idHeading {
+  margin-bottom: 5px; }
+
+.idLabel {
+  font-size: 11px; }
+
+.labelHeading {
+  color: #666666;
+  margin-bottom: 5px;
+  font-size: 11px; }
+
+.labelRisk {
+  color: red; }
+
+.listHeading {
+  color: #666666;
+  font-size: 16px; }
+
+.listItemBorder {
+  border-style: solid;
+  border-color: #E5E5E5;
+  border-width: 1px; }
+
+.listItemRightBorder {
+  border-left-style: solid;
+  border-color: #E5E5E5;
+  border-width: 1px; }
+
+.searchPanel {
+  background-color: #EFF4F9; }
+
+/*# sourceMappingURL=search.css.map */

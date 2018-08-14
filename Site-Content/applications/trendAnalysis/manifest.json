@@ -1,0 +1,92 @@
+{
+    "_version": "1.1.0",
+    "sap.fiori": {
+		"_version": "1.1.0",
+		"registrationIds": [],
+		"archeType": "transactional"
+    },
+    "sap.ui": {
+        "_version": "1.2.0",
+        "technology": "UI5",
+        "fullWidth": true,
+        "deviceTypes": {
+            "desktop": true
+        },
+        "supportedThemes": [
+            "sap_hcb",
+			"sap_bluecrystal"
+        ]
+    },
+    "sap.platform.runtime": {
+		"componentProperties": {
+			"url": "/sap/fiori/cri/trendAnalysis"
+		}
+	},
+    "sap.app": {
+        "_version": "1.2.0",
+        "id": "sap.fiori.cri.trendAnalysis",
+        "type": "application",
+        "i18n": "../i18n/i18n.properties",
+        "title": "{{TrendAnalysis.title}}",
+        "description": "",
+        "applicationVersion": {
+            "version": "1.0.0"
+        },
+        "dataSources": {
+            "CRI": {
+                "uri": "/odata",
+                "type": "OData"
+            }
+        },
+         "crossNavigation": {
+			"inbounds": {
+				"app1Show": {
+					"semanticObject": "TrendAnalysis",
+					"action": "display",
+					"deviceTypes": {
+						"desktop": true
+					}
+				}
+			},
+			"outbounds": {
+
+			}
+		}
+    },
+    
+    "sap.ui5": {
+        "_version": "1.1.0",
+        "componentName": "sap.fiori.cri.trendAnalysis",
+        "rootView": "sap.fiori.cri.view.TrendAnalysis",
+        "dependencies": {
+            "minUI5Version": "1.46.12",
+            "libs": {
+                "sap.m": {
+                    "minVersion": "1.46.12"
+                },
+                "sap.ui.comp": {
+                    "minVersion": "1.46.12"
+                }
+            }
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "sap.fiori.cri.i18n.i18n"
+                }
+            },
+            "CRI": {
+                "dataSource": "CRI",
+                "settings": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        }
+    },
+    "sap.platform.cf":{
+		"oAuthScopes": ["$XSAPPNAME.TrendAnalysis"] 
+	}
+}

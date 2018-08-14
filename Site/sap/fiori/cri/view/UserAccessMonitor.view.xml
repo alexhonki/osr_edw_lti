@@ -1,0 +1,84 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.UserAccessMonitor"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:table="sap.ui.table"
+        xmlns:core="sap.ui.core"
+        displayBlock="true"
+        height="100%">
+    <Page showHeader="true" title="{i18n>UserAccessMonitor.Title}" enableScrolling="true">
+        <content>
+            <Panel width="auto" class="sapUiResponsiveContentPadding">
+                <HBox class="sapUiResponsiveMargin">
+                    <ComboBox
+                            items="{/TimeRanges}"
+                            selectedKey="{/SelectedDateRangeKey}"
+                            selectionChange="onDateRangeComboChange"
+                    >
+                        <core:Item key="{NumMonths}" text="{Name}" />
+                    </ComboBox>
+                    <DateRangeSelection
+                            id="idDateRange"
+                            visible="{=${/UseCustomDateRange} ? true : false}"
+                            delimiter="-"
+                            dateValue="{/FromDate}"
+                            secondDateValue="{/ToDate}"
+                            displayFormat="dd/MM/YYYY"
+                            change="onDateRangeChange"
+                            width="200px"
+                    />
+                    <Select class="sapUiSmallMarginBegin"
+                            items="{
+                                path: '/AuditPolicies'
+                            }"
+                            selectedKey="{/SelectedPolicy}"
+                            change="filterResults">
+                        <core:Item key="{AUDIT_POLICY_NAME}" text="{AUDIT_POLICY_DESC}" />
+                    </Select>
+                </HBox>
+                <table:Table
+                        id="idUserAccessListTable"
+                        selectionMode="None"
+                        rows="{
+                            path: 'CRI>/AuditLog'
+                        }"
+                        enableCellFilter="true"
+                        rowHeight="44"
+                        noDataText="{i18n>UserAccessMonitor.List.NoData}">
+                    <table:toolbar>
+                        <Toolbar>
+                            <Title text="{i18n>UserAccessMonitor.List.Title}: {/PageFilterString}"/>
+                            <ToolbarSpacer/>
+                            <SearchField
+                                    placeholder="{i18n>UserAccessMonitor.Search}"
+                                    value="{/FilterString}"
+                                    search="filterResults"
+                                    width="15rem"/>
+                        </Toolbar>
+                    </table:toolbar>
+                    <table:columns>
+                        <table:Column width="10rem">
+                            <Label text="{i18n>UserAccessMonitor.List.UserID}"/>
+                            <table:template>
+                                <Text text="{CRI>USER_NAME}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column>
+                            <Label text="{i18n>UserAccessMonitor.List.Statement}"/>
+                            <table:template>
+                                <Text text="{CRI>STATEMENT_STRING}" maxLines="2"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column width="15rem" hAlign="Center">
+                            <Label text="{i18n>UserAccessMonitor.List.LogDate}"/>
+                            <table:template>
+                                <Text text="{CRI>LOG_DATE}" maxLines="2"/>
+                            </table:template>
+                        </table:Column>
+                    </table:columns>
+                </table:Table>
+            </Panel>
+        </content>
+    </Page>
+</mvc:View>

@@ -1,0 +1,209 @@
+{
+    "_version": "1.1.0",
+    "sap.fiori": {
+		"_version": "1.1.0",
+		"registrationIds": [],
+		"archeType": "transactional"
+    },
+    "sap.ui": {
+        "_version": "1.2.0",
+        "technology": "UI5",
+        "fullWidth": true,
+        "deviceTypes": {
+            "desktop": true
+        },
+        "supportedThemes": [
+            "sap_hcb",
+			"sap_bluecrystal"
+        ]
+    },
+    "sap.platform.runtime": {
+		"componentProperties": {
+			"url": "/sap/fiori/cri/admin"
+		}
+	},
+    "sap.app": {
+        "_version": "1.2.0",
+        "id": "sap.fiori.cri.admin",
+        "type": "application",
+        "i18n": "../i18n/i18n.properties",
+        "title": "{{Admin.title}}",
+        "description": "",
+        "applicationVersion": {
+            "version": "1.0.0"
+        },
+        "dataSources": {
+            "CRI": {
+                "uri": "/adminodata",
+                "type": "OData"
+            }
+        },
+        "crossNavigation": {
+			"inbounds": {
+				"app1Show": {
+					"semanticObject": "Admin",
+					"action": "display",
+					"deviceTypes": {
+						"desktop": true
+					}
+				}
+			},
+			"outbounds": {
+
+			}
+		}
+    },
+    
+    "sap.ui5": {
+        "_version": "1.1.0",
+        "componentName": "sap.fiori.cri.admin",
+       "rootView": "sap.fiori.cri.view.Admin",
+        "dependencies": {
+            "minUI5Version": "1.46.12",
+            "libs": {
+                "sap.m": {
+                    "minVersion": "1.46.12"
+                },
+                "sap.ui.table": {
+                    "minVersion": "1.46.12"
+                }
+            }
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "sap.fiori.cri.i18n.i18n"
+                }
+            },
+            "CRI": {
+                "dataSource": "CRI",
+                "settings": {
+                    "defaultUpdateMethod": "PUT"
+                }
+            }
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "viewPath": "sap.fiori.cri.view",
+                "controlId": "adminPanel",
+                "bypassed": {
+                    "target": ["master", "applicationSettings"]
+                }
+            },
+            "routes": [
+                {
+                    "pattern": "",
+                    "name": "master",
+                    "target": ["master", "applicationSettings"]
+                },
+                {
+                    "pattern": "applicationSettings",
+                    "name": "applicationSettings",
+                    "target": ["master", "applicationSettings"]
+                },
+                {
+                    "pattern": "useCaseSettings/:useCaseId:",
+                    "name": "useCaseSettings",
+                    "target": ["useCaseMaster", "useCaseSettings"]
+                },
+                {
+                    "pattern": "manageCustomers",
+                    "name": "manageCustomers",
+                    "target": ["master", "manageCustomers"]
+                },
+                {
+                    "pattern": "manageEvents",
+                    "name": "manageEvents",
+                    "target": ["master", "manageEvents"]
+                },
+                {
+                    "pattern": "userAccessMonitor",
+                    "name": "userAccessMonitor",
+                    "target": ["master", "userAccessMonitor"]
+                },
+                {
+                    "pattern": "attributeConfig",
+                    "name": "attributeConfig",
+                    "target": ["master", "attributeConfig"]
+                },
+                {
+                    "pattern": "generalSettings",
+                    "name": "generalSettings",
+                    "target": ["master", "generalSettings"]
+                },
+                {
+                    "pattern": "predefinedEventSettings",
+                    "name": "predefinedEventSettings",
+                    "target": ["master", "predefinedEventSettings"]
+                }
+            ],
+            "targets": {
+                "master" : {
+                    "viewName": "Admin",
+                    "controlAggregation": "masterPages",
+                    "viewLevel": 0
+                },
+                "useCaseMaster": {
+                    "viewName": "UseCaseMaster",
+                    "controlAggregation": "masterPages",
+                    "viewLevel": 1
+                },
+                "useCaseSettings": {
+                    "viewName": "UseCaseSettings",
+                    "controlAggregation": "detailPages",
+                    "viewLevel": 2,
+                    "transition":"slide"
+                },
+                "applicationSettings": {
+                    "viewName": "ApplicationSettings",
+                    "controlAggregation": "detailPages",
+                    "viewLevel": 1,
+                    "transition":"show"
+                },
+                "manageCustomers": {
+                    "viewName": "CustomerManagement",
+                    "controlAggregation": "detailPages",
+                    "viewLevel": 1,
+                    "transition":"show"
+                },
+                "manageEvents": {
+                    "viewName": "EventManagement",
+                    "controlAggregation": "detailPages",
+                    "viewLevel": 1,
+                    "transition":"show"
+                },
+                "userAccessMonitor": {
+                    "viewName": "UserAccessMonitor",
+                    "controlAggregation": "detailPages",
+                    "viewLevel": 1,
+                    "transition":"show"
+                },
+                "attributeConfig": {
+                    "viewName": "SuperAttributeConfig",
+                    "controlAggregation": "detailPages",
+                    "viewLevel": 1,
+                    "transition":"show"
+                },
+                "generalSettings": {
+                    "viewName": "GeneralSettings",
+                    "controlAggregation": "detailPages",
+                    "viewLevel": 1,
+                    "transition":"show"
+                },
+                "predefinedEventSettings": {
+                    "viewName": "PredefinedEventSettings",
+                    "controlAggregation": "detailPages",
+                    "viewLevel": 1,
+                    "transition":"show"
+                }
+            }
+        },
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		}
+    }
+}

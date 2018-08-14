@@ -1,0 +1,32 @@
+{
+	"routes": [{
+		"source": "^/app1/sap/demo/(.*)",
+		"target": "$1",
+		"localDir": "app1/sap/demo/",
+		"cacheControl": "public, max-age=31536000,must-revalidate"
+	},{
+		"source": "^/sap/fiori/cri/(.*)",
+		"target": "$1",
+		"localDir": "sap/fiori/cri",
+		"cacheControl": "public, max-age=31536000,must-revalidate"
+	},{
+			"source": "^/odata/(.*)$",
+    		"target": "/http/odata/services.xsodata/$1",
+			"destination": "backend",
+			"authenticationType": "xsuaa",
+			"csrfProtection": true
+	}, {
+			"source": "^/adminodata/(.*)$",
+    		"target": "/http/odata/adminServices.xsodata/$1",
+			"destination": "backend",
+			"authenticationType": "xsuaa",
+			"csrfProtection": true
+	}, {
+			"source": "^/searchodata/(.*)$",
+    		"target": "/http/odata/searchServices.xsodata/$1",
+			"destination": "backend",
+			"authenticationType": "xsuaa",
+			"csrfProtection": true
+	}
+]
+}

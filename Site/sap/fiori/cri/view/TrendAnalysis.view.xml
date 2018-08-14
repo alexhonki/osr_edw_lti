@@ -1,0 +1,27 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.TrendAnalysis"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:l="sap.ui.layout"
+        xmlns:cri="sap.fiori.cri.control"
+        xmlns:filterbar="sap.ui.comp.filterbar"
+        displayBlock="true"
+        height="100%">
+    <Page id="idTrendAnalysisPage" class="trendAnalysis" showHeader="false" enableScrolling="true" backgroundDesign="Transparent" preserveHeaderStateOnScroll="false" title="{i18n>TrendAnalysis.title}">
+        <content>
+            <cri:FilterBar
+                    id="idFilterBar"
+                    showDateRange='true'
+                    filterChange="onFilterChanged"
+                    clearFilters="onClearFilters"
+            />
+            <Panel width="auto" backgroundDesign="Translucent">
+            <l:Grid id="idCardContainer" defaultSpan="XL3 L4 M6 S12" class="sapUiResponsiveMargin"> <!--content="{path:'cardModel>/Cards', factory:'.cardFactory'}"-->
+
+            </l:Grid>
+            </Panel>
+        </content>
+    </Page>
+</mvc:View>

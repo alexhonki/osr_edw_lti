@@ -1,0 +1,35 @@
+<mvc:View
+        controllerName="sap.fiori.cri.controller.UseCaseSettings"
+        class="sapUiSizeCompact"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:f="sap.ui.layout.form"
+        xmlns:layout="sap.ui.layout"
+        xmlns:cri="sap.fiori.cri"
+        xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+        displayBlock="true"
+        height="100%">
+    <Page id="idUseCaseSettingsPage" class="sapSuiteUiCommonsChartContainer" showHeader="true" title="{i18n>UseCaseSettings.Title}" enableScrolling="true" floatingFooter="true">
+        <content>
+            <Panel width="auto" class="sapUiResponsiveContentPadding" backgroundDesign="Transparent">
+                <Toolbar height="3rem">
+                    <Title visible="{= ${/UseCaseTitle} ? true : false}"
+                           text="{
+                                parts:['i18n>UseCaseSettings.SettingsFormTitle', '/UseCaseTitle'],
+                                formatter: 'jQuery.sap.formatMessage'
+                            }"
+                            titleStyle="H4"/>
+                    <ToolbarSpacer />
+                    <Button text="{i18n>Admin.RestoreButton}" press="onRestore" type="Transparent"/>
+                </Toolbar>
+                <layout:Grid class="sapUiSmallMarginTop" id="idSettingsForm" content="{path: '/SettingsControls', factory: '.createSettingsGroup'}"/>
+            </Panel>
+        </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Button id="idSaveButton" type="Emphasized" text="{i18n>Admin.Footer.Save}" press="onSave" enabled="true"/>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>
