@@ -1,0 +1,8 @@
+{
+	"role":{
+		"name": "osr.sec.lti.backend.dac::read_write",
+		"schema_privileges":[{  "privileges":[ "SELECT", "SELECT CDS METADATA", "EXECUTE","INSERT","UPDATE", "DELETE", "CREATE TEMPORARY TABLE"]}]
+    }
+}
+
+
