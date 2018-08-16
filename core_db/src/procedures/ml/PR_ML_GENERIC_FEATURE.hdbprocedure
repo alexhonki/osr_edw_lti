@@ -1218,26 +1218,26 @@ BEGIN
 		TMP78 =
 		SELECT A."CUST_ID" "CUST_ID", 
 	        CASE 
-                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $25,000 - $50,000' THEN 1
-                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $1,00,000 - $1M' THEN 2
-                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $1,00,000 - $1M' THEN 3
-                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $1,000 - $2,500' THEN 4
-                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $1,000 - $2,500' THEN 5
-                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $2,500 - $5,000' THEN 6
+                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $25,000 - <$50,000' THEN 1
+                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $1,00,000 - <$1M' THEN 2
+                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $1,00,000 - <$1M' THEN 3
+                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $1,000 - <$2,500' THEN 4
+                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $1,000 - <$2,500' THEN 5
+                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $2,500 - <$5,000' THEN 6
                 WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount under $500' THEN 7
-                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $25,000 - $50,000' THEN 8
-                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $5,000 - $10,000' THEN 9
-                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $5,000 - $10,000' THEN 10
-                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $10,000 - $25,000' THEN 11
-                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount over $1M' THEN 12
-                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $50,000 - $100,000' THEN 13
-                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $2,500 - $5,000' THEN 14
-                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount over $1M' THEN 15
-                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $50,000 - $100,000' THEN 16
+                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $25,000 - <$50,000' THEN 8
+                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $5,000 - <$10,000' THEN 9
+                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $5,000 - <$10,000' THEN 10
+                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $10,000 - <$25,000' THEN 11
+                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $1M+' THEN 12
+                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $50,000 - <$100,000' THEN 13
+                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $2,500 - <$5,000' THEN 14
+                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $1M+' THEN 15
+                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $50,000 - <$100,000' THEN 16
                 WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount under $500' THEN 17
-                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $500 - $1,000' THEN 18
-                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $10,000 - $25,000' THEN 19
-                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $500 - $1,000' THEN 20
+                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $500 - <$1,000' THEN 18
+                WHEN EVENT_NAME = 'Assessment Posted - ORG - Tax Amount $10,000 - <$25,000' THEN 19
+                WHEN EVENT_NAME = 'Assessment Posted - IND - Tax Amount $500 - <$1,000' THEN 20
 	        END AS ASSESSMENT_IND_ORG_AMNT               
         FROM "db::app.CustomerEvents" A
         INNER JOIN
