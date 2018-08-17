@@ -84,7 +84,7 @@ modules:
     requires:
      - name: OSR_LTI-Container
      - name: OSR_LTI-uaa
-    # - name: OSR_LTI-JobScheduler
+     - name: OSR_LTI-JobScheduler
     properties:
       SAP_JWT_TRUST_ACL: '[{"clientid":"*", "identityzone":"*"}]'
 resources:
