@@ -238,7 +238,7 @@ sap.ui.define([
 					["", function(d) {
 						return d.getHours > 0 || d.getMinutes() > 0;
 					}],
-					["%b %-d", function(d) {
+					["%b-%-d-%y", function(d) {
 						var ticks = xScale.ticks();
 						return ticks[0].getDate() != ticks[2].getDate();
 					}],
@@ -265,6 +265,7 @@ sap.ui.define([
 							} else {
 								history -= 1;
 							}
+							
 						}
 
 						return yScale(sum / (history + 1));
@@ -405,6 +406,8 @@ sap.ui.define([
 					// this.addReferenceLine(referenceLines, x1, x2, yScale(actionRequiredValue), "Action Required");
 				}
 
+				var xDomainMin = xScale.domain()[0];
+				var xDomainMax = xScale.domain()[1];
 				var zoomed = false;
 				var zoomBrush = d3.svg.brush()
 					.x(xScale);
@@ -955,6 +958,52 @@ sap.ui.define([
 						.attr("transform", function(d) {
 							return "translate(" + xScale(d.date) + "," + yScale(d.value) + ")";
 						});
+					
+					var zoomPan = d3.behavior.zoom()
+						.scaleExtent([1,1])
+						.x(xScale)
+						.on("zoom", function(){
+							//limit panning within domain
+							 var t = d3.event.translate,
+						        ext = [xScale(xDomainMin), width - xScale(xDomainMax)],
+						        dom = xScale.domain(),
+						        dt = dom[1] - dom[0];
+						        if(dom[0] < xDomainMin){ 
+						        	dom[0] = xDomainMin; 
+						        	dom[1] = +dom[0] + dt;
+						        	
+						        }
+						        if(dom[1] > xDomainMax){
+						        	dom[1] = xDomainMax;
+						        	dom[0] = +dom[1] - dt;
+						        } 
+						        xScale.domain(dom);
+						        zoomPan.translate([
+						          t[0] - Math.max(0, ext[0]),
+						          t[1] - Math.max(0, ext[1])
+						        ]);
+							
+							linePaths.forEach(function(path) {
+								path.transition().attr("d", line);
+							});
+							dataPoints.transition().attr("cx", function(d) {
+								return xScale(d.date);
+							})
+							.attr("cy", function(d) {
+								return yScale(d.value);
+							});
+	
+							pointLabels.transition()
+								.attr("transform", function(d) {
+									return "translate(" + xScale(d.date) + "," + yScale(d.value) + ")";
+							});
+							
+							xAxisGroup.transition().call(xAxis)
+								.selectAll(".axis text")
+								.style("font-size", "11px");
+							});
+						
+						that.svg.call(zoomPan);
 				};
 
 				zoomBrush.on("brushend", function() {
