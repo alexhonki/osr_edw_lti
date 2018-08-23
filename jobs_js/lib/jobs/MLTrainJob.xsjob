@@ -2,8 +2,8 @@
 	"description": "Machine Learning Train Data",
 	"action": "procedures.ml::PR_RUN_TRAIN_PREDICT_WRAPPER",
 	"schedules": [{
-		"description": "Perform Machine Learning Training and Prediction: * 1 7 * 4 30 0", 
-		"xscron": "* 1 7 * 4 30 0",
+		"description": "Perform Machine Learning Training and Prediction: * 1 7 * 5 25 0",
+		"xscron": "* 1 7 * 5 25 0",
 		"parameter": { "REACTION_TYPE": "DEBTOR_INITIAL_ASSESSMENT", "PREVIOUS_WINDOWS": 1 }
 	}]
 }

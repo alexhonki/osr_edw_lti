@@ -2,8 +2,8 @@
 	"description": "Machine Learning Predict",
 	"action": "procedures.ml::PR_RUN_PREDICT_WRAPPER",
 	"schedules": [{
-		"description": "Perform Machine Learning Prediction with schedule frequency: * * * * 4 0 0", 
-		"xscron": "* * * * 4 0 0",
+		"description": "Perform Machine Learning Prediction with schedule frequency: * * * * 5 10 0",
+		"xscron": "* * * * 5 10 0",
 		"parameter": { "REACTION_TYPE": "DEBTOR_INITIAL_ASSESSMENT", "PREVIOUS_WINDOWS": 1 }
 	}]
 }

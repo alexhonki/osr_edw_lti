@@ -3,8 +3,8 @@
 	"action": "procedures.events.predefined::PR_EXTRACT_TOTAL_LAND_VALUE_EVENT",
 	
 	"schedules": [{
-		"description": "Total land Value Event with schedule frequency: Delta Load every * * * * 3 31 0",
-		"xscron": "* * * * 3 31 0",
+		"description": "Total land Value Event with schedule frequency: Delta Load every * * * * 5 6 0",
+		"xscron": "* * * * 5 6 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

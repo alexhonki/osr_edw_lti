@@ -3,8 +3,8 @@
 	"action": "procedures.events.predefined::PR_EXTRACT_PROMISED_PAYMENT_EVENT",
 	
 	"schedules": [{
-		"description": "Promised Payment Event with schedule frequency: Delta Load every * * * * 3 29 0",
-		"xscron": "* * * * 3 29 0",
+		"description": "Promised Payment Event with schedule frequency: Delta Load every * * * * 5 4 0",
+		"xscron": "* * * * 5 4 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

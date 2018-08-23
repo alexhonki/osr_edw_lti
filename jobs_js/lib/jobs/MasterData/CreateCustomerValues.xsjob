@@ -2,8 +2,8 @@
 	"description": "Create Customer and Customer Values Data",
 	"action": "procedures.masterData::PR_EXTRACT_LT_CUSTOMER_VALUES",
 	"schedules": [{
-		"description": "Create Customer and Customer Values Data with schedule frequency: * * * * 3 0 0", 
-		"xscron": "* * * * 3 0 0",
+		"description": "Create Customer and Customer Values Data with schedule frequency: * * * * 4 30 0", 
+		"xscron": "* * * * 4 30 0",
 		"parameter": {} 
 	}]
 }

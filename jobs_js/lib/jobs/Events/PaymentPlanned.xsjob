@@ -2,8 +2,8 @@
 	"description": "Extract Payment Plan Created Event Data",
 	"action": "procedures.events.erp::PR_EXTRACT_PAYMENT_PLAN_CREATED_EVENT",
 	"schedules": [{
-		"description": "Payment Plan Created Event with schedule frequency: Delta Load every * * * * 3 19 0",
-		"xscron": "* * * * 3 19 0",
+		"description": "Payment Plan Created Event with schedule frequency: Delta Load every * * * * 4 54 0",
+		"xscron": "* * * * 4 54 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 

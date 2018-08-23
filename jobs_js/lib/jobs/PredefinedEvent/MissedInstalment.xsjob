@@ -3,8 +3,8 @@
 	"action": "procedures.events.predefined::PR_EXTRACT_MISSED_INSTALMENT_EVENT",
 	
 	"schedules": [{
-		"description": "Missed Instalment Event with schedule frequency: Delta Load every * * * * 3 28 0",
-		"xscron": "* * * * 3 28 0",
+		"description": "Missed Instalment Event with schedule frequency: Delta Load every * * * * 5 3 0",
+		"xscron": "* * * * 5 3 0",
 		"parameter": {
 			"IV_MODE": 1
 		} 
