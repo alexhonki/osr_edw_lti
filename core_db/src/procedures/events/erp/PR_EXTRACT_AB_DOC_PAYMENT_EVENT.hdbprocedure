@@ -96,7 +96,8 @@ BEGIN
 												AND BLART = 'AB'
 												AND HVORG = '4000'
 												AND (TVORG IN ('0150', '0190'))
-												AND (AUGRD IN ('01', '08', '15', ''))) A8 
+												AND (AUGRD IN ('01', '08', '15', ''))
+												AND AUGST='9') A8 
 									left join	(SELECT AUGBL, MAX(FAEDN) AS PAYMENT_DATE 
 													FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" A6 
 													WHERE AUGBL IN (SELECT AUGBL
