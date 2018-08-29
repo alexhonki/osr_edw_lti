@@ -65,7 +65,7 @@ BEGIN
 		LEFT(CHDAT,6)  as INIT_TS,
 		NULL  as END_TS
 		from(
-			SELECT DFKKPP.GPART,DFKKPP.CHDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" DFKKPP
+			SELECT DISTINCT DFKKPP.GPART,DFKKPP.CHDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" DFKKPP
 					LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" DFKKPPD
 			ON DFKKPP.PPKEY=DFKKPPD.PPKEY
 			LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" DFKKPPP 
@@ -94,7 +94,7 @@ BEGIN
 		LEFT(CHDAT,6)  as INIT_TS,
 		NULL  as END_TS
 		from(
-				SELECT DFKKPP.GPART,DFKKPP.CHDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" DFKKPP
+				SELECT DISTINCT DFKKPP.GPART,DFKKPP.CHDAT FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" DFKKPP
 				LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" DFKKPPD
 			ON DFKKPP.PPKEY=DFKKPPD.PPKEY
 			LEFT JOIN "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" DFKKPPP 
