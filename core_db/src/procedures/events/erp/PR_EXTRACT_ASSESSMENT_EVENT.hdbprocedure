@@ -42,6 +42,8 @@ BEGIN
 	CALL "procedures.events.erp.assessment::PR_DELETE_ALL_ASSESSMENT_EVENT_DATA"(:IV_MODE);
 	CALL "procedures.events.erp.assessment::PR_DELETE_ASSESSMENT_EVENT_DATA"(LT_CUST_ID);
 	
+	LT_CUST_ID_DISTINCT = SELECT DISTINCT GPART FROM :LT_CUST_ID;
+	
 	INSERT INTO "db::app.CustomerEvents" 
 	/*============================================
 	  For Organization
@@ -79,7 +81,7 @@ BEGIN
 			LEFT(a.BUDAT,6)  as INIT_TS,
 			NULL  as END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" as a
-		INNER JOIN :LT_CUST_ID as delt ON a.GPART = delt.GPART and a.BUDAT = delt.BUDAT
+		INNER JOIN :LT_CUST_ID_DISTINCT as delt ON a.GPART = delt.GPART
 		INNER JOIN (
 			SELECT DISTINCT ZZ_PARTNER, INDIVORG FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV" ) as b ON a.GPART=b.ZZ_PARTNER
 		INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART
@@ -123,7 +125,7 @@ BEGIN
 			LEFT(a.BUDAT,6)  as INIT_TS,
 			NULL  as END_TS
 		FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" as a
-		INNER JOIN :LT_CUST_ID as delt ON a.GPART = delt.GPART and a.BUDAT = delt.BUDAT
+		INNER JOIN :LT_CUST_ID_DISTINCT as delt ON a.GPART = delt.GPART
 		INNER JOIN (SELECT DISTINCT ZZ_PARTNER, INDIVORG FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTCNRESV") as b ON a.GPART=b.ZZ_PARTNER
 		INNER JOIN "db::app.Customer" as SAP on SAP.EXT_ID=a.GPART
 		WHERE HVORG='4000' and TVORG='0150'  AND KOFIZ='LT' and BETRH>0 AND AUGRD IN ('01','08','15', '') and b.INDIVORG='IND'
