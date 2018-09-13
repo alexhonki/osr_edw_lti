@@ -1,0 +1,69 @@
+PROCEDURE "procedures.utils::PR_PAYMENT_DAYS_AFTER_DUE_DATE" ( )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+   
+   
+   
+   /* 
+
+[DESCRIPTION]
+
+- Debtor List with last payment date
+
+*/
+
+LT_DUE_DATES_PER_OPBEL =	SELECT  TAXPAYER.CUST_ID AS "CUST_ID", DEBTOR_DATA.GPART, BETRH , DEBTOR_DATA.FAEDN, DEBTOR_DATA.OPBEL, AUGDT, AUGBT, PERSL,
+								       B.FAEDN AS INV_DUEDATE, 
+								     			B3.DueDate as EPODueDate, CASE WHEN B4.REISSUE_DUE_DATE = '00000000' THEN NULL ELSE B4.REISSUE_DUE_DATE END AS REISSUE_DUE_DATE
+									FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" DEBTOR_DATA 
+									   INNER JOIN
+												"osr.edw.staging.td.rms.proxy.synonym::CV_DFKKINVDOC_H" B 
+												ON  DEBTOR_DATA.XBLNR =  CAST(LPAD(B.INVDOCNO,16,0) AS VARCHAR)
+													LEFT JOIN
+												(SELECT  B2.OPBEL, DueDate  FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPP" A2 
+														INNER JOIN 
+												(SELECT  PPKEY, OPBEL, DueDate FROM (SELECT DISTINCT A1.PPKEY, opbel, DueDate FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPP" A1
+														INNER JOIN 	
+												(SELECT PPKEY,MAX(PRDAT) as DueDate FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKPPD" GROUP BY PPKEY) B1 on A1.PPKEY = B1.PPKEY )) B2
+												   ON A2.PPKEY = B2.PPKEY WHERE PPCAT = 'Z7' AND PPSTA in ('1','')) B3 ON DEBTOR_DATA.OPBEL = B3.OPBEL
+												   LEFT JOIN
+												"osr.edw.staging.td.rms.proxy.synonym::CV_LTAXASFB" B4
+													ON B4.ASSESS_FBNUM = DEBTOR_DATA.FBNUM
+									INNER JOIN
+							    "db::app.Customer" TAXPAYER ON TAXPAYER.EXT_ID = DEBTOR_DATA.GPART
+									WHERE  KOFIZ='LT' AND HVORG = '4000' AND TVORG='0150' AND AUGRD IN ('01','08','15', '');
+
+TMP_TABLE = SELECT * FROM
+	(
+		SELECT 	CUST_ID, 
+			-- :LV_VALUE_ID, 
+			(DUEAMOUNT - CLEAREDAMOUNT) AS "VALUE",
+			-- TO_INT(CONCAT(YEAR(DUE_DATE),LPAD(MONTH(DUE_DATE),2,0))) AS "TIME_SEGMENT",
+			TO_TIMESTAMP(DUE_DATE) AS "INIT_DATE",
+			"MAX_CLEARING_DATE",
+			-- TO_INT(CONCAT(YEAR(DUE_DATE),LPAD(MONTH(DUE_DATE),2,0))) AS "INIT_TIME_SEGMENT",
+			days_between(DUE_DATE,MAX_CLEARING_DATE) as DAYS
+			
+	 FROM ( 
+	SELECT CUST_ID, DUEAMOUNT, CLEAREDAMOUNT, DUE_DATE, "MAX_CLEARING_DATE"
+						FROM(
+								SELECT CUST_ID, MAX("FAEDN") AS "MAX_DUE_DATE", MAX("AUGDT") AS "MAX_CLEARING_DATE", SUM("BETRH") AS "DUEAMOUNT", SUM("AUGBT") AS "CLEAREDAMOUNT", 
+									MAX(COALESCE(EPODueDate,REISSUE_DUE_DATE,INV_DUEDATE)) as DUE_DATE  FROM
+									:LT_DUE_DATES_PER_OPBEL
+									GROUP BY CUST_ID, OPBEL
+							))
+							where "MAX_CLEARING_DATE" > "DUE_DATE"
+		
+	);
+	
+SELECT TOP 1 * FROM :TMP_TABLE;	
+   
+   
+END
