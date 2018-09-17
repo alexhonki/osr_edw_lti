@@ -56,9 +56,6 @@
 				},  {
 					"namespace": "",
 					"id": "sap.fiori.cri.trendAnalysis"
-				},{
-					"namespace": "",
-					"id": "app1"
 				}]
 			}
 		}
@@ -149,18 +146,6 @@
 					"target": {
 						"semanticObject": "TrendAnalysis",
 						"action": "display",
-						"parameters": [
-
-						]
-					}
-				}, {
-					"id": "app1",
-					"title": "{{app1_title}}",
-					"subTitle": "{{app1_app_sub_title}}",
-					"icon": "sap-icon://world",
-					"target": {
-						"semanticObject": "app1",
-						"action": "show",
 						"parameters": [
 
 						]
