@@ -1,10 +1,5 @@
 {
 	"routes": [{
-		"source": "^/app1/sap/demo/(.*)",
-		"target": "$1",
-		"localDir": "app1/sap/demo/",
-		"cacheControl": "public, max-age=31536000,must-revalidate"
-	},{
 		"source": "^/sap/fiori/cri/(.*)",
 		"target": "$1",
 		"localDir": "sap/fiori/cri",
