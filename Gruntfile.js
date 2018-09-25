@@ -8,12 +8,12 @@ module.exports = function(grunt) {
     var createFile = function (lang) {
         return {
             expand: true,
-            src: ['html/resources/webapp/i18n/i18n.properties'],
+            src: ['Site/sap/fiori/cri/i18n/i18n.properties'],
             rename: function () {
-                return 'html/resources/webapp/i18n/i18n_' + lang + '.properties';
+                return 'Site/sap/fiori/cri/i18n/i18n_' + lang + '.properties';
             },
             filter: function (filepath) {
-                return !(grunt.file.exists('html/resources/webapp/i18n/i18n_' + lang + '.properties'));
+                return !(grunt.file.exists('Site/sap/fiori/cri/i18n/i18n_' + lang + '.properties'));
             }
         };
     };
@@ -38,15 +38,15 @@ module.exports = function(grunt) {
             ui5Files: {
                 files: [
                     //i18n
-                    { expand: true, cwd: 'html/resources/webapp/', src: 'i18n/*', dest: 'html/resources/webapp/' },
+                    { expand: true, cwd: 'Site/sap/fiori/cri/', src: 'i18n/*', dest: 'Site/sap/fiori/cri/' },
                     // Mainfest files for UI5
-                    { expand: true, cwd: 'html/resources/webapp/', src: '**/manifest.json', dest: 'html/resources/webapp/' },
+                    { expand: true, cwd: 'Site/sap/fiori/cri/', src: '**/manifest.json', dest: 'Site/sap/fiori/cri/' },
                     // CSS Files
-                    { expand: true, cwd: 'html/resources/webapp/', src: 'css/*.css', dest: 'html/resources/webapp/' },
+                    { expand: true, cwd: 'Site/sap/fiori/cri/', src: 'css/*.css', dest: 'Site/sap/fiori/cri/' },
                     // HTML5 App Descriptor for HCP
                     //{ expand: true, flatten: true, cwd: 'src', src: 'neo-app.json', dest: 'dist/' },
                     // TrendCardConfig
-                    { expand: true, flatten: true, cwd: 'html/resources/webapp/trendAnalysis', src: 'trendCardConfig.json', dest: 'html/resources/webapp/trendAnalysis' }
+                    { expand: true, flatten: true, cwd: 'Site/sap/fiori/cri/trendAnalysis', src: 'trendCardConfig.json', dest: 'Site/sap/fiori/cri/trendAnalysis' }
                 ]
             },
             create_i18n: {
@@ -62,60 +62,60 @@ module.exports = function(grunt) {
             component: {
                 options: {
                     resources: {
-                        cwd: 'html/resources/webapp/',
-                        prefix: 'sap/fiori/cri'
+                        cwd: 'Site/sap/fiori/cri/',
+                        prefix: ''
                     },
-                    dest: 'html/resources/webapp/'
+                    dest: 'Site/sap/fiori/cri/'
                 },
                 components: {
-                    'sap/fiori/cri/admin': {
+                    'admin': {
                         src: [
-                            'sap/fiori/cri/**'
+                            '**'
                         ]
                     },
-                    'sap/fiori/cri/customerDetails': {
+                    'customerDetails': {
                         src: [
-                            'sap/fiori/cri/**'
+                            '**'
                         ]
                     },
-                    'sap/fiori/cri/customerPrediction': {
+                    'customerPrediction': {
                         src: [
-                            'sap/fiori/cri/**'
+                            '**'
                         ]
                     },
-                    'sap/fiori/cri/customersAtRisk': {
+                    'customersAtRisk': {
                         src: [
-                            'sap/fiori/cri/**'
+                            '**'
                         ]
                     },
-                    'sap/fiori/cri/customerSearch': {
+                    'customerSearch': {
                         src: [
-                            'sap/fiori/cri/**'
+                            '**'
                         ]
                     },
-                    'sap/fiori/cri/eventOverview': {
+                    'eventOverview': {
                         src: [
-                            'sap/fiori/cri/**'
+                            '**'
                         ]
                     },
-                    'sap/fiori/cri/gettingStarted': {
+                    'gettingStarted': {
                         src: [
-                            'sap/fiori/cri/**'
+                            '**'
                         ]
                     },
-                    'sap/fiori/cri/search': {
+                    'search': {
                         src: [
-                            'sap/fiori/cri/**'
+                            '**'
                         ]
                     },
-                    'sap/fiori/cri/superAdmin': {
+                    'superAdmin': {
                         src: [
-                            'sap/fiori/cri/**'
+                            '**'
                         ]
                     },
-                    'sap/fiori/cri/trendAnalysis': {
+                    'trendAnalysis': {
                         src: [
-                            'sap/fiori/cri/**'
+                            '**'
                         ]
                     }
                 }
