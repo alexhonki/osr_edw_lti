@@ -46,7 +46,7 @@ modules:
   #    PRESERVE_FRAGMENT: true
       
   - name: OSR_LTI-Site
-    type: siteentry
+    type: nodejs
     path: Site
     parameters:
        memory: 64M
