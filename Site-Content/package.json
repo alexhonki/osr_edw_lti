@@ -1,0 +1,13 @@
+{
+  "engines": {
+    "node": "~4.x || ~6.x"
+  },
+  "name": "Site-content",
+  "version": "1.0.0",
+  "dependencies": {
+   "@sap/site-content-deployer": "1.9.7"
+  },
+  "scripts": {
+    "start": "node --harmony node_modules/@sap/site-content-deployer/deploy.js"
+  }
+}
