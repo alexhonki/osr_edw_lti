@@ -135,6 +135,12 @@
       "object": "osr.edw.staging.td.rms.proxy::CV_DFKKOP_HIS",
        "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
 	 }
+    },
+    "osr.edw.staging.td.rms.proxy.synonym::CV_LTC_RES" : {
+  	"target": {
+      "object": "osr.edw.staging.td.rms.proxy::CV_LTC_RES",
+       "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+	 }
     }
   
 }
