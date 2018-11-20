@@ -1,0 +1,11 @@
+{
+	"description": "Extract Garnishee Event Data",
+	"action": "procedures.events.erp::PR_EXTRACT_GARNISHEE_EVENT",
+	"schedules": [{
+		"description": "Garnishee Event with schedule frequency: Delta Load every * * * * 4 37 0", 
+		"xscron": "* * * * 4 37 0",
+		"parameter": {
+			"IV_MODE": 1
+		} 
+	}]
+}

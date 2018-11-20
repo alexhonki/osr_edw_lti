@@ -1,4 +1,5 @@
-PROCEDURE "procedures.events.erp::PR_EXTRACT_GARNISHEE_EVENT"( )
+PROCEDURE "procedures.events.erp::PR_EXTRACT_GARNISHEE_EVENT"
+( 	IN IV_MODE INTEGER DEFAULT 0 )
    LANGUAGE SQLSCRIPT
    SQL SECURITY INVOKER
    --DEFAULT SCHEMA <default_schema_name>
@@ -25,12 +26,12 @@ BEGIN
 		lv_test = 0;
 	END IF;
 	
-	LT_CUST_EDITED = SELECT GPART 
-					 FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" 
-					 INNER JOIN "db::app.Customer" on EXT_ID = GPART 
+	LT_CUST_EDITED = SELECT PARTNER AS GPART
+					 FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTC_RES" 
+					 INNER JOIN "db::app.Customer" on EXT_ID = PARTNER 
 					 WHERE "Z_RUN_SEQ_ID">:LV_TEST;
 					 
-	LT_CUST_ID_EDITED = SELECT TO_INT(GPART) AS "CUST_ID" FROM :LT_CUST_EDITED;
+	LT_CUST_ID_EDITED = SELECT DISTINCT TO_INT(GPART) AS "CUST_ID" FROM :LT_CUST_EDITED;
 	--Delete the events from Customer Events table
     CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 		IV_EVENT_NAME=>:LV_GARNISHEE_NOTICE,
@@ -38,22 +39,23 @@ BEGIN
     );
     
     INSERT INTO "db::app.CustomerEvents"
-				SELECT   
+				SELECT DISTINCT
 					SAP.CUST_ID 			 AS CUST_ID, 
 					NULL				 	 AS EVENT_ID,
 					:LV_EVENT_GRP			 AS EVENT_GROUP,
-					:LV_PENALTY_TAX			 AS EVENT_NAME,
+					:LV_GARNISHEE_NOTICE			 AS EVENT_NAME,
 					CAST(ISSUE_DATE AS DATE) AS INIT_DATE,
 					NULL AS END_DATE,1		 AS EVENT_VALUE,
-					:LV_PENALTY_TAX 		 AS DESCRIPTION,
+					:LV_GARNISHEE_NOTICE 		 AS DESCRIPTION,
 					LEFT(ISSUE_DATE,6)		 AS INIT_TS,
 					NULL					 AS END_TS
 				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_LTC_RES" AS a
 				INNER JOIN "db::app.Customer" AS SAP ON SAP.EXT_ID=a.PARTNER
+				INNER JOIN :LT_CUST_ID_EDITED as delt ON SAP.CUST_ID = delt.CUST_ID
 				WHERE TYPE = '02';
 				
 					
-	SELECT MAX(Z_RUN_SEQ_ID) INTO LV_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP";
+	SELECT MAX(Z_RUN_SEQ_ID) INTO LV_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_LTC_RES";
 
 	-- Generate Event IDs for newly created Events
 	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	

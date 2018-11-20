@@ -28,7 +28,6 @@ BEGIN
 	IF :lv_test IS NULL THEN
 		lv_test = 0;
 	END IF;
-	--LV_MAX_SEQ_ID = SELECT OUT_MAX_SEQ_ID from "functions::TF_GET_MAX_SEQID_EVENT"(:LV_CHRG_REG_DUNN);
 	LT_CUST_EDITED = SELECT GPART 
 					 FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" 
 					 INNER JOIN "db::app.Customer" on EXT_ID = GPART 
@@ -36,7 +35,6 @@ BEGIN
 					 
 	LT_CUST_ID_EDITED = SELECT TO_INT(GPART) AS "CUST_ID" FROM :LT_CUST_EDITED;
 	--Delete the events from Customer Events table
-	--delete from "db::app.CustomerEvents" where CUST_ID in (LT_CUST_ID_EDITED) and EVENT_ID = (SELECT EVENT_ID FROM "functions::TF_GET_EVENT_DETAIL_FOR_EVENT_NAME"(:LV_CHRG_REG_DUNN));
     CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
 		IV_EVENT_NAME=>:LV_PENALTY_TAX,
 		IT_CUST=>:LT_CUST_ID_EDITED
@@ -55,6 +53,7 @@ BEGIN
 					NULL					 AS END_TS
 				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" AS a
 				INNER JOIN "db::app.Customer" AS SAP ON SAP.EXT_ID=a.GPART
+				INNER JOIN :LT_CUST_ID_EDITED as delt ON SAP.CUST_ID = delt.CUST_ID
 				WHERE HVORG='0041' AND TVORG='0000'AND KOFIZ='LT' GROUP BY OPBEL , SAP.CUST_ID;
 				
 					
