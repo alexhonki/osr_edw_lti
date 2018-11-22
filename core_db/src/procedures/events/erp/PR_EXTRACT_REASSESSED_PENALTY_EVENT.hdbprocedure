@@ -1,0 +1,70 @@
+PROCEDURE "procedures.events.erp::PR_EXTRACT_REASSESSED_UTI_EVENT"
+   (IN IV_MODE INTEGER DEFAULT 0)
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/ 
+   
+   	DECLARE LV_REASSESSED_UTI CONSTANT NVARCHAR(500) := 'Reassessed UTI';
+    DECLARE LV_EVENT_GRP CONSTANT NVARCHAR(500) := 'Reassessment';
+    DECLARE LV_TEST INTEGER;
+    DECLARE LV_MAX_SEQ_ID INTEGER;
+    DECLARE LV_MAX_EVENT_ID INTEGER;
+    
+   	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+		SELECT ::SQL_ERROR_CODE, ::SQL_ERROR_MESSAGE FROM "synonyms::dummy";
+		
+	CALL "procedures.utils::PR_DELETE_ALL_DATA_FOR_EVENT"(
+				IV_MODE=>:IV_MODE,
+				IV_EVENT_NAME=>:LV_REASSESSED_UTI
+		
+	);
+	SELECT OUT_MAX_SEQ_ID INTO lv_test FROM "functions::TF_GET_MAX_SEQID_EVENT"(:LV_REASSESSED_UTI);
+	IF :lv_test IS NULL THEN
+		lv_test = 0;
+	END IF;
+	LT_CUST_EDITED = SELECT GPART 
+					 FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" 
+					 INNER JOIN "db::app.Customer" on EXT_ID = GPART 
+					 WHERE "Z_RUN_SEQ_ID">:LV_TEST;
+					 
+	LT_CUST_ID_EDITED = SELECT TO_INT(GPART) AS "CUST_ID" FROM :LT_CUST_EDITED;
+	--Delete the events from Customer Events table
+    CALL "procedures.utils::PR_DELETE_EVENT_DATA_FOR_CUST"(
+		IV_EVENT_NAME=>:LV_REASSESSED_UTI,
+		IT_CUST=>:LT_CUST_ID_EDITED
+    );
+    
+    INSERT INTO "db::app.CustomerEvents"
+				SELECT   
+					SAP.CUST_ID 			 AS CUST_ID, 
+					NULL				 	 AS EVENT_ID,
+					:LV_EVENT_GRP			 AS EVENT_GROUP,
+					:LV_REASSESSED_UTI		 AS EVENT_NAME,
+					CAST(MAX(AUGDT) AS DATE) AS INIT_DATE,
+					NULL AS END_DATE,1		 AS EVENT_VALUE,
+					:LV_REASSESSED_UTI 		 AS DESCRIPTION,
+					LEFT(MAX(AUGDT),6)		 AS INIT_TS,
+					NULL					 AS END_TS
+				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" AS a
+				INNER JOIN "db::app.Customer" AS SAP ON SAP.EXT_ID=a.GPART
+				INNER JOIN :LT_CUST_ID_EDITED as delt ON SAP.CUST_ID = delt.CUST_ID
+				WHERE HVORG='0040' AND TVORG='0000'AND KOFIZ='LT' AND AUGRD IN ('04','05') GROUP BY FBNUM , AUGDT, SAP.CUST_ID;
+				
+					
+	SELECT MAX(Z_RUN_SEQ_ID) INTO LV_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP";
+
+	-- Generate Event IDs for newly created Events
+	CALL "procedures.utils::PR_UTIL_POPULATE_EVENT_ID"(I_EVENT_SOURCE => 'ERP', I_TYPE => 3);	
+   
+   	UPDATE "db::adm.config.event.name" 
+		SET "ICON" = NULL, "PRIORITY" = 1000,"LATEST_EXTRACTED_SEQUENCE" = LV_MAX_SEQ_ID, "LAST_EXTRACTED_DATE" = CURRENT_UTCTIMESTAMP
+		WHERE  UPPER("EVENT_NAME") = UPPER(LV_REASSESSED_UTI)
+		AND UPPER("CATEGORY_NAME") = UPPER(LV_EVENT_GRP);
+    
+END
