@@ -47,7 +47,7 @@ BEGIN
 					NULL						AS EVENT_ID,
 					:LV_EVENT_GRP				AS EVENT_GROUP,
 					:LV_REVERSAL_LPI			AS EVENT_NAME,  
-					AUGDT						AS INIT_DATE,  --Posting date?
+					AUGDT						AS INIT_DATE,
 					NULL AS END_DATE,1			AS EVENT_VALUE,
 					:LV_REVERSAL_LPI			AS DESCRIPTION,
 					AUGDT						AS INIT_TS,
@@ -55,7 +55,7 @@ BEGIN
 				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" AS a
 				INNER JOIN "db::app.Customer" AS SAP ON SAP.EXT_ID=a.GPART
 				INNER JOIN :LT_CUST_ID_EDITED as delt ON SAP.CUST_ID = delt.CUST_ID
-				WHERE HVORG='0040' AND TVORG='0020'AND KOFIZ='LT' AND AUGRD = 04 GROUP BY FBNUM , AUGDT, SAP.CUST_ID; -- clearing date?
+				WHERE HVORG='0040' AND TVORG='0020'AND KOFIZ='LT' AND AUGRD = 05 GROUP BY FBNUM , AUGDT, SAP.CUST_ID;
 				
 	SELECT MAX(Z_RUN_SEQ_ID) INTO LV_MAX_SEQ_ID from "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP";
 	
