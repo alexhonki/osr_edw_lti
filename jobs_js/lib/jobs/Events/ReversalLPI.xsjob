@@ -1,0 +1,11 @@
+{
+	"description": "Extract LPI Reversal Event Data",
+	"action": "procedures.events.erp::PR_EXTRACT_REVERSAL_LPI_EVENT",
+	"schedules": [{
+		"description": "LPI Reversal Event with schedule frequency: Delta Load every * * * * 4 57 0", 
+		"xscron": "* * * * 4 57 0",
+		"parameter": {
+			"IV_MODE": 1
+		} 
+	}]
+}

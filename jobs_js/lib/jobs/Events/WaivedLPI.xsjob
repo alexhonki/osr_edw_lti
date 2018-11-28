@@ -1,0 +1,11 @@
+{
+	"description": "Extract Waived LPI Event Data",
+	"action": "procedures.events.erp::PR_EXTRACT_WAIVED_LPI_EVENT",
+	"schedules": [{
+		"description": "Waived LPI Event with schedule frequency: Delta Load every * * * * 4 56 0", 
+		"xscron": "* * * * 4 56 0",
+		"parameter": {
+			"IV_MODE": 1
+		} 
+	}]
+}
