@@ -41,6 +41,19 @@ BEGIN
 		IT_CUST=>:LT_CUST_ID_EDITED
 	);
 	
+	 /*************************************
+  	
+  	[TABLE] - DFKKOP - Item table for Contract Account Document
+	[FIEDLS SELECTED] - Get the details of the event that satisfies the [CONDITION]
+		AUGDT - CLearing Date
+	[CONDITION]	- 
+		KOFIZ - Account Determination ID - ('LT' for LandTax)
+		HVORG - Main Transaction for Line Item ('0040' )
+		TVORGV- Sub Transaction ( '0020')
+		AUGRD - Clearing Reason(05 - Reversal)
+		
+   *************************************/
+	
 	INSERT INTO "db::app.CustomerEvents"
 				SELECT   
 					SAP.CUST_ID					AS CUST_ID, 
