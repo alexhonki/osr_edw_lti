@@ -39,6 +39,20 @@ BEGIN
 		IV_EVENT_NAME=>:LV_REASSESSED_PENALTY,
 		IT_CUST=>:LT_CUST_ID_EDITED
     );
+
+	/*************************************
+  	
+  	[TABLE] - DFKKOP - Item table for Contract Account Document
+	[FIEDLS SELECTED] - Get the details of the event that satisfies the [CONDITION]
+		MAX(AUGDT) - Max of the Clearing Date
+	
+	[CONDITION]	- 
+		KOFIZ - Account Determination ID - ('LT' for LandTax)
+		HVORG - Main Transaction for Line Item ('0041' )
+		TVORG- Sub Transaction ( '0000')
+		AUGRD - Clearing Reason(04 - Write-Off or 05 )
+		
+   *************************************/  
     
     INSERT INTO "db::app.CustomerEvents"
 				SELECT   
