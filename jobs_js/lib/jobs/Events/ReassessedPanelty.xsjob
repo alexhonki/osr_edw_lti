@@ -1,0 +1,11 @@
+{
+	"description": "Extract Reassessed Penalty Event Data",
+	"action": "procedures.events.erp::PR_EXTRACT_REASSESSED_PENALTY_EVENT",
+	"schedules": [{
+		"description": "Reassessed Penalty Event with schedule frequency: Delta Load every * * * * 4 41 0", 
+		"xscron": "* * * * 4 41 0",
+		"parameter": {
+			"IV_MODE": 1
+		} 
+	}]
+}

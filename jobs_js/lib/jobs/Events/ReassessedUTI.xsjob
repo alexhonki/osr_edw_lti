@@ -1,0 +1,11 @@
+{
+	"description": "Extract Reassessed UTI Event Data",
+	"action": "procedures.events.erp::PR_EXTRACT_REASSESSED_UTI_EVENT",
+	"schedules": [{
+		"description": "Reassessed UTI Event with schedule frequency: Delta Load every * * * * 4 39 0", 
+		"xscron": "* * * * 4 39 0",
+		"parameter": {
+			"IV_MODE": 1
+		} 
+	}]
+}
