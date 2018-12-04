@@ -56,13 +56,14 @@ BEGIN
     
     INSERT INTO "db::app.CustomerEvents"
 				SELECT   
-					SAP.CUST_ID 			 AS CUST_ID, 
-					NULL				 	 AS EVENT_ID,
-					:LV_EVENT_GRP			 AS EVENT_GROUP,
-					:LV_REASSESSED_PENALTY		 AS EVENT_NAME,
-					CAST(MAX(AUGDT) AS DATE) AS INIT_DATE,
-					NULL AS END_DATE,1		 AS EVENT_VALUE,
-					:LV_REASSESSED_PENALTY 		 AS DESCRIPTION,
+					SAP.CUST_ID 										AS CUST_ID, 
+					NULL				 								AS EVENT_ID,
+					:LV_EVENT_GRP										AS EVENT_GROUP,
+					:LV_REASSESSED_PENALTY								AS EVENT_NAME,
+					CAST(MAX(AUGDT) AS DATE)							AS INIT_DATE,
+					NULL												AS END_DATE,
+					1													AS EVENT_VALUE,
+					CONCAT(CONCAT(:LV_REASSESSED_PENALTY,' - '), FBNUM)	AS DESCRIPTION,
 					LEFT(MAX(AUGDT),6)		 AS INIT_TS,
 					NULL					 AS END_TS
 				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" AS a
