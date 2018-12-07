@@ -64,7 +64,7 @@ BEGIN
 					NULL											AS END_DATE,
 					1												AS EVENT_VALUE,
 					CONCAT(CONCAT(:LV_REVERSAL_LPI,' - '), FBNUM)	AS DESCRIPTION,
-					AUGDT											AS INIT_TS,
+					LEFT(AUGDT,6)									AS INIT_TS,
 					NULL											AS END_TS
 				FROM "osr.edw.staging.td.rms.proxy.synonym::CV_DFKKOP" AS a
 				INNER JOIN "db::app.Customer" AS SAP ON SAP.EXT_ID=a.GPART
