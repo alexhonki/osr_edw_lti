@@ -37,7 +37,17 @@ BEGIN
 		IV_EVENT_NAME=>:LV_GARNISHEE_NOTICE,
 		IT_CUST=>:LT_CUST_ID_EDITED
     );
-    
+    /*************************************
+  	
+  	[TABLE] - LTC_RES - OSR Land Tax: Clearance Results Table
+	[FIEDLS SELECTED] - Get the details of the event that satisfies the [CONDITION]
+		ISSUE_DATE - ISSUED DATE
+	
+	[CONDITION]	- 
+		TYPE -  ('02' for Garnishee Notice)
+
+		
+   *************************************/  
     INSERT INTO "db::app.CustomerEvents"
 				SELECT DISTINCT
 					SAP.CUST_ID 			 AS CUST_ID, 
