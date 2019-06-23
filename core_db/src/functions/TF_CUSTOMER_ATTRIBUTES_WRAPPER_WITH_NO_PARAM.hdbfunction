@@ -1,0 +1,28 @@
+FUNCTION "functions::TF_CUSTOMER_ATTRIBUTES_WRAPPER_WITH_NO_PARAM"( )
+      RETURNS table (
+		CUST_ID 				BIGINT,			-- Customer ID (Internal)
+		ATTRIBUTE_ID			INTEGER,
+		ATTRIBUTE_VALUE			NVARCHAR,
+		INIT_DATE				SECONDDATE,
+		END_DATE				SECONDDATE,
+		INIT_TIME_SEGMENT		INT,
+		END_TIME_SEGMENT		INT,
+		ATTRIBUTE_SORT_ORDER	INT,
+		RECORD_ID				BIGINT
+	)
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+    /*****************************
+        Write your function logic
+    ****************************/
+    RETURN SELECT 	CUST_ID ,			-- Customer ID (Internal)
+					ATTRIBUTE_ID,
+					ATTRIBUTE_VALUE,
+					INIT_DATE,
+					END_DATE,
+					INIT_TIME_SEGMENT,
+					END_TIME_SEGMENT,
+					ATTRIBUTE_SORT_ORDER,
+					RECORD_ID FROM "functions::TF_CUSTOMER_ATTRIBUTES" ('');
+END;

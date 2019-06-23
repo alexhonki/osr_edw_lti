@@ -4,8 +4,8 @@
 <localVariables/>
 <variableMappings/>
 <dataSources>
-  <DataSource id="functions::TF_CUSTOMER_ATTRIBUTES" type="TABLE_FUNCTION">
-    <resourceUri>functions::TF_CUSTOMER_ATTRIBUTES</resourceUri>
+  <DataSource id="functions::TF_CUSTOMER_ATTRIBUTES_WRAPPER_WITH_NO_PARAM" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_CUSTOMER_ATTRIBUTES_WRAPPER_WITH_NO_PARAM</resourceUri>
   </DataSource>
   <DataSource id="db::app.AttributeTypes">
     <resourceUri>db::app.AttributeTypes</resourceUri>
@@ -35,7 +35,7 @@
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
-    <input node="functions::TF_CUSTOMER_ATTRIBUTES">
+    <input node="functions::TF_CUSTOMER_ATTRIBUTES_WRAPPER_WITH_NO_PARAM">
       <mapping xsi:type="Calculation:AttributeMapping" target="CUST_ID_ID" source="CUST_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_ID_ID" source="ATTRIBUTE_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBUTE_VALUE" source="ATTRIBUTE_VALUE"/>
