@@ -22,27 +22,7 @@
       <valueDomain type="empty"/>
       <selection multiLine="false" type="Single"/>
     </variableProperties>
-  </variable>
-  <variable id="IM_REACTION_TYPE" parameter="true">
-    <descriptions defaultDescription="IM_REACTION_TYPE"/>
-    <variableProperties mandatory="false">
-      <valueDomain type="empty"/>
-      <selection multiLine="false" type="Single"/>
-      <derivationRule inputEnabled="true">
-        <resourceUri>procedures.utils::PR_CONF_GET_REACTION_TYPE</resourceUri>
-      </derivationRule>
-      <defaultRange/>
-    </variableProperties>
-  </variable>
-
-  <variable id="IP_REACTION_TYPE" parameter="true">
-    <descriptions defaultDescription=" "/>
-    <variableProperties>
-      <valueDomain type="empty"/>
-      <selection/>
-    </variableProperties>
-  </variable>
-</localVariables>
+  </variable></localVariables>
 <variableMappings>
   <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.customer::CV_CUSTOMER_LAST_EVENT">
     <targetVariable name="IP_INIT_TS" resourceUri="models.apps.customer::CV_CUSTOMER_LAST_EVENT"/>
@@ -63,10 +43,6 @@
   <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.event::CV_EVENT_IMPACT_FILTER">
     <targetVariable name="IP_TO" resourceUri="models.apps.event::CV_EVENT_IMPACT_FILTER"/>
     <localVariable>IP_TO</localVariable>
-  </mapping>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="models.apps.event::CV_EVENT_IMPACT_FILTER">
-    <targetVariable name="IP_REACTION_TYPE" resourceUri="models.apps.event::CV_EVENT_IMPACT_FILTER"/>
-    <localVariable>IP_REACTION_TYPE</localVariable>
   </mapping>
 </variableMappings>
 <dataSources>
@@ -109,10 +85,10 @@
   </calculationView>
   <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="C1_1" joinType="inner">
     <viewAttributes>
-      <viewAttribute id="EVENT_ID" aggregationType="sum">
+      <viewAttribute id="EVENT_ID">
         <descriptions defaultDescription="Event ID"/>
       </viewAttribute>
-      <viewAttribute id="INIT_DATE" aggregationType="min">
+      <viewAttribute id="INIT_DATE">
         <descriptions defaultDescription="Intial Date/Time"/>
       </viewAttribute>
       <viewAttribute id="EVENT_NAME">
@@ -122,7 +98,7 @@
         <descriptions defaultDescription="Event Category/Group"/>
       </viewAttribute>
     
-      <viewAttribute id="EVENT_IMPACT" aggregationType="sum">
+      <viewAttribute id="EVENT_IMPACT">
         <descriptions defaultDescription="Event Impact"/>
       </viewAttribute>
     </viewAttributes>

@@ -1,0 +1,20 @@
+FUNCTION "functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM"(
+		IN IM_FILTER 	NVARCHAR(5000) default '',	-- Filter
+		IN IM_FROM 		VARCHAR(6), -- From Time Segment YYYYMM
+		IN IM_TO VARCHAR(6) -- YYYYMM)
+)
+    RETURNS TABLE (
+		"EVENT_ID"			INTEGER,
+		"EVENT_IMPACT" 		INTEGER,
+		"TOTAL_CUSTOMERS" 	INTEGER,
+		"INFLUENCE" 		INTEGER
+	)
+       LANGUAGE SQLSCRIPT 
+       SQL SECURITY INVOKER AS 
+BEGIN 
+    /*****************************
+        Write your function logic
+    ****************************/
+    
+    RETURN SELECT EVENT_ID, EVENT_IMPACT, TOTAL_CUSTOMERS, INFLUENCE from "functions::TF_EVENT_INFLUENCE_IMPACT_FILTER" (:IM_FILTER,:IM_FROM,:IM_TO,'');
+END;

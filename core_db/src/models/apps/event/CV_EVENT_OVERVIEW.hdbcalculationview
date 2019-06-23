@@ -33,22 +33,22 @@
   </variable>
 </localVariables>
 <variableMappings>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER">
-    <targetVariable name="IM_FILTER" resourceUri="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER"/>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM">
+    <targetVariable name="IM_FILTER" resourceUri="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM"/>
     <localVariable>IP_FILTER</localVariable>
   </mapping>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER">
-    <targetVariable name="IM_FROM" resourceUri="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER"/>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM">
+    <targetVariable name="IM_FROM" resourceUri="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM"/>
     <localVariable>IP_FROM</localVariable>
   </mapping>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER">
-    <targetVariable name="IM_TO" resourceUri="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER"/>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM">
+    <targetVariable name="IM_TO" resourceUri="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM"/>
     <localVariable>IP_TO</localVariable>
   </mapping>
 </variableMappings>
 <dataSources>
-  <DataSource id="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER" type="TABLE_FUNCTION">
-    <resourceUri>functions::TF_EVENT_INFLUENCE_IMPACT_FILTER</resourceUri>
+  <DataSource id="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM</resourceUri>
   </DataSource>
   <DataSource id="db::adm.config.event.name">
     <resourceUri>db::adm.config.event.name</resourceUri>
@@ -72,7 +72,7 @@
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
-    <input node="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER">
+    <input node="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM">
       <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_IMPACT" source="EVENT_IMPACT"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="TOTAL_CUSTOMERS" source="TOTAL_CUSTOMERS"/>

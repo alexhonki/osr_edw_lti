@@ -28,54 +28,39 @@
         <resourceUri>procedures.utils::PR_LAST_EVENT_TIME_SEGMENT</resourceUri>
       </derivationRule>
     </variableProperties>
-  </variable>
-  <variable id="IP_REACTION_TYPE" parameter="true">
-    <descriptions defaultDescription="Reaction Type"/>
-    <variableProperties mandatory="false">
-      <valueDomain type="empty"/>
-      <selection multiLine="false" type="Single"/>
-      <derivationRule inputEnabled="true">
-        <resourceUri>procedures.utils::PR_CONF_GET_REACTION_TYPE</resourceUri>
-      </derivationRule>
-    </variableProperties>
-  </variable>
-</localVariables>
+  </variable></localVariables>
 <variableMappings>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER">
-    <targetVariable name="IM_FILTER" resourceUri="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER"/>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM">
+    <targetVariable name="IM_FILTER" resourceUri="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM"/>
     <localVariable>IP_FILTER</localVariable>
   </mapping>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER">
-    <targetVariable name="IM_FROM" resourceUri="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER"/>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM">
+    <targetVariable name="IM_FROM" resourceUri="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM"/>
     <localVariable>IP_FROM</localVariable>
   </mapping>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER">
-    <targetVariable name="IM_TO" resourceUri="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER"/>
+  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM">
+    <targetVariable name="IM_TO" resourceUri="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM"/>
     <localVariable>IP_TO</localVariable>
-  </mapping>
-  <mapping xsi:type="Variable:VariableMapping" dataSource="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER">
-    <targetVariable name="IM_REACTION_TYPE" resourceUri="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER"/>
-    <localVariable>IP_REACTION_TYPE</localVariable>
   </mapping>
 </variableMappings>
 <dataSources>
-  <DataSource id="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER" type="TABLE_FUNCTION">
-    <resourceUri>functions::TF_EVENT_INFLUENCE_IMPACT_FILTER</resourceUri>
+  <DataSource id="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM" type="TABLE_FUNCTION">
+    <resourceUri>functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM</resourceUri>
   </DataSource>
 </dataSources>
 <calculationViews>
   <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
     <viewAttributes>
-      <viewAttribute id="EVENT_ID" aggregationType="sum">
+      <viewAttribute id="EVENT_ID">
         <descriptions defaultDescription="EVENT_ID"/>
       </viewAttribute>
-      <viewAttribute id="EVENT_IMPACT" aggregationType="sum">
+      <viewAttribute id="EVENT_IMPACT">
         <descriptions defaultDescription="EVENT_IMPACT"/>
       </viewAttribute>
     </viewAttributes>
     <calculatedViewAttributes/>
     <restrictedViewAttributes/>
-    <input node="functions::TF_EVENT_INFLUENCE_IMPACT_FILTER">
+    <input node="functions::TF_EVENT_IMPACT_INFLUENCE_FILTER_WITH_PARAM">
       <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_ID" source="EVENT_ID"/>
       <mapping xsi:type="Calculation:AttributeMapping" target="EVENT_IMPACT" source="EVENT_IMPACT"/>
     </input>
