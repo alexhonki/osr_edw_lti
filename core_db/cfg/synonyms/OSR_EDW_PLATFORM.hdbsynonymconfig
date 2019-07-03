@@ -103,6 +103,13 @@
     }
   },
   
+ "osr.edw.source.md.rms.proxy.synonym::CV_TFK047UT" :{
+   "target": {
+      "object": "osr.edw.source.md.rms.proxy::CV_TFK047UT",
+      "schema.configure": "logical-OSR-EDW-PLATFORM-grantor/schema"
+    }	
+  },
+  
   "osr.edw.staging.td.rms.proxy.synonym::CV_LTAXASFB": {
     "target": {
       "object": "osr.edw.staging.td.rms.proxy::CV_LTAXASFB",
